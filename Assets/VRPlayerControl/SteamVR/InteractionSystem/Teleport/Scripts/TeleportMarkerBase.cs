@@ -33,10 +33,10 @@ namespace Valve.VR.InteractionSystem
 		}
 
 
-		//-------------------------------------------------
-		public virtual void TeleportPlayer( Vector3 pointedAtPosition )
-		{
-		}
+		// //-------------------------------------------------
+		// public virtual void TeleportPlayer( Vector3 pointedAtPosition )
+		// {
+		// }
 
 
 		//-------------------------------------------------
@@ -52,6 +52,6 @@ namespace Valve.VR.InteractionSystem
 		public abstract bool ShouldActivate( Vector3 playerPosition );
 
 		//-------------------------------------------------
-		public abstract bool ShouldMovePlayer();
+		// public abstract bool ShouldMovePlayer();
 	}
 }

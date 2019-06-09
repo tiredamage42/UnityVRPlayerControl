@@ -18,9 +18,9 @@ Shader "Valve/VR/Highlight"
 	CGINCLUDE
 		
 		// Pragmas --------------------------------------------------------------------------------------------------------------------------------------------------
-		#pragma target 5.0
-		#pragma only_renderers d3d11 vulkan glcore
-		#pragma exclude_renderers gles
+		// #pragma target 5.0
+		// #pragma only_renderers d3d11 vulkan glcore
+		// #pragma exclude_renderers gles
 
 		// Includes -------------------------------------------------------------------------------------------------------------------------------------------------
 		#include "UnityCG.cginc"
@@ -54,7 +54,7 @@ Shader "Valve/VR/Highlight"
 #if UNITY_VERSION >= 540
 			o.vertex = UnityObjectToClipPos(i.vertex);
 #else
-			o.vertex = mul(UNITY_MATRIX_MVP, i.vertex);
+			// o.vertex = mul(UNITY_MATRIX_MVP, i.vertex);
 #endif
 			o.uv = TRANSFORM_TEX( i.uv, _MainTex );
 			o.color = i.color;

@@ -16,6 +16,8 @@ public class InputTestScript : MonoBehaviour
     
     void Awake () {
 
+        
+
         //events
         booleanAction[SteamVR_Input_Sources.Any].onStateDown += OnBooleanDown;
         booleanAction[SteamVR_Input_Sources.Any].onState += OnBoolean;
