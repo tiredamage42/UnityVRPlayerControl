@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.vrplayercontrol.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "C:\\Users\\Andres\\Desktop\\Unity\\UnityVRPlayerControl\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "VRPlayerControl [Testing]"
+        }
+      }
+    }
+  ]
+}
