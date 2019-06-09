@@ -109,10 +109,10 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		public override bool ShouldMovePlayer()
-		{
-			return true;
-		}
+		// public override bool ShouldMovePlayer()
+		// {
+		// 	return true;
+		// }
 
 
 		//-------------------------------------------------

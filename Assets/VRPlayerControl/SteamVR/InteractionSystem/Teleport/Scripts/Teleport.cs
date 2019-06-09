@@ -13,36 +13,43 @@ namespace Valve.VR.InteractionSystem
 	//-------------------------------------------------------------------------
 	public class Teleport : MonoBehaviour
     {
-        public SteamVR_Action_Boolean teleportAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Teleport");
+        public SteamVR_Action_Boolean teleportAction;
+		public SteamVR_Input_Sources teleportHand = SteamVR_Input_Sources.LeftHand;
+
+		Hand teleportHandClass {
+			get {
+				return Player.instance.GetHand(teleportHand);
+			}
+		}
 
         public LayerMask traceLayerMask;
 		public LayerMask floorFixupTraceLayerMask;
 		public float floorFixupMaximumTraceDistance = 1.0f;
-		public Material areaVisibleMaterial;
-		public Material areaLockedMaterial;
-		public Material areaHighlightedMaterial;
+		// public Material areaVisibleMaterial;
+		// public Material areaLockedMaterial;
+		// public Material areaHighlightedMaterial;
 		public Material pointVisibleMaterial;
 		public Material pointLockedMaterial;
 		public Material pointHighlightedMaterial;
 		public Transform destinationReticleTransform;
 		public Transform invalidReticleTransform;
-		public GameObject playAreaPreviewCorner;
-		public GameObject playAreaPreviewSide;
+		// public GameObject playAreaPreviewCorner;
+		// public GameObject playAreaPreviewSide;
 		public Color pointerValidColor;
 		public Color pointerInvalidColor;
 		public Color pointerLockedColor;
-		public bool showPlayAreaMarker = true;
+		// public bool showPlayAreaMarker = true;
 
 		public float teleportFadeTime = 0.1f;
 		public float meshFadeTime = 0.2f;
 
 		public float arcDistance = 10.0f;
 
-		[Header( "Effects" )]
-		public Transform onActivateObjectTransform;
-		public Transform onDeactivateObjectTransform;
-		public float activateObjectTime = 1.0f;
-		public float deactivateObjectTime = 1.0f;
+		// [Header( "Effects" )]
+		// public Transform onActivateObjectTransform;
+		// public Transform onDeactivateObjectTransform;
+		// public float activateObjectTime = 1.0f;
+		// public float deactivateObjectTime = 1.0f;
 
 		[Header( "Audio Sources" )]
 		public AudioSource pointerAudioSource;
@@ -68,7 +75,12 @@ namespace Valve.VR.InteractionSystem
 		private LineRenderer pointerLineRenderer;
 		private GameObject teleportPointerObject;
 		private Transform pointerStartTransform;
-		private Hand pointerHand = null;
+
+
+		bool isPointing;
+		// private Hand pointerHand = null;
+		
+		
 		private Player player = null;
 		private TeleportArc teleportArc = null;
 
@@ -95,9 +107,9 @@ namespace Valve.VR.InteractionSystem
 		private Vector3 invalidReticleScale = Vector3.one;
 		private Quaternion invalidReticleTargetRotation = Quaternion.identity;
 
-		private Transform playAreaPreviewTransform;
-		private Transform[] playAreaPreviewCorners;
-		private Transform[] playAreaPreviewSides;
+		// private Transform playAreaPreviewTransform;
+		// private Transform[] playAreaPreviewCorners;
+		// private Transform[] playAreaPreviewSides;
 
 		private float loopingAudioMaxVolume = 0.0f;
 
@@ -108,20 +120,20 @@ namespace Valve.VR.InteractionSystem
 		private AllowTeleportWhileAttachedToHand allowTeleportWhileAttached = null;
 
 		private Vector3 startingFeetOffset = Vector3.zero;
-		private bool movedFeetFarEnough = false;
+		// private bool movedFeetFarEnough = false;
 
-		SteamVR_Events.Action chaperoneInfoInitializedAction;
+		// SteamVR_Events.Action chaperoneInfoInitializedAction;
 
 		// Events
 
-		public static SteamVR_Events.Event< float > ChangeScene = new SteamVR_Events.Event< float >();
-		public static SteamVR_Events.Action< float > ChangeSceneAction( UnityAction< float > action ) { return new SteamVR_Events.Action< float >( ChangeScene, action ); }
+		// public static SteamVR_Events.Event< float > ChangeScene = new SteamVR_Events.Event< float >();
+		// public static SteamVR_Events.Action< float > ChangeSceneAction( UnityAction< float > action ) { return new SteamVR_Events.Action< float >( ChangeScene, action ); }
 
-		public static SteamVR_Events.Event< TeleportMarkerBase > Player = new SteamVR_Events.Event< TeleportMarkerBase >();
-		public static SteamVR_Events.Action< TeleportMarkerBase > PlayerAction( UnityAction< TeleportMarkerBase > action ) { return new SteamVR_Events.Action< TeleportMarkerBase >( Player, action ); }
+		// public static SteamVR_Events.Event< TeleportMarkerBase > Player = new SteamVR_Events.Event< TeleportMarkerBase >();
+		// public static SteamVR_Events.Action< TeleportMarkerBase > PlayerAction( UnityAction< TeleportMarkerBase > action ) { return new SteamVR_Events.Action< TeleportMarkerBase >( Player, action ); }
 
-		public static SteamVR_Events.Event< TeleportMarkerBase > PlayerPre = new SteamVR_Events.Event< TeleportMarkerBase >();
-		public static SteamVR_Events.Action< TeleportMarkerBase > PlayerPreAction( UnityAction< TeleportMarkerBase > action ) { return new SteamVR_Events.Action< TeleportMarkerBase >( PlayerPre, action ); }
+		// public static SteamVR_Events.Event< TeleportMarkerBase > PlayerPre = new SteamVR_Events.Event< TeleportMarkerBase >();
+		// public static SteamVR_Events.Action< TeleportMarkerBase > PlayerPreAction( UnityAction< TeleportMarkerBase > action ) { return new SteamVR_Events.Action< TeleportMarkerBase >( PlayerPre, action ); }
 
 		//-------------------------------------------------
 		private static Teleport _instance;
@@ -144,7 +156,7 @@ namespace Valve.VR.InteractionSystem
         {
             _instance = this;
 
-			chaperoneInfoInitializedAction = ChaperoneInfo.InitializedAction( OnChaperoneInfoInitialized );
+			// chaperoneInfoInitializedAction = ChaperoneInfo.InitializedAction( OnChaperoneInfoInitialized );
 
 			pointerLineRenderer = GetComponentInChildren<LineRenderer>();
 			teleportPointerObject = pointerLineRenderer.gameObject;
@@ -157,8 +169,8 @@ namespace Valve.VR.InteractionSystem
 
 			loopingAudioMaxVolume = loopingAudioSource.volume;
 
-			playAreaPreviewCorner.SetActive( false );
-			playAreaPreviewSide.SetActive( false );
+			// playAreaPreviewCorner.SetActive( false );
+			// playAreaPreviewSide.SetActive( false );
 
 			float invalidReticleStartingScale = invalidReticleTransform.localScale.x;
 			invalidReticleMinScale *= invalidReticleStartingScale;
@@ -191,15 +203,15 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void OnEnable()
 		{
-			chaperoneInfoInitializedAction.enabled = true;
-			OnChaperoneInfoInitialized(); // In case it's already initialized
+			// chaperoneInfoInitializedAction.enabled = true;
+			// OnChaperoneInfoInitialized(); // In case it's already initialized
 		}
 
 
 		//-------------------------------------------------
 		void OnDisable()
 		{
-			chaperoneInfoInitializedAction.enabled = false;
+			// chaperoneInfoInitializedAction.enabled = false;
 			HidePointer();
 		}
 
@@ -221,39 +233,47 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		public void HideTeleportPointer()
-		{
-			if ( pointerHand != null )
-			{
-				HidePointer();
-			}
-		}
+		// public void HideTeleportPointer()
+		// {
+		// 	if ( pointerHand != null )
+		// 	{
+		// 		HidePointer();
+		// 	}
+		// }
 
 
 		//-------------------------------------------------
 		void Update()
 		{
-			Hand oldPointerHand = pointerHand;
-			Hand newPointerHand = null;
 
-			foreach ( Hand hand in player.hands )
-			{
+			bool teleportNewlyPressed = false;
+
+			// Hand oldPointerHand = pointerHand;
+			// Hand newPointerHand = null;
+
+			// foreach ( Hand hand in player.hands )
+			// {
 				if ( visible )
 				{
-					if ( WasTeleportButtonReleased( hand ) )
+					if ( WasTeleportButtonReleased(  ) )
+					// if ( WasTeleportButtonReleased( hand ) )
+					
 					{
-						if ( pointerHand == hand ) //This is the pointer hand
-						{
+						// if ( pointerHand == hand ) //This is the pointer hand
+						// {
 							TryTeleportPlayer();
-						}
+						// }
 					}
 				}
 
-				if ( WasTeleportButtonPressed( hand ) )
+				if ( WasTeleportButtonPressed(  ) )
+				// if ( WasTeleportButtonPressed( hand ) )
+				
 				{
-					newPointerHand = hand;
+					teleportNewlyPressed = true;
+					// newPointerHand = hand;
 				}
-			}
+			// }
 
 			//If something is attached to the hand that is preventing teleport
 			if ( allowTeleportWhileAttached && !allowTeleportWhileAttached.teleportAllowed )
@@ -262,23 +282,34 @@ namespace Valve.VR.InteractionSystem
 			}
 			else
 			{
-				if ( !visible && newPointerHand != null )
+				// if ( !visible && newPointerHand != null )
+				if ( !visible && teleportNewlyPressed )
+				
 				{
 					//Begin showing the pointer
-					ShowPointer( newPointerHand, oldPointerHand );
+					ShowPointer( );// newPointerHand, oldPointerHand );
 				}
 				else if ( visible )
 				{
-					if ( newPointerHand == null && !IsTeleportButtonDown( pointerHand ) )
+
+
+					if ( !teleportNewlyPressed && !IsTeleportButtonDown( ) )// pointerHand ) )
 					{
 						//Hide the pointer
 						HidePointer();
 					}
-					else if ( newPointerHand != null )
-					{
-						//Move the pointer to a new hand
-						ShowPointer( newPointerHand, oldPointerHand );
-					}
+
+
+					// if ( newPointerHand == null && !IsTeleportButtonDown( pointerHand ) )
+					// {
+					// 	//Hide the pointer
+					// 	HidePointer();
+					// }
+					// else if ( newPointerHand != null )
+					// {
+					// 	//Move the pointer to a new hand
+					// 	ShowPointer( newPointerHand, oldPointerHand );
+					// }
 				}
 			}
 
@@ -291,17 +322,17 @@ namespace Valve.VR.InteractionSystem
 					UpdateTeleportColors();
 				}
 
-				if ( onActivateObjectTransform.gameObject.activeSelf && Time.time - pointerShowStartTime > activateObjectTime )
-				{
-					onActivateObjectTransform.gameObject.SetActive( false );
-				}
+				// if ( onActivateObjectTransform.gameObject.activeSelf && Time.time - pointerShowStartTime > activateObjectTime )
+				// {
+				// 	onActivateObjectTransform.gameObject.SetActive( false );
+				// }
 			}
 			else
 			{
-				if ( onDeactivateObjectTransform.gameObject.activeSelf && Time.time - pointerHideStartTime > deactivateObjectTime )
-				{
-					onDeactivateObjectTransform.gameObject.SetActive( false );
-				}
+				// if ( onDeactivateObjectTransform.gameObject.activeSelf && Time.time - pointerHideStartTime > deactivateObjectTime )
+				// {
+				// 	onDeactivateObjectTransform.gameObject.SetActive( false );
+				// }
 			}
 		}
 
@@ -313,7 +344,7 @@ namespace Valve.VR.InteractionSystem
 			Vector3 pointerEnd;
 			Vector3 pointerDir = pointerStartTransform.forward;
 			bool hitSomething = false;
-			bool showPlayAreaPreview = false;
+			// bool showPlayAreaPreview = false;
 			Vector3 playerFeetOffset = player.trackingOriginTransform.position - player.feetPositionGuess;
 
 			Vector3 arcVelocity = pointerDir * arcDistance;
@@ -350,23 +381,23 @@ namespace Valve.VR.InteractionSystem
 				if ( hitTeleportMarker.locked )
 				{
 					teleportArc.SetColor( pointerLockedColor );
-#if (UNITY_5_4)
-					pointerLineRenderer.SetColors( pointerLockedColor, pointerLockedColor );
-#else
+// #if (UNITY_5_4)
+// 					pointerLineRenderer.SetColors( pointerLockedColor, pointerLockedColor );
+// #else
 					pointerLineRenderer.startColor = pointerLockedColor;
 					pointerLineRenderer.endColor = pointerLockedColor;
-#endif
+// #endif
 					destinationReticleTransform.gameObject.SetActive( false );
 				}
 				else
 				{
 					teleportArc.SetColor( pointerValidColor );
-#if (UNITY_5_4)
-					pointerLineRenderer.SetColors( pointerValidColor, pointerValidColor );
-#else
+// #if (UNITY_5_4)
+// 					pointerLineRenderer.SetColors( pointerValidColor, pointerValidColor );
+// #else
 					pointerLineRenderer.startColor = pointerValidColor;
 					pointerLineRenderer.endColor = pointerValidColor;
-#endif
+// #endif
 					destinationReticleTransform.gameObject.SetActive( hitTeleportMarker.showReticle );
 				}
 
@@ -377,37 +408,43 @@ namespace Valve.VR.InteractionSystem
 				pointedAtTeleportMarker = hitTeleportMarker;
 				pointedAtPosition = hitInfo.point;
 
-				if ( showPlayAreaMarker )
-				{
-					//Show the play area marker if this is a teleport area
-					TeleportArea teleportArea = pointedAtTeleportMarker as TeleportArea;
-					if ( teleportArea != null && !teleportArea.locked && playAreaPreviewTransform != null )
-					{
-						Vector3 offsetToUse = playerFeetOffset;
+				// if ( showPlayAreaMarker )
+				// {
+				// 	//Show the play area marker if this is a teleport area
+				// 	// TeleportArea teleportArea = pointedAtTeleportMarker as TeleportArea;
+					
+				// 	// if ( teleportArea != null && !teleportArea.locked && playAreaPreviewTransform != null )
+					
+					
+					
+				// 	if ( playAreaPreviewTransform != null ) // && not locked
+					
+				// 	{
+				// 		Vector3 offsetToUse = playerFeetOffset;
 
-						//Adjust the actual offset to prevent the play area marker from moving too much
-						if ( !movedFeetFarEnough )
-						{
-							float distanceFromStartingOffset = Vector3.Distance( playerFeetOffset, startingFeetOffset );
-							if ( distanceFromStartingOffset < 0.1f )
-							{
-								offsetToUse = startingFeetOffset;
-							}
-							else if ( distanceFromStartingOffset < 0.4f )
-							{
-								offsetToUse = Vector3.Lerp( startingFeetOffset, playerFeetOffset, ( distanceFromStartingOffset - 0.1f ) / 0.3f );
-							}
-							else
-							{
-								movedFeetFarEnough = true;
-							}
-						}
+				// 		//Adjust the actual offset to prevent the play area marker from moving too much
+				// 		if ( !movedFeetFarEnough )
+				// 		{
+				// 			float distanceFromStartingOffset = Vector3.Distance( playerFeetOffset, startingFeetOffset );
+				// 			if ( distanceFromStartingOffset < 0.1f )
+				// 			{
+				// 				offsetToUse = startingFeetOffset;
+				// 			}
+				// 			else if ( distanceFromStartingOffset < 0.4f )
+				// 			{
+				// 				offsetToUse = Vector3.Lerp( startingFeetOffset, playerFeetOffset, ( distanceFromStartingOffset - 0.1f ) / 0.3f );
+				// 			}
+				// 			else
+				// 			{
+				// 				movedFeetFarEnough = true;
+				// 			}
+				// 		}
 
-						playAreaPreviewTransform.position = pointedAtPosition + offsetToUse;
+				// 		playAreaPreviewTransform.position = pointedAtPosition + offsetToUse;
 
-						showPlayAreaPreview = true;
-					}
-				}
+				// 		showPlayAreaPreview = true;
+				// 	}
+				// }
 
 				pointerEnd = hitInfo.point;
 			}
@@ -417,12 +454,12 @@ namespace Valve.VR.InteractionSystem
 				offsetReticleTransform.gameObject.SetActive( false );
 
 				teleportArc.SetColor( pointerInvalidColor );
-#if (UNITY_5_4)
-				pointerLineRenderer.SetColors( pointerInvalidColor, pointerInvalidColor );
-#else
+// #if (UNITY_5_4)
+// 				pointerLineRenderer.SetColors( pointerInvalidColor, pointerInvalidColor );
+// #else
 				pointerLineRenderer.startColor = pointerInvalidColor;
 				pointerLineRenderer.endColor = pointerInvalidColor;
-#endif
+// #endif
 				invalidReticleTransform.gameObject.SetActive( !pointerAtBadAngle );
 
 				//Orient the invalid reticle to the normal of the trace hit point
@@ -462,10 +499,10 @@ namespace Valve.VR.InteractionSystem
 				}
 			}
 
-			if ( playAreaPreviewTransform != null )
-			{
-				playAreaPreviewTransform.gameObject.SetActive( showPlayAreaPreview );
-			}
+			// if ( playAreaPreviewTransform != null )
+			// {
+			// 	playAreaPreviewTransform.gameObject.SetActive( showPlayAreaPreview );
+			// }
 
 			if ( !showOffsetReticle )
 			{
@@ -474,8 +511,10 @@ namespace Valve.VR.InteractionSystem
 
 			destinationReticleTransform.position = pointedAtPosition;
 			invalidReticleTransform.position = pointerEnd;
-			onActivateObjectTransform.position = pointerEnd;
-			onDeactivateObjectTransform.position = pointerEnd;
+			
+			// onActivateObjectTransform.position = pointerEnd;
+			// onDeactivateObjectTransform.position = pointerEnd;
+			
 			offsetReticleTransform.position = pointerEnd - playerFeetOffset;
 
 			reticleAudioSource.transform.position = pointedAtPosition;
@@ -496,8 +535,8 @@ namespace Valve.VR.InteractionSystem
 			if ( debugFloor )
 			{
 				//Debug floor
-				TeleportArea teleportArea = pointedAtTeleportMarker as TeleportArea;
-				if ( teleportArea != null )
+				// TeleportArea teleportArea = pointedAtTeleportMarker as TeleportArea;
+				// if ( teleportArea != null )
 				{
 					if ( floorFixupMaximumTraceDistance > 0.0f )
 					{
@@ -511,12 +550,12 @@ namespace Valve.VR.InteractionSystem
 						{
 							floorDebugSphere.transform.position = raycastHit.point;
 							floorDebugSphere.material.color = Color.green;
-#if (UNITY_5_4)
-							floorDebugLine.SetColors( Color.green, Color.green );
-#else
+// #if (UNITY_5_4)
+// 							floorDebugLine.SetColors( Color.green, Color.green );
+// #else
 							floorDebugLine.startColor = Color.green;
 							floorDebugLine.endColor = Color.green;
-#endif
+// #endif
 							floorDebugLine.SetPosition( 0, pointedAtPosition );
 							floorDebugLine.SetPosition( 1, raycastHit.point );
 						}
@@ -525,12 +564,12 @@ namespace Valve.VR.InteractionSystem
 							Vector3 rayEnd = pointedAtPosition + ( traceDir * floorFixupMaximumTraceDistance );
 							floorDebugSphere.transform.position = rayEnd;
 							floorDebugSphere.material.color = Color.red;
-#if (UNITY_5_4)
-							floorDebugLine.SetColors( Color.red, Color.red );
-#else
+// #if (UNITY_5_4)
+// 							floorDebugLine.SetColors( Color.red, Color.red );
+// #else
 							floorDebugLine.startColor = Color.red;
 							floorDebugLine.endColor = Color.red;
-#endif
+// #endif
 							floorDebugLine.SetPosition( 0, pointedAtPosition );
 							floorDebugLine.SetPosition( 1, rayEnd );
 						}
@@ -541,76 +580,76 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private void OnChaperoneInfoInitialized()
-		{
-			ChaperoneInfo chaperone = ChaperoneInfo.instance;
+		// private void OnChaperoneInfoInitialized()
+		// {
+		// 	ChaperoneInfo chaperone = ChaperoneInfo.instance;
 
-			if ( chaperone.initialized && chaperone.roomscale )
-			{
-				//Set up the render model for the play area bounds
+		// 	if ( chaperone.initialized && chaperone.roomscale )
+		// 	{
+		// 		//Set up the render model for the play area bounds
 
-				if ( playAreaPreviewTransform == null )
-				{
-					playAreaPreviewTransform = new GameObject( "PlayAreaPreviewTransform" ).transform;
-					playAreaPreviewTransform.parent = transform;
-					Util.ResetTransform( playAreaPreviewTransform );
+		// 		if ( playAreaPreviewTransform == null )
+		// 		{
+		// 			playAreaPreviewTransform = new GameObject( "PlayAreaPreviewTransform" ).transform;
+		// 			playAreaPreviewTransform.parent = transform;
+		// 			Util.ResetTransform( playAreaPreviewTransform );
 
-					playAreaPreviewCorner.SetActive( true );
-					playAreaPreviewCorners = new Transform[4];
-					playAreaPreviewCorners[0] = playAreaPreviewCorner.transform;
-					playAreaPreviewCorners[1] = Instantiate( playAreaPreviewCorners[0] );
-					playAreaPreviewCorners[2] = Instantiate( playAreaPreviewCorners[0] );
-					playAreaPreviewCorners[3] = Instantiate( playAreaPreviewCorners[0] );
+		// 			playAreaPreviewCorner.SetActive( true );
+		// 			playAreaPreviewCorners = new Transform[4];
+		// 			playAreaPreviewCorners[0] = playAreaPreviewCorner.transform;
+		// 			playAreaPreviewCorners[1] = Instantiate( playAreaPreviewCorners[0] );
+		// 			playAreaPreviewCorners[2] = Instantiate( playAreaPreviewCorners[0] );
+		// 			playAreaPreviewCorners[3] = Instantiate( playAreaPreviewCorners[0] );
 
-					playAreaPreviewCorners[0].transform.parent = playAreaPreviewTransform;
-					playAreaPreviewCorners[1].transform.parent = playAreaPreviewTransform;
-					playAreaPreviewCorners[2].transform.parent = playAreaPreviewTransform;
-					playAreaPreviewCorners[3].transform.parent = playAreaPreviewTransform;
+		// 			playAreaPreviewCorners[0].transform.parent = playAreaPreviewTransform;
+		// 			playAreaPreviewCorners[1].transform.parent = playAreaPreviewTransform;
+		// 			playAreaPreviewCorners[2].transform.parent = playAreaPreviewTransform;
+		// 			playAreaPreviewCorners[3].transform.parent = playAreaPreviewTransform;
 
-					playAreaPreviewSide.SetActive( true );
-					playAreaPreviewSides = new Transform[4];
-					playAreaPreviewSides[0] = playAreaPreviewSide.transform;
-					playAreaPreviewSides[1] = Instantiate( playAreaPreviewSides[0] );
-					playAreaPreviewSides[2] = Instantiate( playAreaPreviewSides[0] );
-					playAreaPreviewSides[3] = Instantiate( playAreaPreviewSides[0] );
+		// 			playAreaPreviewSide.SetActive( true );
+		// 			playAreaPreviewSides = new Transform[4];
+		// 			playAreaPreviewSides[0] = playAreaPreviewSide.transform;
+		// 			playAreaPreviewSides[1] = Instantiate( playAreaPreviewSides[0] );
+		// 			playAreaPreviewSides[2] = Instantiate( playAreaPreviewSides[0] );
+		// 			playAreaPreviewSides[3] = Instantiate( playAreaPreviewSides[0] );
 
-					playAreaPreviewSides[0].transform.parent = playAreaPreviewTransform;
-					playAreaPreviewSides[1].transform.parent = playAreaPreviewTransform;
-					playAreaPreviewSides[2].transform.parent = playAreaPreviewTransform;
-					playAreaPreviewSides[3].transform.parent = playAreaPreviewTransform;
-				}
+		// 			playAreaPreviewSides[0].transform.parent = playAreaPreviewTransform;
+		// 			playAreaPreviewSides[1].transform.parent = playAreaPreviewTransform;
+		// 			playAreaPreviewSides[2].transform.parent = playAreaPreviewTransform;
+		// 			playAreaPreviewSides[3].transform.parent = playAreaPreviewTransform;
+		// 		}
 
-				float x = chaperone.playAreaSizeX;
-				float z = chaperone.playAreaSizeZ;
+		// 		float x = chaperone.playAreaSizeX;
+		// 		float z = chaperone.playAreaSizeZ;
 
-				playAreaPreviewSides[0].localPosition = new Vector3( 0.0f, 0.0f, 0.5f * z - 0.25f );
-				playAreaPreviewSides[1].localPosition = new Vector3( 0.0f, 0.0f, -0.5f * z + 0.25f );
-				playAreaPreviewSides[2].localPosition = new Vector3( 0.5f * x - 0.25f, 0.0f, 0.0f );
-				playAreaPreviewSides[3].localPosition = new Vector3( -0.5f * x + 0.25f, 0.0f, 0.0f );
+		// 		playAreaPreviewSides[0].localPosition = new Vector3( 0.0f, 0.0f, 0.5f * z - 0.25f );
+		// 		playAreaPreviewSides[1].localPosition = new Vector3( 0.0f, 0.0f, -0.5f * z + 0.25f );
+		// 		playAreaPreviewSides[2].localPosition = new Vector3( 0.5f * x - 0.25f, 0.0f, 0.0f );
+		// 		playAreaPreviewSides[3].localPosition = new Vector3( -0.5f * x + 0.25f, 0.0f, 0.0f );
 
-				playAreaPreviewSides[0].localScale = new Vector3( x - 0.5f, 1.0f, 1.0f );
-				playAreaPreviewSides[1].localScale = new Vector3( x - 0.5f, 1.0f, 1.0f );
-				playAreaPreviewSides[2].localScale = new Vector3( z - 0.5f, 1.0f, 1.0f );
-				playAreaPreviewSides[3].localScale = new Vector3( z - 0.5f, 1.0f, 1.0f );
+		// 		playAreaPreviewSides[0].localScale = new Vector3( x - 0.5f, 1.0f, 1.0f );
+		// 		playAreaPreviewSides[1].localScale = new Vector3( x - 0.5f, 1.0f, 1.0f );
+		// 		playAreaPreviewSides[2].localScale = new Vector3( z - 0.5f, 1.0f, 1.0f );
+		// 		playAreaPreviewSides[3].localScale = new Vector3( z - 0.5f, 1.0f, 1.0f );
 
-				playAreaPreviewSides[0].localRotation = Quaternion.Euler( 0.0f, 0.0f, 0.0f );
-				playAreaPreviewSides[1].localRotation = Quaternion.Euler( 0.0f, 180.0f, 0.0f );
-				playAreaPreviewSides[2].localRotation = Quaternion.Euler( 0.0f, 90.0f, 0.0f );
-				playAreaPreviewSides[3].localRotation = Quaternion.Euler( 0.0f, 270.0f, 0.0f );
+		// 		playAreaPreviewSides[0].localRotation = Quaternion.Euler( 0.0f, 0.0f, 0.0f );
+		// 		playAreaPreviewSides[1].localRotation = Quaternion.Euler( 0.0f, 180.0f, 0.0f );
+		// 		playAreaPreviewSides[2].localRotation = Quaternion.Euler( 0.0f, 90.0f, 0.0f );
+		// 		playAreaPreviewSides[3].localRotation = Quaternion.Euler( 0.0f, 270.0f, 0.0f );
 
-				playAreaPreviewCorners[0].localPosition = new Vector3( 0.5f * x - 0.25f, 0.0f, 0.5f * z - 0.25f );
-				playAreaPreviewCorners[1].localPosition = new Vector3( 0.5f * x - 0.25f, 0.0f, -0.5f * z + 0.25f );
-				playAreaPreviewCorners[2].localPosition = new Vector3( -0.5f * x + 0.25f, 0.0f, -0.5f * z + 0.25f );
-				playAreaPreviewCorners[3].localPosition = new Vector3( -0.5f * x + 0.25f, 0.0f, 0.5f * z - 0.25f );
+		// 		playAreaPreviewCorners[0].localPosition = new Vector3( 0.5f * x - 0.25f, 0.0f, 0.5f * z - 0.25f );
+		// 		playAreaPreviewCorners[1].localPosition = new Vector3( 0.5f * x - 0.25f, 0.0f, -0.5f * z + 0.25f );
+		// 		playAreaPreviewCorners[2].localPosition = new Vector3( -0.5f * x + 0.25f, 0.0f, -0.5f * z + 0.25f );
+		// 		playAreaPreviewCorners[3].localPosition = new Vector3( -0.5f * x + 0.25f, 0.0f, 0.5f * z - 0.25f );
 
-				playAreaPreviewCorners[0].localRotation = Quaternion.Euler( 0.0f, 0.0f, 0.0f );
-				playAreaPreviewCorners[1].localRotation = Quaternion.Euler( 0.0f, 90.0f, 0.0f );
-				playAreaPreviewCorners[2].localRotation = Quaternion.Euler( 0.0f, 180.0f, 0.0f );
-				playAreaPreviewCorners[3].localRotation = Quaternion.Euler( 0.0f, 270.0f, 0.0f );
+		// 		playAreaPreviewCorners[0].localRotation = Quaternion.Euler( 0.0f, 0.0f, 0.0f );
+		// 		playAreaPreviewCorners[1].localRotation = Quaternion.Euler( 0.0f, 90.0f, 0.0f );
+		// 		playAreaPreviewCorners[2].localRotation = Quaternion.Euler( 0.0f, 180.0f, 0.0f );
+		// 		playAreaPreviewCorners[3].localRotation = Quaternion.Euler( 0.0f, 270.0f, 0.0f );
 
-				playAreaPreviewTransform.gameObject.SetActive( false );
-			}
-		}
+		// 		playAreaPreviewTransform.gameObject.SetActive( false );
+		// 	}
+		// }
 
 
 		//-------------------------------------------------
@@ -622,18 +661,23 @@ namespace Valve.VR.InteractionSystem
 			}
 
 			visible = false;
-			if ( pointerHand )
+
+			if ( isPointing )
+			// if ( pointerHand )
 			{
 				if ( ShouldOverrideHoverLock() )
 				{
 					//Restore the original hovering interactable on the hand
 					if ( originalHoverLockState == true )
 					{
-						pointerHand.HoverLock( originalHoveringInteractable );
+						teleportHandClass.HoverLock( originalHoveringInteractable );
+						// pointerHand.HoverLock( originalHoveringInteractable );
 					}
 					else
 					{
-						pointerHand.HoverUnlock( null );
+						
+						teleportHandClass.HoverUnlock( null );
+						// pointerHand.HoverUnlock( null );
 					}
 				}
 
@@ -657,23 +701,24 @@ namespace Valve.VR.InteractionSystem
 			invalidReticleTransform.gameObject.SetActive( false );
 			offsetReticleTransform.gameObject.SetActive( false );
 
-			if ( playAreaPreviewTransform != null )
-			{
-				playAreaPreviewTransform.gameObject.SetActive( false );
-			}
+			// if ( playAreaPreviewTransform != null )
+			// {
+			// 	playAreaPreviewTransform.gameObject.SetActive( false );
+			// }
 
-			if ( onActivateObjectTransform.gameObject.activeSelf )
-			{
-				onActivateObjectTransform.gameObject.SetActive( false );
-			}
-			onDeactivateObjectTransform.gameObject.SetActive( true );
+			// if ( onActivateObjectTransform.gameObject.activeSelf )
+			// {
+			// 	onActivateObjectTransform.gameObject.SetActive( false );
+			// }
+			// onDeactivateObjectTransform.gameObject.SetActive( true );
 
-			pointerHand = null;
+			isPointing = false;
+			// pointerHand = null;
 		}
 
 
 		//-------------------------------------------------
-		private void ShowPointer( Hand newPointerHand, Hand oldPointerHand )
+		private void ShowPointer ( )// Hand newPointerHand, Hand oldPointerHand )
 		{
 			if ( !visible )
 			{
@@ -695,13 +740,16 @@ namespace Valve.VR.InteractionSystem
 				}
 
 				startingFeetOffset = player.trackingOriginTransform.position - player.feetPositionGuess;
-				movedFeetFarEnough = false;
+				// movedFeetFarEnough = false;
 
-				if ( onDeactivateObjectTransform.gameObject.activeSelf )
-				{
-					onDeactivateObjectTransform.gameObject.SetActive( false );
-				}
-				onActivateObjectTransform.gameObject.SetActive( true );
+				// if ( onDeactivateObjectTransform.gameObject.activeSelf )
+				// {
+				// 	onDeactivateObjectTransform.gameObject.SetActive( false );
+				// }
+				// onActivateObjectTransform.gameObject.SetActive( true );
+
+
+
 
 				loopingAudioSource.clip = pointerLoopSound;
 				loopingAudioSource.loop = true;
@@ -710,31 +758,39 @@ namespace Valve.VR.InteractionSystem
 			}
 
 
-			if ( oldPointerHand )
-			{
-				if ( ShouldOverrideHoverLock() )
-				{
-					//Restore the original hovering interactable on the hand
-					if ( originalHoverLockState == true )
-					{
-						oldPointerHand.HoverLock( originalHoveringInteractable );
-					}
-					else
-					{
-						oldPointerHand.HoverUnlock( null );
-					}
-				}
-			}
 
-			pointerHand = newPointerHand;
 
-			if ( visible && oldPointerHand != pointerHand )
+			// if ( oldPointerHand )
+			// {
+			// 	if ( ShouldOverrideHoverLock() )
+			// 	{
+			// 		//Restore the original hovering interactable on the hand
+			// 		if ( originalHoverLockState == true )
+			// 		{
+			// 			oldPointerHand.HoverLock( originalHoveringInteractable );
+			// 		}
+			// 		else
+			// 		{
+			// 			oldPointerHand.HoverUnlock( null );
+			// 		}
+			// 	}
+			// }
+
+
+			isPointing = true;
+
+			// pointerHand = newPointerHand;
+
+			if ( visible  )//&& oldPointerHand != pointerHand )
 			{
 				PlayAudioClip( pointerAudioSource, pointerStartSound );
 			}
 
-			if ( pointerHand )
-			{
+			// if ( pointerHand )
+			// {
+
+				Hand pointerHand = teleportHandClass;
+
 				pointerStartTransform = GetPointerStartTransform( pointerHand );
 
 				if ( pointerHand.currentAttachedObject != null )
@@ -756,7 +812,7 @@ namespace Valve.VR.InteractionSystem
 
 				loopingAudioSource.transform.SetParent( pointerStartTransform );
 				loopingAudioSource.transform.localPosition = Vector3.zero;
-			}
+			// }
 		}
 
 
@@ -793,8 +849,10 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void PlayPointerHaptic( bool validLocation )
 		{
-			if ( pointerHand != null )
+			if (isPointing)
+			// if ( pointerHand != null )
 			{
+				Hand pointerHand = teleportHandClass;
 				if ( validLocation )
 				{
 					pointerHand.TriggerHapticPulse( 800 );
@@ -835,11 +893,12 @@ namespace Valve.VR.InteractionSystem
 			if ( teleportPoint != null && teleportPoint.teleportType == TeleportPoint.TeleportPointType.SwitchToNewScene )
 			{
 				currentFadeTime *= 3.0f;
-				Teleport.ChangeScene.Send( currentFadeTime );
+				// Teleport.ChangeScene.Send( currentFadeTime );
 			}
 
 			SteamVR_Fade.Start( Color.clear, 0 );
 			SteamVR_Fade.Start( Color.black, currentFadeTime );
+
 
 			headAudioSource.transform.SetParent( player.hmdTransform );
 			headAudioSource.transform.localPosition = Vector3.zero;
@@ -854,7 +913,7 @@ namespace Valve.VR.InteractionSystem
 		{
 			teleporting = false;
 
-			Teleport.PlayerPre.Send( pointedAtTeleportMarker );
+			// Teleport.PlayerPre.Send( pointedAtTeleportMarker );
 
 			SteamVR_Fade.Start( Color.clear, currentFadeTime );
 
@@ -872,10 +931,10 @@ namespace Valve.VR.InteractionSystem
 					return;
 				}
 			}
-
+			else
 			// Find the actual floor position below the navigation mesh
-			TeleportArea teleportArea = teleportingToMarker as TeleportArea;
-			if ( teleportArea != null )
+			// TeleportArea teleportArea = teleportingToMarker as TeleportArea;
+			// if ( teleportArea != null )
 			{
 				if ( floorFixupMaximumTraceDistance > 0.0f )
 				{
@@ -887,17 +946,17 @@ namespace Valve.VR.InteractionSystem
 				}
 			}
 
-			if ( teleportingToMarker.ShouldMovePlayer() )
-			{
+			// if ( teleportingToMarker.ShouldMovePlayer() )
+			// {
 				Vector3 playerFeetOffset = player.trackingOriginTransform.position - player.feetPositionGuess;
 				player.trackingOriginTransform.position = teleportPosition + playerFeetOffset;
-			}
-			else
-			{
-				teleportingToMarker.TeleportPlayer( pointedAtPosition );
-			}
+			// }
+			// else
+			// {
+			// 	teleportingToMarker.TeleportPlayer( pointedAtPosition );
+			// }
 
-			Teleport.Player.Send( pointedAtTeleportMarker );
+			// Teleport.Player.Send( pointedAtTeleportMarker );
 		}
 
 
@@ -1051,14 +1110,8 @@ namespace Valve.VR.InteractionSystem
 				{
 					AllowTeleportWhileAttachedToHand allowTeleportWhileAttachedToHand = hand.currentAttachedObject.GetComponent<AllowTeleportWhileAttachedToHand>();
 
-					if ( allowTeleportWhileAttachedToHand != null && allowTeleportWhileAttachedToHand.teleportAllowed == true )
-					{
-						return true;
-					}
-					else
-					{
-						return false;
-					}
+					return allowTeleportWhileAttachedToHand != null && allowTeleportWhileAttachedToHand.teleportAllowed == true;
+					
 				}
 			}
 
@@ -1079,8 +1132,10 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private bool WasTeleportButtonReleased( Hand hand )
+		private bool WasTeleportButtonReleased()// Hand hand )
 		{
+			Hand hand = teleportHandClass;
+
 			if ( IsEligibleForTeleport( hand ) )
 			{
 				if ( hand.noSteamVRFallbackCamera != null )
@@ -1099,8 +1154,10 @@ namespace Valve.VR.InteractionSystem
 		}
 
 		//-------------------------------------------------
-		private bool IsTeleportButtonDown( Hand hand )
+		private bool IsTeleportButtonDown( )//Hand hand )
 		{
+			Hand hand = teleportHandClass;
+			
 			if ( IsEligibleForTeleport( hand ) )
 			{
 				if ( hand.noSteamVRFallbackCamera != null )
@@ -1118,8 +1175,10 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private bool WasTeleportButtonPressed( Hand hand )
+		private bool WasTeleportButtonPressed( )//Hand hand )
 		{
+			Hand hand = teleportHandClass;
+			
 			if ( IsEligibleForTeleport( hand ) )
 			{
 				if ( hand.noSteamVRFallbackCamera != null )
