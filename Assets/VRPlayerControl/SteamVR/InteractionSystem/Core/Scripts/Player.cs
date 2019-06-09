@@ -107,27 +107,52 @@ namespace Valve.VR.InteractionSystem
 		}
 
 
+		public Hand GetHand( SteamVR_Input_Sources sources )
+		{
+		
+			for ( int j = 0; j < hands.Length; j++ )
+			{
+				if ( !hands[j].gameObject.activeInHierarchy )
+				{
+					continue;
+				}
+
+				if ( hands[j].handType != sources)
+				{
+					continue;
+				}
+
+				return hands[j];
+			}
+
+			return null;
+		}
+
+
 		//-------------------------------------------------
 		public Hand leftHand
 		{
 			get
 			{
-				for ( int j = 0; j < hands.Length; j++ )
-				{
-					if ( !hands[j].gameObject.activeInHierarchy )
-					{
-						continue;
-					}
+				
+				// for ( int j = 0; j < hands.Length; j++ )
+				// {
+				// 	if ( !hands[j].gameObject.activeInHierarchy )
+				// 	{
+				// 		continue;
+				// 	}
 
-					if ( hands[j].handType != SteamVR_Input_Sources.LeftHand)
-					{
-						continue;
-					}
+				// 	if ( hands[j].handType != SteamVR_Input_Sources.LeftHand)
+				// 	{
+				// 		continue;
+				// 	}
 
-					return hands[j];
-				}
+				// 	return hands[j];
+				// }
 
-				return null;
+				// return null;
+
+				return GetHand(SteamVR_Input_Sources.LeftHand);
 			}
 		}
 
