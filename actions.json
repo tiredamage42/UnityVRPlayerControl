@@ -76,6 +76,50 @@
       "name": "/actions/mixedreality/in/ExternalCamera",
       "type": "pose",
       "requirement": "optional"
+    },
+    {
+      "name": "/actions/VRControlActionSet/in/TrackpadAxis",
+      "type": "vector2"
+    },
+    {
+      "name": "/actions/VRControlActionSet/in/TrackpadButton",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/VRControlActionSet/in/TriggerAxis",
+      "type": "vector1"
+    },
+    {
+      "name": "/actions/VRControlActionSet/in/TriggerButton",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/VRControlActionSet/in/SideButton",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/VRControlActionSet/in/MenuButton",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/VRControlActionSet/in/TrackpadDPadUp",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/VRControlActionSet/in/TrackpadDPadDown",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/VRControlActionSet/in/TrackpadDPadRight",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/VRControlActionSet/in/TrackpadDPadLeft",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/VRControlActionSet/out/Haptic",
+      "type": "vibration"
     }
   ],
   "action_sets": [
@@ -93,6 +137,10 @@
     },
     {
       "name": "/actions/mixedreality",
+      "usage": "single"
+    },
+    {
+      "name": "/actions/VRControlActionSet",
       "usage": "single"
     }
   ],
@@ -146,7 +194,18 @@
       "/actions/default/in/SkeletonRightHand": "Skeleton (Right)",
       "/actions/default/in/Teleport": "Teleport",
       "/actions/default/out/Haptic": "Haptic",
-      "/actions/platformer/in/Jump": "Jump"
+      "/actions/platformer/in/Jump": "Jump",
+      "/actions/VRControlActionSet/out/Haptic": "Haptic",
+      "/actions/VRControlActionSet/in/TrackpadAxis": "TrackpadAxis",
+      "/actions/VRControlActionSet/in/MenuButton": "MenuButton",
+      "/actions/VRControlActionSet/in/SideButton": "SideButton",
+      "/actions/VRControlActionSet/in/TriggerButton": "TriggerButton",
+      "/actions/VRControlActionSet/in/TrackpadDPadUp": "TrackpadDPadUp",
+      "/actions/VRControlActionSet/in/TrackpadDPadRight": "TrackpadDPadRight",
+      "/actions/VRControlActionSet/in/TrackpadDPadDown": "TrackpadDPadDown",
+      "/actions/VRControlActionSet/in/TrackpadDPadLeft": "TrackpadDPadLeft",
+      "/actions/VRControlActionSet/in/TrackpadButton": "TrackpadButton",
+      "/actions/VRControlActionSet/in/TriggerAxis": "TriggerAxis"
     }
   ]
 }
