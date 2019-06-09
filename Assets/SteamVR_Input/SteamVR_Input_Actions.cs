@@ -53,6 +53,28 @@ namespace Valve.VR
         
         private static SteamVR_Action_Pose p_mixedreality_ExternalCamera;
         
+        private static SteamVR_Action_Vector2 p_vRControlActionSet_TrackpadAxis;
+        
+        private static SteamVR_Action_Boolean p_vRControlActionSet_TrackpadButton;
+        
+        private static SteamVR_Action_Single p_vRControlActionSet_TriggerAxis;
+        
+        private static SteamVR_Action_Boolean p_vRControlActionSet_TriggerButton;
+        
+        private static SteamVR_Action_Boolean p_vRControlActionSet_SideButton;
+        
+        private static SteamVR_Action_Boolean p_vRControlActionSet_MenuButton;
+        
+        private static SteamVR_Action_Boolean p_vRControlActionSet_TrackpadDPadUp;
+        
+        private static SteamVR_Action_Boolean p_vRControlActionSet_TrackpadDPadDown;
+        
+        private static SteamVR_Action_Boolean p_vRControlActionSet_TrackpadDPadRight;
+        
+        private static SteamVR_Action_Boolean p_vRControlActionSet_TrackpadDPadLeft;
+        
+        private static SteamVR_Action_Vibration p_vRControlActionSet_Haptic;
+        
         public static SteamVR_Action_Boolean default_InteractUI
         {
             get
@@ -197,6 +219,94 @@ namespace Valve.VR
             }
         }
         
+        public static SteamVR_Action_Vector2 vRControlActionSet_TrackpadAxis
+        {
+            get
+            {
+                return SteamVR_Actions.p_vRControlActionSet_TrackpadAxis.GetCopy<SteamVR_Action_Vector2>();
+            }
+        }
+        
+        public static SteamVR_Action_Boolean vRControlActionSet_TrackpadButton
+        {
+            get
+            {
+                return SteamVR_Actions.p_vRControlActionSet_TrackpadButton.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
+        public static SteamVR_Action_Single vRControlActionSet_TriggerAxis
+        {
+            get
+            {
+                return SteamVR_Actions.p_vRControlActionSet_TriggerAxis.GetCopy<SteamVR_Action_Single>();
+            }
+        }
+        
+        public static SteamVR_Action_Boolean vRControlActionSet_TriggerButton
+        {
+            get
+            {
+                return SteamVR_Actions.p_vRControlActionSet_TriggerButton.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
+        public static SteamVR_Action_Boolean vRControlActionSet_SideButton
+        {
+            get
+            {
+                return SteamVR_Actions.p_vRControlActionSet_SideButton.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
+        public static SteamVR_Action_Boolean vRControlActionSet_MenuButton
+        {
+            get
+            {
+                return SteamVR_Actions.p_vRControlActionSet_MenuButton.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
+        public static SteamVR_Action_Boolean vRControlActionSet_TrackpadDPadUp
+        {
+            get
+            {
+                return SteamVR_Actions.p_vRControlActionSet_TrackpadDPadUp.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
+        public static SteamVR_Action_Boolean vRControlActionSet_TrackpadDPadDown
+        {
+            get
+            {
+                return SteamVR_Actions.p_vRControlActionSet_TrackpadDPadDown.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
+        public static SteamVR_Action_Boolean vRControlActionSet_TrackpadDPadRight
+        {
+            get
+            {
+                return SteamVR_Actions.p_vRControlActionSet_TrackpadDPadRight.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
+        public static SteamVR_Action_Boolean vRControlActionSet_TrackpadDPadLeft
+        {
+            get
+            {
+                return SteamVR_Actions.p_vRControlActionSet_TrackpadDPadLeft.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
+        public static SteamVR_Action_Vibration vRControlActionSet_Haptic
+        {
+            get
+            {
+                return SteamVR_Actions.p_vRControlActionSet_Haptic.GetCopy<SteamVR_Action_Vibration>();
+            }
+        }
+        
         private static void InitializeActionArrays()
         {
             Valve.VR.SteamVR_Input.actions = new Valve.VR.SteamVR_Action[] {
@@ -217,7 +327,18 @@ namespace Valve.VR
                     SteamVR_Actions.buggy_Throttle,
                     SteamVR_Actions.buggy_Brake,
                     SteamVR_Actions.buggy_Reset,
-                    SteamVR_Actions.mixedreality_ExternalCamera};
+                    SteamVR_Actions.mixedreality_ExternalCamera,
+                    SteamVR_Actions.vRControlActionSet_TrackpadAxis,
+                    SteamVR_Actions.vRControlActionSet_TrackpadButton,
+                    SteamVR_Actions.vRControlActionSet_TriggerAxis,
+                    SteamVR_Actions.vRControlActionSet_TriggerButton,
+                    SteamVR_Actions.vRControlActionSet_SideButton,
+                    SteamVR_Actions.vRControlActionSet_MenuButton,
+                    SteamVR_Actions.vRControlActionSet_TrackpadDPadUp,
+                    SteamVR_Actions.vRControlActionSet_TrackpadDPadDown,
+                    SteamVR_Actions.vRControlActionSet_TrackpadDPadRight,
+                    SteamVR_Actions.vRControlActionSet_TrackpadDPadLeft,
+                    SteamVR_Actions.vRControlActionSet_Haptic};
             Valve.VR.SteamVR_Input.actionsIn = new Valve.VR.ISteamVR_Action_In[] {
                     SteamVR_Actions.default_InteractUI,
                     SteamVR_Actions.default_Teleport,
@@ -235,11 +356,23 @@ namespace Valve.VR
                     SteamVR_Actions.buggy_Throttle,
                     SteamVR_Actions.buggy_Brake,
                     SteamVR_Actions.buggy_Reset,
-                    SteamVR_Actions.mixedreality_ExternalCamera};
+                    SteamVR_Actions.mixedreality_ExternalCamera,
+                    SteamVR_Actions.vRControlActionSet_TrackpadAxis,
+                    SteamVR_Actions.vRControlActionSet_TrackpadButton,
+                    SteamVR_Actions.vRControlActionSet_TriggerAxis,
+                    SteamVR_Actions.vRControlActionSet_TriggerButton,
+                    SteamVR_Actions.vRControlActionSet_SideButton,
+                    SteamVR_Actions.vRControlActionSet_MenuButton,
+                    SteamVR_Actions.vRControlActionSet_TrackpadDPadUp,
+                    SteamVR_Actions.vRControlActionSet_TrackpadDPadDown,
+                    SteamVR_Actions.vRControlActionSet_TrackpadDPadRight,
+                    SteamVR_Actions.vRControlActionSet_TrackpadDPadLeft};
             Valve.VR.SteamVR_Input.actionsOut = new Valve.VR.ISteamVR_Action_Out[] {
-                    SteamVR_Actions.default_Haptic};
+                    SteamVR_Actions.default_Haptic,
+                    SteamVR_Actions.vRControlActionSet_Haptic};
             Valve.VR.SteamVR_Input.actionsVibration = new Valve.VR.SteamVR_Action_Vibration[] {
-                    SteamVR_Actions.default_Haptic};
+                    SteamVR_Actions.default_Haptic,
+                    SteamVR_Actions.vRControlActionSet_Haptic};
             Valve.VR.SteamVR_Input.actionsPose = new Valve.VR.SteamVR_Action_Pose[] {
                     SteamVR_Actions.default_Pose,
                     SteamVR_Actions.mixedreality_ExternalCamera};
@@ -251,14 +384,24 @@ namespace Valve.VR
                     SteamVR_Actions.default_HeadsetOnHead,
                     SteamVR_Actions.platformer_Jump,
                     SteamVR_Actions.buggy_Brake,
-                    SteamVR_Actions.buggy_Reset};
+                    SteamVR_Actions.buggy_Reset,
+                    SteamVR_Actions.vRControlActionSet_TrackpadButton,
+                    SteamVR_Actions.vRControlActionSet_TriggerButton,
+                    SteamVR_Actions.vRControlActionSet_SideButton,
+                    SteamVR_Actions.vRControlActionSet_MenuButton,
+                    SteamVR_Actions.vRControlActionSet_TrackpadDPadUp,
+                    SteamVR_Actions.vRControlActionSet_TrackpadDPadDown,
+                    SteamVR_Actions.vRControlActionSet_TrackpadDPadRight,
+                    SteamVR_Actions.vRControlActionSet_TrackpadDPadLeft};
             Valve.VR.SteamVR_Input.actionsSingle = new Valve.VR.SteamVR_Action_Single[] {
                     SteamVR_Actions.default_Squeeze,
-                    SteamVR_Actions.buggy_Throttle};
+                    SteamVR_Actions.buggy_Throttle,
+                    SteamVR_Actions.vRControlActionSet_TriggerAxis};
             Valve.VR.SteamVR_Input.actionsVector2 = new Valve.VR.SteamVR_Action_Vector2[] {
                     SteamVR_Actions.default_TrackpadAxis,
                     SteamVR_Actions.platformer_Move,
-                    SteamVR_Actions.buggy_Steering};
+                    SteamVR_Actions.buggy_Steering,
+                    SteamVR_Actions.vRControlActionSet_TrackpadAxis};
             Valve.VR.SteamVR_Input.actionsVector3 = new Valve.VR.SteamVR_Action_Vector3[0];
             Valve.VR.SteamVR_Input.actionsSkeleton = new Valve.VR.SteamVR_Action_Skeleton[] {
                     SteamVR_Actions.default_SkeletonLeftHand,
@@ -276,7 +419,17 @@ namespace Valve.VR
                     SteamVR_Actions.buggy_Steering,
                     SteamVR_Actions.buggy_Throttle,
                     SteamVR_Actions.buggy_Brake,
-                    SteamVR_Actions.buggy_Reset};
+                    SteamVR_Actions.buggy_Reset,
+                    SteamVR_Actions.vRControlActionSet_TrackpadAxis,
+                    SteamVR_Actions.vRControlActionSet_TrackpadButton,
+                    SteamVR_Actions.vRControlActionSet_TriggerAxis,
+                    SteamVR_Actions.vRControlActionSet_TriggerButton,
+                    SteamVR_Actions.vRControlActionSet_SideButton,
+                    SteamVR_Actions.vRControlActionSet_MenuButton,
+                    SteamVR_Actions.vRControlActionSet_TrackpadDPadUp,
+                    SteamVR_Actions.vRControlActionSet_TrackpadDPadDown,
+                    SteamVR_Actions.vRControlActionSet_TrackpadDPadRight,
+                    SteamVR_Actions.vRControlActionSet_TrackpadDPadLeft};
         }
         
         private static void PreInitActions()
@@ -299,6 +452,17 @@ namespace Valve.VR
             SteamVR_Actions.p_buggy_Brake = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/buggy/in/Brake")));
             SteamVR_Actions.p_buggy_Reset = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/buggy/in/Reset")));
             SteamVR_Actions.p_mixedreality_ExternalCamera = ((SteamVR_Action_Pose)(SteamVR_Action.Create<SteamVR_Action_Pose>("/actions/mixedreality/in/ExternalCamera")));
+            SteamVR_Actions.p_vRControlActionSet_TrackpadAxis = ((SteamVR_Action_Vector2)(SteamVR_Action.Create<SteamVR_Action_Vector2>("/actions/VRControlActionSet/in/TrackpadAxis")));
+            SteamVR_Actions.p_vRControlActionSet_TrackpadButton = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/VRControlActionSet/in/TrackpadButton")));
+            SteamVR_Actions.p_vRControlActionSet_TriggerAxis = ((SteamVR_Action_Single)(SteamVR_Action.Create<SteamVR_Action_Single>("/actions/VRControlActionSet/in/TriggerAxis")));
+            SteamVR_Actions.p_vRControlActionSet_TriggerButton = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/VRControlActionSet/in/TriggerButton")));
+            SteamVR_Actions.p_vRControlActionSet_SideButton = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/VRControlActionSet/in/SideButton")));
+            SteamVR_Actions.p_vRControlActionSet_MenuButton = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/VRControlActionSet/in/MenuButton")));
+            SteamVR_Actions.p_vRControlActionSet_TrackpadDPadUp = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/VRControlActionSet/in/TrackpadDPadUp")));
+            SteamVR_Actions.p_vRControlActionSet_TrackpadDPadDown = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/VRControlActionSet/in/TrackpadDPadDown")));
+            SteamVR_Actions.p_vRControlActionSet_TrackpadDPadRight = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/VRControlActionSet/in/TrackpadDPadRight")));
+            SteamVR_Actions.p_vRControlActionSet_TrackpadDPadLeft = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/VRControlActionSet/in/TrackpadDPadLeft")));
+            SteamVR_Actions.p_vRControlActionSet_Haptic = ((SteamVR_Action_Vibration)(SteamVR_Action.Create<SteamVR_Action_Vibration>("/actions/VRControlActionSet/out/Haptic")));
         }
     }
 }
