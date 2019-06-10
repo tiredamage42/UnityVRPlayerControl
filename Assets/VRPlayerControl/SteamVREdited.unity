@@ -1117,29 +1117,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84a4f15a3179f1d4993aded11f4d0232, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  locked: 0
-  markerActive: 1
-  <meshBounds>k__BackingField:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0, y: 0, z: 0}
-  areaMesh: {fileID: 0}
-  tintColorId: 0
-  visibleTintColor:
-    r: 0
-    g: 0
-    b: 0
-    a: 0
-  highlightedTintColor:
-    r: 0
-    g: 0
-    b: 0
-    a: 0
-  lockedTintColor:
-    r: 0
-    g: 0
-    b: 0
-    a: 0
-  highlighted: 0
 --- !u!23 &48546055
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7532,29 +7509,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84a4f15a3179f1d4993aded11f4d0232, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  locked: 1
-  markerActive: 1
-  <meshBounds>k__BackingField:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0, y: 0, z: 0}
-  areaMesh: {fileID: 492562081}
-  tintColorId: 0
-  visibleTintColor:
-    r: 0
-    g: 0
-    b: 0
-    a: 0
-  highlightedTintColor:
-    r: 0
-    g: 0
-    b: 0
-    a: 0
-  lockedTintColor:
-    r: 0
-    g: 0
-    b: 0
-    a: 0
-  highlighted: 0
 --- !u!23 &492562081
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -12002,29 +11956,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84a4f15a3179f1d4993aded11f4d0232, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  locked: 0
-  markerActive: 1
-  <meshBounds>k__BackingField:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0, y: 0, z: 0}
-  areaMesh: {fileID: 0}
-  tintColorId: 0
-  visibleTintColor:
-    r: 0
-    g: 0
-    b: 0
-    a: 0
-  highlightedTintColor:
-    r: 0
-    g: 0
-    b: 0
-    a: 0
-  lockedTintColor:
-    r: 0
-    g: 0
-    b: 0
-    a: 0
-  highlighted: 0
 --- !u!23 &807809072
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -12278,29 +12209,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84a4f15a3179f1d4993aded11f4d0232, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  locked: 0
-  markerActive: 1
-  <meshBounds>k__BackingField:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0, y: 0, z: 0}
-  areaMesh: {fileID: 0}
-  tintColorId: 0
-  visibleTintColor:
-    r: 0
-    g: 0
-    b: 0
-    a: 0
-  highlightedTintColor:
-    r: 0
-    g: 0
-    b: 0
-    a: 0
-  lockedTintColor:
-    r: 0
-    g: 0
-    b: 0
-    a: 0
-  highlighted: 0
 --- !u!23 &839653808
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -27979,10 +27887,12 @@ MonoBehaviour:
   moveEnableAction:
     actionPath: /actions/default/in/Teleport
     needsReinit: 0
-  moveHand: 1
+  moveHand: 2
   sensitivity: 0.1
   maxSpeed: 1
-  method1: 1
+  cameraRig: {fileID: 1893138400}
+  head: {fileID: 2125041983}
+  method1: 0
   handTransform: {fileID: 1893138396}
 --- !u!143 &1893138398
 CharacterController:
@@ -28002,6 +27912,12 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!4 &1893138400 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 447954, guid: dc06161b6d97feb419f45f03b62e14b9,
+    type: 3}
+  m_PrefabInstance: {fileID: 1893138394}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1893278402
 GameObject:
   m_ObjectHideFlags: 0
@@ -30906,6 +30822,12 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4000011633437892, guid: fb710a001890d9a44bb74a8ce4f20cc0,
     type: 3}
   m_PrefabInstance: {fileID: 2116414874}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2125041983 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 429506, guid: dc06161b6d97feb419f45f03b62e14b9,
+    type: 3}
+  m_PrefabInstance: {fileID: 1893138394}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &2128122523
 GameObject:
