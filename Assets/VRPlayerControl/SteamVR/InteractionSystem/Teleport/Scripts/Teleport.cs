@@ -33,12 +33,12 @@ namespace Valve.VR.InteractionSystem
 		public Material pointHighlightedMaterial;
 		public Transform destinationReticleTransform;
 		public Transform invalidReticleTransform;
-		// public GameObject playAreaPreviewCorner;
-		// public GameObject playAreaPreviewSide;
+		public GameObject playAreaPreviewCorner;
+		public GameObject playAreaPreviewSide;
 		public Color pointerValidColor;
 		public Color pointerInvalidColor;
 		public Color pointerLockedColor;
-		// public bool showPlayAreaMarker = true;
+		public bool showPlayAreaMarker = true;
 
 		public float teleportFadeTime = 0.1f;
 		public float meshFadeTime = 0.2f;
@@ -104,12 +104,12 @@ namespace Valve.VR.InteractionSystem
 		private float invalidReticleMaxScale = 1.0f;
 		private float invalidReticleMinScaleDistance = 0.4f;
 		private float invalidReticleMaxScaleDistance = 2.0f;
-		private Vector3 invalidReticleScale = Vector3.one;
-		private Quaternion invalidReticleTargetRotation = Quaternion.identity;
+		// private Vector3 invalidReticleScale = Vector3.one;
+		// private Quaternion invalidReticleTargetRotation = Quaternion.identity;
 
-		// private Transform playAreaPreviewTransform;
-		// private Transform[] playAreaPreviewCorners;
-		// private Transform[] playAreaPreviewSides;
+		private Transform playAreaPreviewTransform;
+		private Transform[] playAreaPreviewCorners;
+		private Transform[] playAreaPreviewSides;
 
 		private float loopingAudioMaxVolume = 0.0f;
 
@@ -120,9 +120,9 @@ namespace Valve.VR.InteractionSystem
 		private AllowTeleportWhileAttachedToHand allowTeleportWhileAttached = null;
 
 		private Vector3 startingFeetOffset = Vector3.zero;
-		// private bool movedFeetFarEnough = false;
+		private bool movedFeetFarEnough = false;
 
-		// SteamVR_Events.Action chaperoneInfoInitializedAction;
+		SteamVR_Events.Action chaperoneInfoInitializedAction;
 
 		// Events
 
@@ -156,7 +156,7 @@ namespace Valve.VR.InteractionSystem
         {
             _instance = this;
 
-			// chaperoneInfoInitializedAction = ChaperoneInfo.InitializedAction( OnChaperoneInfoInitialized );
+			chaperoneInfoInitializedAction = ChaperoneInfo.InitializedAction( OnChaperoneInfoInitialized );
 
 			pointerLineRenderer = GetComponentInChildren<LineRenderer>();
 			teleportPointerObject = pointerLineRenderer.gameObject;
@@ -169,8 +169,8 @@ namespace Valve.VR.InteractionSystem
 
 			loopingAudioMaxVolume = loopingAudioSource.volume;
 
-			// playAreaPreviewCorner.SetActive( false );
-			// playAreaPreviewSide.SetActive( false );
+			playAreaPreviewCorner.SetActive( false );
+			playAreaPreviewSide.SetActive( false );
 
 			float invalidReticleStartingScale = invalidReticleTransform.localScale.x;
 			invalidReticleMinScale *= invalidReticleStartingScale;
@@ -203,15 +203,15 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void OnEnable()
 		{
-			// chaperoneInfoInitializedAction.enabled = true;
-			// OnChaperoneInfoInitialized(); // In case it's already initialized
+			chaperoneInfoInitializedAction.enabled = true;
+			OnChaperoneInfoInitialized(); // In case it's already initialized
 		}
 
 
 		//-------------------------------------------------
 		void OnDisable()
 		{
-			// chaperoneInfoInitializedAction.enabled = false;
+			chaperoneInfoInitializedAction.enabled = false;
 			HidePointer();
 		}
 
@@ -338,13 +338,66 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
+
+
+		void SetArcColor (Color32 color) {
+			teleportArc.SetColor( color );
+// #if (UNITY_5_4)
+// 			pointerLineRenderer.SetColors( color, color );
+// #else
+			pointerLineRenderer.startColor = color;
+			pointerLineRenderer.endColor = color;
+// #endif
+
+		}
+
+
+		bool ShowPlayArea (Vector3 playerFeetOffset) {
+			if ( !showPlayAreaMarker ) return false;
+			if ( playAreaPreviewTransform == null ) return false;
+			
+			Vector3 offsetToUse = playerFeetOffset;
+
+			//Adjust the actual offset to prevent the play area marker from moving too much
+			if ( !movedFeetFarEnough )
+			{
+				float distanceFromStartingOffset = Vector3.Distance( playerFeetOffset, startingFeetOffset );
+				if ( distanceFromStartingOffset < 0.1f )
+				{
+					offsetToUse = startingFeetOffset;
+				}
+				else if ( distanceFromStartingOffset < 0.4f )
+				{
+					offsetToUse = Vector3.Lerp( startingFeetOffset, playerFeetOffset, ( distanceFromStartingOffset - 0.1f ) / 0.3f );
+				}
+				else
+				{
+					movedFeetFarEnough = true;
+				}
+			}
+
+			playAreaPreviewTransform.position = pointedAtPosition + offsetToUse;
+
+			return true;
+		}
+
+
+		void AdjustArcAndReticles (bool isValid, bool pointerAtBadAngle) {
+
+			offsetReticleTransform.gameObject.SetActive( isValid );
+			invalidReticleTransform.gameObject.SetActive( !isValid && !pointerAtBadAngle );
+
+		}
+
+				
+
+		
 		private void UpdatePointer()
 		{
 			Vector3 pointerStart = pointerStartTransform.position;
 			Vector3 pointerEnd;
 			Vector3 pointerDir = pointerStartTransform.forward;
 			bool hitSomething = false;
-			// bool showPlayAreaPreview = false;
 			Vector3 playerFeetOffset = player.trackingOriginTransform.position - player.feetPositionGuess;
 
 			Vector3 arcVelocity = pointerDir * arcDistance;
@@ -369,6 +422,9 @@ namespace Valve.VR.InteractionSystem
 				hitTeleportMarker = hitInfo.collider.GetComponentInParent<TeleportMarkerBase>();
 			}
 
+
+
+
 			if ( pointerAtBadAngle )
 			{
 				hitTeleportMarker = null;
@@ -376,109 +432,86 @@ namespace Valve.VR.InteractionSystem
 
 			HighlightSelected( hitTeleportMarker );
 
+
+			bool hasValidSpot = false;
+
 			if ( hitTeleportMarker != null ) //Hit a teleport marker
 			{
 				if ( hitTeleportMarker.locked )
 				{
-					teleportArc.SetColor( pointerLockedColor );
-// #if (UNITY_5_4)
-// 					pointerLineRenderer.SetColors( pointerLockedColor, pointerLockedColor );
-// #else
-					pointerLineRenderer.startColor = pointerLockedColor;
-					pointerLineRenderer.endColor = pointerLockedColor;
-// #endif
+
+					SetArcColor( pointerLockedColor );
+					
 					destinationReticleTransform.gameObject.SetActive( false );
 				}
 				else
 				{
-					teleportArc.SetColor( pointerValidColor );
-// #if (UNITY_5_4)
-// 					pointerLineRenderer.SetColors( pointerValidColor, pointerValidColor );
-// #else
-					pointerLineRenderer.startColor = pointerValidColor;
-					pointerLineRenderer.endColor = pointerValidColor;
-// #endif
-					destinationReticleTransform.gameObject.SetActive( hitTeleportMarker.showReticle );
+
+					hasValidSpot = true;
+
+					SetArcColor( pointerValidColor );
+					
+					destinationReticleTransform.gameObject.SetActive( false );//hitTeleportMarker.showReticle );
 				}
 
-				offsetReticleTransform.gameObject.SetActive( true );
 
-				invalidReticleTransform.gameObject.SetActive( false );
+				AdjustArcAndReticles(true, pointerAtBadAngle);
+				
+
+				// offsetReticleTransform.gameObject.SetActive( true );
+				// invalidReticleTransform.gameObject.SetActive( false );
+
 
 				pointedAtTeleportMarker = hitTeleportMarker;
 				pointedAtPosition = hitInfo.point;
 
-				// if ( showPlayAreaMarker )
-				// {
-				// 	//Show the play area marker if this is a teleport area
-				// 	// TeleportArea teleportArea = pointedAtTeleportMarker as TeleportArea;
-					
-				// 	// if ( teleportArea != null && !teleportArea.locked && playAreaPreviewTransform != null )
-					
-					
-					
-				// 	if ( playAreaPreviewTransform != null ) // && not locked
-					
-				// 	{
-				// 		Vector3 offsetToUse = playerFeetOffset;
 
-				// 		//Adjust the actual offset to prevent the play area marker from moving too much
-				// 		if ( !movedFeetFarEnough )
-				// 		{
-				// 			float distanceFromStartingOffset = Vector3.Distance( playerFeetOffset, startingFeetOffset );
-				// 			if ( distanceFromStartingOffset < 0.1f )
-				// 			{
-				// 				offsetToUse = startingFeetOffset;
-				// 			}
-				// 			else if ( distanceFromStartingOffset < 0.4f )
-				// 			{
-				// 				offsetToUse = Vector3.Lerp( startingFeetOffset, playerFeetOffset, ( distanceFromStartingOffset - 0.1f ) / 0.3f );
-				// 			}
-				// 			else
-				// 			{
-				// 				movedFeetFarEnough = true;
-				// 			}
-				// 		}
-
-				// 		playAreaPreviewTransform.position = pointedAtPosition + offsetToUse;
-
-				// 		showPlayAreaPreview = true;
-				// 	}
-				// }
+			
 
 				pointerEnd = hitInfo.point;
 			}
 			else //Hit neither
 			{
-				destinationReticleTransform.gameObject.SetActive( false );
-				offsetReticleTransform.gameObject.SetActive( false );
 
-				teleportArc.SetColor( pointerInvalidColor );
-// #if (UNITY_5_4)
-// 				pointerLineRenderer.SetColors( pointerInvalidColor, pointerInvalidColor );
-// #else
-				pointerLineRenderer.startColor = pointerInvalidColor;
-				pointerLineRenderer.endColor = pointerInvalidColor;
-// #endif
-				invalidReticleTransform.gameObject.SetActive( !pointerAtBadAngle );
+				hasValidSpot = !pointerAtBadAngle; //and not locked etc...
 
-				//Orient the invalid reticle to the normal of the trace hit point
-				Vector3 normalToUse = hitInfo.normal;
-				float angle = Vector3.Angle( hitInfo.normal, Vector3.up );
-				if ( angle < 15.0f )
-				{
-					normalToUse = Vector3.up;
+
+				AdjustArcAndReticles(hasValidSpot, pointerAtBadAngle);
+					
+				
+				
+				
+				// destinationReticleTransform.gameObject.SetActive( false );
+				// offsetReticleTransform.gameObject.SetActive( false );
+
+				SetArcColor( hasValidSpot ? pointerValidColor : pointerInvalidColor );
+
+				// invalidReticleTransform.gameObject.SetActive( !pointerAtBadAngle );
+
+				
+				
+				if (!pointerAtBadAngle) {
+
+					//Orient the invalid reticle to the normal of the trace hit point
+					Vector3 normalToUse = hitInfo.normal;
+					float angle = Vector3.Angle( hitInfo.normal, Vector3.up );
+					if ( angle < 15.0f )
+					{
+						normalToUse = Vector3.up;
+					}
+					
+					
+					Quaternion invalidReticleTargetRotation = Quaternion.FromToRotation( Vector3.up, normalToUse );
+					invalidReticleTransform.rotation = Quaternion.Slerp( invalidReticleTransform.rotation, invalidReticleTargetRotation, 0.1f );
+
+					//Scale the invalid reticle based on the distance from the player
+					float distanceFromPlayer = Vector3.Distance( hitInfo.point, player.hmdTransform.position );
+					float invalidReticleCurrentScale = Util.RemapNumberClamped( distanceFromPlayer, invalidReticleMinScaleDistance, invalidReticleMaxScaleDistance, invalidReticleMinScale, invalidReticleMaxScale );
+					// invalidReticleScale.x = invalidReticleCurrentScale;
+					// invalidReticleScale.y = invalidReticleCurrentScale;
+					// invalidReticleScale.z = invalidReticleCurrentScale;
+					invalidReticleTransform.transform.localScale = Vector3.one * invalidReticleCurrentScale;// invalidReticleScale;
 				}
-				invalidReticleTargetRotation = Quaternion.FromToRotation( Vector3.up, normalToUse );
-				invalidReticleTransform.rotation = Quaternion.Slerp( invalidReticleTransform.rotation, invalidReticleTargetRotation, 0.1f );
-
-				//Scale the invalid reticle based on the distance from the player
-				float distanceFromPlayer = Vector3.Distance( hitInfo.point, player.hmdTransform.position );
-				float invalidReticleCurrentScale = Util.RemapNumberClamped( distanceFromPlayer, invalidReticleMinScaleDistance, invalidReticleMaxScaleDistance, invalidReticleMinScale, invalidReticleMaxScale );
-				invalidReticleScale.x = invalidReticleCurrentScale;
-				invalidReticleScale.y = invalidReticleCurrentScale;
-				invalidReticleScale.z = invalidReticleCurrentScale;
-				invalidReticleTransform.transform.localScale = invalidReticleScale;
 
 				pointedAtTeleportMarker = null;
 
@@ -499,10 +532,14 @@ namespace Valve.VR.InteractionSystem
 				}
 			}
 
-			// if ( playAreaPreviewTransform != null )
-			// {
-			// 	playAreaPreviewTransform.gameObject.SetActive( showPlayAreaPreview );
-			// }
+
+			bool showPlayAreaPreview = hasValidSpot && ShowPlayArea(playerFeetOffset);
+
+
+			if ( playAreaPreviewTransform != null )
+			{
+				playAreaPreviewTransform.gameObject.SetActive( showPlayAreaPreview );
+			}
 
 			if ( !showOffsetReticle )
 			{
@@ -580,76 +617,76 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		// private void OnChaperoneInfoInitialized()
-		// {
-		// 	ChaperoneInfo chaperone = ChaperoneInfo.instance;
+		private void OnChaperoneInfoInitialized()
+		{
+			ChaperoneInfo chaperone = ChaperoneInfo.instance;
 
-		// 	if ( chaperone.initialized && chaperone.roomscale )
-		// 	{
-		// 		//Set up the render model for the play area bounds
+			if ( chaperone.initialized && chaperone.roomscale )
+			{
+				//Set up the render model for the play area bounds
 
-		// 		if ( playAreaPreviewTransform == null )
-		// 		{
-		// 			playAreaPreviewTransform = new GameObject( "PlayAreaPreviewTransform" ).transform;
-		// 			playAreaPreviewTransform.parent = transform;
-		// 			Util.ResetTransform( playAreaPreviewTransform );
+				if ( playAreaPreviewTransform == null )
+				{
+					playAreaPreviewTransform = new GameObject( "PlayAreaPreviewTransform" ).transform;
+					playAreaPreviewTransform.parent = transform;
+					Util.ResetTransform( playAreaPreviewTransform );
 
-		// 			playAreaPreviewCorner.SetActive( true );
-		// 			playAreaPreviewCorners = new Transform[4];
-		// 			playAreaPreviewCorners[0] = playAreaPreviewCorner.transform;
-		// 			playAreaPreviewCorners[1] = Instantiate( playAreaPreviewCorners[0] );
-		// 			playAreaPreviewCorners[2] = Instantiate( playAreaPreviewCorners[0] );
-		// 			playAreaPreviewCorners[3] = Instantiate( playAreaPreviewCorners[0] );
+					playAreaPreviewCorner.SetActive( true );
+					playAreaPreviewCorners = new Transform[4];
+					playAreaPreviewCorners[0] = playAreaPreviewCorner.transform;
+					playAreaPreviewCorners[1] = Instantiate( playAreaPreviewCorners[0] );
+					playAreaPreviewCorners[2] = Instantiate( playAreaPreviewCorners[0] );
+					playAreaPreviewCorners[3] = Instantiate( playAreaPreviewCorners[0] );
 
-		// 			playAreaPreviewCorners[0].transform.parent = playAreaPreviewTransform;
-		// 			playAreaPreviewCorners[1].transform.parent = playAreaPreviewTransform;
-		// 			playAreaPreviewCorners[2].transform.parent = playAreaPreviewTransform;
-		// 			playAreaPreviewCorners[3].transform.parent = playAreaPreviewTransform;
+					playAreaPreviewCorners[0].transform.parent = playAreaPreviewTransform;
+					playAreaPreviewCorners[1].transform.parent = playAreaPreviewTransform;
+					playAreaPreviewCorners[2].transform.parent = playAreaPreviewTransform;
+					playAreaPreviewCorners[3].transform.parent = playAreaPreviewTransform;
 
-		// 			playAreaPreviewSide.SetActive( true );
-		// 			playAreaPreviewSides = new Transform[4];
-		// 			playAreaPreviewSides[0] = playAreaPreviewSide.transform;
-		// 			playAreaPreviewSides[1] = Instantiate( playAreaPreviewSides[0] );
-		// 			playAreaPreviewSides[2] = Instantiate( playAreaPreviewSides[0] );
-		// 			playAreaPreviewSides[3] = Instantiate( playAreaPreviewSides[0] );
+					playAreaPreviewSide.SetActive( true );
+					playAreaPreviewSides = new Transform[4];
+					playAreaPreviewSides[0] = playAreaPreviewSide.transform;
+					playAreaPreviewSides[1] = Instantiate( playAreaPreviewSides[0] );
+					playAreaPreviewSides[2] = Instantiate( playAreaPreviewSides[0] );
+					playAreaPreviewSides[3] = Instantiate( playAreaPreviewSides[0] );
 
-		// 			playAreaPreviewSides[0].transform.parent = playAreaPreviewTransform;
-		// 			playAreaPreviewSides[1].transform.parent = playAreaPreviewTransform;
-		// 			playAreaPreviewSides[2].transform.parent = playAreaPreviewTransform;
-		// 			playAreaPreviewSides[3].transform.parent = playAreaPreviewTransform;
-		// 		}
+					playAreaPreviewSides[0].transform.parent = playAreaPreviewTransform;
+					playAreaPreviewSides[1].transform.parent = playAreaPreviewTransform;
+					playAreaPreviewSides[2].transform.parent = playAreaPreviewTransform;
+					playAreaPreviewSides[3].transform.parent = playAreaPreviewTransform;
+				}
 
-		// 		float x = chaperone.playAreaSizeX;
-		// 		float z = chaperone.playAreaSizeZ;
+				float x = chaperone.playAreaSizeX;
+				float z = chaperone.playAreaSizeZ;
 
-		// 		playAreaPreviewSides[0].localPosition = new Vector3( 0.0f, 0.0f, 0.5f * z - 0.25f );
-		// 		playAreaPreviewSides[1].localPosition = new Vector3( 0.0f, 0.0f, -0.5f * z + 0.25f );
-		// 		playAreaPreviewSides[2].localPosition = new Vector3( 0.5f * x - 0.25f, 0.0f, 0.0f );
-		// 		playAreaPreviewSides[3].localPosition = new Vector3( -0.5f * x + 0.25f, 0.0f, 0.0f );
+				playAreaPreviewSides[0].localPosition = new Vector3( 0.0f, 0.0f, 0.5f * z - 0.25f );
+				playAreaPreviewSides[1].localPosition = new Vector3( 0.0f, 0.0f, -0.5f * z + 0.25f );
+				playAreaPreviewSides[2].localPosition = new Vector3( 0.5f * x - 0.25f, 0.0f, 0.0f );
+				playAreaPreviewSides[3].localPosition = new Vector3( -0.5f * x + 0.25f, 0.0f, 0.0f );
 
-		// 		playAreaPreviewSides[0].localScale = new Vector3( x - 0.5f, 1.0f, 1.0f );
-		// 		playAreaPreviewSides[1].localScale = new Vector3( x - 0.5f, 1.0f, 1.0f );
-		// 		playAreaPreviewSides[2].localScale = new Vector3( z - 0.5f, 1.0f, 1.0f );
-		// 		playAreaPreviewSides[3].localScale = new Vector3( z - 0.5f, 1.0f, 1.0f );
+				playAreaPreviewSides[0].localScale = new Vector3( x - 0.5f, 1.0f, 1.0f );
+				playAreaPreviewSides[1].localScale = new Vector3( x - 0.5f, 1.0f, 1.0f );
+				playAreaPreviewSides[2].localScale = new Vector3( z - 0.5f, 1.0f, 1.0f );
+				playAreaPreviewSides[3].localScale = new Vector3( z - 0.5f, 1.0f, 1.0f );
 
-		// 		playAreaPreviewSides[0].localRotation = Quaternion.Euler( 0.0f, 0.0f, 0.0f );
-		// 		playAreaPreviewSides[1].localRotation = Quaternion.Euler( 0.0f, 180.0f, 0.0f );
-		// 		playAreaPreviewSides[2].localRotation = Quaternion.Euler( 0.0f, 90.0f, 0.0f );
-		// 		playAreaPreviewSides[3].localRotation = Quaternion.Euler( 0.0f, 270.0f, 0.0f );
+				playAreaPreviewSides[0].localRotation = Quaternion.Euler( 0.0f, 0.0f, 0.0f );
+				playAreaPreviewSides[1].localRotation = Quaternion.Euler( 0.0f, 180.0f, 0.0f );
+				playAreaPreviewSides[2].localRotation = Quaternion.Euler( 0.0f, 90.0f, 0.0f );
+				playAreaPreviewSides[3].localRotation = Quaternion.Euler( 0.0f, 270.0f, 0.0f );
 
-		// 		playAreaPreviewCorners[0].localPosition = new Vector3( 0.5f * x - 0.25f, 0.0f, 0.5f * z - 0.25f );
-		// 		playAreaPreviewCorners[1].localPosition = new Vector3( 0.5f * x - 0.25f, 0.0f, -0.5f * z + 0.25f );
-		// 		playAreaPreviewCorners[2].localPosition = new Vector3( -0.5f * x + 0.25f, 0.0f, -0.5f * z + 0.25f );
-		// 		playAreaPreviewCorners[3].localPosition = new Vector3( -0.5f * x + 0.25f, 0.0f, 0.5f * z - 0.25f );
+				playAreaPreviewCorners[0].localPosition = new Vector3( 0.5f * x - 0.25f, 0.0f, 0.5f * z - 0.25f );
+				playAreaPreviewCorners[1].localPosition = new Vector3( 0.5f * x - 0.25f, 0.0f, -0.5f * z + 0.25f );
+				playAreaPreviewCorners[2].localPosition = new Vector3( -0.5f * x + 0.25f, 0.0f, -0.5f * z + 0.25f );
+				playAreaPreviewCorners[3].localPosition = new Vector3( -0.5f * x + 0.25f, 0.0f, 0.5f * z - 0.25f );
 
-		// 		playAreaPreviewCorners[0].localRotation = Quaternion.Euler( 0.0f, 0.0f, 0.0f );
-		// 		playAreaPreviewCorners[1].localRotation = Quaternion.Euler( 0.0f, 90.0f, 0.0f );
-		// 		playAreaPreviewCorners[2].localRotation = Quaternion.Euler( 0.0f, 180.0f, 0.0f );
-		// 		playAreaPreviewCorners[3].localRotation = Quaternion.Euler( 0.0f, 270.0f, 0.0f );
+				playAreaPreviewCorners[0].localRotation = Quaternion.Euler( 0.0f, 0.0f, 0.0f );
+				playAreaPreviewCorners[1].localRotation = Quaternion.Euler( 0.0f, 90.0f, 0.0f );
+				playAreaPreviewCorners[2].localRotation = Quaternion.Euler( 0.0f, 180.0f, 0.0f );
+				playAreaPreviewCorners[3].localRotation = Quaternion.Euler( 0.0f, 270.0f, 0.0f );
 
-		// 		playAreaPreviewTransform.gameObject.SetActive( false );
-		// 	}
-		// }
+				playAreaPreviewTransform.gameObject.SetActive( false );
+			}
+		}
 
 
 		//-------------------------------------------------
@@ -740,7 +777,7 @@ namespace Valve.VR.InteractionSystem
 				}
 
 				startingFeetOffset = player.trackingOriginTransform.position - player.feetPositionGuess;
-				// movedFeetFarEnough = false;
+				movedFeetFarEnough = false;
 
 				// if ( onDeactivateObjectTransform.gameObject.activeSelf )
 				// {
@@ -939,6 +976,8 @@ namespace Valve.VR.InteractionSystem
 				if ( floorFixupMaximumTraceDistance > 0.0f )
 				{
 					RaycastHit raycastHit;
+
+					//maybe should be down ?
 					if ( Physics.Raycast( teleportPosition + 0.05f * Vector3.down, Vector3.down, out raycastHit, floorFixupMaximumTraceDistance, floorFixupTraceLayerMask ) )
 					{
 						teleportPosition = raycastHit.point;
@@ -1035,8 +1074,10 @@ namespace Valve.VR.InteractionSystem
 				bool pulsed = false;
 
 				//Show the hint on each eligible hand
-				foreach ( Hand hand in player.hands )
-				{
+				// foreach ( Hand hand in player.hands )
+				// {
+
+					Hand hand = teleportHandClass;
 					bool showHint = IsEligibleForTeleport( hand );
 					bool isShowingHint = !string.IsNullOrEmpty( ControllerButtonHints.GetActiveHintText( hand, teleportAction) );
 					if ( showHint )
@@ -1060,7 +1101,7 @@ namespace Valve.VR.InteractionSystem
 					{
 						ControllerButtonHints.HideTextHint( hand, teleportAction);
 					}
-				}
+				// }
 
 				if ( Time.time > prevBreakTime + 3.0f )
 				{
