@@ -26,7 +26,7 @@ public class TouchpadLocomotion : MonoBehaviour
     public float sensitivity = 0.1f;
     public float maxSpeed = 1.0f;
 
-    Transform cameraRig, head;
+    public Transform cameraRig, head;
     float currentSpeed;
     CharacterController characterController;
 
@@ -37,8 +37,8 @@ public class TouchpadLocomotion : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        cameraRig = SteamVR_Render.Top().origin;
-        head = SteamVR_Render.Top().head;
+        // cameraRig = SteamVR_Render.Top().origin;
+        // head = SteamVR_Render.Top().head;
     }
 
     // Update is called once per frame
@@ -83,13 +83,13 @@ public class TouchpadLocomotion : MonoBehaviour
 
     void HandleHead () {
         //store current rotation
-        Vector3 oldCameraRigPosition = cameraRig.position;
-        Quaternion oldCameraRigRotation = cameraRig.rotation;
+        Vector3 oldCameraRigPosition = head.position;
+        Quaternion oldCameraRigRotation = head.rotation;
 
         transform.rotation = Quaternion.Euler( new Vector3(0, head.rotation.eulerAngles.y, 0) );
 
-        cameraRig.position = oldCameraRigPosition;
-        cameraRig.rotation = oldCameraRigRotation;
+        head.position = oldCameraRigPosition;
+        head.rotation = oldCameraRigRotation;
     }
 
     void CalculateMovement () {
@@ -209,7 +209,7 @@ public class TouchpadLocomotion : MonoBehaviour
         {
             //make sure the touch isn't in the deadzone and we aren't going to fast.
             // CapCollider.material = NoFrictionMaterial;
-            velocity = moveDirection;
+            velocity = currentTrackpad;// moveDirection;
             // if (JumpAction.GetStateDown(MovementHand) && GroundCount > 0)
             // {
             //     float jumpSpeed = Mathf.Sqrt(2 * jumpHeight * 9.81f);
@@ -217,12 +217,13 @@ public class TouchpadLocomotion : MonoBehaviour
             // }
 
             Vector3 velocityNew = new Vector3( 
-                velocity.x * maxSpeed - characterController.velocity.x, 
+                velocity.x * maxSpeed,// - characterController.velocity.x, 
                 0, 
-                velocity.z * maxSpeed - characterController.velocity.z 
+                velocity.y * maxSpeed //- characterController.velocity.z 
             );
 
-            characterController.Move(velocityNew);
+
+            characterController.Move(transform.TransformDirection( velocityNew * Time.deltaTime ) );
 
 
 
