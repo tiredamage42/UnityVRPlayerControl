@@ -100,6 +100,8 @@ public class TouchpadLocomotion : MonoBehaviour
      */
 
     // makes sure head doesnt rotate with cc
+    float currentTurnSpeed;
+    public float turnSpeedAccelSpeed = 15;
 
 
 
@@ -113,18 +115,25 @@ public class TouchpadLocomotion : MonoBehaviour
 
 
         bool isTurning = false;
+        bool left = false;
         if (moveEnableAction.GetState(lookHand)) {
             float axis = trackpackAxisAction.GetAxis(lookHand).x;
-            if (axis >= deadZone) {
+            if (Mathf.Abs(axis) >= deadZone) {
                 isTurning = true;
+                left = axis < 0;
 
-                transform.RotateAround(oldCameraRigPosition, Vector3.up, axis * turnSpeed * deltaTime);
-
+                
                 // transform.position = new Vector3(oldCameraRigPosition.x, transform.position.y, oldCameraRigPosition.z);
                 // transform.Rotate(0, axis * turnSpeed * deltaTime, 0);
             }
         }
-        if (isTurning) {
+        currentTurnSpeed = Mathf.Lerp(currentTurnSpeed, isTurning ? (left ?  -1 : 1) : 0, deltaTime * turnSpeedAccelSpeed);
+        if (currentTurnSpeed != 0) {
+
+        
+
+            transform.RotateAround(oldCameraRigPosition, Vector3.up, currentTurnSpeed * turnSpeed * deltaTime);
+
 
 
         }
@@ -286,7 +295,7 @@ public class TouchpadLocomotion : MonoBehaviour
             characterController.Move(
                 // maybe head
                 transform
-                    .TransformDirection( velocityNew * deltaTime ) 
+                    .TransformDirection( velocityNew ) 
             );
 
 
