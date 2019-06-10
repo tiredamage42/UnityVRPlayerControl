@@ -118,6 +118,10 @@
       "type": "boolean"
     },
     {
+      "name": "/actions/VRControlActionSet/in/Pose",
+      "type": "pose"
+    },
+    {
       "name": "/actions/VRControlActionSet/out/Haptic",
       "type": "vibration"
     }
@@ -205,7 +209,8 @@
       "/actions/VRControlActionSet/in/TrackpadDPadDown": "TrackpadDPadDown",
       "/actions/VRControlActionSet/in/TrackpadDPadLeft": "TrackpadDPadLeft",
       "/actions/VRControlActionSet/in/TrackpadButton": "TrackpadButton",
-      "/actions/VRControlActionSet/in/TriggerAxis": "TriggerAxis"
+      "/actions/VRControlActionSet/in/TriggerAxis": "TriggerAxis",
+      "/actions/VRControlActionSet/in/Pose": "Pose"
     }
   ]
 }

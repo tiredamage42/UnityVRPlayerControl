@@ -111,7 +111,7 @@ amplified walking (move tracking space along with camera movement vector so meat
 public class TouchpadLocomotion : MonoBehaviour
 {
 
-    public float comfortVignetteIntensity = 1.0f;
+    public float comfortVignetteIntensity = 20.0f;
 
     // public float turnSpeed = 5;
     // public float deadZone = .1f;
@@ -196,9 +196,9 @@ public class TouchpadLocomotion : MonoBehaviour
     */
     
 
-    public float turnDegrees = 45f;    
+    public float turnDegrees = 20f;    
 
-    public float fastTurnTime = .25f;
+    public float fastTurnTime = .1f;
 
     float fastTurnDegreesPerSecond {
         get {
@@ -209,14 +209,14 @@ public class TouchpadLocomotion : MonoBehaviour
 
     // makes sure head doesnt rotate with cc
     // float currentTurnSpeed;
-    public float smoothTurnSpeedAcceleration = 5;
-    public float smoothTurnSpeed = 40;
+    public float smoothTurnSpeedAcceleration = 20;
+    public float smoothTurnSpeed = 300;
 
     public enum TurnType {
         None, Instant, Fast, Smooth
     };
 
-    public TurnType turnType;
+    public TurnType turnType = TurnType.Fast;
 
 
     void DoInstantTurn (float degrees, bool toRight) {
@@ -296,7 +296,7 @@ public class TouchpadLocomotion : MonoBehaviour
         }
     }
 
-    public float runMultiplier = 2;
+    public float runMultiplier = 3;
 
     bool isRunning;
 
@@ -304,7 +304,7 @@ public class TouchpadLocomotion : MonoBehaviour
     const float runAngleThreshold = 45f; 
 
     public enum RunMode { None, Held, Clicked };
-    public RunMode runMode;
+    public RunMode runMode = RunMode.Clicked;
 
     Vector2 currentMoveVector;
 
@@ -461,9 +461,7 @@ public class TouchpadLocomotion : MonoBehaviour
 
         bool isMoving = currentMoveVector != Vector2.zero;
 
-        if (isTurning || isMoving) {
-            SetComfortVignette(isTurning || isMoving ? comfortVignetteIntensity : 0);
-        }
+        SetComfortVignette(isTurning || isMoving ? comfortVignetteIntensity : 0);
     }
 
     void SetComfortVignette(float intensity) {
