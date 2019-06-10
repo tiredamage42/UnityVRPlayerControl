@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
+using Valve.VR.InteractionSystem;
+
 namespace VRPlayer {
 
 
@@ -10,28 +12,39 @@ namespace VRPlayer {
 
 
     make camera rig child of this transform (at origin)
+
+
+    DONT MOVE TRANSFORM (player uses it as tracking origin, so it should be offset)
+
 */
+
+
+
 
     
 public class TouchpadLocomotion : MonoBehaviour
 {
+    public float turnSpeed = 5;
 
     public float deadZone = .1f;
 
     public SteamVR_Action_Vector2 trackpackAxisAction;
     public SteamVR_Action_Boolean moveEnableAction;
-
     public SteamVR_Input_Sources moveHand;
+    public SteamVR_Input_Sources lookHand;
     
-    public float sensitivity = 0.1f;
+    
+    // public float sensitivity = 0.1f;
     public float maxSpeed = 1.0f;
 
-    public Transform cameraRig, head;
+    // public Transform cameraRig, head;
+    public Transform head;
+    
     float currentSpeed;
     CharacterController characterController;
 
 
-    public bool method1 = true;
+    // public bool method1 = true;
 
     
     // Start is called before the first frame update
@@ -45,13 +58,13 @@ public class TouchpadLocomotion : MonoBehaviour
     void Update()
     {
 
-        if (method1) {
-            Method1Update ();
-        }
+        // if (method1) {
+            // Method1Update ();
+        // }
 
-        else {
-            Method2Update();
-        }
+        // else {
+            Method2Update(Time.deltaTime);
+        // }
 
      
         
@@ -79,42 +92,81 @@ public class TouchpadLocomotion : MonoBehaviour
     }
 
 
+    /*
+    
+
+    
+    
+     */
+
     // makes sure head doesnt rotate with cc
 
-    void HandleHead () {
+
+
+    void HandleHead (float deltaTime) {
         //store current rotation
         Vector3 oldCameraRigPosition = head.position;
-        Quaternion oldCameraRigRotation = head.rotation;
-
-        transform.rotation = Quaternion.Euler( new Vector3(0, head.rotation.eulerAngles.y, 0) );
-
-        head.position = oldCameraRigPosition;
-        head.rotation = oldCameraRigRotation;
-    }
-
-    void CalculateMovement () {
-        // figure out movement orientation
-        Vector3 orientationEuler = new Vector3(0, transform.rotation.eulerAngles.y, 0);
-        Quaternion orientation = Quaternion.Euler(orientationEuler);
-        Vector3 movement = Vector3.zero;
+        // Quaternion oldCameraRigRotation = head.rotation;
 
 
-        if (moveEnableAction.GetStateUp(moveHand)) {
-            currentSpeed = 0;
+
+
+
+        bool isTurning = false;
+        if (moveEnableAction.GetState(lookHand)) {
+            float axis = trackpackAxisAction.GetAxis(lookHand).x;
+            if (axis >= deadZone) {
+                isTurning = true;
+
+                transform.RotateAround(oldCameraRigPosition, Vector3.up, axis * turnSpeed * deltaTime);
+
+                // transform.position = new Vector3(oldCameraRigPosition.x, transform.position.y, oldCameraRigPosition.z);
+                // transform.Rotate(0, axis * turnSpeed * deltaTime, 0);
+            }
+        }
+        if (isTurning) {
+
+
+        }
+        else {
+            // transform.rotation = Quaternion.Euler( new Vector3(0, oldCameraRigRotation.eulerAngles.y, 0) );
         }
 
-        if (moveEnableAction.GetState(moveHand)) {
-            currentSpeed += trackpackAxisAction.GetAxis(moveHand).y * sensitivity;
-            currentSpeed = Mathf.Clamp(currentSpeed, -maxSpeed, maxSpeed);
+        
+        // if (isTurning) {
 
+        //     head.position = oldCameraRigPosition;
+        // }
 
-            movement += orientation * (currentSpeed * Vector3.forward);
-        }
+        // if (!isTurning) {
 
-        characterController.Move(movement);
-
-
+        //     head.rotation = oldCameraRigRotation;
+        // }
     }
+
+    // void CalculateMovement () {
+    //     // figure out movement orientation
+    //     Vector3 orientationEuler = new Vector3(0, transform.rotation.eulerAngles.y, 0);
+    //     Quaternion orientation = Quaternion.Euler(orientationEuler);
+    //     Vector3 movement = Vector3.zero;
+
+
+    //     if (moveEnableAction.GetStateUp(moveHand)) {
+    //         currentSpeed = 0;
+    //     }
+
+    //     if (moveEnableAction.GetState(moveHand)) {
+    //         currentSpeed += trackpackAxisAction.GetAxis(moveHand).y * sensitivity;
+    //         currentSpeed = Mathf.Clamp(currentSpeed, -maxSpeed, maxSpeed);
+
+
+    //         movement += orientation * (currentSpeed * Vector3.forward);
+    //     }
+
+    //     characterController.Move(movement);
+    // }
+
+
 
     void HandleCapsuleHeight () {
         float headHeight = Mathf.Clamp(head.localPosition.y, 1, 2);
@@ -142,17 +194,18 @@ public class TouchpadLocomotion : MonoBehaviour
         newCenter.z = head.localPosition.z;
 
         //rotate
-        newCenter = Quaternion.Euler(0, -transform.eulerAngles.y, 0) * newCenter;
+        // newCenter = Quaternion.Euler(0, -transform.eulerAngles.y, 0) * newCenter;
         
         characterController.center = newCenter;
         
     }
 
-    void Method1Update () {
-        HandleHead();    
-        HandleCapsuleHeight();
-        CalculateMovement();
-    }
+    // void Method1Update () {
+        // HandleHead();    
+        
+        // HandleCapsuleHeight();
+        // CalculateMovement();
+    // }
 
 
     public Transform handTransform;
@@ -183,18 +236,22 @@ public class TouchpadLocomotion : MonoBehaviour
 
 
 
-    void Method2Update()
+    void Method2Update(float deltaTime)
     {
+        HandleHead(deltaTime);
+
+        HandleCapsuleHeight();
+
         Vector2 currentTrackpad = trackpackAxisAction.GetAxis(moveHand);
         
         
         //Set size and position of the capsule collider so it maches our head.
-        characterController.height = head.localPosition.y;
-        characterController.center = new Vector3(head.localPosition.x, head.localPosition.y / 2, head.localPosition.z);
+        // characterController.height = head.localPosition.y;
+        // characterController.center = new Vector3(head.localPosition.x, head.localPosition.y / 2, head.localPosition.z);
         
 
         //get the angle of the touch and correct it for the rotation of the controller
-        Vector3 moveDirection = Quaternion.AngleAxis(Angle(currentTrackpad) + handTransform.localRotation.eulerAngles.y, Vector3.up) * Vector3.forward;
+        // Vector3 moveDirection = Quaternion.AngleAxis(Angle(currentTrackpad) + handTransform.localRotation.eulerAngles.y, Vector3.up) * Vector3.forward;
         
 
 
@@ -204,26 +261,33 @@ public class TouchpadLocomotion : MonoBehaviour
 
 
 
-        Vector3 velocity = new Vector3(0,0,0);
+        // Vector3 velocity = new Vector3(0,0,0);
         if (currentTrackpad.magnitude > deadZone)
         {
             //make sure the touch isn't in the deadzone and we aren't going to fast.
             // CapCollider.material = NoFrictionMaterial;
-            velocity = currentTrackpad;// moveDirection;
+            
+            // velocity = currentTrackpad;// moveDirection;
+            
             // if (JumpAction.GetStateDown(MovementHand) && GroundCount > 0)
             // {
             //     float jumpSpeed = Mathf.Sqrt(2 * jumpHeight * 9.81f);
             //     RBody.AddForce(0, jumpSpeed, 0, ForceMode.VelocityChange);
             // }
+            currentTrackpad = currentTrackpad * maxSpeed * deltaTime;
 
             Vector3 velocityNew = new Vector3( 
-                velocity.x * maxSpeed,// - characterController.velocity.x, 
+                currentTrackpad.x,// * maxSpeed,// - characterController.velocity.x, 
                 0, 
-                velocity.y * maxSpeed //- characterController.velocity.z 
+                currentTrackpad.y// * maxSpeed //- characterController.velocity.z 
             );
 
 
-            characterController.Move(transform.TransformDirection( velocityNew * Time.deltaTime ) );
+            characterController.Move(
+                // maybe head
+                transform
+                    .TransformDirection( velocityNew * deltaTime ) 
+            );
 
 
 
@@ -241,8 +305,14 @@ public class TouchpadLocomotion : MonoBehaviour
         //     CapCollider.material = FrictionMaterial;
         // }
     }
+
+
+
+
 }
 
 
 
 }
+
+
