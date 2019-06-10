@@ -97,6 +97,14 @@ namespace Valve.VR
             }
         }
         
+        public virtual SteamVR_Action_Pose Pose
+        {
+            get
+            {
+                return SteamVR_Actions.vRControlActionSet_Pose;
+            }
+        }
+        
         public virtual SteamVR_Action_Vibration Haptic
         {
             get

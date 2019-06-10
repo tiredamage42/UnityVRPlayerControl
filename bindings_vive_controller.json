@@ -268,6 +268,180 @@
                "path" : "/user/hand/right/input/trackpad"
             }
          ]
+      },
+      "/actions/vrcontrolactionset" : {
+         "haptics" : [
+            {
+               "output" : "/actions/vrcontrolactionset/out/haptic",
+               "path" : "/user/hand/left/output/haptic"
+            },
+            {
+               "output" : "/actions/vrcontrolactionset/out/haptic",
+               "path" : "/user/hand/right/output/haptic"
+            }
+         ],
+         "poses" : [
+            {
+               "output" : "/actions/vrcontrolactionset/in/pose",
+               "path" : "/user/hand/left/pose/raw"
+            },
+            {
+               "output" : "/actions/vrcontrolactionset/in/pose",
+               "path" : "/user/hand/right/pose/raw"
+            }
+         ],
+         "sources" : [
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/vrcontrolactionset/in/sidebutton"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/grip"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/vrcontrolactionset/in/sidebutton"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/grip"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/vrcontrolactionset/in/menubutton"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/application_menu"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/vrcontrolactionset/in/menubutton"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/application_menu"
+            },
+            {
+               "inputs" : {
+                  "pull" : {
+                     "output" : "/actions/vrcontrolactionset/in/triggeraxis"
+                  }
+               },
+               "mode" : "trigger",
+               "path" : "/user/hand/left/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "pull" : {
+                     "output" : "/actions/vrcontrolactionset/in/triggeraxis"
+                  }
+               },
+               "mode" : "trigger",
+               "path" : "/user/hand/right/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/vrcontrolactionset/in/triggerbutton"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/vrcontrolactionset/in/triggerbutton"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "position" : {
+                     "output" : "/actions/vrcontrolactionset/in/trackpadaxis"
+                  }
+               },
+               "mode" : "trackpad",
+               "path" : "/user/hand/left/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "position" : {
+                     "output" : "/actions/vrcontrolactionset/in/trackpadaxis"
+                  }
+               },
+               "mode" : "trackpad",
+               "path" : "/user/hand/right/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "east" : {
+                     "output" : "/actions/vrcontrolactionset/in/trackpaddpadright"
+                  },
+                  "north" : {
+                     "output" : "/actions/vrcontrolactionset/in/trackpaddpadup"
+                  },
+                  "south" : {
+                     "output" : "/actions/vrcontrolactionset/in/trackpaddpaddown"
+                  },
+                  "west" : {
+                     "output" : "/actions/vrcontrolactionset/in/trackpaddpadleft"
+                  }
+               },
+               "mode" : "dpad",
+               "parameters" : {
+                  "sub_mode" : "click"
+               },
+               "path" : "/user/hand/left/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "east" : {
+                     "output" : "/actions/vrcontrolactionset/in/trackpaddpadright"
+                  },
+                  "north" : {
+                     "output" : "/actions/vrcontrolactionset/in/trackpaddpadup"
+                  },
+                  "south" : {
+                     "output" : "/actions/vrcontrolactionset/in/trackpaddpaddown"
+                  },
+                  "west" : {
+                     "output" : "/actions/vrcontrolactionset/in/trackpaddpadleft"
+                  }
+               },
+               "mode" : "dpad",
+               "parameters" : {
+                  "sub_mode" : "click"
+               },
+               "path" : "/user/hand/right/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/vrcontrolactionset/in/trackpadbutton"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/vrcontrolactionset/in/trackpadbutton"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/trackpad"
+            }
+         ]
       }
    },
    "category" : "steamvr_input",
