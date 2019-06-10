@@ -398,6 +398,7 @@ namespace Valve.VR.InteractionSystem
 			Vector3 pointerEnd;
 			Vector3 pointerDir = pointerStartTransform.forward;
 			bool hitSomething = false;
+			
 			Vector3 playerFeetOffset = player.trackingOriginTransform.position - player.feetPositionGuess;
 
 			Vector3 arcVelocity = pointerDir * arcDistance;
