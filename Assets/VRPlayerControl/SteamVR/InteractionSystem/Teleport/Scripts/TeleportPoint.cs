@@ -54,13 +54,13 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		public override bool showReticle
-		{
-			get
-			{
-				return false;
-			}
-		}
+		// public override bool showReticle
+		// {
+		// 	get
+		// 	{
+		// 		return false;
+		// 	}
+		// }
 
 
 		//-------------------------------------------------

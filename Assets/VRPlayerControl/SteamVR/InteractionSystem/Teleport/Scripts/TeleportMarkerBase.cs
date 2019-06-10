@@ -15,13 +15,13 @@ namespace Valve.VR.InteractionSystem
 		public bool markerActive = true;
 
 		//-------------------------------------------------
-		public virtual bool showReticle
-		{
-			get
-			{
-				return true;
-			}
-		}
+		// public virtual bool showReticle
+		// {
+		// 	get
+		// 	{
+		// 		return true;
+		// 	}
+		// }
 
 
 		//-------------------------------------------------
