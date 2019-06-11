@@ -91,12 +91,8 @@ namespace Valve.VR.InteractionSystem
                 lineRenderers[i].lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
                 lineRenderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 lineRenderers[i].material = material;
-#if (UNITY_5_4)
-                lineRenderers[i].SetWidth(thickness, thickness);
-#else
 				lineRenderers[i].startWidth = thickness * scale;
 				lineRenderers[i].endWidth = thickness * scale;
-#endif
                 lineRenderers[i].enabled = false;
             }
         }
@@ -243,12 +239,8 @@ namespace Valve.VR.InteractionSystem
         {
             for (int i = 0; i < segmentCount; ++i)
             {
-#if (UNITY_5_4)
-                lineRenderers[i].SetColors(color, color);
-#else
 				lineRenderers[i].startColor = color;
 				lineRenderers[i].endColor = color;
-#endif
             }
         }
 
@@ -269,13 +261,13 @@ namespace Valve.VR.InteractionSystem
 
                 if (Physics.Linecast(segmentStartPos, segmentEndPos, out hitInfo, traceLayerMask))
                 {
-                    if (hitInfo.collider.GetComponent<IgnoreTeleportTrace>() == null)
-                    {
-                        Util.DrawCross(hitInfo.point, Color.red, 0.5f);
+                    // if (hitInfo.collider.GetComponent<IgnoreTeleportTrace>() == null)
+                    // {
+                        // Util.DrawCross(hitInfo.point, Color.red, 0.5f);
                         float segmentDistance = Vector3.Distance(segmentStartPos, segmentEndPos);
                         float hitTime = segmentStartTime + (timeStep * (hitInfo.distance / segmentDistance));
                         return hitTime;
-                    }
+                    // }
                 }
 
                 segmentStartTime = segmentEndTime;

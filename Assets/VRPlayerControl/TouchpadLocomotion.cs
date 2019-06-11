@@ -109,6 +109,174 @@ amplified walking (move tracking space along with camera movement vector so meat
 public class TouchpadLocomotion : MonoBehaviour
 {
 
+    public class ClimbTracker {
+        // SteamVR_Input_Sources hand;
+        public bool isClimbable;
+        // Vector3 previousHandPosition;
+
+        public ClimbTracker(SteamVR_Input_Sources hand) {
+            // this.hand = hand;
+            // this.previousHandPosition = Player.instance.GetHand(hand).transform.localPosition;
+        }
+
+        bool isClimbing;
+
+
+        // public bool CheckForClimbDown (SteamVR_Action_Boolean climbAction) {
+        //     return isClimbable && climbAction.GetStateDown(hand);
+        // }
+
+
+
+        // public bool UpdateHand (SteamVR_Action_Boolean climbAction) {
+        //     // bool isClimbing = false;
+            
+        //     // Vector3 handLocalPosition = Player.instance.GetHand(hand).transform.localPosition;
+        //     if (isClimbable) {
+
+        //         if (climbAction.GetState(hand)) {
+        //             isClimbing = true;
+        //             // Player.instance.trackingOriginTransform.position += (previousHandPosition - handLocalPosition);
+        //         }
+        //     }
+
+        //     // previousHandPosition = handLocalPosition;
+        //     return isClimbing;
+        // }
+
+        // public void DoClimbAction () {
+        //     if (isClimbing) {
+                
+        //     Vector3 handLocalPosition = Player.instance.GetHand(hand).transform.localPosition;
+            
+        //     Player.instance.trackingOriginTransform.position += (previousHandPosition - handLocalPosition);
+            
+        //     previousHandPosition = handLocalPosition;
+            
+        //     }
+
+        // }
+    }
+
+
+    SteamVR_Input_Sources OtherHand(SteamVR_Input_Sources thisHand) {
+        if (thisHand == SteamVR_Input_Sources.LeftHand) {
+            return SteamVR_Input_Sources.RightHand;
+        }
+        else {
+            return SteamVR_Input_Sources.LeftHand;
+        }
+
+    }
+
+    Dictionary<SteamVR_Input_Sources, ClimbTracker> climbableChecks = new Dictionary<SteamVR_Input_Sources, ClimbTracker>();
+
+
+    void InitializeClimbableChecks () {
+
+        climbableChecks.Add(SteamVR_Input_Sources.LeftHand, new ClimbTracker(SteamVR_Input_Sources.LeftHand));
+        climbableChecks.Add(SteamVR_Input_Sources.RightHand, new ClimbTracker(SteamVR_Input_Sources.RightHand));
+    }
+
+
+
+    bool isClimbing;
+    SteamVR_Input_Sources currentClimbHand;
+
+    public float climbExitForceMultiplier = 2;
+    
+    void UpdateClimbs () {
+        
+        bool justLetGo = false;
+
+        foreach (var hand in climbableChecks.Keys) {
+            bool isClimbable = climbableChecks[hand].isClimbable;
+
+            // if we just clicked to start climbing, make this the primary climb hand
+            if (isClimbable && climbAction.GetStateDown(hand)) {
+                isClimbing = true;
+                currentClimbHand = hand;
+                previousHandPosition = Player.instance.GetHand(currentClimbHand).transform.localPosition;
+            }
+
+
+            //if this is the current climbing hand
+            if (isClimbing && currentClimbHand == hand) {
+
+                // if we've let go to stop climbing
+                if (!isClimbable || climbAction.GetStateUp(hand)) {
+
+                    isClimbing = false;
+                    justLetGo = true;
+
+
+
+                    //check if our other hand is climbable and gripping (so we make that the primary one again)
+
+                    SteamVR_Input_Sources otherHand = OtherHand(hand);
+                    ClimbTracker other = climbableChecks[otherHand];
+
+                    if (other.isClimbable && climbAction.GetState(otherHand)) {
+                        justLetGo = false;
+
+                        isClimbing = true;
+                        currentClimbHand = otherHand;
+                        previousHandPosition = Player.instance.GetHand(currentClimbHand).transform.localPosition;
+                    }
+                }
+            }
+        }
+
+
+        
+        
+
+        // bool leftClimb = climbableChecks[SteamVR_Input_Sources.LeftHand].UpdateHand(climbAction);
+        // bool rightClimb = climbableChecks[SteamVR_Input_Sources.RightHand].UpdateHand(climbAction);
+        // isClimbing = leftClimb || rightClimb;
+
+        Teleport.instance.teleportationAllowed = !isClimbing;
+        characterController.enabled = !isClimbing;
+        
+        if (isClimbing) {
+
+            Vector3 handLocalPosition = Player.instance.GetHand(currentClimbHand).transform.localPosition;
+            
+            Player.instance.trackingOriginTransform.position += (previousHandPosition - handLocalPosition);
+            
+            previousHandPosition = handLocalPosition;
+
+        }
+        else {
+            if (justLetGo) {
+                Vector3 momentum = previousHandPosition - (Player.instance.GetHand(currentClimbHand).transform.localPosition);
+                moveScript.SetMomentum(
+                    //maybe transform.inversetransform direction
+                    transform.InverseTransformDirection(
+                        climbExitForceMultiplier * momentum 
+                    )
+                    
+                );
+            }
+        }
+
+        // climbableChecks[SteamVR_Input_Sources.LeftHand].DoClimbAction();
+        // climbableChecks[SteamVR_Input_Sources.RightHand].DoClimbAction();
+    }
+
+    Vector3 previousHandPosition;
+        
+
+    public void SetClimbAbility(SteamVR_Input_Sources source, bool climbable) {
+        climbableChecks[source].isClimbable = climbable;
+    }
+
+
+
+    public SteamVR_Action_Boolean climbAction;
+
+
+
     public Color crouchVignetteColor = new Color(1, .5f, 0, 1);
 
     public bool easyCrouch = true;
@@ -420,9 +588,12 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
         
         vignette = head.GetComponentInChildren<VignettingVR>();
         moveScript = GetComponent<SimpleCharacterController>();
+
+        InitializeClimbableChecks();
     }
 
     void Update() {
+        UpdateClimbs();
 
         Teleport.instance.SetCurrentTrackingTransformOffset(totalOfset);
 
@@ -515,12 +686,12 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
 
     // set move velocity to zero every frame for instant stop
     // when not moving
-    Vector2 HandleMoveInput (bool movementEnabled) {
-        Vector2 currentMoveVector = Vector2.zero;
+    void HandleMoveInput (bool movementEnabled) {
+        currentMoveVector = Vector2.zero;
         
         if (!movementEnabled) {
             isRunning = false;
-            return currentMoveVector;
+            return;
         }
         currentMoveVector = moveAction.GetAxis(moveHand);
 
@@ -551,7 +722,7 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
             }
             currentMoveVector = currentMoveVector * maxSpeed * (isRunning ? runMultiplier : 1);
         }
-        return currentMoveVector;
+        // return currentMoveVector;
     }
 
     void HandleTurningUpdate(float deltaTime) {
@@ -566,6 +737,7 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
                 break;
         }
     }
+    Vector2 currentMoveVector;
         
      
 
@@ -576,9 +748,9 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
         CheckForJump();
         
 
-        bool movementEnabled = true;//moveEnableAction.GetState(moveHand);
+        bool movementEnabled = !isClimbing;// true;//moveEnableAction.GetState(moveHand);
         HandleTurnInput(movementEnabled);
-        Vector2 currentMoveVector = HandleMoveInput(movementEnabled);
+        HandleMoveInput(movementEnabled);
 
         moveScript.SetMoveVector(currentMoveVector);
 
