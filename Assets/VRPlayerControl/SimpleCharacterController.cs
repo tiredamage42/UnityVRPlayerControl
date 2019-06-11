@@ -47,7 +47,7 @@ public class SimpleCharacterController : MonoBehaviour
         isGrounded = false;
         Ray ray = new Ray (rayCheck, Vector3.down);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, buffer + (wasGrounded ? .25f : .01f), groundMask)) {
+        if (Physics.Raycast(ray, out hit, buffer + (wasGrounded ? .25f : .05f), groundMask)) {
             isGrounded = true;
             floorY = hit.point.y;
         }

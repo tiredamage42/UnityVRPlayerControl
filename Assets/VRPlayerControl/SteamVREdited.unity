@@ -13055,6 +13055,10 @@ PrefabInstance:
       propertyPath: teleportHand
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 11445746, guid: 7a135b1a2cb9c8f488d4dd00c55ab283, type: 3}
+      propertyPath: fastTeleport
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 127276, guid: 7a135b1a2cb9c8f488d4dd00c55ab283, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -28205,6 +28209,8 @@ MonoBehaviour:
   defaultPlayerHeight: 1.8
   crouchRatioThreshold: 0.5555556
   resizePlayer: 1
+  currentCrouchOffset: 0
+  crouchTime: 0.25
   worldScale: 1
   crouchTransitionSpeed: 10
   recalibrateHeight: 0
