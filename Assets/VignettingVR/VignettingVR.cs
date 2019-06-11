@@ -3,6 +3,8 @@
 [RequireComponent(typeof(Camera))]
 public class VignettingVR : MonoBehaviour
 {
+
+    Color vignetteColor = Color.black;
     public void SetIntensity(float intensity) {
         vignettingIntensity = intensity;
         if (vignettingIntensity == 0) {
@@ -12,6 +14,10 @@ public class VignettingVR : MonoBehaviour
             enabled = true;
         }
     }
+    public void SetColor (Color newColor) {
+        vignetteColor = newColor;
+    }
+    
     const float VIGNETTING_DEPTH = 10f;
     float vignettingIntensity = .5f;
     Vector4[] viewportSpaceOffset = new Vector4[2];
@@ -63,7 +69,7 @@ public class VignettingVR : MonoBehaviour
             // pass values to shader
             material.SetVectorArray("_vignetteViewportSpaceOffset", viewportSpaceOffset);
                         
-            material.SetFloat("_vignettingIntensity", vignettingIntensity);
+            material.SetColor("_VignetteColor", new Color(vignetteColor.r, vignetteColor.g, vignetteColor.b, vignettingIntensity));
             
             Graphics.Blit(source, destination, material);
         }

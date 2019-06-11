@@ -37,11 +37,15 @@ public class SimpleCharacterController : MonoBehaviour
 
     void CheckGrounded () {
 
-        Vector3 myPos = transform.position;
-        Vector3 charControllerOffset = characterController.center;
 
-        Vector3 rayCheck = myPos + charControllerOffset;
-        rayCheck.y = myPos.y + buffer;
+
+        //make sure we're checking from the actual capsule position (could be offset due to height or movement)
+        
+        Vector3 charControllerOffset = characterController.center;
+        Vector3 rayCheck = transform.position + characterController.center;
+        rayCheck.y -= (characterController.height * .5f) - buffer;// myPos.y + buffer;
+
+        
         bool wasGrounded = isGrounded;
 
         isGrounded = false;

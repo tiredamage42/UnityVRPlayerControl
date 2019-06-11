@@ -382,10 +382,11 @@ namespace Valve.VR.InteractionSystem
 		}
 
 
-		void AdjustArcAndReticles (bool isValid, bool pointerAtBadAngle) {
+		void ActivateReticles (bool destination, bool invalid, bool offset) {
 
-			offsetReticleTransform.gameObject.SetActive( isValid );
-			invalidReticleTransform.gameObject.SetActive( !isValid && !pointerAtBadAngle );
+			destinationReticleTransform.gameObject.SetActive( destination );
+			invalidReticleTransform.gameObject.SetActive( invalid );
+			offsetReticleTransform.gameObject.SetActive( offset );
 
 		}
 
@@ -402,15 +403,12 @@ namespace Valve.VR.InteractionSystem
 			validAreaTargeted = false;
 
 
-
-
-
 			Vector3 pointerStart = pointerStartTransform.position;
 			Vector3 pointerEnd;
 			Vector3 pointerDir = pointerStartTransform.forward;
 			bool hitSomething = false;
 			
-			Vector3 playerFeetOffset = player.trackingOriginTransform.position - player.feetPositionGuess;
+			Vector3 playerFeetOffset = player.trackingOriginTransformPosition - player.feetPositionGuess;
 
 			Vector3 arcVelocity = pointerDir * arcDistance;
 
@@ -453,7 +451,7 @@ namespace Valve.VR.InteractionSystem
 				{
 
 					SetArcColor( pointerLockedColor );
-					destinationReticleTransform.gameObject.SetActive( false );
+					// destinationReticleTransform.gameObject.SetActive( false );
 
 					
 					
@@ -466,11 +464,15 @@ namespace Valve.VR.InteractionSystem
 
 					SetArcColor( pointerValidColor );
 					
-					destinationReticleTransform.gameObject.SetActive( false );//hitTeleportMarker.showReticle );
+					// destinationReticleTransform.gameObject.SetActive( false );//hitTeleportMarker.showReticle );
 				}
 
 
-				AdjustArcAndReticles(true, pointerAtBadAngle);
+
+
+
+				ActivateReticles (false, false, true);
+				// AdjustArcAndReticles(true, pointerAtBadAngle);
 				
 
 				// offsetReticleTransform.gameObject.SetActive( true );
@@ -490,10 +492,17 @@ namespace Valve.VR.InteractionSystem
 
 				validAreaTargeted = !pointerAtBadAngle && hitSomething; // not locked area
 
+				//if valid area targeted, check for angle
+
 				// hasValidSpot = !pointerAtBadAngle; //and not locked etc...
 
 
-				AdjustArcAndReticles(validAreaTargeted, pointerAtBadAngle);
+
+				ActivateReticles (validAreaTargeted, !validAreaTargeted && !pointerAtBadAngle, !pointerAtBadAngle);
+				
+
+				// AdjustArcAndReticles(validAreaTargeted, pointerAtBadAngle);
+						
 					
 				
 				
@@ -508,7 +517,8 @@ namespace Valve.VR.InteractionSystem
 
 				
 				
-				if (!pointerAtBadAngle && !validAreaTargeted) {
+				// if (!pointerAtBadAngle && !validAreaTargeted) {
+				if (invalidReticleTransform.gameObject.activeSelf) {
 
 					//Orient the invalid reticle to the normal of the trace hit point
 					Vector3 normalToUse = hitInfo.normal;
@@ -530,6 +540,36 @@ namespace Valve.VR.InteractionSystem
 					// invalidReticleScale.z = invalidReticleCurrentScale;
 					invalidReticleTransform.transform.localScale = Vector3.one * invalidReticleCurrentScale;// invalidReticleScale;
 				}
+
+				if (destinationReticleTransform.gameObject.activeSelf) {
+
+					//Orient the invalid reticle to the normal of the trace hit point
+					Vector3 normalToUse = hitInfo.normal;
+					float angle = Vector3.Angle( hitInfo.normal, Vector3.up );
+					if ( angle < 15.0f )
+					{
+						normalToUse = Vector3.up;
+					}
+					
+					
+					Quaternion invalidReticleTargetRotation = Quaternion.FromToRotation( Vector3.up, normalToUse );
+					destinationReticleTransform.rotation = Quaternion.Slerp( destinationReticleTransform.rotation, invalidReticleTargetRotation, 0.1f );
+
+					//Scale the invalid reticle based on the distance from the player
+					float distanceFromPlayer = Vector3.Distance( hitInfo.point, player.hmdTransform.position );
+					float invalidReticleCurrentScale = Util.RemapNumberClamped( distanceFromPlayer, invalidReticleMinScaleDistance, invalidReticleMaxScaleDistance, invalidReticleMinScale, invalidReticleMaxScale );
+					// invalidReticleScale.x = invalidReticleCurrentScale;
+					// invalidReticleScale.y = invalidReticleCurrentScale;
+					// invalidReticleScale.z = invalidReticleCurrentScale;
+					destinationReticleTransform.transform.localScale = Vector3.one * invalidReticleCurrentScale;// invalidReticleScale;
+				}
+
+
+
+
+
+
+
 
 				pointedAtTeleportMarker = null;
 
@@ -797,7 +837,7 @@ namespace Valve.VR.InteractionSystem
 					}
 				}
 
-				startingFeetOffset = player.trackingOriginTransform.position - player.feetPositionGuess;
+				startingFeetOffset = player.trackingOriginTransformPosition - player.feetPositionGuess;
 				movedFeetFarEnough = false;
 
 				// if ( onDeactivateObjectTransform.gameObject.activeSelf )
@@ -1013,7 +1053,7 @@ namespace Valve.VR.InteractionSystem
 
 			// if ( teleportingToMarker.ShouldMovePlayer() )
 			// {
-				Vector3 playerFeetOffset = player.trackingOriginTransform.position - player.feetPositionGuess;
+				Vector3 playerFeetOffset = player.trackingOriginTransformPosition - player.feetPositionGuess;
 				player.trackingOriginTransform.position = teleportPosition + playerFeetOffset;
 			// }
 			// else
