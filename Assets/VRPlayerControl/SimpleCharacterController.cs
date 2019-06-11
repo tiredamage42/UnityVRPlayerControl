@@ -49,16 +49,32 @@ public class SimpleCharacterController : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, buffer + (wasGrounded ? .25f : .05f), groundMask)) {
             isGrounded = true;
+            momentum = Vector3.zero;
             floorY = hit.point.y;
         }
     }
 
 
+    public float moemntumDecaySpeed = 1;
+
+    Vector3 momentum;
 
 
-    float yVelocity;
+    public void SetMomentum (Vector3 velocity) {
+        momentum = velocity;
+    }
+
+
+
+
+    // float yVelocity;
     public void Jump () {
-        yVelocity = jumpSpeed;
+        momentum.y = jumpSpeed;
+        momentum.x = characterController.velocity.x;
+        momentum.x = characterController.velocity.z;
+        
+        
+        // yVelocity = jumpSpeed;
     }
 
 
@@ -69,10 +85,12 @@ public class SimpleCharacterController : MonoBehaviour
 
 
     void UpdateGravity (float deltaTime) {
+        momentum.x = Mathf.Lerp(momentum.x, 0, deltaTime * moemntumDecaySpeed);
+        momentum.z = Mathf.Lerp(momentum.z, 0, deltaTime * moemntumDecaySpeed);
         
-        yVelocity += Physics.gravity.y * gravityModifier * deltaTime;
-        if (yVelocity < -maxGravityVelocity) {
-            yVelocity = -maxGravityVelocity;
+        momentum.y += Physics.gravity.y * gravityModifier * deltaTime;
+        if (momentum.y < -maxGravityVelocity) {
+            momentum.y = -maxGravityVelocity;
         }
     }
 
@@ -84,7 +102,13 @@ public class SimpleCharacterController : MonoBehaviour
         }
 
         characterController.Move( relativeTransform.TransformDirection( 
-            new Vector3( currentMoveVector.x, yVelocity, currentMoveVector.y) * deltaTime ) );
+                new Vector3( 
+                    currentMoveVector.x + momentum.x, 
+                    momentum.y, 
+                    currentMoveVector.y + momentum.z
+                ) * deltaTime 
+            ) 
+        );
     }
 
 

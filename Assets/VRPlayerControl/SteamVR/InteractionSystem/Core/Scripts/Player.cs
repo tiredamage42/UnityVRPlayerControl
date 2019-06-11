@@ -28,8 +28,8 @@ namespace Valve.VR.InteractionSystem
 		[Tooltip( "List of possible Hands, including no-SteamVR fallback Hands." )]
 		public Hand[] hands;
 
-		[Tooltip( "Reference to the physics collider that follows the player's HMD position." )]
-		public Collider headCollider;
+		// [Tooltip( "Reference to the physics collider that follows the player's HMD position." )]
+		// public Collider headCollider;
 
 		[Tooltip( "These objects are enabled when SteamVR is available" )]
 		public GameObject rigSteamVR;
@@ -138,23 +138,6 @@ namespace Valve.VR.InteractionSystem
 			get
 			{
 				
-				// for ( int j = 0; j < hands.Length; j++ )
-				// {
-				// 	if ( !hands[j].gameObject.activeInHierarchy )
-				// 	{
-				// 		continue;
-				// 	}
-
-				// 	if ( hands[j].handType != SteamVR_Input_Sources.LeftHand)
-				// 	{
-				// 		continue;
-				// 	}
-
-				// 	return hands[j];
-				// }
-
-				// return null;
-
 				return GetHand(SteamVR_Input_Sources.LeftHand);
 			}
 		}
@@ -165,22 +148,7 @@ namespace Valve.VR.InteractionSystem
 		{
 			get
 			{
-				for ( int j = 0; j < hands.Length; j++ )
-				{
-					if ( !hands[j].gameObject.activeInHierarchy )
-					{
-						continue;
-					}
-
-					if ( hands[j].handType != SteamVR_Input_Sources.RightHand)
-					{
-						continue;
-					}
-
-					return hands[j];
-				}
-
-				return null;
+				return GetHand(SteamVR_Input_Sources.RightHand);
 			}
 		}
 
@@ -188,13 +156,13 @@ namespace Valve.VR.InteractionSystem
         // Get Player scale. Assumes it is scaled equally on all axes.
         //-------------------------------------------------
 
-        public float scale
-        {
-            get
-            {
-                return transform.lossyScale.x;
-            }
-        }
+        // public float scale
+        // {
+        //     get
+        //     {
+        //         return transform.lossyScale.x;
+        //     }
+        // }
 
 
         //-------------------------------------------------
@@ -227,25 +195,14 @@ namespace Valve.VR.InteractionSystem
 				Transform hmd = hmdTransform;
 				if ( hmd )
 				{
-					Vector3 eyeOffset = Vector3.Project( hmd.position - trackingOriginTransformPosition, trackingOriginTransform.up );
+					Vector3 eyeOffset = Vector3.Project( hmd.position - trackingOriginTransform.position, trackingOriginTransform.up );
 					return eyeOffset.magnitude / trackingOriginTransform.lossyScale.x;
 				}
 				return 0.0f;
 			}
 		}
 
-		Vector3 currentMeatspaceOffset;
-
-		public void SetTrackignOriginOffset (float offset) {
-			currentMeatspaceOffset = new Vector3(0,offset,0);
-		}
-
-		public Vector3 trackingOriginTransformPosition {
-			get {
-				return trackingOriginTransform.position;// - currentMeatspaceOffset;// GetComponent<VRPlayer.TouchpadLocomotion>().totalOfset;// Vector3.up * currentMeatspaceOffset;
-			}
-		}
-
+		
 
 		//-------------------------------------------------
 		// Guess for the world-space position of the player's feet, directly beneath the HMD.
@@ -257,7 +214,7 @@ namespace Valve.VR.InteractionSystem
 				Transform hmd = hmdTransform;
 				if ( hmd )
 				{
-					return trackingOriginTransformPosition + Vector3.ProjectOnPlane( hmd.position - trackingOriginTransformPosition, trackingOriginTransform.up );
+					return trackingOriginTransform.position + Vector3.ProjectOnPlane( hmd.position - trackingOriginTransform.position, trackingOriginTransform.up );
 				}
 				return trackingOriginTransform.position;
 			}
@@ -349,21 +306,21 @@ namespace Valve.VR.InteractionSystem
 			//		folder in your Asset tree. These icons are included under Core/Icons. Moving them into a
 			//		"Gizmos" folder should make them work again.
 
-			Gizmos.color = Color.white;
-			Gizmos.DrawIcon( feetPositionGuess, "vr_interaction_system_feet.png" );
+			// Gizmos.color = Color.white;
+			// Gizmos.DrawIcon( feetPositionGuess, "vr_interaction_system_feet.png" );
 
-			Gizmos.color = Color.cyan;
-			Gizmos.DrawLine( feetPositionGuess, feetPositionGuess + trackingOriginTransform.up * eyeHeight );
+			// Gizmos.color = Color.cyan;
+			// Gizmos.DrawLine( feetPositionGuess, feetPositionGuess + trackingOriginTransform.up * eyeHeight );
 
 			// Body direction arrow
-			Gizmos.color = Color.blue;
-			Vector3 bodyDirection = bodyDirectionGuess;
-			Vector3 bodyDirectionTangent = Vector3.Cross( trackingOriginTransform.up, bodyDirection );
-			Vector3 startForward = feetPositionGuess + trackingOriginTransform.up * eyeHeight * 0.75f;
-			Vector3 endForward = startForward + bodyDirection * 0.33f;
-			Gizmos.DrawLine( startForward, endForward );
-			Gizmos.DrawLine( endForward, endForward - 0.033f * ( bodyDirection + bodyDirectionTangent ) );
-			Gizmos.DrawLine( endForward, endForward - 0.033f * ( bodyDirection - bodyDirectionTangent ) );
+			// Gizmos.color = Color.blue;
+			// Vector3 bodyDirection = bodyDirectionGuess;
+			// Vector3 bodyDirectionTangent = Vector3.Cross( trackingOriginTransform.up, bodyDirection );
+			// Vector3 startForward = feetPositionGuess + trackingOriginTransform.up * eyeHeight * 0.75f;
+			// Vector3 endForward = startForward + bodyDirection * 0.33f;
+			// Gizmos.DrawLine( startForward, endForward );
+			// Gizmos.DrawLine( endForward, endForward - 0.033f * ( bodyDirection + bodyDirectionTangent ) );
+			// Gizmos.DrawLine( endForward, endForward - 0.033f * ( bodyDirection - bodyDirectionTangent ) );
 
 			Gizmos.color = Color.red;
 			int count = handCount;
@@ -373,11 +330,11 @@ namespace Valve.VR.InteractionSystem
 
 				if ( hand.handType == SteamVR_Input_Sources.LeftHand)
 				{
-					Gizmos.DrawIcon( hand.transform.position, "vr_interaction_system_left_hand.png" );
+					// Gizmos.DrawIcon( hand.transform.position, "vr_interaction_system_left_hand.png" );
 				}
 				else if ( hand.handType == SteamVR_Input_Sources.RightHand)
 				{
-					Gizmos.DrawIcon( hand.transform.position, "vr_interaction_system_right_hand.png" );
+					// Gizmos.DrawIcon( hand.transform.position, "vr_interaction_system_right_hand.png" );
 				}
 				else
 				{
@@ -448,9 +405,9 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		public void PlayerShotSelf()
-		{
+		// public void PlayerShotSelf()
+		// {
 			//Do something appropriate here
-		}
+		// }
 	}
 }
