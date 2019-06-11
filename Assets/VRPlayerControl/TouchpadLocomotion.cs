@@ -222,26 +222,25 @@ public class TouchpadLocomotion : MonoBehaviour
     // public float crouchHeight = 1;
     public float crouchTransitionSpeed = 10f;
 
+    public bool recalibrateHeight;
+
     bool isCrouched;
     // float targetStandScale, targetCrouchScale, currentScaleLerp;
     
 
     void CheckForInitialScaling () {
 
-        if (resizePlayer) {
-
-            if (!adjustedScale) {
-                if (hmdOnHead.GetState(SteamVR_Input_Sources.Head)) {
-                    Debug.Log("recalibrating player natural height");
-                    RecalibratePlayerMeatspaceHeight();
-                    // CalculateScaleTargets();
-                    adjustedScale = true;
-                }
+        
+        if (!adjustedScale || recalibrateHeight) {
+            if (hmdOnHead.GetState(SteamVR_Input_Sources.Head)) {
+                Debug.Log("recalibrating player natural height");
+                RecalibratePlayerMeatspaceHeight();
+                // CalculateScaleTargets();
+                adjustedScale = true;
             }
         }
-        else {
-            adjustedScale = false;
-        }
+        recalibrateHeight = false;
+    
     }
 
     void CheckForJump () {
