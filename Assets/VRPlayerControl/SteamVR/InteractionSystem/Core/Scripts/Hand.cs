@@ -901,14 +901,14 @@ namespace Valve.VR.InteractionSystem
                     continue;
 
                 // Ignore this collider for hovering
-                IgnoreHovering ignore = collider.GetComponent<IgnoreHovering>();
-                if (ignore != null)
-                {
-                    if (ignore.onlyIgnoreHand == null || ignore.onlyIgnoreHand == this)
-                    {
-                        continue;
-                    }
-                }
+                // IgnoreHovering ignore = collider.GetComponent<IgnoreHovering>();
+                // if (ignore != null)
+                // {
+                //     if (ignore.onlyIgnoreHand == null || ignore.onlyIgnoreHand == this)
+                //     {
+                //         continue;
+                //     }
+                // }
 
                 // Can't hover over the object if it's attached
                 bool hoveringOverAttached = false;

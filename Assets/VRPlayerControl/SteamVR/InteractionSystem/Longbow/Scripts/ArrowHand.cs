@@ -36,7 +36,7 @@ namespace Valve.VR.InteractionSystem
 
 		public SoundPlayOneshot arrowSpawnSound;
 
-		private AllowTeleportWhileAttachedToHand allowTeleport = null;
+		// private AllowTeleportWhileAttachedToHand allowTeleport = null;
 
 		public int maxArrowCount = 10;
 		private List<GameObject> arrowList;
@@ -45,9 +45,11 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void Awake()
 		{
-			allowTeleport = GetComponent<AllowTeleportWhileAttachedToHand>();
-			//allowTeleport.teleportAllowed = true;
-			allowTeleport.overrideHoverLock = false;
+			// allowTeleport = GetComponent<AllowTeleportWhileAttachedToHand>();
+			
+			// //allowTeleport.teleportAllowed = true;
+			
+			// allowTeleport.overrideHoverLock = false;
 
 			arrowList = new List<GameObject>();
 		}
@@ -184,7 +186,9 @@ namespace Valve.VR.InteractionSystem
                     nockedWithType = bestGrab;
 					bow.StartNock( this );
 					hand.HoverLock( GetComponent<Interactable>() );
-					allowTeleport.teleportAllowed = false;
+					
+					// allowTeleport.teleportAllowed = false;
+					
 					currentArrow.transform.parent = bow.nockTransform;
 					Util.ResetTransform( currentArrow.transform );
 					Util.ResetTransform( arrowNockTransform );
@@ -208,7 +212,7 @@ namespace Valve.VR.InteractionSystem
                     nockedWithType = GrabTypes.None;
 					bow.ReleaseNock();
 					hand.HoverUnlock( GetComponent<Interactable>() );
-					allowTeleport.teleportAllowed = true;
+					// allowTeleport.teleportAllowed = true;
 				}
 
 				bow.StartRotationLerp(); // Arrow is releasing from the bow, tell the bow to lerp back to controller rotation
@@ -251,7 +255,7 @@ namespace Valve.VR.InteractionSystem
 			StartCoroutine( ArrowReleaseHaptics() );
 
 			currentArrow = null;
-			allowTeleport.teleportAllowed = true;
+			// allowTeleport.teleportAllowed = true;
 		}
 
 
