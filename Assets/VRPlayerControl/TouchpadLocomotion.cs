@@ -4,7 +4,8 @@ using UnityEngine;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
-namespace VRPlayer {
+namespace VRPlayer 
+{
 
 
 
@@ -140,7 +141,7 @@ public class TouchpadLocomotion : MonoBehaviour
         if (isCrouched) {
             // if we're resizing the player, use default values
             float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHeight;
-            crouchOffsetTarget = startHeight - (startHeight * crouchRatioThreshold);
+            crouchOffsetTarget = (startHeight * crouchRatioThreshold) - startHeight;
         }
 
         //maybe smooth an interpolator instead...
@@ -152,6 +153,12 @@ public class TouchpadLocomotion : MonoBehaviour
     float resizePlayerOffset {
         get {
             return resizePlayer ? defaultPlayerHeight - standingMeatspaceHeadHeight : 0;
+        }
+    }
+
+    public float totalOfset {
+        get {
+            return  currentCrouchOffset + resizePlayerOffset;
         }
     }
 
@@ -364,6 +371,10 @@ public class TouchpadLocomotion : MonoBehaviour
     }
 
     void Update() {
+
+        GetComponent<Player>().SetTrackignOriginOffset(
+            totalOfset
+        );
         CheckForInitialScaling();
         UpdateWorldScale();
         InputUpdateLoop(Time.deltaTime);
