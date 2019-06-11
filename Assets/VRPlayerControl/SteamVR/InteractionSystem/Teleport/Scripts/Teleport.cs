@@ -389,11 +389,22 @@ namespace Valve.VR.InteractionSystem
 
 		}
 
+
+
+		bool validAreaTargeted;
+
 				
 
 		
 		private void UpdatePointer()
 		{
+
+			validAreaTargeted = false;
+
+
+
+
+
 			Vector3 pointerStart = pointerStartTransform.position;
 			Vector3 pointerEnd;
 			Vector3 pointerDir = pointerStartTransform.forward;
@@ -434,7 +445,7 @@ namespace Valve.VR.InteractionSystem
 			HighlightSelected( hitTeleportMarker );
 
 
-			bool hasValidSpot = false;
+			// bool hasValidSpot = false;
 
 			if ( hitTeleportMarker != null ) //Hit a teleport marker
 			{
@@ -442,13 +453,16 @@ namespace Valve.VR.InteractionSystem
 				{
 
 					SetArcColor( pointerLockedColor );
-					
 					destinationReticleTransform.gameObject.SetActive( false );
+
+					
+					
 				}
 				else
 				{
+					validAreaTargeted = true;
 
-					hasValidSpot = true;
+					// hasValidSpot = true;
 
 					SetArcColor( pointerValidColor );
 					
@@ -474,10 +488,12 @@ namespace Valve.VR.InteractionSystem
 			else //Hit neither
 			{
 
-				hasValidSpot = !pointerAtBadAngle; //and not locked etc...
+				validAreaTargeted = !pointerAtBadAngle && hitSomething; // not locked area
+
+				// hasValidSpot = !pointerAtBadAngle; //and not locked etc...
 
 
-				AdjustArcAndReticles(hasValidSpot, pointerAtBadAngle);
+				AdjustArcAndReticles(validAreaTargeted, pointerAtBadAngle);
 					
 				
 				
@@ -485,13 +501,14 @@ namespace Valve.VR.InteractionSystem
 				// destinationReticleTransform.gameObject.SetActive( false );
 				// offsetReticleTransform.gameObject.SetActive( false );
 
-				SetArcColor( hasValidSpot ? pointerValidColor : pointerInvalidColor );
+				// SetArcColor( hasValidSpot ? pointerValidColor : pointerInvalidColor );
+				SetArcColor( validAreaTargeted ? pointerValidColor : pointerInvalidColor );
 
 				// invalidReticleTransform.gameObject.SetActive( !pointerAtBadAngle );
 
 				
 				
-				if (!pointerAtBadAngle) {
+				if (!pointerAtBadAngle && !validAreaTargeted) {
 
 					//Orient the invalid reticle to the normal of the trace hit point
 					Vector3 normalToUse = hitInfo.normal;
@@ -525,6 +542,8 @@ namespace Valve.VR.InteractionSystem
 					pointerEnd = teleportArc.GetArcPositionAtTime( teleportArc.arcDuration );
 				}
 
+				pointedAtPosition = pointerEnd;
+
 				//Debug floor
 				if ( debugFloor )
 				{
@@ -534,7 +553,7 @@ namespace Valve.VR.InteractionSystem
 			}
 
 
-			bool showPlayAreaPreview = hasValidSpot && ShowPlayArea(playerFeetOffset);
+			bool showPlayAreaPreview = validAreaTargeted && ShowPlayArea(playerFeetOffset);
 
 
 			if ( playAreaPreviewTransform != null )
@@ -693,6 +712,7 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void HidePointer()
 		{
+			
 			if ( visible )
 			{
 				pointerHideStartTime = Time.time;
@@ -908,7 +928,12 @@ namespace Valve.VR.InteractionSystem
 		{
 			if ( visible && !teleporting )
 			{
-				if ( pointedAtTeleportMarker != null && pointedAtTeleportMarker.locked == false )
+				if ( validAreaTargeted)
+				// 	( pointedAtTeleportMarker != null && pointedAtTeleportMarker.locked == false )
+				// 	|| (validAreaTargeted)
+
+				// ) 
+				
 				{
 					//Pointing at an unlocked teleport marker
 					teleportingToMarker = pointedAtTeleportMarker;
