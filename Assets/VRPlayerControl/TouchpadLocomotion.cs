@@ -138,29 +138,63 @@ public class TouchpadLocomotion : MonoBehaviour
     }
 
 
-    float currentCrouchOffset;
+    public float currentCrouchOffset;
+    float currentCrouchLerp;
+    public float crouchTime = .25f;
     void HandleEasyCrouch (float deltaTime) {
-        float crouchOffsetTarget = 0;
 
-        if (isCrouched) {
-            // if we're resizing the player, use default values
-            float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHeight;
-            crouchOffsetTarget = (startHeight * crouchRatioThreshold) - startHeight;
-        }
+        float target = isCrouched ? 1 : 0;
 
-        if (currentCrouchOffset != crouchOffsetTarget) {
+        if (currentCrouchLerp != target) {
+            if (target == 0) {
+                currentCrouchLerp -= deltaTime * (1.0f/crouchTime);
+            }
+            else {
+            currentCrouchLerp += deltaTime * (1.0f/crouchTime);
+                
+            }
+
+            currentCrouchLerp = Mathf.Clamp01(currentCrouchLerp);
+
+
+float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHeight;
+            float crouchOffsetTarget = (startHeight * crouchRatioThreshold) - startHeight;
+
+
+            currentCrouchOffset = Mathf.Lerp(0, crouchOffsetTarget, currentCrouchLerp); 
+
+
+
+
+        
+        
+        // float crouchOffsetTarget = 0;
+
+        // if (isCrouched) {
+        //     // if we're resizing the player, use default values
+        //     float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHeight;
+        //     crouchOffsetTarget = (startHeight * crouchRatioThreshold) - startHeight;
+        // }
+
+        // if (currentCrouchOffset != crouchOffsetTarget) {
+            
+
             //maybe smooth an interpolator instead...
-            currentCrouchOffset = Mathf.Lerp(currentCrouchOffset, crouchOffsetTarget, deltaTime * crouchTransitionSpeed);
+            // currentCrouchOffset = Mathf.Lerp(currentCrouchOffset, crouchOffsetTarget, deltaTime * crouchTransitionSpeed);
             
 
 
             if (moveScript.isGrounded) {
+                Debug.Log("eermm");
                 float floorY = moveScript.floorY;
+
+                //mae sure this happens after any teleportation
 
                 transform.position = new Vector3(transform.position.x, floorY + totalOfset, transform.position.z);
             }
-        }
+        // }
 
+}
 
 
     }
@@ -273,6 +307,7 @@ public class TouchpadLocomotion : MonoBehaviour
             if (jumpAction.GetStateDown(moveHand)) {
                 isCrouched = false;
                 moveScript.Jump();
+                Debug.Log("y no jump");
             }
         }
     }
