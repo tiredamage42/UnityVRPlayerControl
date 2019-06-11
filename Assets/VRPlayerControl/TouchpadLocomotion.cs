@@ -124,6 +124,10 @@ public class TouchpadLocomotion : MonoBehaviour
     float standingMeatspaceHeadHeight;
     public void RecalibratePlayerMeatspaceHeight () {
         standingMeatspaceHeadHeight = head.localPosition.y;
+
+        if (totalOfset != 0) {
+            transform.position = new Vector3(transform.position.x, moveScript.floorY + totalOfset, transform.position.z);
+        }
     }
 
     // this doenst count the resizing offset
@@ -144,8 +148,21 @@ public class TouchpadLocomotion : MonoBehaviour
             crouchOffsetTarget = (startHeight * crouchRatioThreshold) - startHeight;
         }
 
-        //maybe smooth an interpolator instead...
-        currentCrouchOffset = Mathf.Lerp(currentCrouchOffset, crouchOffsetTarget, deltaTime * crouchTransitionSpeed);
+        if (currentCrouchOffset != crouchOffsetTarget) {
+            //maybe smooth an interpolator instead...
+            currentCrouchOffset = Mathf.Lerp(currentCrouchOffset, crouchOffsetTarget, deltaTime * crouchTransitionSpeed);
+            
+
+
+            if (moveScript.isGrounded) {
+                float floorY = moveScript.floorY;
+
+                transform.position = new Vector3(transform.position.x, floorY + totalOfset, transform.position.z);
+            }
+        }
+
+
+
     }
 
 
@@ -372,9 +389,11 @@ public class TouchpadLocomotion : MonoBehaviour
 
     void Update() {
 
-        GetComponent<Player>().SetTrackignOriginOffset(
-            totalOfset
-        );
+        Teleport.instance.SetCurrentTrackingTransformOffset(totalOfset);
+
+        // GetComponent<Player>().SetTrackignOriginOffset(
+        //     totalOfset
+        // );
         CheckForInitialScaling();
         UpdateWorldScale();
         InputUpdateLoop(Time.deltaTime);

@@ -23,8 +23,8 @@ namespace Valve.VR.InteractionSystem
 		}
 
         public LayerMask traceLayerMask;
-		public LayerMask floorFixupTraceLayerMask;
-		public float floorFixupMaximumTraceDistance = 1.0f;
+		// public LayerMask floorFixupTraceLayerMask;
+		// public float floorFixupMaximumTraceDistance = 1.0f;
 		// public Material areaVisibleMaterial;
 		// public Material areaLockedMaterial;
 		// public Material areaHighlightedMaterial;
@@ -66,11 +66,11 @@ namespace Valve.VR.InteractionSystem
 		public AudioClip badHighlightSound;
 
 		[Header( "Debug" )]
-		public bool debugFloor = false;
+		// public bool debugFloor = false;
 		public bool showOffsetReticle = false;
 		public Transform offsetReticleTransform;
-		public MeshRenderer floorDebugSphere;
-		public LineRenderer floorDebugLine;
+		// public MeshRenderer floorDebugSphere;
+		// public LineRenderer floorDebugLine;
 
 		private LineRenderer pointerLineRenderer;
 		private GameObject teleportPointerObject;
@@ -124,6 +124,8 @@ namespace Valve.VR.InteractionSystem
 
 		SteamVR_Events.Action chaperoneInfoInitializedAction;
 
+		public float maxGroundAngle = 45;
+
 		// Events
 
 		// public static SteamVR_Events.Event< float > ChangeScene = new SteamVR_Events.Event< float >();
@@ -148,6 +150,12 @@ namespace Valve.VR.InteractionSystem
 
 				return _instance;
 			}
+		}
+
+		float trackingTransformOffset;
+		public void SetCurrentTrackingTransformOffset (float offset) {
+			trackingTransformOffset = offset;
+
 		}
 
 
@@ -216,6 +224,11 @@ namespace Valve.VR.InteractionSystem
 		}
 
 
+
+			
+
+
+
 		//-------------------------------------------------
 		private void CheckForSpawnPoint()
 		{
@@ -245,6 +258,7 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void Update()
 		{
+			SmoothTeleport(Time.deltaTime);
 
 			bool teleportNewlyPressed = false;
 
@@ -377,6 +391,8 @@ namespace Valve.VR.InteractionSystem
 			}
 
 			playAreaPreviewTransform.position = pointedAtPosition + offsetToUse;
+			playAreaPreviewTransform.rotation = Player.instance.transform.rotation;
+			
 
 			return true;
 		}
@@ -387,8 +403,8 @@ namespace Valve.VR.InteractionSystem
 			destinationReticleTransform.gameObject.SetActive( destination );
 			invalidReticleTransform.gameObject.SetActive( invalid );
 			offsetReticleTransform.gameObject.SetActive( offset );
-
 		}
+
 
 
 
@@ -490,7 +506,17 @@ namespace Valve.VR.InteractionSystem
 			else //Hit neither
 			{
 
-				validAreaTargeted = !pointerAtBadAngle && hitSomething; // not locked area
+				Vector3 normalToUse = Vector3.up;// hitInfo.normal;
+				float angle = 0;
+
+				if (hitSomething) {
+					normalToUse = hitInfo.normal;
+					angle = Vector3.Angle( normalToUse, Vector3.up );
+				}
+
+					
+
+				validAreaTargeted = !pointerAtBadAngle && hitSomething && (angle <= maxGroundAngle); // not locked area
 
 				//if valid area targeted, check for angle
 
@@ -515,25 +541,38 @@ namespace Valve.VR.InteractionSystem
 
 				// invalidReticleTransform.gameObject.SetActive( !pointerAtBadAngle );
 
+
+				pointedAtTeleportMarker = null;
+
+				if ( hitSomething )
+				{
+					pointerEnd = hitInfo.point;
+				}
+				else
+				{
+					pointerEnd = teleportArc.GetArcPositionAtTime( teleportArc.arcDuration );
+				}
+
+
 				
 				
 				// if (!pointerAtBadAngle && !validAreaTargeted) {
 				if (invalidReticleTransform.gameObject.activeSelf) {
 
 					//Orient the invalid reticle to the normal of the trace hit point
-					Vector3 normalToUse = hitInfo.normal;
-					float angle = Vector3.Angle( hitInfo.normal, Vector3.up );
-					if ( angle < 15.0f )
-					{
-						normalToUse = Vector3.up;
-					}
+					// Vector3 normalToUse = hitInfo.normal;
+					// float angle = Vector3.Angle( hitInfo.normal, Vector3.up );
+					// if ( angle < 15.0f )
+					// {
+					// 	normalToUse = Vector3.up;
+					// }
 					
 					
 					Quaternion invalidReticleTargetRotation = Quaternion.FromToRotation( Vector3.up, normalToUse );
 					invalidReticleTransform.rotation = Quaternion.Slerp( invalidReticleTransform.rotation, invalidReticleTargetRotation, 0.1f );
 
 					//Scale the invalid reticle based on the distance from the player
-					float distanceFromPlayer = Vector3.Distance( hitInfo.point, player.hmdTransform.position );
+					float distanceFromPlayer = Vector3.Distance( pointerEnd, player.hmdTransform.position );
 					float invalidReticleCurrentScale = Util.RemapNumberClamped( distanceFromPlayer, invalidReticleMinScaleDistance, invalidReticleMaxScaleDistance, invalidReticleMinScale, invalidReticleMaxScale );
 					// invalidReticleScale.x = invalidReticleCurrentScale;
 					// invalidReticleScale.y = invalidReticleCurrentScale;
@@ -544,19 +583,19 @@ namespace Valve.VR.InteractionSystem
 				if (destinationReticleTransform.gameObject.activeSelf) {
 
 					//Orient the invalid reticle to the normal of the trace hit point
-					Vector3 normalToUse = hitInfo.normal;
-					float angle = Vector3.Angle( hitInfo.normal, Vector3.up );
-					if ( angle < 15.0f )
-					{
-						normalToUse = Vector3.up;
-					}
+					// Vector3 normalToUse = hitInfo.normal;
+					// float angle = Vector3.Angle( hitInfo.normal, Vector3.up );
+					// if ( angle < 15.0f )
+					// {
+					// 	normalToUse = Vector3.up;
+					// }
 					
 					
 					Quaternion invalidReticleTargetRotation = Quaternion.FromToRotation( Vector3.up, normalToUse );
 					destinationReticleTransform.rotation = Quaternion.Slerp( destinationReticleTransform.rotation, invalidReticleTargetRotation, 0.1f );
 
 					//Scale the invalid reticle based on the distance from the player
-					float distanceFromPlayer = Vector3.Distance( hitInfo.point, player.hmdTransform.position );
+					float distanceFromPlayer = Vector3.Distance( pointerEnd, player.hmdTransform.position );
 					float invalidReticleCurrentScale = Util.RemapNumberClamped( distanceFromPlayer, invalidReticleMinScaleDistance, invalidReticleMaxScaleDistance, invalidReticleMinScale, invalidReticleMaxScale );
 					// invalidReticleScale.x = invalidReticleCurrentScale;
 					// invalidReticleScale.y = invalidReticleCurrentScale;
@@ -571,25 +610,15 @@ namespace Valve.VR.InteractionSystem
 
 
 
-				pointedAtTeleportMarker = null;
-
-				if ( hitSomething )
-				{
-					pointerEnd = hitInfo.point;
-				}
-				else
-				{
-					pointerEnd = teleportArc.GetArcPositionAtTime( teleportArc.arcDuration );
-				}
-
+				
 				pointedAtPosition = pointerEnd;
 
 				//Debug floor
-				if ( debugFloor )
-				{
-					floorDebugSphere.gameObject.SetActive( false );
-					floorDebugLine.gameObject.SetActive( false );
-				}
+				// if ( debugFloor )
+				// {
+				// 	floorDebugSphere.gameObject.SetActive( false );
+				// 	floorDebugLine.gameObject.SetActive( false );
+				// }
 			}
 
 
@@ -624,6 +653,7 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void FixedUpdate()
 		{
+			/*
 			if ( !visible )
 			{
 				return;
@@ -673,9 +703,11 @@ namespace Valve.VR.InteractionSystem
 					}
 				}
 			}
+			 */
+			
 		}
 
-
+		//Maybe adjust this to world scale
 		//-------------------------------------------------
 		private void OnChaperoneInfoInitialized()
 		{
@@ -985,10 +1017,73 @@ namespace Valve.VR.InteractionSystem
 		}
 
 
+		float teleportLerp;
+		public bool fastTeleport = true;
+		public float fastTeleportTime = .25f;
+		Vector3 teleportStartPosition;
+
+
+
+		void SmoothTeleport (float deltaTime) {
+			if (teleporting && fastTeleport) {
+
+				teleportLerp += deltaTime * (1.0f/fastTeleportTime);
+				if (teleportLerp > 1) {
+					teleportLerp = 1;
+				}
+
+
+
+
+
+
+
+
+				Vector3 teleportPosition = pointedAtPosition;
+
+			TeleportPoint teleportPoint = teleportingToMarker as TeleportPoint;
+			if ( teleportPoint != null )
+			{
+				teleportPosition = teleportPoint.transform.position;
+
+				
+			}
+			Vector3 playerFeetOffset = player.trackingOriginTransformPosition - player.feetPositionGuess;
+			Vector3 targetPos = (teleportPosition + playerFeetOffset) + Vector3.up * trackingTransformOffset;
+
+
+
+
+
+
+
+
+				Player.instance.trackingOriginTransform.position = Vector3.Lerp(
+					teleportStartPosition, 
+					targetPos
+
+					,
+					teleportLerp
+				);
+
+
+
+				if (teleportLerp == 1) {
+
+					teleporting = false;
+					
+				}
+			}
+		}
+		
+
+
 		//-------------------------------------------------
 		private void InitiateTeleportFade()
 		{
 			teleporting = true;
+
+			bool doFade = true;
 
 			currentFadeTime = teleportFadeTime;
 
@@ -998,16 +1093,32 @@ namespace Valve.VR.InteractionSystem
 				currentFadeTime *= 3.0f;
 				// Teleport.ChangeScene.Send( currentFadeTime );
 			}
+			else {
 
-			SteamVR_Fade.Start( Color.clear, 0 );
-			SteamVR_Fade.Start( Color.black, currentFadeTime );
+				if (fastTeleport) {
+					doFade = false;
+					teleportStartPosition = Player.instance.trackingOriginTransform.position;
+					teleportLerp = 0;
+				}
+
+			}
+			if (doFade) {
+
+				SteamVR_Fade.Start( Color.clear, 0 );
+				SteamVR_Fade.Start( Color.black, currentFadeTime );
+			}
+
 
 
 			headAudioSource.transform.SetParent( player.hmdTransform );
 			headAudioSource.transform.localPosition = Vector3.zero;
 			PlayAudioClip( headAudioSource, teleportSound );
 
-			Invoke( "TeleportPlayer", currentFadeTime );
+			if (doFade) {
+
+				Invoke( "TeleportPlayer", currentFadeTime );
+			}
+
 		}
 
 
@@ -1020,9 +1131,9 @@ namespace Valve.VR.InteractionSystem
 
 			SteamVR_Fade.Start( Color.clear, currentFadeTime );
 
-			TeleportPoint teleportPoint = teleportingToMarker as TeleportPoint;
 			Vector3 teleportPosition = pointedAtPosition;
 
+			TeleportPoint teleportPoint = teleportingToMarker as TeleportPoint;
 			if ( teleportPoint != null )
 			{
 				teleportPosition = teleportPoint.transform.position;
@@ -1039,22 +1150,22 @@ namespace Valve.VR.InteractionSystem
 			// TeleportArea teleportArea = teleportingToMarker as TeleportArea;
 			// if ( teleportArea != null )
 			{
-				if ( floorFixupMaximumTraceDistance > 0.0f )
-				{
-					RaycastHit raycastHit;
+				// if ( floorFixupMaximumTraceDistance > 0.0f )
+				// {
+				// 	RaycastHit raycastHit;
 
-					//maybe should be down ?
-					if ( Physics.Raycast( teleportPosition + 0.05f * Vector3.down, Vector3.down, out raycastHit, floorFixupMaximumTraceDistance, floorFixupTraceLayerMask ) )
-					{
-						teleportPosition = raycastHit.point;
-					}
-				}
+				// 	//maybe should be down ?
+				// 	if ( Physics.Raycast( teleportPosition + 0.05f * Vector3.down, Vector3.down, out raycastHit, floorFixupMaximumTraceDistance, floorFixupTraceLayerMask ) )
+				// 	{
+				// 		teleportPosition = raycastHit.point;
+				// 	}
+				// }
 			}
 
 			// if ( teleportingToMarker.ShouldMovePlayer() )
 			// {
 				Vector3 playerFeetOffset = player.trackingOriginTransformPosition - player.feetPositionGuess;
-				player.trackingOriginTransform.position = teleportPosition + playerFeetOffset;
+				player.trackingOriginTransform.position = (teleportPosition + playerFeetOffset) + Vector3.up * trackingTransformOffset;
 			// }
 			// else
 			// {

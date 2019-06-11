@@ -30,22 +30,18 @@ public class SimpleCharacterController : MonoBehaviour
     public bool isGrounded;
 
     const float buffer = .1f;
-
+    public float floorY = 0;
     void Awake ( ) {
         characterController = GetComponent<CharacterController>();
     }
 
     void CheckGrounded () {
 
-
-
-        //make sure we're checking from the actual capsule position (could be offset due to height or movement)
-        
+        //make sure we're checking from the actual capsule position (could be offset due to height or movement)        
         Vector3 charControllerOffset = characterController.center;
         Vector3 rayCheck = transform.position + characterController.center;
-        rayCheck.y -= (characterController.height * .5f) - buffer;// myPos.y + buffer;
+        rayCheck.y -= ((characterController.height * .5f) + characterController.skinWidth) - buffer;// myPos.y + buffer;
 
-        
         bool wasGrounded = isGrounded;
 
         isGrounded = false;
@@ -53,6 +49,7 @@ public class SimpleCharacterController : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, buffer + (wasGrounded ? .25f : .01f), groundMask)) {
             isGrounded = true;
+            floorY = hit.point.y;
         }
     }
 
