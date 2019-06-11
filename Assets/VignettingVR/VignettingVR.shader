@@ -17,8 +17,7 @@
 			#pragma fragment frag
 			
 			#include "UnityCG.cginc"
-			#pragma shader_feature DEBUG_SHOW_VIGNETTE //if you need to see the mask somehow in-build, change this line to "#pragma multi_compile _ DEBUG_SHOW_VIGNETTE". Otherwise, Unity will strip this shader-variant away.
-
+			
 			struct appdata
 			{
 				float4 vertex : POSITION;
@@ -55,19 +54,13 @@
 				half2 vignetteCenter = i.uv;
 
 				vignetteCenter += _vignetteViewportSpaceOffset[unity_StereoEyeIndex].xy; // shift to center
-
-				vignetteCenter *= 2.0; // make vignett a bit tighter
 				
 				half mask = dot(vignetteCenter, vignetteCenter); // compute square length from center
 				
 				mask = (1.0 - mask * _vignettingIntensity); // inverse mask, so we can use it for composition; apply intensity
-				
-#ifdef DEBUG_SHOW_VIGNETTE 
-				return float4(saturate((mask).xxx > 0), 1) ;
-#else
+		
 				half4 col = tex2D(_MainTex, screenUV);
 				return col * mask; //compose
-#endif
 
 			}
 			ENDCG

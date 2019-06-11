@@ -105,6 +105,14 @@ namespace Valve.VR
             }
         }
         
+        public virtual SteamVR_Action_Boolean HeadsetOnHead
+        {
+            get
+            {
+                return SteamVR_Actions.vRControlActionSet_HeadsetOnHead;
+            }
+        }
+        
         public virtual SteamVR_Action_Vibration Haptic
         {
             get
