@@ -28207,7 +28207,7 @@ MonoBehaviour:
   capsuleRadius: 0.25
   minMaxHeight: {x: 1, y: 2}
   hmdOnHead:
-    actionPath: /actions/VRControlActionSet/in/HeadsetOnHead
+    actionPath: /actions/default/in/HeadsetOnHead
     needsReinit: 0
   moveEnableAction:
     actionPath: /actions/VRControlActionSet/in/TriggerButton
@@ -28232,7 +28232,7 @@ MonoBehaviour:
     needsReinit: 0
   moveHand: 1
   turnHand: 2
-  maxSpeed: 1
+  maxSpeed: 2
   runMode: 2
   runMultiplier: 3
   turnType: 3
@@ -28240,8 +28240,8 @@ MonoBehaviour:
   fastTurnTime: 0.1
   smoothTurnSpeedAcceleration: 20
   smoothTurnSpeed: 300
-  vignetteIntensity: 2
-  vignetteSpeed: 10
+  vignetteIntensity: 3
+  vignetteSpeed: 5
   vignetteMovementThreshold: 1
 --- !u!143 &1893138398
 CharacterController:
@@ -28291,7 +28291,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 535e80694d9f7b74aa4c818249ff4f08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vignettingIntensity: 2
   m_Shader: {fileID: 4800000, guid: 0632c2294a6387945a914014e96c7ff7, type: 3}
 --- !u!114 &1893138403
 MonoBehaviour:

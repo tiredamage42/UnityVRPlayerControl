@@ -82,7 +82,8 @@ public class SimpleCharacterController : MonoBehaviour
             relativeTransform = transform;
         }
 
-        characterController.Move( relativeTransform.TransformDirection( new Vector3( currentMoveVector.x, 0, currentMoveVector.y) * deltaTime ) );
+        characterController.Move( relativeTransform.TransformDirection( 
+            new Vector3( currentMoveVector.x, yVelocity, currentMoveVector.y) * deltaTime ) );
     }
 
 

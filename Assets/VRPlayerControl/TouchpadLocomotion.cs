@@ -121,7 +121,8 @@ public class TouchpadLocomotion : MonoBehaviour
 
     void CheckForInitialScaling () {
         if (!adjustedScale) {
-            if (hmdOnHead.GetState(SteamVR_Input_Sources.Head)) {
+            if (hmdOnHead.GetStateDown(SteamVR_Input_Sources.Head)) {
+        Debug.Log("WOOOOO");
                 CalculateScaleTargets();
                 adjustedScale = true;
             }
@@ -256,7 +257,7 @@ public class TouchpadLocomotion : MonoBehaviour
     void HandleComfortVignetting (bool vignetteEnabled, float deltaTime) {
         float targetIntensity = vignetteEnabled ? vignetteIntensity : 0.0f;
         currentVignetteIntensity = Mathf.Lerp(currentVignetteIntensity, targetIntensity, deltaTime * vignetteSpeed);
-        vignette.vignettingIntensity = currentVignetteIntensity;
+        vignette.SetIntensity( currentVignetteIntensity );
     }
 
     void DoInstantTurn (float degrees, bool toRight) {
