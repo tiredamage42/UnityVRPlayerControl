@@ -13033,7 +13033,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11445746, guid: 7a135b1a2cb9c8f488d4dd00c55ab283, type: 3}
       propertyPath: teleportAction.actionPath
-      value: /actions/VRControlActionSet/in/TrackpadDPadRight
+      value: /actions/VRControlActionSet/in/SideButton
       objectReference: {fileID: 0}
     - target: {fileID: 11445746, guid: 7a135b1a2cb9c8f488d4dd00c55ab283, type: 3}
       propertyPath: showOffsetReticle
@@ -13053,7 +13053,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11445746, guid: 7a135b1a2cb9c8f488d4dd00c55ab283, type: 3}
       propertyPath: teleportHand
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 127276, guid: 7a135b1a2cb9c8f488d4dd00c55ab283, type: 3}
       propertyPath: m_IsActive
@@ -28099,6 +28099,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 107946, guid: dc06161b6d97feb419f45f03b62e14b9, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 447954, guid: dc06161b6d97feb419f45f03b62e14b9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -28196,12 +28200,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23a5c0e8920f14a47b2bb4763c1b4478, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  comfortVignetteIntensity: 20
+  defaultPlayerHeight: 1.8
+  crouchHeight: 1
+  crouchTransitionSpeed: 10
+  head: {fileID: 2125041983}
+  capsuleRadius: 0.25
+  minMaxHeight: {x: 1, y: 2}
+  hmdOnHead:
+    actionPath: /actions/VRControlActionSet/in/HeadsetOnHead
+    needsReinit: 0
   moveEnableAction:
     actionPath: /actions/VRControlActionSet/in/TriggerButton
     needsReinit: 0
   moveAction:
     actionPath: /actions/VRControlActionSet/in/TrackpadAxis
+    needsReinit: 0
+  runAction:
+    actionPath: /actions/VRControlActionSet/in/TrackpadDPadUp
+    needsReinit: 0
+  jumpAction:
+    actionPath: /actions/VRControlActionSet/in/TriggerButton
+    needsReinit: 0
+  crouchAction:
+    actionPath: /actions/VRControlActionSet/in/SideButton
     needsReinit: 0
   turnActionLeft:
     actionPath: /actions/VRControlActionSet/in/TrackpadDPadLeft
@@ -28209,20 +28230,19 @@ MonoBehaviour:
   turnActionRight:
     actionPath: /actions/VRControlActionSet/in/TrackpadDPadRight
     needsReinit: 0
-  runAction:
-    actionPath: /actions/VRControlActionSet/in/TrackpadDPadUp
-    needsReinit: 0
   moveHand: 1
   turnHand: 2
   maxSpeed: 1
-  head: {fileID: 2125041983}
+  runMode: 2
+  runMultiplier: 3
+  turnType: 3
   turnDegrees: 20
   fastTurnTime: 0.1
   smoothTurnSpeedAcceleration: 20
   smoothTurnSpeed: 300
-  turnType: 3
-  runMultiplier: 3
-  runMode: 2
+  vignetteIntensity: 2
+  vignetteSpeed: 10
+  vignetteMovementThreshold: 1
 --- !u!143 &1893138398
 CharacterController:
   m_ObjectHideFlags: 0
@@ -28271,10 +28291,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 535e80694d9f7b74aa4c818249ff4f08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vignettingEnable: 1
-  vignettingIntensity: 0
-  debugMode: 0
+  vignettingIntensity: 2
   m_Shader: {fileID: 4800000, guid: 0632c2294a6387945a914014e96c7ff7, type: 3}
+--- !u!114 &1893138403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893138395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f359b936f0d954c079052f58d519e013, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpSpeed: 5
+  gravityModifier: 1
+  maxGravityVelocity: 2
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 1
+  isGrounded: 0
 --- !u!1 &1893278402
 GameObject:
   m_ObjectHideFlags: 0

@@ -105,160 +105,186 @@ amplified walking (move tracking space along with camera movement vector so meat
 */
 
 
-
-
-    
 public class TouchpadLocomotion : MonoBehaviour
 {
 
-    public float comfortVignetteIntensity = 20.0f;
 
-    // public float turnSpeed = 5;
-    // public float deadZone = .1f;
+    bool adjustedScale;
 
+    public float defaultPlayerHeight = 1.8f;
+    public float crouchHeight = 1;
+    public float crouchTransitionSpeed = 10f;
+
+    bool isCrouched;
+    float targetStandScale, targetCrouchScale, currentScaleLerp;
+    
+
+    void CheckForInitialScaling () {
+        if (!adjustedScale) {
+            if (hmdOnHead.GetState(SteamVR_Input_Sources.Head)) {
+                CalculateScaleTargets();
+                adjustedScale = true;
+            }
+        }
+    }
+
+    void CheckForJump () {
+        if (moveScript.isGrounded) {
+
+            if (jumpAction.GetStateDown(moveHand)) {
+                isCrouched = false;
+                moveScript.Jump();
+            }
+        }
+    }
+
+    void CheckCrouched (float deltaTime) {
+
+
+        if (crouchAction.GetStateDown(moveHand)) {
+            isCrouched = !isCrouched;
+        }
+
+        if (!adjustedScale) {
+            if (isCrouched) {
+                isCrouched = false;
+                Debug.LogWarning("cant crouch yet, default player scale not adjusted");
+            }
+            return;
+        }
+
+        currentScaleLerp = Mathf.Lerp(currentScaleLerp, isCrouched ? 0 : 1, crouchTransitionSpeed * deltaTime);        
+        float currentScale = Mathf.Lerp(targetCrouchScale, targetStandScale, currentScaleLerp);
+        if (transform.lossyScale.x != currentScale) {
+            transform.localScale = Vector3.one * currentScale;
+        }
+    }
+
+    void CalculateScaleTargets () {
+        ResetPlayerHeight();
+        float naturalHeadHeight = head.localPosition.y;
+
+        targetStandScale = defaultPlayerHeight / naturalHeadHeight;
+        targetCrouchScale = crouchHeight / naturalHeadHeight;
+    }
+
+
+    void ResetPlayerHeight () {
+        transform.localScale = Vector3.one;
+    }
+
+
+    // any movement above this angle with forward movement cant run.
+    const float runAngleThreshold = 45f;     
+    
+    public Transform head;
+    public float capsuleRadius = .25f;
+    public Vector2 minMaxHeight = new Vector2(1, 2);
+
+
+
+    [Header("Controls")]
+    public SteamVR_Action_Boolean hmdOnHead;
+    
     public SteamVR_Action_Boolean moveEnableAction;
     public SteamVR_Action_Vector2 moveAction;
+    public SteamVR_Action_Boolean runAction, jumpAction, crouchAction;
+    
+
 
     public SteamVR_Action_Boolean turnActionLeft, turnActionRight;
-    public SteamVR_Action_Boolean runAction;
 
-    
     public SteamVR_Input_Sources moveHand;
     public SteamVR_Input_Sources turnHand;
-    
-    // public SteamVR_Action_Vector2 trackpackAxisAction;
-    
-    
-    // public float sensitivity = 0.1f;
+
+    [Header("Movement")]
+    SimpleCharacterController moveScript;
     public float maxSpeed = 1.0f;
+    public enum RunMode { None, Held, Clicked };
+    public RunMode runMode = RunMode.Clicked;
+    public float runMultiplier = 3;
 
-    // public Transform cameraRig, head;
-    public Transform head;
-    
-    // float currentSpeed;
+    bool isRunning;
     CharacterController characterController;
+    // Vector2 currentMoveVector;
 
+    public enum TurnType { None, Instant, Fast, Smooth };
+    [Header("Turning")]
+    public TurnType turnType = TurnType.Fast;
+    public float turnDegrees = 20f;    
+    public float fastTurnTime = .1f;
 
-    // public bool method1 = true;
+    public float smoothTurnSpeedAcceleration = 20;
+    public float smoothTurnSpeed = 300;
 
-    
-    // Start is called before the first frame update
-    // void Start()
-    // {
-        // cameraRig = SteamVR_Render.Top().origin;
-        // head = SteamVR_Render.Top().head;
-    // }
+    float fastTurnDegreesPerSecond { get { return turnDegrees / fastTurnTime; } }
+    int smoothTurnDirection;
+    float fastTurnTotalRotation = float.MaxValue;
+    bool fastTurnRight;
+    float smoothTurnMultiplier;
 
-    // Update is called once per frame
-    void Update()
-    {
+    [Header("Comfort Vignette")]
+    public float vignetteIntensity = 2.0f;
+    public float vignetteSpeed = 10;
+    public float vignetteMovementThreshold = 1;
+    VignettingVR vignette;
+    float currentVignetteIntensity;
 
-        // if (method1) {
-            // Method1Update ();
-        // }
-
-        // else {
-            // Method2Update(Time.deltaTime);
-        // }
-
-        InputUpdateLoop();
-    }
-
-
-
-    void FixedUpdate () {
-        FixedUpdateLoop(Time.fixedDeltaTime);
-    }
 
 
     void Awake () {
 
-        Method1Initialize();
-        // if (method1) {
-        // }
-        // else {
-        //     Method2Initialize();
-        // }
-
-    }
-
-
-    void Method1Initialize () {
-
         characterController = GetComponent<CharacterController>();
-        if (characterController == null) {
-            characterController = gameObject.AddComponent<CharacterController>();
-        }
+        if (characterController == null) characterController = gameObject.AddComponent<CharacterController>();
+        
+        vignette = head.GetComponentInChildren<VignettingVR>();
+        moveScript = GetComponent<SimpleCharacterController>();
+    }
+
+    void Update() {
+        CheckForInitialScaling();
+        InputUpdateLoop(Time.deltaTime);
+    }
+    void FixedUpdate () {
+
+        // UpdateGravity(Time.fixedDeltaTime);
+        FixedUpdateLoop(Time.fixedDeltaTime);
     }
 
 
-    /*
-    */
     
-
-    public float turnDegrees = 20f;    
-
-    public float fastTurnTime = .1f;
-
-    float fastTurnDegreesPerSecond {
-        get {
-            return turnDegrees / fastTurnTime;
-        }
+    void HandleComfortVignetting (bool vignetteEnabled, float deltaTime) {
+        float targetIntensity = vignetteEnabled ? vignetteIntensity : 0.0f;
+        currentVignetteIntensity = Mathf.Lerp(currentVignetteIntensity, targetIntensity, deltaTime * vignetteSpeed);
+        vignette.vignettingIntensity = currentVignetteIntensity;
     }
-    
-
-    // makes sure head doesnt rotate with cc
-    // float currentTurnSpeed;
-    public float smoothTurnSpeedAcceleration = 20;
-    public float smoothTurnSpeed = 300;
-
-    public enum TurnType {
-        None, Instant, Fast, Smooth
-    };
-
-    public TurnType turnType = TurnType.Fast;
-
 
     void DoInstantTurn (float degrees, bool toRight) {
         transform.RotateAround(head.position, Vector3.up, toRight ? degrees : -degrees);
     }
 
 
-    float fastTurnTotalRotation = float.MaxValue;
-    bool fastTurnRight;
     void DoFastTurn (bool toRight) {
         fastTurnTotalRotation = 0;
         fastTurnRight = toRight;
     }
 
-    bool HandleFastTurn (float targetDegrees, float degreesPerSecond, bool toRight, float deltaTime) {
-        
+    void HandleFastTurn (float targetDegrees, float degreesPerSecond, bool toRight, float deltaTime) {
         //keep turning if we're not there yet
-        if(Mathf.Abs(fastTurnTotalRotation) < targetDegrees) {
-            
+        if(Mathf.Abs(fastTurnTotalRotation) < targetDegrees) {   
             float rotationAdd = degreesPerSecond * deltaTime * (toRight ? 1 : -1);
             transform.RotateAround(head.position, Vector3.up, rotationAdd);
             fastTurnTotalRotation += rotationAdd;
-
-            return true;
         }
-        return false;
     }
-
-    float smoothTurnMultiplier;
-
-    bool HandleSmoothTurn (int turn, float deltaTime) {
+    
+    void HandleSmoothTurn (int turn, float deltaTime) {
         smoothTurnMultiplier = Mathf.Lerp(smoothTurnMultiplier, turn, deltaTime * smoothTurnSpeedAcceleration);
         if (smoothTurnMultiplier != 0) {
             transform.RotateAround(head.position, Vector3.up, smoothTurnMultiplier * smoothTurnSpeed * deltaTime);
-            return true;
-
-
         }
-        return false;
     }
 
-    int smoothTurnDirection;
 
     void HandleTurnInput (bool movementEnabled) {
         smoothTurnDirection = 0;
@@ -296,34 +322,21 @@ public class TouchpadLocomotion : MonoBehaviour
         }
     }
 
-    public float runMultiplier = 3;
-
-    bool isRunning;
-
-    // any movement above this angle with forward movement cant run.
-    const float runAngleThreshold = 45f; 
-
-    public enum RunMode { None, Held, Clicked };
-    public RunMode runMode = RunMode.Clicked;
-
-    Vector2 currentMoveVector;
-
 
     // set move velocity to zero every frame for instant stop
     // when not moving
-    void HandleMoveInput (bool movementEnabled) {
-        currentMoveVector = Vector2.zero;
+    Vector2 HandleMoveInput (bool movementEnabled) {
+        Vector2 currentMoveVector = Vector2.zero;
         
         if (!movementEnabled) {
             isRunning = false;
-            return;
+            return currentMoveVector;
         }
         currentMoveVector = moveAction.GetAxis(moveHand);
 
         if (currentMoveVector != Vector2.zero) {
 
             if (currentMoveVector.sqrMagnitude > 1) {
-                Debug.LogError("NORMALIZING");
                 currentMoveVector.Normalize();
             }
 
@@ -331,10 +344,8 @@ public class TouchpadLocomotion : MonoBehaviour
 
                 bool runPossible = Vector2.Angle(currentMoveVector, new Vector2(0, 1)) <= runAngleThreshold;
                 if (!runPossible) {
-
                     // we're used to walking forward, lateral and backwards/up down movement feels wrong
                     // so it's speed needs to be clamped to prevent motion sickness
-
                     isRunning = false;
                 }
                 else {
@@ -346,274 +357,81 @@ public class TouchpadLocomotion : MonoBehaviour
                             isRunning = true;
                         }
                     }
-                    
-                    if (!isRunning) {
-                        
-                    }
-
                 }
             }
-
+            currentMoveVector = currentMoveVector * maxSpeed * (isRunning ? runMultiplier : 1);
         }
-
-
-
-
-
-        currentMoveVector = currentMoveVector * maxSpeed * (isRunning ? runMultiplier : 1);
+        return currentMoveVector;
     }
 
-        
-
-
-    bool HandleTurningUpdate(float deltaTime) {
+    void HandleTurningUpdate(float deltaTime) {
         switch(turnType) {
             case TurnType.None: break;
             case TurnType.Instant: break;
             case TurnType.Fast:
-                return HandleFastTurn(turnDegrees, fastTurnDegreesPerSecond, fastTurnRight, deltaTime);
+                HandleFastTurn(turnDegrees, fastTurnDegreesPerSecond, fastTurnRight, deltaTime);
+                break;
             case TurnType.Smooth:
-                return HandleSmoothTurn (smoothTurnDirection, deltaTime);
+                HandleSmoothTurn (smoothTurnDirection, deltaTime);
+                break;
         }
-        return false;
     }
         
-        /*
+     
+
+    void InputUpdateLoop (float deltaTime) {
+        CheckCrouched(deltaTime);
+        CheckForJump();
         
 
-
-    void HandleHead (float deltaTime) {
-        //store current rotation
-        Vector3 oldCameraRigPosition = head.position;
-        // Quaternion oldCameraRigRotation = head.rotation;
-
-
-
-
-
-        bool isTurning = false;
-        bool left = false;
-        if (moveEnableAction.GetState(lookHand)) {
-            float axis = trackpackAxisAction.GetAxis(lookHand).x;
-            if (Mathf.Abs(axis) >= deadZone) {
-                isTurning = true;
-                left = axis < 0;
-
-                
-                // transform.position = new Vector3(oldCameraRigPosition.x, transform.position.y, oldCameraRigPosition.z);
-                // transform.Rotate(0, axis * turnSpeed * deltaTime, 0);
-            }
-        }
-        currentTurnSpeed = Mathf.Lerp(currentTurnSpeed, isTurning ? (left ?  -1 : 1) : 0, deltaTime * turnSpeedAccelSpeed);
-        if (currentTurnSpeed != 0) {
-            transform.RotateAround(oldCameraRigPosition, Vector3.up, currentTurnSpeed * turnSpeed * deltaTime);
-        }
-        else {
-            // transform.rotation = Quaternion.Euler( new Vector3(0, oldCameraRigRotation.eulerAngles.y, 0) );
-        }
-
-        
-        // if (isTurning) {
-
-        //     head.position = oldCameraRigPosition;
-        // }
-
-        // if (!isTurning) {
-
-        //     head.rotation = oldCameraRigRotation;
-        // }
-    }
-     */
-
-
-    // void CalculateMovement () {
-    //     // figure out movement orientation
-    //     Vector3 orientationEuler = new Vector3(0, transform.rotation.eulerAngles.y, 0);
-    //     Quaternion orientation = Quaternion.Euler(orientationEuler);
-    //     Vector3 movement = Vector3.zero;
-
-
-    //     if (moveEnableAction.GetStateUp(moveHand)) {
-    //         currentSpeed = 0;
-    //     }
-
-    //     if (moveEnableAction.GetState(moveHand)) {
-    //         currentSpeed += trackpackAxisAction.GetAxis(moveHand).y * sensitivity;
-    //         currentSpeed = Mathf.Clamp(currentSpeed, -maxSpeed, maxSpeed);
-
-
-    //         movement += orientation * (currentSpeed * Vector3.forward);
-    //     }
-
-    //     characterController.Move(movement);
-    // }
-
-    void InputUpdateLoop () {
-
-        bool movementEnabled = moveEnableAction.GetState(moveHand);
+        bool movementEnabled = true;//moveEnableAction.GetState(moveHand);
         HandleTurnInput(movementEnabled);
-        HandleMoveInput(movementEnabled);
+        Vector2 currentMoveVector = HandleMoveInput(movementEnabled);
+
+        moveScript.SetMoveVector(currentMoveVector);
+
+        bool enableComfortVignette = smoothTurnDirection != 0;
+        if (!enableComfortVignette) {
+            // bool isMoving = currentMoveVector != Vector2.zero;
+            enableComfortVignette = moveScript.isMoving && currentMoveVector.sqrMagnitude >= vignetteMovementThreshold * vignetteMovementThreshold;
+        }
+        HandleComfortVignetting( enableComfortVignette, deltaTime );
     }
-    void FixedUpdateLoop (float deltaTime) {
-        bool isTurning = HandleTurningUpdate(deltaTime);
-        HandleCapsuleHeight();
-        MoveCharacterController(deltaTime);
-
-        bool isMoving = currentMoveVector != Vector2.zero;
-
-        SetComfortVignette(isTurning || isMoving ? comfortVignetteIntensity : 0);
-    }
-
-    void SetComfortVignette(float intensity) {
-
-        VignettingVR vignetting = head.GetComponentInChildren<VignettingVR>();
-        vignetting.vignettingIntensity = intensity;
         
+    void FixedUpdateLoop (float deltaTime) {
+        HandleTurningUpdate(deltaTime);
+        SetCharacterControllerHeight (Mathf.Clamp(head.localPosition.y, minMaxHeight.x, minMaxHeight.y), capsuleRadius);
+        
+        moveScript.MoveCharacterController(deltaTime, transform);
+        // MoveCharacterController(deltaTime);        
     }
 
-    void MoveCharacterController (float deltaTime) {
+    // void MoveCharacterController (float deltaTime) {
 
+    //     Transform relativeTransform = transform;
 
-        Vector3 velocity = new Vector3( currentMoveVector.x, 0, currentMoveVector.y);
-
-        characterController.Move( transform.TransformDirection( velocity * deltaTime ) );
-    }
-
-
-
-    void HandleCapsuleHeight () {
-        float headHeight = Mathf.Clamp(head.localPosition.y, 1, 2);
-        SetCharacterControllerHeight (headHeight, .25f);
-    }
-
-    
+    //     characterController.Move( relativeTransform.TransformDirection( new Vector3( currentMoveVector.x, 0, currentMoveVector.y) * deltaTime ) );
+    // }
 
 
     void SetCharacterControllerHeight (float height, float radius) {
-        if (characterController == null)
-            return;
 
-
+        characterController.height = height;        
         characterController.radius = radius;
-        
-        characterController.height = height;
         
         Vector3 newCenter = new Vector3(0, height * .5f, 0);
         newCenter.y += characterController.skinWidth;
 
-
-        //move capsul in local space to adjust for headset moving around on its own
+        //move capsule in local space to adjust for headset moving around on its own
         newCenter.x = head.localPosition.x;
         newCenter.z = head.localPosition.z;
 
         //rotate
         // newCenter = Quaternion.Euler(0, -transform.eulerAngles.y, 0) * newCenter;
         
-        characterController.center = newCenter;
-        
+        characterController.center = newCenter;        
     }
-
-    // void Method1Update () {
-        // HandleHead();    
-        
-        // HandleCapsuleHeight();
-        // CalculateMovement();
-    // }
-
-
-    // public Transform handTransform;
-
-
-    /*
-        Now we set up our scene, add a Rigidbody and capsule collider to your [cameraRig] component, 
-        make sure that you constrain all rotation on the rigidbody so you don’t find yourself falling over. 
-        For the capsule collider all you need to set is the radius since all the other values are controlled by our code, I set mine to 0.1.
-
-        Now we can start to code. Create a new script called movement and add it to your [CameraRig] component. Here Is the code I used:
-    */
-
-    
-    //  public static float Angle(Vector2 p_vector2)
-    //  {
-    //      if (p_vector2.x < 0)
-    //      {
-    //          return 360 - (Mathf.Atan2(p_vector2.x, p_vector2.y) * Mathf.Rad2Deg * -1);
-    //      }
-    //      else
-    //      {
-    //          return Mathf.Atan2(p_vector2.x, p_vector2.y) * Mathf.Rad2Deg;
-    //      }
-    //  }
-
-
-
-
-
-    // void Method2Update(float deltaTime)
-    // {
-    //     HandleHead(deltaTime);
-
-    //     HandleCapsuleHeight();
-
-    //     Vector2 currentTrackpad = trackpackAxisAction.GetAxis(moveHand);
-        
-        
-    //     //Set size and position of the capsule collider so it maches our head.
-    //     // characterController.height = head.localPosition.y;
-    //     // characterController.center = new Vector3(head.localPosition.x, head.localPosition.y / 2, head.localPosition.z);
-        
-
-    //     //get the angle of the touch and correct it for the rotation of the controller
-    //     // Vector3 moveDirection = Quaternion.AngleAxis(Angle(currentTrackpad) + handTransform.localRotation.eulerAngles.y, Vector3.up) * Vector3.forward;
-        
-
-
-    //     // if (GetComponent<Rigidbody>().velocity.magnitude < speed && trackpad.magnitude >Deadzone){//make sure the touch isn't in the deadzone and we aren't going to fast.
-    //     //     GetComponent<Rigidbody().AddForce(moveDirection * 30);
-    //     // }
-
-
-
-    //     // Vector3 velocity = new Vector3(0,0,0);
-    //     if (currentTrackpad.magnitude > deadZone)
-    //     {
-    //         //make sure the touch isn't in the deadzone and we aren't going to fast.
-    //         // CapCollider.material = NoFrictionMaterial;
-            
-    //         // velocity = currentTrackpad;// moveDirection;
-            
-    //         // if (JumpAction.GetStateDown(MovementHand) && GroundCount > 0)
-    //         // {
-    //         //     float jumpSpeed = Mathf.Sqrt(2 * jumpHeight * 9.81f);
-    //         //     RBody.AddForce(0, jumpSpeed, 0, ForceMode.VelocityChange);
-    //         // }
-    //         currentTrackpad = currentTrackpad * maxSpeed * deltaTime;
-
-    //         Vector3 velocityNew = new Vector3( 
-    //             currentTrackpad.x,// * maxSpeed,// - characterController.velocity.x, 
-    //             0, 
-    //             currentTrackpad.y// * maxSpeed //- characterController.velocity.z 
-    //         );
-
-
-    //         characterController.Move(
-    //             // maybe head
-    //             transform
-    //                 .TransformDirection( velocityNew ) 
-    //         );
-
-    //         // RBody.AddForce(velocity.x*MovementSpeed - RBody.velocity.x, 0, velocity.z*MovementSpeed - RBody.velocity.z, ForceMode.VelocityChange);
-    //         // Debug.Log("Velocity" + velocity);
-    //         // Debug.Log("Movement Direction:" + moveDirection);
-    //     }
-    //     // else if(GroundCount > 0)
-    //     // {
-    //     //     CapCollider.material = FrictionMaterial;
-    //     // }
-    // }
 }
-
-
 
 }
 
