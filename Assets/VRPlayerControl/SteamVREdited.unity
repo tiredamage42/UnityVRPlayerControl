@@ -28200,7 +28200,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23a5c0e8920f14a47b2bb4763c1b4478, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  crouchVignetteColor: {r: 1, g: 0.5, b: 0, a: 1}
+  crouchVignetteColor: {r: 0.5566038, g: 0.2793933, b: 0, a: 1}
   easyCrouch: 1
   defaultPlayerHeight: 1.8
   crouchRatioThreshold: 0.5555556
@@ -28316,6 +28316,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   isGrounded: 0
+  floorY: 0
 --- !u!1 &1893278402
 GameObject:
   m_ObjectHideFlags: 0
