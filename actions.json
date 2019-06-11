@@ -123,7 +123,8 @@
     },
     {
       "name": "/actions/VRControlActionSet/in/HeadsetOnHead",
-      "type": "boolean"
+      "type": "boolean",
+      "requirement": "optional"
     },
     {
       "name": "/actions/VRControlActionSet/out/Haptic",

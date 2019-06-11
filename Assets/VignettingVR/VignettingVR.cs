@@ -3,8 +3,17 @@
 [RequireComponent(typeof(Camera))]
 public class VignettingVR : MonoBehaviour
 {
+    public void SetIntensity(float intensity) {
+        vignettingIntensity = intensity;
+        if (vignettingIntensity == 0) {
+            enabled = false;
+        }
+        else {
+            enabled = true;
+        }
+    }
     const float VIGNETTING_DEPTH = 10f;
-    public float vignettingIntensity = .5f;
+    float vignettingIntensity = .5f;
     Vector4[] viewportSpaceOffset = new Vector4[2];
     Camera currentCamera;
 
@@ -16,6 +25,7 @@ public class VignettingVR : MonoBehaviour
         material = new Material(m_Shader);
         material.hideFlags = HideFlags.HideAndDontSave;
         viewportSpaceOffset = new Vector4[2];
+        SetIntensity(0);
     }
 
     Matrix4x4 GetWorldToClipMatrix(Camera.StereoscopicEye eye)
