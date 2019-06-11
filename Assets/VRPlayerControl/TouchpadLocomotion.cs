@@ -108,24 +108,139 @@ amplified walking (move tracking space along with camera movement vector so meat
 public class TouchpadLocomotion : MonoBehaviour
 {
 
+    public Color crouchVignetteColor = new Color(1, .5f, 0, 1);
+
+    public bool easyCrouch = true;
+
+    public float defaultPlayerHeight = 1.8f;
+    // const float defaultCrouchHeight = 1.0f;
+
+    // 1.0f / 1.8f = crouch height of 1 for default height of 1.8
+    [Range(0,1)] public float crouchRatioThreshold = 1.0f / 1.8f;
+    public bool resizePlayer;
+
+
+    float standingMeatspaceHeadHeight;
+    public void RecalibratePlayerMeatspaceHeight () {
+        standingMeatspaceHeadHeight = head.localPosition.y;
+    }
+
+    // this doenst count the resizing offset
+    // so the actual physical act of crouching wont be difficult for taller than
+    // default height players
+    bool GetManualCrouching () {
+        return head.transform.localPosition.y / standingMeatspaceHeadHeight <= crouchRatioThreshold;
+    }
+
+
+    float currentCrouchOffset;
+    void HandleEasyCrouch (float deltaTime) {
+        float crouchOffsetTarget = 0;
+
+        if (isCrouched) {
+            // if we're resizing the player, use default values
+            float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHeight;
+            crouchOffsetTarget = startHeight - (startHeight * crouchRatioThreshold);
+        }
+
+        //maybe smooth an interpolator instead...
+        currentCrouchOffset = Mathf.Lerp(currentCrouchOffset, crouchOffsetTarget, deltaTime * crouchTransitionSpeed);
+    }
+
+
+    //negative if lpayer is taller, positive if shorter
+    float resizePlayerOffset {
+        get {
+            return resizePlayer ? defaultPlayerHeight - standingMeatspaceHeadHeight : 0;
+        }
+    }
+
+    const float minCapsuleHeight = .1f;
+
+    // in order to achieve height changes we'll offset the entire play area in order to keep
+    // consisten heights between players / accessibility / crouching
+    // this is done by offsetting the character controller capsules center and height
+    // so the tracking origin can sit below or above the virtual game floor
+    void SetCharacterControllerHeight (){
+        float radius = capsuleRadius;
+        characterController.radius = radius;
+
+        float height = head.localPosition.y;//Mathf.Clamp(head.localPosition.y, minMaxHeight.x, minMaxHeight.y);
+        
+        float totalHeightOffset = currentCrouchOffset + resizePlayerOffset;
+
+        //adjust for crouch + resizing player
+        height += totalHeightOffset;
+
+        if (height <= minCapsuleHeight) {
+            height = minCapsuleHeight;
+        }
+
+        characterController.height = height;        
+
+        // push the cc up on the center, so when we're crouched, our trackign origin transform can dip
+        // below the floor, that way the camera is closer to the floor (giving hte illusion of crouched stance)
+
+
+        // if resizing and player is shorter in real life than default player height,
+        // the bottom of the capsule should protrude out from below our tracking origin
+        // pushing it up
+        
+        Vector3 newCenter = new Vector3(0, (height * .5f) - totalHeightOffset, 0);
+        newCenter.y += characterController.skinWidth;
+
+        //move capsule in local space to adjust for headset moving around on its own
+        newCenter.x = head.localPosition.x;
+        newCenter.z = head.localPosition.z;
+
+        //rotate
+        // newCenter = Quaternion.Euler(0, -transform.eulerAngles.y, 0) * newCenter;
+        
+        characterController.center = newCenter;        
+    }
+
+
+
+    
+    [Range(.1f, 10)] public float worldScale = 1.0f;
+
+    void UpdateWorldScale () {
+        transform.localScale = Vector3.one * (1.0f/worldScale);
+    }
+
+
+    // float defaultOriginYOffset;
+    // void UpdateInitialHeightScaling () {
+
+    // }
+
+
+
 
     bool adjustedScale;
 
-    public float defaultPlayerHeight = 1.8f;
-    public float crouchHeight = 1;
+    // public float crouchHeight = 1;
     public float crouchTransitionSpeed = 10f;
 
     bool isCrouched;
-    float targetStandScale, targetCrouchScale, currentScaleLerp;
+    // float targetStandScale, targetCrouchScale, currentScaleLerp;
     
 
     void CheckForInitialScaling () {
-        if (!adjustedScale) {
-            if (hmdOnHead.GetStateDown(SteamVR_Input_Sources.Head)) {
-        Debug.Log("WOOOOO");
-                CalculateScaleTargets();
-                adjustedScale = true;
+
+        if (resizePlayer) {
+
+            if (!adjustedScale) {
+                if (hmdOnHead.GetState(SteamVR_Input_Sources.Head)) {
+                    Debug.Log("recalibrating player natural height");
+                    RecalibratePlayerMeatspaceHeight();
+                    // CalculateScaleTargets();
+                    adjustedScale = true;
+                }
             }
+        }
+        else {
+            adjustedScale = false;
         }
     }
 
@@ -140,6 +255,11 @@ public class TouchpadLocomotion : MonoBehaviour
     }
 
     void CheckCrouched (float deltaTime) {
+        if (!easyCrouch) {
+            currentCrouchOffset = 0;
+            isCrouched = GetManualCrouching();
+            return;
+        }
 
 
         if (crouchAction.GetStateDown(moveHand)) {
@@ -154,25 +274,27 @@ public class TouchpadLocomotion : MonoBehaviour
             return;
         }
 
-        currentScaleLerp = Mathf.Lerp(currentScaleLerp, isCrouched ? 0 : 1, crouchTransitionSpeed * deltaTime);        
-        float currentScale = Mathf.Lerp(targetCrouchScale, targetStandScale, currentScaleLerp);
-        if (transform.lossyScale.x != currentScale) {
-            transform.localScale = Vector3.one * currentScale;
-        }
+        HandleEasyCrouch(deltaTime);
+        
+
+        // currentScaleLerp = Mathf.Lerp(currentScaleLerp, isCrouched ? 0 : 1, crouchTransitionSpeed * deltaTime);        
+        // float currentScale = Mathf.Lerp(targetCrouchScale, targetStandScale, currentScaleLerp);
+        // if (transform.lossyScale.x != currentScale) {
+        //     transform.localScale = Vector3.one * currentScale;
+        // }
     }
 
-    void CalculateScaleTargets () {
-        ResetPlayerHeight();
-        float naturalHeadHeight = head.localPosition.y;
+    // void CalculateScaleTargets () {
+    //     ResetPlayerHeight();
+    //     float naturalHeadHeight = head.localPosition.y;
 
-        targetStandScale = defaultPlayerHeight / naturalHeadHeight;
-        targetCrouchScale = crouchHeight / naturalHeadHeight;
-    }
+    //     targetStandScale = defaultPlayerHeight / naturalHeadHeight;
+    //     targetCrouchScale = crouchHeight / naturalHeadHeight;
+    // }
 
-
-    void ResetPlayerHeight () {
-        transform.localScale = Vector3.one;
-    }
+    // void ResetPlayerHeight () {
+    //     transform.localScale = Vector3.one;
+    // }
 
 
     // any movement above this angle with forward movement cant run.
@@ -244,6 +366,7 @@ public class TouchpadLocomotion : MonoBehaviour
 
     void Update() {
         CheckForInitialScaling();
+        UpdateWorldScale();
         InputUpdateLoop(Time.deltaTime);
     }
     void FixedUpdate () {
@@ -257,7 +380,9 @@ public class TouchpadLocomotion : MonoBehaviour
     void HandleComfortVignetting (bool vignetteEnabled, float deltaTime) {
         float targetIntensity = vignetteEnabled ? vignetteIntensity : 0.0f;
         currentVignetteIntensity = Mathf.Lerp(currentVignetteIntensity, targetIntensity, deltaTime * vignetteSpeed);
+
         vignette.SetIntensity( currentVignetteIntensity );
+        vignette.SetColor(isCrouched ? crouchVignetteColor : Color.black);
     }
 
     void DoInstantTurn (float degrees, bool toRight) {
@@ -382,6 +507,8 @@ public class TouchpadLocomotion : MonoBehaviour
 
     void InputUpdateLoop (float deltaTime) {
         CheckCrouched(deltaTime);
+
+        
         CheckForJump();
         
 
@@ -391,7 +518,7 @@ public class TouchpadLocomotion : MonoBehaviour
 
         moveScript.SetMoveVector(currentMoveVector);
 
-        bool enableComfortVignette = smoothTurnDirection != 0;
+        bool enableComfortVignette = smoothTurnDirection != 0 || !moveScript.isGrounded || isCrouched;
         if (!enableComfortVignette) {
             // bool isMoving = currentMoveVector != Vector2.zero;
             enableComfortVignette = moveScript.isMoving && currentMoveVector.sqrMagnitude >= vignetteMovementThreshold * vignetteMovementThreshold;
@@ -401,7 +528,7 @@ public class TouchpadLocomotion : MonoBehaviour
         
     void FixedUpdateLoop (float deltaTime) {
         HandleTurningUpdate(deltaTime);
-        SetCharacterControllerHeight (Mathf.Clamp(head.localPosition.y, minMaxHeight.x, minMaxHeight.y), capsuleRadius);
+        SetCharacterControllerHeight ();
         
         moveScript.MoveCharacterController(deltaTime, transform);
         // MoveCharacterController(deltaTime);        
@@ -415,23 +542,6 @@ public class TouchpadLocomotion : MonoBehaviour
     // }
 
 
-    void SetCharacterControllerHeight (float height, float radius) {
-
-        characterController.height = height;        
-        characterController.radius = radius;
-        
-        Vector3 newCenter = new Vector3(0, height * .5f, 0);
-        newCenter.y += characterController.skinWidth;
-
-        //move capsule in local space to adjust for headset moving around on its own
-        newCenter.x = head.localPosition.x;
-        newCenter.z = head.localPosition.z;
-
-        //rotate
-        // newCenter = Quaternion.Euler(0, -transform.eulerAngles.y, 0) * newCenter;
-        
-        characterController.center = newCenter;        
-    }
 }
 
 }

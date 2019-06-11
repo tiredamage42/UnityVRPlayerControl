@@ -224,10 +224,16 @@ namespace Valve.VR.InteractionSystem
 				Transform hmd = hmdTransform;
 				if ( hmd )
 				{
-					Vector3 eyeOffset = Vector3.Project( hmd.position - trackingOriginTransform.position, trackingOriginTransform.up );
+					Vector3 eyeOffset = Vector3.Project( hmd.position - trackingOriginTransformPosition, trackingOriginTransform.up );
 					return eyeOffset.magnitude / trackingOriginTransform.lossyScale.x;
 				}
 				return 0.0f;
+			}
+		}
+
+		public Vector3 trackingOriginTransformPosition {
+			get {
+				return trackingOriginTransform.position;// - Vector3.up * currentMeatspaceOffset;
 			}
 		}
 
@@ -242,7 +248,7 @@ namespace Valve.VR.InteractionSystem
 				Transform hmd = hmdTransform;
 				if ( hmd )
 				{
-					return trackingOriginTransform.position + Vector3.ProjectOnPlane( hmd.position - trackingOriginTransform.position, trackingOriginTransform.up );
+					return trackingOriginTransformPosition + Vector3.ProjectOnPlane( hmd.position - trackingOriginTransformPosition, trackingOriginTransform.up );
 				}
 				return trackingOriginTransform.position;
 			}

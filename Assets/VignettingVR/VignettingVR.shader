@@ -41,8 +41,9 @@
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
 
-			half  _vignettingIntensity;
-			half2 _vignetteViewportSpaceOffset[2];
+			fixed4 _VignetteColor;
+			// fixed  _vignettingIntensity;
+			fixed2 _vignetteViewportSpaceOffset[2];
 
 			half4 frag (v2f i) : SV_Target
 			{
@@ -57,10 +58,13 @@
 				
 				half mask = dot(vignetteCenter, vignetteCenter); // compute square length from center
 				
-				mask = (1.0 - mask * _vignettingIntensity); // inverse mask, so we can use it for composition; apply intensity
-		
+				mask = (1.0 - mask * _VignetteColor.w); // inverse mask, so we can use it for composition; apply intensity
 				half4 col = tex2D(_MainTex, screenUV);
-				return col * mask; //compose
+
+
+				return half4(lerp(_VignetteColor.xyz, col.xyz, mask), 1);
+		
+				// return col * mask; //compose
 
 			}
 			ENDCG
