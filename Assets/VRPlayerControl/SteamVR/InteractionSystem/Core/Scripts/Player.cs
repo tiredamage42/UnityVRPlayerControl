@@ -7,8 +7,11 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+// using VRPlayer;
+
 
 namespace Valve.VR.InteractionSystem
+
 {
 	//-------------------------------------------------------------------------
 	// Singleton representing the local VR player/user, with methods for getting
@@ -231,9 +234,15 @@ namespace Valve.VR.InteractionSystem
 			}
 		}
 
+		Vector3 currentMeatspaceOffset;
+
+		public void SetTrackignOriginOffset (float offset) {
+			currentMeatspaceOffset = new Vector3(0,offset,0);
+		}
+
 		public Vector3 trackingOriginTransformPosition {
 			get {
-				return trackingOriginTransform.position;// - Vector3.up * currentMeatspaceOffset;
+				return trackingOriginTransform.position;// - currentMeatspaceOffset;// GetComponent<VRPlayer.TouchpadLocomotion>().totalOfset;// Vector3.up * currentMeatspaceOffset;
 			}
 		}
 

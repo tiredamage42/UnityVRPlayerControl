@@ -28201,10 +28201,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   crouchVignetteColor: {r: 1, g: 0.5, b: 0, a: 1}
-  easyCrouch: 0
+  easyCrouch: 1
   defaultPlayerHeight: 1.8
   crouchRatioThreshold: 0.5555556
-  resizePlayer: 0
+  resizePlayer: 1
   worldScale: 1
   crouchTransitionSpeed: 10
   recalibrateHeight: 0
