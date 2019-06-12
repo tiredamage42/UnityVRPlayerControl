@@ -35,7 +35,7 @@ public class ObjectOutlines : MonoBehaviour
     }
 
     void OnDisable () {
-        if (Application.isPlaying) {
+        if (!Application.isPlaying) {
             DestroyImmediate(TempCam.gameObject);
             DestroyImmediate(Post_Mat);
         }
@@ -69,8 +69,6 @@ public class ObjectOutlines : MonoBehaviour
         //render all objects this camera can render, but with our custom shader.
         TempCam.RenderWithShader(DrawSimple,"");
 
-
- 
         Post_Mat.SetTexture("_SceneTex", source); 
         
         //copy the temporary RT to the final image
