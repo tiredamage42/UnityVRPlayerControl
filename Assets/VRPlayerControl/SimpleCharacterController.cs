@@ -13,18 +13,21 @@ public class SimpleCharacterController : MonoBehaviour
     public float gravityModifier = 1.0f;
     public float maxGravityVelocity = 2;
 
-    Vector2 currentMoveVector;
+    Vector3 currentMoveVector;
 
     public bool isMoving {
         get {
-            return currentMoveVector != Vector2.zero;
+            return currentMoveVector != Vector3.zero;
         }
     }
 
-    public void SetMoveVector(Vector2 currentMoveVector) {
+    public void SetMoveVector(Vector3 currentMoveVector) {
         this.currentMoveVector = currentMoveVector;
+        
     }
     public LayerMask groundMask;
+
+    public float ungroundedSpeedMultiplier = .25f;
 
 
     public bool isGrounded;
@@ -41,11 +44,11 @@ public class SimpleCharacterController : MonoBehaviour
         Vector3 charControllerOffset = characterController.center;
         Vector3 rayCheck = transform.position + characterController.center;
         rayCheck.y -= ((characterController.height * .5f) + characterController.skinWidth) - buffer;// myPos.y + buffer;
+        Ray ray = new Ray (rayCheck, Vector3.down);
+        Debug.DrawRay(ray.origin, ray.direction, Color.cyan, 1);
 
         bool wasGrounded = isGrounded;
-
         isGrounded = false;
-        Ray ray = new Ray (rayCheck, Vector3.down);
         RaycastHit hit;
         if (momentum.y <= 0 && Physics.Raycast(ray, out hit, buffer + (wasGrounded && (momentum.y <= 0) ? .25f : .05f), groundMask)) {
             isGrounded = true;
@@ -67,14 +70,13 @@ public class SimpleCharacterController : MonoBehaviour
         momentum = velocity;
     }
 
-
-
-
     // float yVelocity;
     public void Jump () {
         momentum.y = jumpSpeed;
-        momentum.x = characterController.velocity.x;
-        momentum.z = characterController.velocity.z;
+
+        Vector3 localVelocity = transform.InverseTransformDirection(characterController.velocity);
+        momentum.x = localVelocity.x;
+        momentum.z = localVelocity.z;
         
         
         // yVelocity = jumpSpeed;
@@ -96,6 +98,7 @@ public class SimpleCharacterController : MonoBehaviour
             momentum.y = -maxGravityVelocity;
         }
     }
+    public bool useRawMovement;
 
 
     public void MoveCharacterController (float deltaTime, Transform relativeTransform=null) {
@@ -104,11 +107,20 @@ public class SimpleCharacterController : MonoBehaviour
             relativeTransform = transform;
         }
 
+        Vector3 moveVector = currentMoveVector;
+
+        if (!useRawMovement) {
+
+            if (!isGrounded) {
+                moveVector *= ungroundedSpeedMultiplier;
+            }
+        }
+
         characterController.Move( relativeTransform.TransformDirection( 
-                new Vector3( 
-                    currentMoveVector.x + momentum.x, 
-                    momentum.y, 
-                    currentMoveVector.y + momentum.z
+                useRawMovement ? moveVector : new Vector3( 
+                    moveVector.x + momentum.x, 
+                    moveVector.y + momentum.y, 
+                    moveVector.z + momentum.z
                 ) * deltaTime 
             ) 
         );

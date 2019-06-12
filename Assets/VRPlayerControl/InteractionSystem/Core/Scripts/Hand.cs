@@ -923,9 +923,14 @@ namespace Valve.VR.InteractionSystem
                 if (hoveringOverAttached)
                     continue;
 
+                
                 // Occupied by another hand, so we can't touch it
-                if (otherHand && otherHand.hoveringInteractable == contacting)
-                    continue;
+                // if (otherHand && otherHand.hoveringInteractable == contacting)
+                //     continue;
+
+
+
+
 
                 // Best candidate so far...
                 float distance = Vector3.Distance(contacting.transform.position, hoverPosition);
