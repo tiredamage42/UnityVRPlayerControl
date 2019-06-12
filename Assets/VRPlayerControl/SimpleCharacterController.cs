@@ -47,9 +47,12 @@ public class SimpleCharacterController : MonoBehaviour
         isGrounded = false;
         Ray ray = new Ray (rayCheck, Vector3.down);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, buffer + (wasGrounded ? .25f : .05f), groundMask)) {
+        if (momentum.y <= 0 && Physics.Raycast(ray, out hit, buffer + (wasGrounded && (momentum.y <= 0) ? .25f : .05f), groundMask)) {
             isGrounded = true;
+            
+            // momentum = new Vector3(0, momentum.y, 0);
             momentum = Vector3.zero;
+            
             floorY = hit.point.y;
         }
     }
@@ -57,7 +60,7 @@ public class SimpleCharacterController : MonoBehaviour
 
     public float moemntumDecaySpeed = 1;
 
-    Vector3 momentum;
+    public Vector3 momentum;
 
 
     public void SetMomentum (Vector3 velocity) {
@@ -71,7 +74,7 @@ public class SimpleCharacterController : MonoBehaviour
     public void Jump () {
         momentum.y = jumpSpeed;
         momentum.x = characterController.velocity.x;
-        momentum.x = characterController.velocity.z;
+        momentum.z = characterController.velocity.z;
         
         
         // yVelocity = jumpSpeed;
