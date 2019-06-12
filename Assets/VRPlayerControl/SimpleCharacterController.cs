@@ -13,7 +13,7 @@ public class SimpleCharacterController : MonoBehaviour
     public float gravityModifier = 1.0f;
     public float maxGravityVelocity = 2;
 
-    Vector3 currentMoveVector;
+    public Vector3 currentMoveVector;
 
     public bool isMoving {
         get {
@@ -41,8 +41,8 @@ public class SimpleCharacterController : MonoBehaviour
     void CheckGrounded () {
 
         //make sure we're checking from the actual capsule position (could be offset due to height or movement)        
-        Vector3 charControllerOffset = characterController.center;
-        Vector3 rayCheck = transform.position + characterController.center;
+        // Vector3 charControllerOffset = characterController.center;
+        Vector3 rayCheck = transform.position + (transform.rotation *characterController.center);
         rayCheck.y -= ((characterController.height * .5f) + characterController.skinWidth) - buffer;// myPos.y + buffer;
         Ray ray = new Ray (rayCheck, Vector3.down);
         Debug.DrawRay(ray.origin, ray.direction, Color.cyan, 1);
@@ -117,11 +117,11 @@ public class SimpleCharacterController : MonoBehaviour
         }
 
         characterController.Move( relativeTransform.TransformDirection( 
-                useRawMovement ? moveVector : new Vector3( 
+                useRawMovement ? moveVector : (new Vector3( 
                     moveVector.x + momentum.x, 
                     moveVector.y + momentum.y, 
                     moveVector.z + momentum.z
-                ) * deltaTime 
+                ) * (useRawMovement ? 1 : deltaTime)) 
             ) 
         );
     }

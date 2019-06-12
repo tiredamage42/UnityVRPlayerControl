@@ -246,7 +246,7 @@ public class TouchpadLocomotion : MonoBehaviour
 
         Teleport.instance.teleportationAllowed = !isClimbing;
         // characterController.enabled = !isClimbing;
-        
+        moveScript.useRawMovement = isClimbing;
         if (isClimbing) {
 
             Vector3 handLocalPosition = Player.instance.GetHand(currentClimbHand).transform.localPosition;
@@ -612,8 +612,7 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
     }
 
     void Update() {
-        UpdateClimbs();
-
+        
         Teleport.instance.SetCurrentTrackingTransformOffset(totalOfset);
 
         // GetComponent<Player>().SetTrackignOriginOffset(
@@ -624,6 +623,8 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
         InputUpdateLoop(Time.deltaTime);
     }
     void FixedUpdate () {
+        UpdateClimbs();
+
 
         // UpdateGravity(Time.fixedDeltaTime);
         FixedUpdateLoop(Time.fixedDeltaTime);
@@ -770,8 +771,10 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
         bool movementEnabled = !isClimbing;// true;//moveEnableAction.GetState(moveHand);
         HandleTurnInput(movementEnabled);
         HandleMoveInput(movementEnabled);
+        if (!isClimbing) {
 
-        moveScript.SetMoveVector(new Vector3 (currentMoveVector.x, 0, currentMoveVector.y));
+            moveScript.SetMoveVector(new Vector3 (currentMoveVector.x, 0, currentMoveVector.y));
+        }
 
         bool enableComfortVignette = smoothTurnDirection != 0 || !moveScript.isGrounded || isCrouched;
         if (!enableComfortVignette) {
