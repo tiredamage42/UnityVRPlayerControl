@@ -6,7 +6,16 @@ using Valve.VR.InteractionSystem;
 
 namespace VRPlayer 
 {
+/*
+    make velocity rught space in char controller whne jumping
 
+    check ground ray location (might be off)
+
+    allow multiple hand hovers on interactables
+
+    climb momentum multiplier less on x and z axis
+
+ */
 
 
 
@@ -180,8 +189,8 @@ public class TouchpadLocomotion : MonoBehaviour
 
 
 
-    bool isClimbing;
-    SteamVR_Input_Sources currentClimbHand;
+    public bool isClimbing;
+    public SteamVR_Input_Sources currentClimbHand;
 
     public float climbExitForceMultiplier = 2;
     
@@ -242,7 +251,9 @@ public class TouchpadLocomotion : MonoBehaviour
 
             Vector3 handLocalPosition = Player.instance.GetHand(currentClimbHand).transform.localPosition;
             
-            Player.instance.trackingOriginTransform.position += (previousHandPosition - handLocalPosition);
+            Player.instance.trackingOriginTransform.position += transform.TransformDirection(
+                 (previousHandPosition - handLocalPosition)
+            );
             
             previousHandPosition = handLocalPosition;
 
@@ -252,11 +263,12 @@ public class TouchpadLocomotion : MonoBehaviour
                 Vector3 momentum = previousHandPosition - (Player.instance.GetHand(currentClimbHand).transform.localPosition);
                 moveScript.SetMomentum(
                     //maybe transform.inversetransform direction
-                    transform.InverseTransformDirection(
+                    // transform.InverseTransformDirection(
                         climbExitForceMultiplier * momentum 
-                    )
+                    // )
                     
                 );
+                Debug.LogError("WOOO");
             }
         }
 
