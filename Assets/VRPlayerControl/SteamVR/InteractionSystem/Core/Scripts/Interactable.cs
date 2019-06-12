@@ -216,6 +216,7 @@ namespace Valve.VR.InteractionSystem
 
                 if (existingRenderer != null && highlightRenderer != null && attachedToHand == false)
                 {
+                    // Debug.Log("wtf");
                     highlightRenderer.transform.position = existingRenderer.transform.position;
                     highlightRenderer.transform.rotation = existingRenderer.transform.rotation;
                     highlightRenderer.transform.localScale = existingRenderer.transform.lossyScale;
