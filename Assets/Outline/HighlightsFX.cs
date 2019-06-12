@@ -69,11 +69,12 @@ public class HighlightsFX : MonoBehaviour
     }
     bool AddRenderer(Renderer renderer, OutlineData data, bool rebuild=true)
     {
-        if (!m_objectRenderers.ContainsKey(renderer)) {
-            m_objectRenderers.Add(renderer, data);     
-            if (rebuild) RecreateCommandBuffer();
-            return true;
-        }
+        renderer.gameObject.layer = LayerMask.NameToLayer("Outline");
+        // if (!m_objectRenderers.ContainsKey(renderer)) {
+        //     m_objectRenderers.Add(renderer, data);     
+        //     if (rebuild) RecreateCommandBuffer();
+        //     return true;
+        // }
         return false;
     }
     public void AddRenderer(Renderer renderer, Color col, SortingType sorting)
@@ -92,11 +93,13 @@ public class HighlightsFX : MonoBehaviour
         
     public bool RemoveRenderer(Renderer renderer, bool rebuild=true)
     {
-        if (m_objectRenderers.ContainsKey(renderer)) {
-            m_objectRenderers.Remove(renderer);      
-            if (rebuild) RecreateCommandBuffer();
-            return true;
-        }
+        renderer.gameObject.layer = LayerMask.NameToLayer("Default");
+
+        // if (m_objectRenderers.ContainsKey(renderer)) {
+        //     m_objectRenderers.Remove(renderer);      
+        //     if (rebuild) RecreateCommandBuffer();
+        //     return true;
+        // }
         return false;
     }
 
@@ -173,35 +176,63 @@ public class HighlightsFX : MonoBehaviour
         m_blurMaterial = new Material(Shader.Find("Hidden/FastBlur"));
 
         m_camera = GetComponent<Camera>();
-        m_camera.depthTextureMode = DepthTextureMode.Depth;
+        // m_camera.depthTextureMode = DepthTextureMode.Depth;
         m_camera.AddCommandBuffer(BufferDrawEvent, m_commandBuffer);
 	}
+
+
+    Vector2 res {
+        get {
+             // Vector2 res = new Vector2 (Screen.width, Screen.height);
+    
+        Vector2 r = new Vector2 (
+            UnityEngine.XR.XRSettings.eyeTextureWidth * 2,
+            UnityEngine.XR.XRSettings.eyeTextureHeight    
+        );
+        return r;
+
+        }
+    }
+
+    RenderTextureDescriptor GetRT {
+        get {
+            return UnityEngine.XR.XRSettings.eyeTextureDesc;
+        }
+    }
     Vector2 resolution;
     void Update () {
-    if (resolution.x != Screen.width || resolution.y != Screen.height)
+
+       
+    
+    if (resolution != res)//Screen.width || resolution.y != Screen.height)
      {
 
          RecreateCommandBuffer();
+         resolution = res;
          
-         resolution.x = Screen.width;
-         resolution.y = Screen.height;
+        //  resolution.x = Screen.width;
+        //  resolution.y = Screen.height;
      }
     }
 
     private void RecreateCommandBuffer()
     {
         m_commandBuffer.Clear();
-
+        return;
         if (m_objectRenderers.Count == 0)
             return;
 
-        m_RTWidth = (int)(Screen.width / (float)m_resolution);
-        m_RTHeight = (int)(Screen.height / (float)m_resolution);
+            
+
+        m_RTWidth = (int)(res.x / (float)m_resolution);
+        m_RTHeight = (int)(res.y / (float)m_resolution);
 
 
         // initialization
 
         m_commandBuffer.GetTemporaryRT(m_highlightRTID, m_RTWidth, m_RTHeight, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32);
+        // m_commandBuffer.GetTemporaryRT(m_highlightRTID, GetRT, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32);
+        
         m_commandBuffer.SetRenderTarget(m_highlightRTID, BuiltinRenderTextureType.CurrentActive);
         m_commandBuffer.ClearRenderTarget(false, true, Color.clear);
 
@@ -237,7 +268,6 @@ public class HighlightsFX : MonoBehaviour
         foreach (var renderer in m_objectExcluders)
         {         
             m_commandBuffer.DrawRenderer(renderer, m_highlightMaterial, 0, (int) SortingType.Overlay);
-            
         }
 
 
@@ -250,9 +280,14 @@ public class HighlightsFX : MonoBehaviour
 
         int rtW = m_RTWidth >> downsample;
         int rtH = m_RTHeight >> downsample;
-   
+     
         m_commandBuffer.GetTemporaryRT(m_blurredRTID, rtW, rtH, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32);
         m_commandBuffer.GetTemporaryRT(m_temporaryRTID, rtW, rtH, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32);
+
+
+// m_commandBuffer.GetTemporaryRT(m_blurredRTID, GetRT, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32);
+// m_commandBuffer.GetTemporaryRT(m_temporaryRTID, GetRT, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32);
+
 
         if (downsample != 0) {
 
@@ -288,8 +323,12 @@ public class HighlightsFX : MonoBehaviour
         //     m_commandBuffer.SetGlobalTexture("_SecondaryTex", m_temporaryRTID);
         // }
 
+
+
+        
+
         // back buffer
-        // m_commandBuffer.Blit(BuiltinRenderTextureType.CameraTarget, m_highlightRTID);
+        m_commandBuffer.Blit(BuiltinRenderTextureType.CameraTarget, m_highlightRTID);
 
         // overlay
         m_commandBuffer.Blit(m_highlightRTID, BuiltinRenderTextureType.CameraTarget, m_highlightMaterial, 0);

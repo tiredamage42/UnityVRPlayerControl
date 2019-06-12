@@ -80,7 +80,7 @@
 
 		// 4 Draw to render texture, depth filtered.
         Pass {        	
-			ZTest LEqual 
+			// ZTest LEqual 
 			CGPROGRAM
 			#pragma vertex simple_vert
 			#pragma fragment simple_frag

@@ -13,9 +13,9 @@
         #pragma fragment frag
         #include "UnityCG.cginc"
 
-        static const fixed _Size = 2;
+        static const fixed _Size = 1;
         static const fixed _Intensity = 2;
-        static const int _Iterations = 40;
+        static const int _Iterations = 20;
         static const fixed4 _Color = fixed4(1, .5, 0, 1);
 
 
@@ -45,11 +45,11 @@
 
             fixed4 frag (v2f i) : COLOR  {
                 
-                #if UNITY_UV_STARTS_AT_TOP
-                if (_MainTex_TexelSize.y > 0) {
+                // #if UNITY_UV_STARTS_AT_TOP
+                // if (_MainTex_TexelSize.y > 0) {
                     i.uvs.y = 1 - i.uvs.y;
-                }
-                #endif
+                // }
+                // #endif
 
                 //add color to pixels that are near red pixels in the original "simple draw" output
                 //for every horizontal iteration
@@ -86,11 +86,11 @@
                 
 
 
-                #if UNITY_UV_STARTS_AT_TOP
-                if (_GrabTexture_TexelSize.y > 0) {
+                // #if UNITY_UV_STARTS_AT_TOP
+                // if (_GrabTexture_TexelSize.y > 0) {
                     i.uvs.y = 1 - i.uvs.y;
-                }
-                #endif
+                // }
+                // #endif
 
                 fixed4 scene = tex2D(_SceneTex, i.uvs);
 
