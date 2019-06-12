@@ -192,7 +192,7 @@ public class TouchpadLocomotion : MonoBehaviour
     public bool isClimbing;
     public SteamVR_Input_Sources currentClimbHand;
 
-    public float climbExitForceMultiplier = 2;
+    public Vector3 climbExitForceMultiplier = new Vector3(10, 100, 10);
     
     void UpdateClimbs () {
         
@@ -245,15 +245,16 @@ public class TouchpadLocomotion : MonoBehaviour
         // isClimbing = leftClimb || rightClimb;
 
         Teleport.instance.teleportationAllowed = !isClimbing;
-        characterController.enabled = !isClimbing;
+        // characterController.enabled = !isClimbing;
         
         if (isClimbing) {
 
             Vector3 handLocalPosition = Player.instance.GetHand(currentClimbHand).transform.localPosition;
             
-            Player.instance.trackingOriginTransform.position += transform.TransformDirection(
-                 (previousHandPosition - handLocalPosition)
-            );
+            moveScript.SetMoveVector((previousHandPosition - handLocalPosition));
+            // Player.instance.trackingOriginTransform.position += transform.TransformDirection(
+            //      (previousHandPosition - handLocalPosition)
+            // );
             
             previousHandPosition = handLocalPosition;
 
@@ -262,9 +263,15 @@ public class TouchpadLocomotion : MonoBehaviour
             if (justLetGo) {
                 Vector3 momentum = previousHandPosition - (Player.instance.GetHand(currentClimbHand).transform.localPosition);
                 moveScript.SetMomentum(
+                    new Vector3(
+                        climbExitForceMultiplier.x * momentum.x,
+                        climbExitForceMultiplier.y * momentum.y,
+                        climbExitForceMultiplier.z * momentum.z
+                    )
+                        
                     //maybe transform.inversetransform direction
                     // transform.InverseTransformDirection(
-                        climbExitForceMultiplier * momentum 
+                        // climbExitForceMultiplier * momentum 
                     // )
                     
                 );
@@ -764,7 +771,7 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
         HandleTurnInput(movementEnabled);
         HandleMoveInput(movementEnabled);
 
-        moveScript.SetMoveVector(currentMoveVector);
+        moveScript.SetMoveVector(new Vector3 (currentMoveVector.x, 0, currentMoveVector.y));
 
         bool enableComfortVignette = smoothTurnDirection != 0 || !moveScript.isGrounded || isCrouched;
         if (!enableComfortVignette) {
