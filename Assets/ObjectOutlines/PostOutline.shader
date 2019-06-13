@@ -87,11 +87,12 @@
                 // the overlay insides
                 
                 //maybe just subtract
-                depthHighlights = depthHighlights * saturate(1 - overlayHighlights.a * overlayAlphaHelper);
+                depthHighlights.rgb = depthHighlights.rgb * saturate(1.0 - overlayHighlights.a * overlayAlphaHelper);
 
                 
                 //adjust the overlay alpha so it's back ot normal (0 on the inside of the highlight)
                 overlayHighlights.a -= tex2D(_OverlayMask, i.uv).a;
+                // return overlayHighlights.a;
 
                  
                 fixed4 allOverlay = saturate(overlayHighlights + depthHighlights);

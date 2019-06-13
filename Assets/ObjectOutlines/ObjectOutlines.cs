@@ -188,6 +188,7 @@ public class ObjectOutlines : MonoBehaviour
         }
     }
     public void HighlightRenderers(List<Renderer> renderers, int highlightGroupIndex) {
+        Debug.Log("highlighting");
         for (int i = 0; i < renderers.Count; i++) {
             HighlightRenderer(renderers[i], highlightGroupIndex);
         }
@@ -298,6 +299,7 @@ public class ObjectOutlines : MonoBehaviour
         if (!useGroupColor) {
             Shader.SetGlobalColor(_Color, overrideColor);
         }
+        
 
         bool clearedCamera = false;
             
@@ -305,9 +307,9 @@ public class ObjectOutlines : MonoBehaviour
             HighlightGroup group = highlightGroups[i];
             if (group.sortingType == sortType) {
                 
-                if (clear) {
-                    TempCam.clearFlags = clearedCamera || !clear ? CameraClearFlags.Nothing : CameraClearFlags.Color;
-                }
+                TempCam.clearFlags = clearedCamera || !clear ? CameraClearFlags.Nothing : CameraClearFlags.Color;
+                // if (clear) {
+                // }
                 
                 clearedCamera = true;
                     
@@ -341,7 +343,7 @@ public class ObjectOutlines : MonoBehaviour
         //make the temporary rendertexture
         InitializeTemporaryCamera();
 
-        RenderTexture cameraTarget = RenderTexture.GetTemporary(w, h, needsDepth ? 24 : 0, RenderTextureFormat.Default);
+        RenderTexture cameraTarget = RenderTexture.GetTemporary(w, h, needsDepth ? 16 : 0, RenderTextureFormat.Default);
         //set the camera's target texture when rendering
         TempCam.targetTexture = cameraTarget;
         
