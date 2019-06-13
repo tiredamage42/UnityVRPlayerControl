@@ -8,6 +8,25 @@
         #pragma vertex vert_img
         #pragma fragment frag
         #include "UnityCG.cginc"
+        struct appdata
+			{
+				float4 vertex : POSITION;
+				float2 uv : TEXCOORD0;
+			};
+
+        struct v2f
+			{
+				float2 uv : TEXCOORD0;
+				float4 vertex : SV_POSITION;
+			};
+
+			v2f vert_img (appdata v)
+			{
+				v2f o;
+				o.vertex = UnityObjectToClipPos(v.vertex);
+				o.uv = v.uv;
+				return o;
+			}
         ENDCG
 
         //masking out the inner highglight from the blurred image
@@ -18,11 +37,11 @@
             // how much alpha we subtract from the inner highlight
             fixed _MaskAlphaSubtractMult;
 
-            fixed4 frag (v2f_img i) : COLOR  {
+            fixed4 frag (v2f i) : COLOR  {
 
                 // invert for OPENGL
                 #if UNITY_UV_STARTS_AT_TOP
-                    i.uv.y = 1-i.uv.y;
+                    // i.uv.y = 1-i.uv.y;
                 #endif
                 
 
@@ -42,7 +61,7 @@
             
             fixed3 _Intensity_Heaviness_OverlayAlphaHelper;
 
-            fixed4 frag (v2f_img i) : COLOR  {
+            fixed4 frag (v2f i) : COLOR  {
 
                 fixed intensity = _Intensity_Heaviness_OverlayAlphaHelper.x;
                 fixed heaviness = _Intensity_Heaviness_OverlayAlphaHelper.y;
