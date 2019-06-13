@@ -36,8 +36,8 @@
 			{
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
-				// o.uv = v.uv;
-				o.uv = UnityStereoScreenSpaceUVAdjust(v.uv, _MainTex_ST);
+				o.uv = v.uv;
+				o.uv = v.uv;// UnityStereoScreenSpaceUVAdjust(v.uv, _MainTex_ST);
 				return o;
 			}
 
@@ -48,7 +48,7 @@
 
 			half4 frag (v2f i) : SV_Target
 			{
-				float2 screenUV = i.uv;// UnityStereoScreenSpaceUVAdjust(i.uv, _MainTex_ST);
+				float2 screenUV = UnityStereoScreenSpaceUVAdjust(i.uv, _MainTex_ST);
 #if (UNITY_SINGLE_PASS_STEREO)
 				// in single pass, we need to figure out what eye we're rendering to by our selfs
 				unity_StereoEyeIndex = screenUV > 0.5;		

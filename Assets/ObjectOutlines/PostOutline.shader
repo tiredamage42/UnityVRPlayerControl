@@ -3,6 +3,7 @@
         _MainTex("Main Texture", 2D)="black"{}
     }
     SubShader {
+        
         Cull Off ZWrite Off ZTest Always
 
         CGINCLUDE
@@ -29,7 +30,7 @@
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				// o.uv = v.uv;
-                o.uv = UnityStereoScreenSpaceUVAdjust(v.uv, _MainTex_ST);
+                o.uv = v.uv;// UnityStereoScreenSpaceUVAdjust(v.uv, _MainTex_ST);
 				return o;
 			}
         ENDCG
@@ -48,6 +49,8 @@
                 #if UNITY_UV_STARTS_AT_TOP
                     // i.uv.y = 1-i.uv.y;
                 #endif
+
+                i.uv = UnityStereoScreenSpaceUVAdjust(i.uv, _MainTex_ST);
                 
 
                 fixed4 mask = tex2D(_MaskOut, i.uv);
@@ -67,6 +70,8 @@
             fixed3 _Intensity_Heaviness_OverlayAlphaHelper;
 
             fixed4 frag (v2f i) : COLOR  {
+                i.uv = UnityStereoScreenSpaceUVAdjust(i.uv, _MainTex_ST);
+                
 
                 fixed intensity = _Intensity_Heaviness_OverlayAlphaHelper.x;
                 fixed heaviness = _Intensity_Heaviness_OverlayAlphaHelper.y;

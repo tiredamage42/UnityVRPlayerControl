@@ -6,6 +6,12 @@ using UnityEngine.Rendering;
 // [ExecuteInEditMode]
 public class ObjectOutlines : MonoBehaviour 
 {
+    /*
+        for flicker:
+            try increase depth buffer
+            lower near clip plane
+    
+     */
     public Renderer debugRenderer;
     public string outlineLayer = "Outline";
     
@@ -29,7 +35,6 @@ public class ObjectOutlines : MonoBehaviour
     [Range(0, 2)] public int downsample = 1;
     [Range(0.0f, 10.0f)] public float blurSize = 3.0f;
     [Range(1, 4)] public int blurIterations = 2;
-
 
 
     public List<HighlightGroup> highlightGroups = new List<HighlightGroup>();
@@ -59,14 +64,11 @@ public class ObjectOutlines : MonoBehaviour
         Color c = Color.clear;
         defaultBlackTexture.SetPixels( new Color[] {c,c,c,c} );
         this.defaultBlackTexture = defaultBlackTexture;
-
-
     }
-
 
     void InitializeAwake () {
         AttachedCamera = GetComponent<Camera>();
-        AttachedCamera.depthTextureMode = DepthTextureMode.Depth;
+        // AttachedCamera.depthTextureMode = DepthTextureMode.Depth;
         TempCam = new GameObject().AddComponent<Camera>();
         TempCam.enabled = false;
         Post_Mat = new Material(Shader.Find("Hidden/PostOutline"));
@@ -113,8 +115,8 @@ public class ObjectOutlines : MonoBehaviour
         TempCam.allowDynamicResolution = false;
         TempCam.allowHDR = false;
         TempCam.allowMSAA = false;        
-        TempCam.farClipPlane = 50;
-        TempCam.nearClipPlane = .25f;
+        TempCam.farClipPlane = 25;
+        TempCam.nearClipPlane = .1f;
         TempCam.useOcclusionCulling = true; 
         TempCam.backgroundColor = Color.clear;
     }
@@ -339,7 +341,7 @@ public class ObjectOutlines : MonoBehaviour
         //make the temporary rendertexture
         InitializeTemporaryCamera();
 
-        RenderTexture cameraTarget = RenderTexture.GetTemporary(w, h, needsDepth ? 16 : 0, RenderTextureFormat.Default);
+        RenderTexture cameraTarget = RenderTexture.GetTemporary(w, h, needsDepth ? 24 : 0, RenderTextureFormat.Default);
         //set the camera's target texture when rendering
         TempCam.targetTexture = cameraTarget;
         
