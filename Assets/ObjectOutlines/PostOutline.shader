@@ -1,122 +1,78 @@
-﻿Shader "Custom/Post Outline"{
-
+﻿Shader "Hidden/PostOutline"{
     Properties {
         _MainTex("Main Texture", 2D)="black"{}
-        _SceneTex("Scene Texture", 2D)="black"{}
     }
     SubShader {
         CGINCLUDE
-        
         sampler2D _MainTex;
-
-        #pragma vertex vert
+        #pragma vertex vert_img
         #pragma fragment frag
         #include "UnityCG.cginc"
-
-        static const fixed _Size = 1;
-        static const fixed _Intensity = 2;
-        static const int _Iterations = 20;
-        static const fixed4 _Color = fixed4(1, .5, 0, 1);
-
-
-        struct v2f {
-            float4 pos : SV_POSITION;
-            float2 uvs : TEXCOORD0;
-        };
-
-
-        v2f vert (appdata_base v) {
-            v2f o;
-
-            o.pos = UnityObjectToClipPos(v.vertex);
-
-            o.uvs = o.pos.xy / 2 + 0.5;
-
-            return o;
-        }
-
         ENDCG
 
+        //masking out the inner highglight from the blurred image
         Pass {
             CGPROGRAM
+            sampler2D _MaskOut;
 
-            // how much screen space a texel occupies
-            float2 _MainTex_TexelSize;
+            // how much alpha we subtract from the inner highlight
+            fixed _MaskAlphaSubtractMult;
 
-            fixed4 frag (v2f i) : COLOR  {
+            fixed4 frag (v2f_img i) : COLOR  {
+
+                // invert for OPENGL
+                #if UNITY_UV_STARTS_AT_TOP
+                    i.uv.y = 1-i.uv.y;
+                #endif
                 
-                // #if UNITY_UV_STARTS_AT_TOP
-                // if (_MainTex_TexelSize.y > 0) {
-                    i.uvs.y = 1 - i.uvs.y;
-                // }
-                // #endif
 
-                //add color to pixels that are near red pixels in the original "simple draw" output
-                //for every horizontal iteration
-
-                //final color intensity that increments based on surrounding intensity
-                float ColorIntensityInRadius = 0;
-                for (int k = 0; k < _Iterations; k++) {
-                    //increase our output color by the pixels in the area
-                    ColorIntensityInRadius += tex2D(_MainTex, i.uvs + float2((k-_Iterations/2) * _MainTex_TexelSize.x * _Size, 0)).r / _Iterations;
-                }
-
-                return ColorIntensityInRadius;
+                fixed4 mask = tex2D(_MaskOut, i.uv);
+                fixed4 mask4 = fixed4(mask.a,mask.a,mask.a,mask.a*_MaskAlphaSubtractMult);
+                fixed4 blurred = tex2D(_MainTex, i.uv);
+                return blurred - mask4;
             }
-
-
             ENDCG
-        
         }
-        GrabPass {}
 
+        //final, add highlights to scene texture (_MainTex)
         Pass {
-
-
             CGPROGRAM
-            sampler2D _SceneTex;
+            sampler2D _OverlayHighlights, _OverlayMask, _DepthHighlights;
 
-            // written to during "grab pass"
-            sampler2D _GrabTexture;
-            float2 _GrabTexture_TexelSize;
+            
+            fixed3 _Intensity_Heaviness_OverlayAlphaHelper;
 
+            fixed4 frag (v2f_img i) : COLOR  {
 
-            half4 frag (v2f i) : COLOR {
+                fixed intensity = _Intensity_Heaviness_OverlayAlphaHelper.x;
+                fixed heaviness = _Intensity_Heaviness_OverlayAlphaHelper.y;
+                fixed overlayAlphaHelper = _Intensity_Heaviness_OverlayAlphaHelper.z;
 
-                
-
-
-                // #if UNITY_UV_STARTS_AT_TOP
-                // if (_GrabTexture_TexelSize.y > 0) {
-                    i.uvs.y = 1 - i.uvs.y;
-                // }
-                // #endif
-
-                fixed4 scene = tex2D(_SceneTex, i.uvs);
-
-                // if something already exists underneath the fragment (in the original texture), discard the fragment
-                if (tex2D(_MainTex, i.uvs.xy).r > 0) {
-                    return scene;
-                }
+                fixed4 overlayHighlights = tex2D(_OverlayHighlights, i.uv);
+                fixed4 depthHighlights = tex2D(_DepthHighlights, i.uv);
                 
                 
-                //final color intensity that increments based on surrounding intensity
-                float ColorIntensityInRadius = 0;
+                // remove any highlights from depth tested pass that overlap into
+                // the overlay insides
                 
-                //add color to pixels that are near red pixels in the original "simple draw" output
-                //for every vretical iteration
-                for (int k = 0; k < _Iterations; k++) {
-                    //increase our output color by the pixels in the area
-                    ColorIntensityInRadius += tex2D(_GrabTexture, i.uvs + float2(0, 
-                        (k-_Iterations/2) * _GrabTexture_TexelSize.y * _Size)
-                    ).r / _Iterations;
-                    
-                }
+                //maybe just subtract
+                depthHighlights = depthHighlights * saturate(1 - overlayHighlights.a * overlayAlphaHelper);
 
-                // this is alpha blending, but we cant use hw blending unless we make a third pass
-                // s this is probably cheaper
-                half4 outcolor = ColorIntensityInRadius * _Color * _Intensity + (1-ColorIntensityInRadius) * scene;
-                return outcolor;
+                
+                //adjust the overlay alpha so it's back ot normal (0 on the inside of the highlight)
+                overlayHighlights.a -= tex2D(_OverlayMask, i.uv).a;
+
+                 
+                fixed4 allOverlay = saturate(overlayHighlights + depthHighlights);
+                // allOverlay.a = saturate(overlayHighlights + depthHighlights);
+
+                fixed interpolator = allOverlay.a * heaviness;
+                allOverlay = allOverlay * intensity;
+
+                
+                fixed4 scene = tex2D(_MainTex, i.uv);
+
+                return lerp(scene, allOverlay, interpolator);
             }
             ENDCG
         }

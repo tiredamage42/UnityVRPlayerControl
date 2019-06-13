@@ -162,12 +162,18 @@ namespace Valve.VR.InteractionSystem
 
 
 
-            HighlightsFX.instance.AddRenderers(
-                _Renderers, new Color(1,.5f,0,1), HighlightsFX.SortingType.DepthFiltered
-            );
+            ObjectOutlines.Highlight_Renderers( _Renderers, 0 );
+
+
+
+            // HighlightsFX.instance.AddRenderers(
+            //     _Renderers, new Color(1,.5f,0,1), HighlightsFX.SortingType.DepthFiltered
+            // );
         }
         void UnHighlight() {
-            HighlightsFX.instance.RemoveRenderers(_Renderers);
+            ObjectOutlines.UnHighlight_Renderers( _Renderers );
+
+            // HighlightsFX.instance.RemoveRenderers(_Renderers);
             _Renderers.Clear();
         }
 
