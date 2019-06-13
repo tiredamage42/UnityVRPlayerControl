@@ -30,16 +30,17 @@
 				float4 vertex : SV_POSITION;
 			};
 
+			sampler2D _MainTex;
+			float4 _MainTex_ST;
 			v2f vert (appdata v)
 			{
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.uv = v.uv;
+				// o.uv = v.uv;
+				o.uv = UnityStereoScreenSpaceUVAdjust(v.uv, _MainTex_ST);
 				return o;
 			}
 
-			sampler2D _MainTex;
-			float4 _MainTex_ST;
 
 			fixed4 _VignetteColor;
 			// fixed  _vignettingIntensity;
@@ -47,7 +48,7 @@
 
 			half4 frag (v2f i) : SV_Target
 			{
-				float2 screenUV = UnityStereoScreenSpaceUVAdjust(i.uv, _MainTex_ST);
+				float2 screenUV = i.uv;// UnityStereoScreenSpaceUVAdjust(i.uv, _MainTex_ST);
 #if (UNITY_SINGLE_PASS_STEREO)
 				// in single pass, we need to figure out what eye we're rendering to by our selfs
 				unity_StereoEyeIndex = screenUV > 0.5;		

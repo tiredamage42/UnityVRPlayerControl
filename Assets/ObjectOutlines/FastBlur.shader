@@ -2,9 +2,7 @@
 Shader "Hidden/_FastBlur" {
 	Properties {
 		_MainTex ("Base (RGB)", 2D) = "white" {}
-		// _Bloom ("Bloom (RGB)", 2D) = "black" {}
 	}
-	
 	CGINCLUDE
 
 		#include "UnityCG.cginc"
@@ -12,18 +10,18 @@ Shader "Hidden/_FastBlur" {
 		sampler2D _MainTex;
 		sampler2D _Bloom;
 				
-		uniform half4 _MainTex_TexelSize;
-		half4 _MainTex_ST;
-		half4 _Bloom_ST;
-		uniform half4 _Parameter;
+		uniform fixed4 _MainTex_TexelSize;
+		fixed4 _MainTex_ST;
+		fixed4 _Bloom_ST;
+		uniform fixed4 _Parameter;
 
 		struct v2f_tap
 		{
-			float4 pos : SV_POSITION;
-			half2 uv20 : TEXCOORD0;
-			half2 uv21 : TEXCOORD1;
-			half2 uv22 : TEXCOORD2;
-			half2 uv23 : TEXCOORD3;
+			fixed4 pos : SV_POSITION;
+			fixed2 uv20 : TEXCOORD0;
+			fixed2 uv21 : TEXCOORD1;
+			fixed2 uv22 : TEXCOORD2;
+			fixed2 uv23 : TEXCOORD3;
 		};			
 
 		v2f_tap vert4Tap ( appdata_img v )
@@ -32,9 +30,9 @@ Shader "Hidden/_FastBlur" {
 
 			o.pos = UnityObjectToClipPos (v.vertex);
         	o.uv20 = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy, _MainTex_ST);
-			o.uv21 = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(-0.5h,-0.5h), _MainTex_ST);
-			o.uv22 = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(0.5h,-0.5h), _MainTex_ST);
-			o.uv23 = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * half2(-0.5h,0.5h), _MainTex_ST);
+			o.uv21 = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * fixed2(-0.5h,-0.5h), _MainTex_ST);
+			o.uv22 = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * fixed2(0.5h,-0.5h), _MainTex_ST);
+			o.uv23 = UnityStereoScreenSpaceUVAdjust(v.texcoord + _MainTex_TexelSize.xy * fixed2(-0.5h,0.5h), _MainTex_ST);
 
 			return o; 
 		}					
@@ -50,41 +48,41 @@ Shader "Hidden/_FastBlur" {
 	
 		// weight curves
 
-		// static const half curve[7] = { 0.0205, 0.0855, 0.232, 0.324, 0.232, 0.0855, 0.0205 };  // gauss'ish blur weights
+		// static const fixed curve[7] = { 0.0205, 0.0855, 0.232, 0.324, 0.232, 0.0855, 0.0205 };  // gauss'ish blur weights
 
-		// static const half4 curve4[7] = { 
-        //     half4(0.0205, 0.0205, 0.0205, 0), 
-        //     half4(0.0855, 0.0855, 0.0855, 0), 
-        //     half4(0.232,  0.232,  0.232,  0), 
-        //     half4(0.324,  0.324,  0.324,  1), 
-        //     half4(0.232,  0.232,  0.232,  0), 
-        //     half4(0.0855, 0.0855, 0.0855, 0), 
-        //     half4(0.0205, 0.0205, 0.0205, 0) 
+		// static const fixed4 curve4[7] = { 
+        //     fixed4(0.0205, 0.0205, 0.0205, 0), 
+        //     fixed4(0.0855, 0.0855, 0.0855, 0), 
+        //     fixed4(0.232,  0.232,  0.232,  0), 
+        //     fixed4(0.324,  0.324,  0.324,  1), 
+        //     fixed4(0.232,  0.232,  0.232,  0), 
+        //     fixed4(0.0855, 0.0855, 0.0855, 0), 
+        //     fixed4(0.0205, 0.0205, 0.0205, 0) 
         // };
-        static const half4 curve4[7] = { 
-            half4(0.0205, 0.0205, 0.0205, 0.0205), 
-            half4(0.0855, 0.0855, 0.0855, 0.0855), 
-            half4(0.232,  0.232,  0.232,  0.232), 
-            half4(0.324,  0.324,  0.324,  0.324), 
-            half4(0.232,  0.232,  0.232,  0.232), 
-            half4(0.0855, 0.0855, 0.0855, 0.0855), 
-            half4(0.0205, 0.0205, 0.0205, 0.0205) 
+        static const fixed4 curve4[7] = { 
+            fixed4(0.0205, 0.0205, 0.0205, 0.0205), 
+            fixed4(0.0855, 0.0855, 0.0855, 0.0855), 
+            fixed4(0.232,  0.232,  0.232,  0.232), 
+            fixed4(0.324,  0.324,  0.324,  0.324), 
+            fixed4(0.232,  0.232,  0.232,  0.232), 
+            fixed4(0.0855, 0.0855, 0.0855, 0.0855), 
+            fixed4(0.0205, 0.0205, 0.0205, 0.0205) 
         };
 
 		struct v2f_withBlurCoords8 
 		{
-			float4 pos : SV_POSITION;
-			half4 uv : TEXCOORD0;
-			half2 offs : TEXCOORD1;
+			fixed4 pos : SV_POSITION;
+			fixed4 uv : TEXCOORD0;
+			fixed2 offs : TEXCOORD1;
 		};	
 		
 
-        v2f_withBlurCoords8 Vert (appdata_img v, half2 uv)
+        v2f_withBlurCoords8 Vert (appdata_img v, fixed2 uv)
 		{
 			v2f_withBlurCoords8 o;
 			o.pos = UnityObjectToClipPos (v.vertex);
 			
-			o.uv = half4(v.texcoord.xy,1,1);
+			o.uv = fixed4(v.texcoord.xy,1,1);
 			o.offs = _MainTex_TexelSize.xy * uv * _Parameter.x;
 
 			return o; 
@@ -92,50 +90,28 @@ Shader "Hidden/_FastBlur" {
 
 		v2f_withBlurCoords8 vertBlurHorizontal (appdata_img v)
 		{
-            return Vert(v, half2(1, 0));
-
-			// v2f_withBlurCoords8 o;
-			// o.pos = UnityObjectToClipPos (v.vertex);
-			
-			// o.uv = half4(v.texcoord.xy,1,1);
-			// o.offs = _MainTex_TexelSize.xy * half2(1.0, 0.0) * _Parameter.x;
-
-			// return o; 
+            return Vert(v, fixed2(1, 0));
 		}
 		
 		v2f_withBlurCoords8 vertBlurVertical (appdata_img v)
 		{
-            return Vert(v, half2(0, 1));
-
-			// v2f_withBlurCoords8 o;
-			// o.pos = UnityObjectToClipPos (v.vertex);
-			
-			// o.uv = half4(v.texcoord.xy,1,1);
-			// o.offs = _MainTex_TexelSize.xy * half2(0.0, 1.0) * _Parameter.x;
-			 
-			// return o; 
+            return Vert(v, fixed2(0, 1));
 		}	
 
-		half4 fragBlur8 ( v2f_withBlurCoords8 i ) : SV_Target
+		fixed4 fragBlur8 ( v2f_withBlurCoords8 i ) : SV_Target
 		{
-			half2 uv = i.uv.xy; 
-			half2 netFilterWidth = i.offs;  
-			half2 coords = uv - netFilterWidth * 3.0;  
+			fixed2 uv = i.uv.xy; 
+			fixed2 netFilterWidth = i.offs;  
+			fixed2 coords = uv - netFilterWidth * 3.0;  
 			
-			half4 color = 0;
+			fixed4 color = 0;
   			for( int l = 0; l < 7; l++ )  
   			{   
-				half4 tap = tex2D(_MainTex, UnityStereoScreenSpaceUVAdjust(coords, _MainTex_ST));
-				
-                
-                
+				fixed4 tap = tex2D(_MainTex, UnityStereoScreenSpaceUVAdjust(coords, _MainTex_ST));
                 color += tap * curve4[l];
-                
-
 				coords += netFilterWidth;
   			}
             return color;
-			// return half4(color.rgb, .5);
 		}
 					
 	ENDCG
