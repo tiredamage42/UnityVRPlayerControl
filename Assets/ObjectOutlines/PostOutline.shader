@@ -75,7 +75,7 @@
                 fixed4 overlayHighlights = tex2D(_OverlayHighlights, i.uv);
 
                 fixed4 depthHighlights = tex2D(_DepthHighlights, i.uv);
-                return depthHighlights;
+                // return depthHighlights;
                 
                 
                 // remove any highlights from depth tested pass that overlap into

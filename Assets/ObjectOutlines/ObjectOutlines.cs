@@ -92,6 +92,10 @@ public class ObjectOutlines : MonoBehaviour
         if (debugRenderer != null) {
             // Highlight_Renderer(debugRenderer, 0);
         }
+
+        bool needsDepth, needsOverlay;
+        bool renderingHighlighted = HasAny(out needsDepth, out needsOverlay);
+        enabled = renderingHighlighted;
     }
 
     void OnDisable () {
@@ -199,6 +203,7 @@ public class ObjectOutlines : MonoBehaviour
             else {
                 if (i == highlightGroupIndex) {
                     group.Add(renderer);
+                    enabled = true;
                 }
             }
         }
