@@ -275,7 +275,7 @@ public class TouchpadLocomotion : MonoBehaviour
                     // )
                     
                 );
-                Debug.LogError("WOOO");
+                // Debug.LogError("WOOO");
             }
         }
 
@@ -372,7 +372,7 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
 
 
             if (moveScript.isGrounded) {
-                Debug.Log("eermm");
+                // Debug.Log("eermm");
                 float floorY = moveScript.floorY;
 
                 //mae sure this happens after any teleportation
@@ -494,7 +494,7 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
             if (jumpAction.GetStateDown(moveHand)) {
                 isCrouched = false;
                 moveScript.Jump();
-                Debug.Log("y no jump");
+                // Debug.Log("y no jump");
             }
         }
     }
