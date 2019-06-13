@@ -59,22 +59,17 @@ public class VignettingVR : MonoBehaviour
 
     void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-        if (vignettingIntensity != 0) {
+        Vector3 vignetteCenterWorldSpace = transform.position + transform.forward * VIGNETTING_DEPTH;
+        
+        viewportSpaceOffset[0] = GetViewportSpaceOffset(vignetteCenterWorldSpace, Camera.StereoscopicEye.Left);
+        viewportSpaceOffset[1] = GetViewportSpaceOffset(vignetteCenterWorldSpace, Camera.StereoscopicEye.Right);
 
-            Vector3 vignetteCenterWorldSpace = transform.position + transform.forward * VIGNETTING_DEPTH;
-            
-            viewportSpaceOffset[0] = GetViewportSpaceOffset(vignetteCenterWorldSpace, Camera.StereoscopicEye.Left);
-            viewportSpaceOffset[1] = GetViewportSpaceOffset(vignetteCenterWorldSpace, Camera.StereoscopicEye.Right);
-
-            // pass values to shader
-            material.SetVectorArray("_vignetteViewportSpaceOffset", viewportSpaceOffset);
-                        
-            material.SetColor("_VignetteColor", new Color(vignetteColor.r, vignetteColor.g, vignetteColor.b, vignettingIntensity));
-            
-            Graphics.Blit(source, destination, material);
-        }
-        else {
-
-        }
+        // pass values to shader
+        material.SetVectorArray("_vignetteViewportSpaceOffset", viewportSpaceOffset);
+                    
+        material.SetColor("_VignetteColor", new Color(vignetteColor.r, vignetteColor.g, vignetteColor.b, vignettingIntensity));
+        
+        Graphics.Blit(source, destination, material);
+        
     }
 }
