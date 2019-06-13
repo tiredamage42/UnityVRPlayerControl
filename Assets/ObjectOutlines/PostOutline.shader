@@ -3,28 +3,33 @@
         _MainTex("Main Texture", 2D)="black"{}
     }
     SubShader {
+        Cull Off ZWrite Off ZTest Always
+
         CGINCLUDE
         sampler2D _MainTex;
+        fixed4 _MainTex_ST;
+
         #pragma vertex vert_img
         #pragma fragment frag
         #include "UnityCG.cginc"
         struct appdata
 			{
-				float4 vertex : POSITION;
-				float2 uv : TEXCOORD0;
+				fixed4 vertex : POSITION;
+				fixed2 uv : TEXCOORD0;
 			};
 
         struct v2f
 			{
-				float2 uv : TEXCOORD0;
-				float4 vertex : SV_POSITION;
+				fixed2 uv : TEXCOORD0;
+				fixed4 vertex : SV_POSITION;
 			};
 
 			v2f vert_img (appdata v)
 			{
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.uv = v.uv;
+				// o.uv = v.uv;
+                o.uv = UnityStereoScreenSpaceUVAdjust(v.uv, _MainTex_ST);
 				return o;
 			}
         ENDCG
@@ -68,7 +73,9 @@
                 fixed overlayAlphaHelper = _Intensity_Heaviness_OverlayAlphaHelper.z;
 
                 fixed4 overlayHighlights = tex2D(_OverlayHighlights, i.uv);
+
                 fixed4 depthHighlights = tex2D(_DepthHighlights, i.uv);
+                return depthHighlights;
                 
                 
                 // remove any highlights from depth tested pass that overlap into

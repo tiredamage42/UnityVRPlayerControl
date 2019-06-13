@@ -6,12 +6,13 @@ using UnityEngine.Rendering;
 // [ExecuteInEditMode]
 public class ObjectOutlines : MonoBehaviour 
 {
+    public Renderer debugRenderer;
     public string outlineLayer = "Outline";
     
-    Camera AttachedCamera, TempCam;
     Shader DrawSimple;
-    Material Post_Mat;
-    Texture defaultBlackTexture;
+    [SerializeField] Camera AttachedCamera, TempCam;
+    [SerializeField] Material Post_Mat;
+    [SerializeField] Texture defaultBlackTexture;
     int stagedLayer;
 
     const int maskOutPass = 0;
@@ -48,31 +49,48 @@ public class ObjectOutlines : MonoBehaviour
     }
 
 
+    void Awake () {
+        InitializeAwake();
+    }
+
+    void InitializeDefaultBlackTexture () {
+        //might need to adjust alphas on this...
+        Texture2D defaultBlackTexture = new Texture2D(2, 2, TextureFormat.R8, false, false);
+        Color c = Color.clear;
+        defaultBlackTexture.SetPixels( new Color[] {c,c,c,c} );
+        this.defaultBlackTexture = defaultBlackTexture;
+
+
+    }
+
+
+    void InitializeAwake () {
+        AttachedCamera = GetComponent<Camera>();
+        AttachedCamera.depthTextureMode = DepthTextureMode.Depth;
+        TempCam = new GameObject().AddComponent<Camera>();
+        TempCam.enabled = false;
+        Post_Mat = new Material(Shader.Find("Hidden/PostOutline"));
+        DrawSimple = Shader.Find("Custom/DrawSimple");
+
+        InitializeDefaultBlackTexture();
+        InitializeShaderIDs();
+    }
+
+
         
 
 
     void OnEnable () {
         _instance = this;
-        AttachedCamera = GetComponent<Camera>();
-
-        AttachedCamera.depthTextureMode = DepthTextureMode.Depth;
-
-        TempCam = new GameObject().AddComponent<Camera>();
-        TempCam.enabled = false;
-        Post_Mat = new Material(Shader.Find("Hidden/PostOutline"));
-
-        DrawSimple = Shader.Find("Custom/DrawSimple");
-
-        //might need to adjust alphas on this...
-        Texture2D defaultBlackTexture = new Texture2D(2, 2, TextureFormat.R8, false, false);
-        this.defaultBlackTexture = defaultBlackTexture;
-
+        
         stagedLayer = LayerMask.NameToLayer(outlineLayer);
-
-        InitializeShaderIDs();
-
+        
         for (int i = 0; i < highlightGroups.Count; i++) {
             highlightGroups[i].OnEnable();
+        }
+
+        if (debugRenderer != null) {
+            // Highlight_Renderer(debugRenderer, 0);
         }
     }
 
@@ -87,10 +105,10 @@ public class ObjectOutlines : MonoBehaviour
     void InitializeTemporaryCamera () {
         //set up a temporary camera
         TempCam.CopyFrom(AttachedCamera);
-        //TempCam.renderingPath = RenderingPath.VertexLit;
-        //TempCam.allowDynamicResolution = false;
+        TempCam.renderingPath = RenderingPath.VertexLit;
+        TempCam.allowDynamicResolution = false;
         TempCam.allowHDR = false;
-        // TempCam.allowMSAA = false;        
+        TempCam.allowMSAA = false;        
         TempCam.farClipPlane = 50;
         TempCam.nearClipPlane = .25f;
         TempCam.useOcclusionCulling = true; 
@@ -119,8 +137,12 @@ public class ObjectOutlines : MonoBehaviour
     [System.Serializable] public class HighlightGroup {
 
         public void OnEnable () {
-            renderers = new Dictionary<Renderer, int>();
-            rKeys = new HashSet<Renderer>();
+            if (renderers == null) {
+                renderers = new Dictionary<Renderer, int>();
+            }
+            if (rKeys == null) {
+                rKeys = new HashSet<Renderer>();
+            }
         }
 
         public HighlightGroup (Color color, SortingType sortingType) {
@@ -189,21 +211,29 @@ public class ObjectOutlines : MonoBehaviour
                 group.Remove(renderer);
             }
         }
+        bool needsDepth, needsOverlay;
+        bool renderingHighlighted = HasAny(out needsDepth, out needsOverlay);
+        enabled = renderingHighlighted;        
     }
 
     public static void Highlight_Renderer (Renderer renderer, int highlightGroupIndex) {
+       if (instance == null) return;
        instance.HighlightRenderer(renderer, highlightGroupIndex);
     }
     public static void UnHighlight_Renderer(Renderer renderer) {
+        if (instance == null) return;
         instance.UnHighlightRenderer(renderer);
     }
     public static void Highlight_Renderers (List<Renderer> renderers, int highlightGroupIndex) {
+       if (instance == null) return;
        instance.HighlightRenderers(renderers, highlightGroupIndex);
     }
     public static void UnHighlight_Renderers(List<Renderer> renderers) {
+        if (instance == null) return;
         instance.UnHighlightRenderers(renderers);
     }
     public static void AddHighlightGroup (Color color, SortingType sortingType) {
+        if (instance == null) return;
         instance.highlightGroups.Add(new HighlightGroup(color, sortingType));
     }
 
@@ -294,7 +324,7 @@ public class ObjectOutlines : MonoBehaviour
         bool renderingHighlighted = HasAny(out needsDepth, out needsOverlay);
 
         if (!renderingHighlighted) {
-            Graphics.Blit(source, destination);
+            // Graphics.Blit(source, destination);
             return;
         }
         
@@ -320,7 +350,7 @@ public class ObjectOutlines : MonoBehaviour
             
             // render only the highlited objects that are depth tested
             // no camera clearint yet, we need the depth buffer from the last pass
-            RenderLoop(stagedLayer, SortingType.DepthFilter, false, false, Color.magenta);
+            RenderLoop(stagedLayer, SortingType.DepthFilter, false, true, Color.magenta);
             
             // blur the render texture we've been drawing to with the tempCamera
             BlurUtils.BlurImage(cameraTarget, blurredTarget, downsample, blurSize, blurIterations);
@@ -328,7 +358,7 @@ public class ObjectOutlines : MonoBehaviour
             // make a mask to remove the inside to make it an outline
             // render all outlined objects again wihtout any occlusion (this render loop clears the camera)
             // to filter out all possible glow on overlapping objects
-            RenderLoop(stagedLayer, SortingType.DepthFilter, true, true, Color.white);
+            RenderLoop(stagedLayer, SortingType.DepthFilter, true, false, Color.white);
             
             // now mask out the insides (as well as the alpha)
             MaskOutInsides (blurredTarget, cameraTarget, finalDepthTestedHighlighted, 1);
@@ -339,7 +369,7 @@ public class ObjectOutlines : MonoBehaviour
         if (needsOverlay) {
             finalOverlayedHighLighted = RenderTexture.GetTemporary(w, h, 0, RenderTextureFormat.Default);
             
-            RenderLoop(stagedLayer, SortingType.Overlay, true, false, Color.magenta);
+            RenderLoop(stagedLayer, SortingType.Overlay, true, true, Color.magenta);
             
             BlurUtils.BlurImage(cameraTarget, blurredTarget, downsample, blurSize, blurIterations);
             
