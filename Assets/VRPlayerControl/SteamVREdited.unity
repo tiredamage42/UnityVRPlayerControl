@@ -13390,7 +13390,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11445746, guid: 7a135b1a2cb9c8f488d4dd00c55ab283, type: 3}
       propertyPath: fastTeleport
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11445746, guid: 7a135b1a2cb9c8f488d4dd00c55ab283, type: 3}
+      propertyPath: fastTeleportTime
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 127276, guid: 7a135b1a2cb9c8f488d4dd00c55ab283, type: 3}
       propertyPath: m_IsActive
