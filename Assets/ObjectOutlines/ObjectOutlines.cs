@@ -52,6 +52,7 @@ public class ObjectOutlines : MonoBehaviour
 
 
     void OnEnable () {
+        _instance = this;
         AttachedCamera = GetComponent<Camera>();
 
         AttachedCamera.depthTextureMode = DepthTextureMode.Depth;
@@ -86,10 +87,10 @@ public class ObjectOutlines : MonoBehaviour
     void InitializeTemporaryCamera () {
         //set up a temporary camera
         TempCam.CopyFrom(AttachedCamera);
-        TempCam.renderingPath = RenderingPath.VertexLit;
-        TempCam.allowDynamicResolution = false;
+        //TempCam.renderingPath = RenderingPath.VertexLit;
+        //TempCam.allowDynamicResolution = false;
         TempCam.allowHDR = false;
-        TempCam.allowMSAA = false;        
+        // TempCam.allowMSAA = false;        
         TempCam.farClipPlane = 50;
         TempCam.nearClipPlane = .25f;
         TempCam.useOcclusionCulling = true; 
