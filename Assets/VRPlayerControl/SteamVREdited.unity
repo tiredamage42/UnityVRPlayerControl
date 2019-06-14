@@ -23339,7 +23339,6 @@ MonoBehaviour:
   _itemPackage: {fileID: 11450054, guid: 98a3ad29136d5c04f8a025adf1cbd704, type: 3}
   requireGrabActionToTake: 1
   requireReleaseActionToReturn: 0
-  showTriggerHint: 1
   attachmentFlags: -23
   takeBackItem: 1
   acceptDifferentItems: 0
@@ -28153,11 +28152,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1000013281422588, guid: dc06161b6d97feb419f45f03b62e14b9, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 107460, guid: dc06161b6d97feb419f45f03b62e14b9, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11451472, guid: dc06161b6d97feb419f45f03b62e14b9, type: 3}
       propertyPath: m_Enabled
@@ -28177,6 +28176,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11450312, guid: dc06161b6d97feb419f45f03b62e14b9, type: 3}
       propertyPath: showDebugText
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11465950, guid: dc06161b6d97feb419f45f03b62e14b9, type: 3}
+      propertyPath: hmdTransform
+      value: 
+      objectReference: {fileID: 2125041983}
+    - target: {fileID: 101548, guid: dc06161b6d97feb419f45f03b62e14b9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 129006, guid: dc06161b6d97feb419f45f03b62e14b9, type: 3}
+      propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
@@ -28363,6 +28374,16 @@ MonoBehaviour:
   highlightGroups:
   - highlightColor: {r: 1, g: 0.08363296, b: 0, a: 1}
     sortingType: 2
+    renderers: []
+    originalLayers: 
+--- !u!81 &1893138405
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893138401}
+  m_Enabled: 1
 --- !u!1 &1893278402
 GameObject:
   m_ObjectHideFlags: 0
@@ -29084,6 +29105,8 @@ MonoBehaviour:
   highlightGroups:
   - highlightColor: {r: 0.33692577, g: 0.9622642, b: 0.040850822, a: 1}
     sortingType: 2
+    renderers: []
+    originalLayers: 
 --- !u!81 &1936684616
 AudioListener:
   m_ObjectHideFlags: 0

@@ -1099,16 +1099,16 @@ namespace Valve.VR.InteractionSystem
 
 			// if ( IsEligibleForTeleport( hand ) )
 			// {
-				if ( hand.noSteamVRFallbackCamera != null )
-				{
-					return Input.GetKeyUp( KeyCode.T );
-				}
-				else
-                {
+				// if ( hand.noSteamVRFallbackCamera != null )
+				// {
+				// 	return Input.GetKeyUp( KeyCode.T );
+				// }
+				// else
+                // {
                     return teleportAction.GetStateUp(hand.handType);
 
                     //return hand.controller.GetPressUp( SteamVR_Controller.ButtonMask.Touchpad );
-                }
+                // }
 			// }
 
 			// return false;
@@ -1121,14 +1121,14 @@ namespace Valve.VR.InteractionSystem
 			
 			// if ( IsEligibleForTeleport( hand ) )
 			// {
-				if ( hand.noSteamVRFallbackCamera != null )
-				{
-					return Input.GetKey( KeyCode.T );
-				}
-				else
-                {
+				// if ( hand.noSteamVRFallbackCamera != null )
+				// {
+				// 	return Input.GetKey( KeyCode.T );
+				// }
+				// else
+                // {
                     return teleportAction.GetState(hand.handType);
-				}
+				// }
 			// }
 
 			// return false;
@@ -1142,16 +1142,16 @@ namespace Valve.VR.InteractionSystem
 			
 			// if ( IsEligibleForTeleport( hand ) )
 			// {
-				if ( hand.noSteamVRFallbackCamera != null )
-				{
-					return Input.GetKeyDown( KeyCode.T );
-				}
-				else
-                {
+				// if ( hand.noSteamVRFallbackCamera != null )
+				// {
+				// 	return Input.GetKeyDown( KeyCode.T );
+				// }
+				// else
+                // {
                     return teleportAction.GetStateDown(hand.handType);
 
                     //return hand.controller.GetPressDown( SteamVR_Controller.ButtonMask.Touchpad );
-				}
+				// }
 			// }
 
 			// return false;
@@ -1161,14 +1161,14 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private Transform GetPointerStartTransform( Hand hand )
 		{
-			if ( hand.noSteamVRFallbackCamera != null )
-			{
-				return hand.noSteamVRFallbackCamera.transform;
-			}
-			else
-			{
+			// if ( hand.noSteamVRFallbackCamera != null )
+			// {
+			// 	return hand.noSteamVRFallbackCamera.transform;
+			// }
+			// else
+			// {
 				return hand.transform;
-			}
+			// }
 		}
 	}
 }

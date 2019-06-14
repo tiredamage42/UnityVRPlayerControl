@@ -133,10 +133,6 @@ namespace Valve.VR.InteractionSystem
 			seeThru.gameObject.SetActive( false );
 		}
 
-
-		
-
-
 		//-------------------------------------------------
 		void Update()
 		{
@@ -148,8 +144,9 @@ namespace Valve.VR.InteractionSystem
 				int materialCount = Mathf.Min( origMaterials.Length, seeThruMaterials.Length );
 				for ( int i = 0; i < materialCount; i++ )
 				{
-					seeThruMaterials[i].mainTexture = origMaterials[i].mainTexture;
-					seeThruMaterials[i].color = seeThruMaterials[i].color * origMaterials[i].color;
+					// seeThruMaterials[i].mainTexture = origMaterials[i].mainTexture;
+					// seeThruMaterials[i].color = seeThruMaterials[i].color * origMaterials[i].color;
+					seeThruMaterials[i].color = Color.green;// seeThruMaterials[i].color * origMaterials[i].color;
 				}
 			}
 		}

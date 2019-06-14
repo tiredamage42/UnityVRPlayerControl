@@ -86,10 +86,10 @@ namespace Valve.VR.InteractionSystem
         [Tooltip("A transform on the hand to center attached objects on")]
         public Transform objectAttachmentPoint;
 
-        public Camera noSteamVRFallbackCamera;
-        public float noSteamVRFallbackMaxDistanceNoItem = 10.0f;
-        public float noSteamVRFallbackMaxDistanceWithItem = 0.5f;
-        private float noSteamVRFallbackInteractorDistance = -1.0f;
+        // public Camera noSteamVRFallbackCamera;
+        // public float noSteamVRFallbackMaxDistanceNoItem = 10.0f;
+        // public float noSteamVRFallbackMaxDistanceWithItem = 0.5f;
+        // private float noSteamVRFallbackInteractorDistance = -1.0f;
 
         public GameObject renderModelPrefab;
         protected List<RenderModel> renderModels = new List<RenderModel>();
@@ -126,12 +126,17 @@ namespace Valve.VR.InteractionSystem
             }
         }
 
-        private List<AttachedObject> attachedObjects = new List<AttachedObject>();
 
-        public ReadOnlyCollection<AttachedObject> AttachedObjects
-        {
-            get { return attachedObjects.AsReadOnly(); }
-        }
+        public AttachedObject currentAttached;
+        public bool hasCurrentAttached;
+
+
+        // private List<AttachedObject> attachedObjects = new List<AttachedObject>();
+
+        // public ReadOnlyCollection<AttachedObject> AttachedObjects
+        // {
+        //     get { return attachedObjects.AsReadOnly(); }
+        // }
 
         public bool hoverLocked { get; private set; }
 
@@ -187,6 +192,7 @@ namespace Valve.VR.InteractionSystem
                             HandDebugLog("HoverEnd " + oldInteractable.gameObject);
 
                         oldInteractable.SendMessage("OnHandHoverEnd", this, SendMessageOptions.DontRequireReceiver);
+                        HideGrabHint();
 
                         //Note: The _hoveringInteractable can change after sending the OnHandHoverEnd message 
                         //so we need to check it again before broadcasting this message
@@ -203,7 +209,14 @@ namespace Valve.VR.InteractionSystem
                     {
                         if (spewDebugText)
                             HandDebugLog("HoverBegin " + newInteractable.gameObject);
+
+
                         newInteractable.SendMessage("OnHandHoverBegin", this, SendMessageOptions.DontRequireReceiver);
+                        //if it's useable... cant think of any time it wouldnt be
+                        ShowGrabHint();
+                        
+                        
+                        
 
                         //Note: The _hoveringInteractable can change after sending the OnHandHoverBegin message 
                         //so we need to check it again before broadcasting this message
@@ -220,35 +233,35 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         // Active GameObject attached to this Hand
         //-------------------------------------------------
-        public GameObject currentAttachedObject
-        {
-            get
-            {
-                CleanUpAttachedObjectStack();
+        // public GameObject currentAttachedObject
+        // {
+        //     get
+        //     {
+        //         CleanUpAttachedObjectStack();
 
-                if (attachedObjects.Count > 0)
-                {
-                    return attachedObjects[attachedObjects.Count - 1].attachedObject;
-                }
+        //         if (attachedObjects.Count > 0)
+        //         {
+        //             return attachedObjects[attachedObjects.Count - 1].attachedObject;
+        //         }
 
-                return null;
-            }
-        }
+        //         return null;
+        //     }
+        // }
 
-        public AttachedObject? currentAttachedObjectInfo
-        {
-            get
-            {
-                CleanUpAttachedObjectStack();
+        // public AttachedObject? currentAttachedObjectInfo
+        // {
+        //     get
+        //     {
+        //         CleanUpAttachedObjectStack();
 
-                if (attachedObjects.Count > 0)
-                {
-                    return attachedObjects[attachedObjects.Count - 1];
-                }
+        //         if (attachedObjects.Count > 0)
+        //         {
+        //             return attachedObjects[attachedObjects.Count - 1];
+        //         }
 
-                return null;
-            }
-        }
+        //         return null;
+        //     }
+        // }
 
         public SteamVR_Behaviour_Skeleton skeleton
         {
@@ -381,7 +394,7 @@ namespace Valve.VR.InteractionSystem
             }
 
             //Make sure top object on stack is non-null
-            CleanUpAttachedObjectStack();
+            // CleanUpAttachedObjectStack();
 
             //Detach the object if it is already attached so that it can get re-attached at the top of the stack
             if(ObjectIsAttached(objectToAttach))
@@ -394,19 +407,24 @@ namespace Valve.VR.InteractionSystem
                     otherHand.DetachObject(objectToAttach);
             }
 
-            if (attachedObject.HasAttachFlag(AttachmentFlags.DetachOthers))
-            {
-                //Detach all the objects from the stack
-                while (attachedObjects.Count > 0)
-                {
-                    DetachObject(attachedObjects[0].attachedObject);
-                }
+
+            if (hasCurrentAttached) {
+                DetachObject(currentAttached.attachedObject);
             }
 
-            if (currentAttachedObject)
-            {
-                currentAttachedObject.SendMessage("OnHandFocusLost", this, SendMessageOptions.DontRequireReceiver);
-            }
+            // if (attachedObject.HasAttachFlag(AttachmentFlags.DetachOthers))
+            // {
+            //     //Detach all the objects from the stack
+            //     while (attachedObjects.Count > 0)
+            //     {
+            //         DetachObject(attachedObjects[0].attachedObject);
+            //     }
+            // }
+
+            // if (currentAttachedObject)
+            // {
+            //     currentAttachedObject.SendMessage("OnHandFocusLost", this, SendMessageOptions.DontRequireReceiver);
+            // }
 
             attachedObject.attachedObject = objectToAttach;
             attachedObject.interactable = objectToAttach.GetComponent<Interactable>();
@@ -444,22 +462,23 @@ namespace Valve.VR.InteractionSystem
             attachedObject.originalParent = objectToAttach.transform.parent != null ? objectToAttach.transform.parent.gameObject : null;
 
             attachedObject.attachedRigidbody = objectToAttach.GetComponent<Rigidbody>();
+            
             if (attachedObject.attachedRigidbody != null)
             {
                 if (attachedObject.interactable.attachedToHand != null) //already attached to another hand
                 {
                     //if it was attached to another hand, get the flags from that hand
                     
-                    for (int attachedIndex = 0; attachedIndex < attachedObject.interactable.attachedToHand.attachedObjects.Count; attachedIndex++)
-                    {
-                        AttachedObject attachedObjectInList = attachedObject.interactable.attachedToHand.attachedObjects[attachedIndex];
+                    // for (int attachedIndex = 0; attachedIndex < attachedObject.interactable.attachedToHand.attachedObjects.Count; attachedIndex++)
+                    // {
+                        AttachedObject attachedObjectInList = attachedObject.interactable.attachedToHand.currentAttached;//.attachedObjects[attachedIndex];
                         if (attachedObjectInList.interactable == attachedObject.interactable)
                         {
                             attachedObject.attachedRigidbodyWasKinematic = attachedObjectInList.attachedRigidbodyWasKinematic;
                             attachedObject.attachedRigidbodyUsedGravity = attachedObjectInList.attachedRigidbodyUsedGravity;
                             attachedObject.originalParent = attachedObjectInList.originalParent;
                         }
-                    }
+                    // }
                 }
                 else
                 {
@@ -575,7 +594,9 @@ namespace Valve.VR.InteractionSystem
                 attachedObject.attachedObject.transform.rotation = attachedObject.easeSourceRotation;
             }
 
-            attachedObjects.Add(attachedObject);
+            // attachedObjects.Add(attachedObject);
+            currentAttached = attachedObject;
+            hasCurrentAttached = true;
 
             UpdateHovering();
 
@@ -596,13 +617,14 @@ namespace Valve.VR.InteractionSystem
 
         public bool ObjectIsAttached(GameObject go)
         {
-            for (int attachedIndex = 0; attachedIndex < attachedObjects.Count; attachedIndex++)
-            {
-                if (attachedObjects[attachedIndex].attachedObject == go)
-                    return true;
-            }
+            return currentAttached.attachedObject == go;
+            // for (int attachedIndex = 0; attachedIndex < attachedObjects.Count; attachedIndex++)
+            // {
+            //     if (attachedObjects[attachedIndex].attachedObject == go)
+            //         return true;
+            // }
 
-            return false;
+            // return false;
         }
 
         public void ForceHoverUnlock()
@@ -617,97 +639,106 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         public void DetachObject(GameObject objectToDetach, bool restoreOriginalParent = true)
         {
-            int index = attachedObjects.FindIndex(l => l.attachedObject == objectToDetach);
-            if (index != -1)
-            {
+            if (!hasCurrentAttached) {
+                return;
+            }
+            if (currentAttached.attachedObject != objectToDetach) {
+                return;
+            }
+
+            // int index = attachedObjects.FindIndex(l => l.attachedObject == objectToDetach);
+            // if (index != -1)
+            // {
                 if (spewDebugText)
                     HandDebugLog("DetachObject " + objectToDetach);
 
-                GameObject prevTopObject = currentAttachedObject;
+                // GameObject prevTopObject = currentAttachedObject;
 
-
-                if (attachedObjects[index].interactable != null)
+                AttachedObject ao = currentAttached;
+                if (ao.interactable != null)
                 {
-                    if (attachedObjects[index].interactable.hideHandOnAttach)
+                    if (ao.interactable.hideHandOnAttach)
                         Show();
 
-                    if (attachedObjects[index].interactable.hideSkeletonOnAttach && mainRenderModel != null && mainRenderModel.displayHandByDefault)
+                    if (ao.interactable.hideSkeletonOnAttach && mainRenderModel != null && mainRenderModel.displayHandByDefault)
                         ShowSkeleton();
 
-                    if (attachedObjects[index].interactable.hideControllerOnAttach && mainRenderModel != null && mainRenderModel.displayControllerByDefault)
+                    if (ao.interactable.hideControllerOnAttach && mainRenderModel != null && mainRenderModel.displayControllerByDefault)
                         ShowController();
 
-                    if (attachedObjects[index].interactable.handAnimationOnPickup != 0)
+                    if (ao.interactable.handAnimationOnPickup != 0)
                         StopAnimation();
 
-                    if (attachedObjects[index].interactable.setRangeOfMotionOnPickup != SkeletalMotionRangeChange.None)
+                    if (ao.interactable.setRangeOfMotionOnPickup != SkeletalMotionRangeChange.None)
                         ResetTemporarySkeletonRangeOfMotion();
                 }
 
                 Transform parentTransform = null;
-                if (attachedObjects[index].isParentedToHand)
+                if (ao.isParentedToHand)
                 {
-                    if (restoreOriginalParent && (attachedObjects[index].originalParent != null))
+                    if (restoreOriginalParent && (ao.originalParent != null))
                     {
-                        parentTransform = attachedObjects[index].originalParent.transform;
+                        parentTransform = ao.originalParent.transform;
                     }
 
-                    if (attachedObjects[index].attachedObject != null)
+                    if (ao.attachedObject != null)
                     {
-                        attachedObjects[index].attachedObject.transform.parent = parentTransform;
+                        ao.attachedObject.transform.parent = parentTransform;
                     }
                 }
 
-                if (attachedObjects[index].HasAttachFlag(AttachmentFlags.TurnOnKinematic))
+                if (ao.HasAttachFlag(AttachmentFlags.TurnOnKinematic))
                 {
-                    if (attachedObjects[index].attachedRigidbody != null)
+                    if (ao.attachedRigidbody != null)
                     {
-                        attachedObjects[index].attachedRigidbody.isKinematic = attachedObjects[index].attachedRigidbodyWasKinematic;
-                        attachedObjects[index].attachedRigidbody.collisionDetectionMode = attachedObjects[index].collisionDetectionMode;
+                        ao.attachedRigidbody.isKinematic = ao.attachedRigidbodyWasKinematic;
+                        ao.attachedRigidbody.collisionDetectionMode = ao.collisionDetectionMode;
                     }
                 }
 
-                if (attachedObjects[index].HasAttachFlag(AttachmentFlags.TurnOffGravity))
+                if (ao.HasAttachFlag(AttachmentFlags.TurnOffGravity))
                 {
-                    if (attachedObjects[index].attachedObject != null)
+                    if (ao.attachedObject != null)
                     {
-                        if (attachedObjects[index].attachedRigidbody != null)
-                            attachedObjects[index].attachedRigidbody.useGravity = attachedObjects[index].attachedRigidbodyUsedGravity;
+                        if (ao.attachedRigidbody != null)
+                            ao.attachedRigidbody.useGravity = ao.attachedRigidbodyUsedGravity;
                     }
                 }
 
-                if (attachedObjects[index].interactable != null && attachedObjects[index].interactable.handFollowTransform && HasSkeleton())
+                if (ao.interactable != null && ao.interactable.handFollowTransform && HasSkeleton())
                 {
                     skeleton.transform.localPosition = Vector3.zero;
                     skeleton.transform.localRotation = Quaternion.identity;
                 }
 
-                if (attachedObjects[index].attachedObject != null)
+                if (ao.attachedObject != null)
                 {
-                    if (attachedObjects[index].interactable == null || (attachedObjects[index].interactable != null))// && attachedObjects[index].interactable.isDestroying == false))
-                        attachedObjects[index].attachedObject.SetActive(true);
+                    // if (ao.interactable == null || (ao.interactable != null))// && attachedObjects[index].interactable.isDestroying == false))
+                        ao.attachedObject.SetActive(true);
 
-                    attachedObjects[index].attachedObject.SendMessage("OnDetachedFromHand", this, SendMessageOptions.DontRequireReceiver);
+                    ao.attachedObject.SendMessage("OnDetachedFromHand", this, SendMessageOptions.DontRequireReceiver);
                 }
 
-                attachedObjects.RemoveAt(index);
+                // attachedObjects.RemoveAt(index);
+                hasCurrentAttached = false;
+                // currentAttached = null;
 
-                CleanUpAttachedObjectStack();
+                // CleanUpAttachedObjectStack();
 
-                GameObject newTopObject = currentAttachedObject;
+                // GameObject newTopObject = currentAttachedObject;
 
                 hoverLocked = false;
 
 
                 //Give focus to the top most object on the stack if it changed
-                if (newTopObject != null && newTopObject != prevTopObject)
-                {
-                    newTopObject.SetActive(true);
-                    newTopObject.SendMessage("OnHandFocusAcquired", this, SendMessageOptions.DontRequireReceiver);
-                }
-            }
+                // if (newTopObject != null && newTopObject != prevTopObject)
+                // {
+                //     newTopObject.SetActive(true);
+                //     newTopObject.SendMessage("OnHandFocusAcquired", this, SendMessageOptions.DontRequireReceiver);
+                // }
+            // }
 
-            CleanUpAttachedObjectStack();
+            // CleanUpAttachedObjectStack();
 
             if (mainRenderModel != null)
                 mainRenderModel.MatchHandToTransform(mainRenderModel.transform);
@@ -724,7 +755,9 @@ namespace Valve.VR.InteractionSystem
             if (trackedObject == null)
             {
                 Vector3 velocityTarget, angularTarget;
-                GetUpdatedAttachedVelocities(currentAttachedObjectInfo.Value, out velocityTarget, out angularTarget);
+                // GetUpdatedAttachedVelocities(currentAttachedObjectInfo.Value, out velocityTarget, out angularTarget);
+                GetUpdatedAttachedVelocities(currentAttached, out velocityTarget, out angularTarget);
+                Debug.LogError("Getting tracked object velocity here");
                 return velocityTarget;
             }
 
@@ -754,7 +787,9 @@ namespace Valve.VR.InteractionSystem
             if (trackedObject == null)
             {
                 Vector3 velocityTarget, angularTarget;
-                GetUpdatedAttachedVelocities(currentAttachedObjectInfo.Value, out velocityTarget, out angularTarget);
+                // GetUpdatedAttachedVelocities(currentAttachedObjectInfo.Value, out velocityTarget, out angularTarget);
+                GetUpdatedAttachedVelocities(currentAttached, out velocityTarget, out angularTarget);
+                Debug.LogError("Getting tracked object velocity here");
                 return angularTarget;
             }
 
@@ -784,10 +819,10 @@ namespace Valve.VR.InteractionSystem
 
 
         //-------------------------------------------------
-        private void CleanUpAttachedObjectStack()
-        {
-            attachedObjects.RemoveAll(l => l.attachedObject == null);
-        }
+        // private void CleanUpAttachedObjectStack()
+        // {
+        //     attachedObjects.RemoveAll(l => l.attachedObject == null);
+        // }
 
 
         //-------------------------------------------------
@@ -844,10 +879,10 @@ namespace Valve.VR.InteractionSystem
             // We are a "no SteamVR fallback hand" if we have this camera set
             // we'll use the right mouse to look around and left mouse to interact
             // - don't need to find the device
-            if (noSteamVRFallbackCamera)
-            {
-                yield break;
-            }
+            // if (noSteamVRFallbackCamera)
+            // {
+            //     yield break;
+            // }
 
             //Debug.Log( "<b>[SteamVR Interaction]</b> Hand - initializing connection routine" );
 
@@ -867,10 +902,10 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         protected virtual void UpdateHovering()
         {
-            if ((noSteamVRFallbackCamera == null) && (isActive == false))
-            {
-                return;
-            }
+            // if ((noSteamVRFallbackCamera == null) && (isActive == false))
+            // {
+            //     return;
+            // }
 
             if (hoverLocked)
                 return;
@@ -945,17 +980,23 @@ namespace Valve.VR.InteractionSystem
                 //     }
                 // }
 
+
+
                 // Can't hover over the object if it's attached
-                bool hoveringOverAttached = false;
-                for (int attachedIndex = 0; attachedIndex < attachedObjects.Count; attachedIndex++)
-                {
-                    if (attachedObjects[attachedIndex].attachedObject == contacting.gameObject)
-                    {
-                        hoveringOverAttached = true;
-                        break;
-                    }
-                }
-                if (hoveringOverAttached)
+                // bool hoveringOverAttached = false;
+                // for (int attachedIndex = 0; attachedIndex < attachedObjects.Count; attachedIndex++)
+                // {
+                //     if (attachedObjects[attachedIndex].attachedObject == contacting.gameObject)
+                //     {
+                //         hoveringOverAttached = true;
+                //         break;
+                //     }
+                // }
+                
+                // if (hoveringOverAttached)
+                //     continue;
+
+                if (currentAttached.attachedObject == contacting.gameObject)
                     continue;
 
                 
@@ -996,49 +1037,50 @@ namespace Valve.VR.InteractionSystem
 
 
         //-------------------------------------------------
-        protected virtual void UpdateNoSteamVRFallback()
-        {
-            if (noSteamVRFallbackCamera)
-            {
-                Ray ray = noSteamVRFallbackCamera.ScreenPointToRay(Input.mousePosition);
+        // protected virtual void UpdateNoSteamVRFallback()
+        // {
+        //     if (noSteamVRFallbackCamera)
+        //     {
+        //         Ray ray = noSteamVRFallbackCamera.ScreenPointToRay(Input.mousePosition);
 
-                if (attachedObjects.Count > 0)
-                {
-                    // Holding down the mouse:
-                    // move around a fixed distance from the camera
-                    transform.position = ray.origin + noSteamVRFallbackInteractorDistance * ray.direction;
-                }
-                else
-                {
-                    // Not holding down the mouse:
-                    // cast out a ray to see what we should mouse over
+        //         if (hasCurrentAttached)
+        //         // if (attachedObjects.Count > 0)
+        //         {
+        //             // Holding down the mouse:
+        //             // move around a fixed distance from the camera
+        //             transform.position = ray.origin + noSteamVRFallbackInteractorDistance * ray.direction;
+        //         }
+        //         else
+        //         {
+        //             // Not holding down the mouse:
+        //             // cast out a ray to see what we should mouse over
 
-                    // Don't want to hit the hand and anything underneath it
-                    // So move it back behind the camera when we do the raycast
-                    Vector3 oldPosition = transform.position;
-                    transform.position = noSteamVRFallbackCamera.transform.forward * (-1000.0f);
+        //             // Don't want to hit the hand and anything underneath it
+        //             // So move it back behind the camera when we do the raycast
+        //             Vector3 oldPosition = transform.position;
+        //             transform.position = noSteamVRFallbackCamera.transform.forward * (-1000.0f);
 
-                    RaycastHit raycastHit;
-                    if (Physics.Raycast(ray, out raycastHit, noSteamVRFallbackMaxDistanceNoItem))
-                    {
-                        transform.position = raycastHit.point;
+        //             RaycastHit raycastHit;
+        //             if (Physics.Raycast(ray, out raycastHit, noSteamVRFallbackMaxDistanceNoItem))
+        //             {
+        //                 transform.position = raycastHit.point;
 
-                        // Remember this distance in case we click and drag the mouse
-                        noSteamVRFallbackInteractorDistance = Mathf.Min(noSteamVRFallbackMaxDistanceNoItem, raycastHit.distance);
-                    }
-                    else if (noSteamVRFallbackInteractorDistance > 0.0f)
-                    {
-                        // Move it around at the distance we last had a hit
-                        transform.position = ray.origin + Mathf.Min(noSteamVRFallbackMaxDistanceNoItem, noSteamVRFallbackInteractorDistance) * ray.direction;
-                    }
-                    else
-                    {
-                        // Didn't hit, just leave it where it was
-                        transform.position = oldPosition;
-                    }
-                }
-            }
-        }
+        //                 // Remember this distance in case we click and drag the mouse
+        //                 noSteamVRFallbackInteractorDistance = Mathf.Min(noSteamVRFallbackMaxDistanceNoItem, raycastHit.distance);
+        //             }
+        //             else if (noSteamVRFallbackInteractorDistance > 0.0f)
+        //             {
+        //                 // Move it around at the distance we last had a hit
+        //                 transform.position = ray.origin + Mathf.Min(noSteamVRFallbackMaxDistanceNoItem, noSteamVRFallbackInteractorDistance) * ray.direction;
+        //             }
+        //             else
+        //             {
+        //                 // Didn't hit, just leave it where it was
+        //                 transform.position = oldPosition;
+        //             }
+        //         }
+        //     }
+        // }
 
 
         //-------------------------------------------------
@@ -1073,12 +1115,14 @@ namespace Valve.VR.InteractionSystem
                     "Hovering: {0}\n" +
                     "Hover Lock: {1}\n" +
                     "Attached: {2}\n" +
-                    "Total Attached: {3}\n" +
-                    "Type: {4}\n",
+                    // "Total Attached: {3}\n" +
+                    "Type: {3}\n",
                     (hoveringInteractable ? hoveringInteractable.gameObject.name : "null"),
                     hoverLocked,
-                    (currentAttachedObject ? currentAttachedObject.name : "null"),
-                    attachedObjects.Count,
+                    // (currentAttachedObject ? currentAttachedObject.name : "null"),
+                    (hasCurrentAttached ? currentAttached.attachedObject.name : "null"),
+                    
+                    // attachedObjects.Count,
                     handType.ToString());
             }
             else
@@ -1100,8 +1144,6 @@ namespace Valve.VR.InteractionSystem
             float hoverUpdateBegin = ((otherHand != null) && (otherHand.GetInstanceID() < GetInstanceID())) ? (0.5f * hoverUpdateInterval) : (0.0f);
             InvokeRepeating("UpdateHovering", hoverUpdateBegin, hoverUpdateInterval);
 
-
-
             InvokeRepeating("UpdateDebugText", hoverUpdateBegin, hoverUpdateInterval);
         }
 
@@ -1118,71 +1160,101 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         protected virtual void Update()
         {
-            if (attachedObjects.Count > 1) {
-                Debug.LogError("have more than one attached object");
-                for (int i = 0; i < attachedObjects.Count; i++) {
-                    Debug.LogError("\t" + attachedObjects[i].attachedObject.name);
+            // if (attachedObjects.Count > 1) {
+            //     Debug.LogError("have more than one attached object");
+            //     for (int i = 0; i < attachedObjects.Count; i++) {
+            //         Debug.LogError("\t" + attachedObjects[i].attachedObject.name);
                     
-                }
-            }
-            UpdateNoSteamVRFallback();
+            //     }
+            // }
+            // UpdateNoSteamVRFallback();
 
-            GameObject attachedObject = currentAttachedObject;
-            if (attachedObject != null)
+            // GameObject attachedObject = currentAttachedObject;
+            // if (attachedObject != null)
+            if (hasCurrentAttached)
             {
+                currentAttached.
                 attachedObject.SendMessage("HandAttachedUpdate", this, SendMessageOptions.DontRequireReceiver);
             }
 
             if (hoveringInteractable)
             {
                 hoveringInteractable.SendMessage("HandHoverUpdate", this, SendMessageOptions.DontRequireReceiver);
+
+                // if useable
+                if (GetGrabDown()) {
+                    HideGrabHint();
+                }
             }
         }
 
         /// <summary>
         /// Returns true when the hand is currently hovering over the interactable passed in
         /// </summary>
-        public bool IsStillHovering(Interactable interactable)
-        {
-            return hoveringInteractable == interactable;
-        }
+        // public bool IsStillHovering(Interactable interactable)
+        // {
+        //     return hoveringInteractable == interactable;
+        // }
 
         protected virtual void HandFollowUpdate()
         {
-            GameObject attachedObject = currentAttachedObject;
-            if (attachedObject != null)
+            // GameObject attachedObject = currentAttachedObject;
+            // if (attachedObject != null)
+            if (hasCurrentAttached)
             {
-                if (currentAttachedObjectInfo.Value.interactable != null)
+
+                // if (currentAttachedObjectInfo.Value.interactable != null)
+                if (currentAttached.interactable != null)
+                
                 {
                     SteamVR_Skeleton_PoseSnapshot pose = null;
 
-                    if (currentAttachedObjectInfo.Value.interactable.skeletonPoser != null && HasSkeleton())
+                    if (currentAttached.interactable.skeletonPoser != null && HasSkeleton())
                     {
-                        pose = currentAttachedObjectInfo.Value.interactable.skeletonPoser.GetBlendedPose(skeleton);
+                        pose = currentAttached.interactable.skeletonPoser.GetBlendedPose(skeleton);
                     }
+                    // if (currentAttachedObjectInfo.Value.interactable.skeletonPoser != null && HasSkeleton())
+                    // {
+                    //     pose = currentAttachedObjectInfo.Value.interactable.skeletonPoser.GetBlendedPose(skeleton);
+                    // }
 
-                    if (currentAttachedObjectInfo.Value.interactable.handFollowTransform)
+                    // if (currentAttachedObjectInfo.Value.interactable.handFollowTransform)
+                    if (currentAttached.interactable.handFollowTransform)
+                    
                     {
                         Quaternion targetHandRotation;
                         Vector3 targetHandPosition;
 
                         if (pose == null)
                         {
-                            Quaternion offset = Quaternion.Inverse(this.transform.rotation) * currentAttachedObjectInfo.Value.handAttachmentPointTransform.rotation;
-                            targetHandRotation = currentAttachedObjectInfo.Value.interactable.transform.rotation * Quaternion.Inverse(offset);
+                            // Quaternion offset = Quaternion.Inverse(this.transform.rotation) * currentAttachedObjectInfo.Value.handAttachmentPointTransform.rotation;
+                            // targetHandRotation = currentAttachedObjectInfo.Value.interactable.transform.rotation * Quaternion.Inverse(offset);
 
-                            Vector3 worldOffset = (this.transform.position - currentAttachedObjectInfo.Value.handAttachmentPointTransform.position);
+                            // Vector3 worldOffset = (this.transform.position - currentAttachedObjectInfo.Value.handAttachmentPointTransform.position);
+                            // Quaternion rotationDiff = mainRenderModel.GetHandRotation() * Quaternion.Inverse(this.transform.rotation);
+                            // Vector3 localOffset = rotationDiff * worldOffset;
+                            // targetHandPosition = currentAttachedObjectInfo.Value.interactable.transform.position + localOffset;
+
+                            Quaternion offset = Quaternion.Inverse(this.transform.rotation) * currentAttached.handAttachmentPointTransform.rotation;
+                            targetHandRotation = currentAttached.interactable.transform.rotation * Quaternion.Inverse(offset);
+
+                            Vector3 worldOffset = (this.transform.position - currentAttached.handAttachmentPointTransform.position);
                             Quaternion rotationDiff = mainRenderModel.GetHandRotation() * Quaternion.Inverse(this.transform.rotation);
                             Vector3 localOffset = rotationDiff * worldOffset;
-                            targetHandPosition = currentAttachedObjectInfo.Value.interactable.transform.position + localOffset;
+                            targetHandPosition = currentAttached.interactable.transform.position + localOffset;
                         }
                         else
                         {
-                            Transform objectT = currentAttachedObjectInfo.Value.attachedObject.transform;
+                            // Transform objectT = currentAttachedObjectInfo.Value.attachedObject.transform;
+                            Transform objectT = currentAttached.attachedObject.transform;
+                            
                             Vector3 oldItemPos = objectT.position;
                             Quaternion oldItemRot = objectT.transform.rotation;
-                            objectT.position = TargetItemPosition(currentAttachedObjectInfo.Value);
-                            objectT.rotation = TargetItemRotation(currentAttachedObjectInfo.Value);
+                            objectT.position = TargetItemPosition(currentAttached);
+                            objectT.rotation = TargetItemRotation(currentAttached);
+                            // objectT.position = TargetItemPosition(currentAttachedObjectInfo.Value);
+                            // objectT.rotation = TargetItemRotation(currentAttachedObjectInfo.Value);
+                            
                             Vector3 localSkelePos = objectT.InverseTransformPoint(transform.position);
                             Quaternion localSkeleRot = Quaternion.Inverse(objectT.rotation) * transform.rotation;
                             objectT.position = oldItemPos;
@@ -1208,9 +1280,11 @@ namespace Valve.VR.InteractionSystem
 
         protected virtual void FixedUpdate()
         {
-            if (currentAttachedObject != null)
+            // if (currentAttachedObject != null)
+            if (hasCurrentAttached)
+            
             {
-                AttachedObject attachedInfo = currentAttachedObjectInfo.Value;
+                AttachedObject attachedInfo = currentAttached;// currentAttachedObjectInfo.Value;
                 if (attachedInfo.attachedObject != null)
                 {
                     if (attachedInfo.HasAttachFlag(AttachmentFlags.VelocityMovement))
@@ -1268,7 +1342,9 @@ namespace Valve.VR.InteractionSystem
             bool success = GetUpdatedAttachedVelocities(attachedObjectInfo, out velocityTarget, out angularTarget);
             if (success)
             {
-                float scale = SteamVR_Utils.GetLossyScale(currentAttachedObjectInfo.Value.handAttachmentPointTransform);
+                // float scale = SteamVR_Utils.GetLossyScale(currentAttachedObjectInfo.Value.handAttachmentPointTransform);
+                float scale = SteamVR_Utils.GetLossyScale(currentAttached.handAttachmentPointTransform);
+                
                 float maxAngularVelocityChange = MaxAngularVelocityChange * scale;
                 float maxVelocityChange = MaxVelocityChange * scale;
 
@@ -1283,11 +1359,13 @@ namespace Valve.VR.InteractionSystem
             {
                 Vector3 tp = attachedObject.handAttachmentPointTransform.InverseTransformPoint(transform.TransformPoint(attachedObject.interactable.skeletonPoser.GetBlendedPose(skeleton).position));
                 //tp.x *= -1;
-                return currentAttachedObjectInfo.Value.handAttachmentPointTransform.TransformPoint(tp);
+                // return currentAttachedObjectInfo.Value.handAttachmentPointTransform.TransformPoint(tp);
+                return currentAttached.handAttachmentPointTransform.TransformPoint(tp);
             }
             else
             {
-                return currentAttachedObjectInfo.Value.handAttachmentPointTransform.TransformPoint(attachedObject.initialPositionalOffset);
+                // return currentAttachedObjectInfo.Value.handAttachmentPointTransform.TransformPoint(attachedObject.initialPositionalOffset);
+                return currentAttached.handAttachmentPointTransform.TransformPoint(attachedObject.initialPositionalOffset);
             }
         }
 
@@ -1296,11 +1374,13 @@ namespace Valve.VR.InteractionSystem
             if (attachedObject.interactable != null && attachedObject.interactable.skeletonPoser != null && HasSkeleton())
             {
                 Quaternion tr = Quaternion.Inverse(attachedObject.handAttachmentPointTransform.rotation) * (transform.rotation * attachedObject.interactable.skeletonPoser.GetBlendedPose(skeleton).rotation);
-                return currentAttachedObjectInfo.Value.handAttachmentPointTransform.rotation * tr;
+                // return currentAttachedObjectInfo.Value.handAttachmentPointTransform.rotation * tr;
+                return currentAttached.handAttachmentPointTransform.rotation * tr;
             }
             else
             {
-                return currentAttachedObjectInfo.Value.handAttachmentPointTransform.rotation * attachedObject.initialRotationalOffset;
+                // return currentAttachedObjectInfo.Value.handAttachmentPointTransform.rotation * attachedObject.initialRotationalOffset;
+                return currentAttached.handAttachmentPointTransform.rotation * attachedObject.initialRotationalOffset;
             }
         }
 
@@ -1318,8 +1398,8 @@ namespace Valve.VR.InteractionSystem
 
             if (float.IsNaN(velocityTarget.x) == false && float.IsInfinity(velocityTarget.x) == false)
             {
-                if (noSteamVRFallbackCamera)
-                    velocityTarget /= 10; //hacky fix for fallback
+                // if (noSteamVRFallbackCamera)
+                //     velocityTarget /= 10; //hacky fix for fallback
 
                 realNumbers = true;
             }
@@ -1342,8 +1422,8 @@ namespace Valve.VR.InteractionSystem
             {
                 angularTarget = angle * axis * angularVelocityMagic * Time.deltaTime;
 
-                if (noSteamVRFallbackCamera)
-                    angularTarget /= 10; //hacky fix for fallback
+                // if (noSteamVRFallbackCamera)
+                //     angularTarget /= 10; //hacky fix for fallback
 
                 realNumbers &= true;
             }
@@ -1451,17 +1531,20 @@ namespace Valve.VR.InteractionSystem
             hapticAction.Execute(0, duration, frequency, amplitude, handType);
         }
 
-        public void ShowGrabHint()
+
+
+
+        void ShowGrabHint()
         {
             ControllerButtonHints.ShowButtonHint(this, grabGripAction); //todo: assess
         }
 
-        public void HideGrabHint()
+        void HideGrabHint()
         {
             ControllerButtonHints.HideButtonHint(this, grabGripAction); //todo: assess
         }
 
-        public void ShowGrabHint(string text)
+        void ShowGrabHint(string text)
         {
             ControllerButtonHints.ShowTextHint(this, grabGripAction, text);
         }

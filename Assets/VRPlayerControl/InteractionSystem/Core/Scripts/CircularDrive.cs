@@ -187,7 +187,7 @@ namespace Valve.VR.InteractionSystem
 		{
 			if ( handHoverLocked )
 			{
-                handHoverLocked.HideGrabHint();
+                // handHoverLocked.HideGrabHint();
 				handHoverLocked.HoverUnlock(interactable);
 				handHoverLocked = null;
 			}
@@ -219,14 +219,14 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void OnHandHoverBegin( Hand hand )
 		{
-            hand.ShowGrabHint();
+            // hand.ShowGrabHint();
 		}
 
 
 		//-------------------------------------------------
 		private void OnHandHoverEnd( Hand hand )
 		{
-            hand.HideGrabHint();
+            // hand.HideGrabHint();
 
 			if ( driving && hand )
 			{
@@ -272,7 +272,7 @@ namespace Valve.VR.InteractionSystem
 				ComputeAngle( hand );
 				UpdateAll();
 
-                hand.HideGrabHint();
+                // hand.HideGrabHint();
 			}
 
             // else if (grabbedWithType != GrabTypes.None && isGrabEnding)

@@ -91,7 +91,7 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         protected virtual void OnHandHoverBegin( Hand hand )
 		{
-			bool showHint = false;
+			// bool showHint = false;
 
             // "Catch" the throwable by holding down the interaction button instead of pressing it.
             // Only do this if the throwable is moving faster than the prescribed threshold speed,
@@ -110,22 +110,22 @@ namespace Valve.VR.InteractionSystem
 						hand.AttachObject( gameObject, 
                             // bestGrabType, 
                             attachmentFlags );
-						showHint = false;
+						// showHint = false;
 					}
 				}
 			}
 
-			if ( showHint )
-			{
-                hand.ShowGrabHint();
-			}
+			// if ( showHint )
+			// {
+            //     hand.ShowGrabHint();
+			// }
 		}
 
 
         //-------------------------------------------------
         protected virtual void OnHandHoverEnd( Hand hand )
 		{
-            hand.HideGrabHint();
+            // hand.HideGrabHint();
 		}
 
 
@@ -140,7 +140,7 @@ namespace Valve.VR.InteractionSystem
 				hand.AttachObject( gameObject, 
                     // startingGrabType, 
                     attachmentFlags, attachmentOffset );
-                hand.HideGrabHint();
+                // hand.HideGrabHint();
             }
 		}
 
@@ -195,8 +195,8 @@ namespace Valve.VR.InteractionSystem
 
         public virtual void GetReleaseVelocities(Hand hand, out Vector3 velocity, out Vector3 angularVelocity)
         {
-            if (hand.noSteamVRFallbackCamera && releaseVelocityStyle != ReleaseStyle.NoChange)
-                releaseVelocityStyle = ReleaseStyle.ShortEstimation; // only type that works with fallback hand is short estimation.
+            // if (hand.noSteamVRFallbackCamera && releaseVelocityStyle != ReleaseStyle.NoChange)
+            //     releaseVelocityStyle = ReleaseStyle.ShortEstimation; // only type that works with fallback hand is short estimation.
 
             switch (releaseVelocityStyle)
             {
