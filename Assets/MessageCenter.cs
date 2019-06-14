@@ -1,20 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class MessageCenter : MonoBehaviour
 {
-
-
     public static void DisplayMessage (string message, Color color, float duration, float fadeIn, float fadeOut) {
         if (instances.Count == 0) {
             Debug.LogError("No message center instances in the scene");
         }
-        for (int i =0 ; i < instances.Count; i++) {
-            instances[i].ShowMessage(message, color, duration, fadeIn, fadeOut);
+
+        foreach (var instance in instances) {
+            instance.ShowMessage(message, color, duration, fadeIn, fadeOut);
         }
     }
-    static List<MessageCenter> instances = new List<MessageCenter>();
+    static HashSet<MessageCenter> instances = new HashSet<MessageCenter>();
 
     public static void RemoveInstance (MessageCenter messageCenter) {
         instances.Remove(messageCenter);
