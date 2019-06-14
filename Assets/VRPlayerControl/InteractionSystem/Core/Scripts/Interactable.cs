@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 namespace Valve.VR.InteractionSystem
 {
-    //-------------------------------------------------------------------------
     public class Interactable : MonoBehaviour
     {
         [Tooltip("Activates an action set on attach and deactivates on detach")]
@@ -59,26 +58,31 @@ namespace Valve.VR.InteractionSystem
 
         [Tooltip("Set whether or not you want this interactible to highlight when hovering over it")]
         public bool highlightOnHover = true;
-        // protected MeshRenderer[] highlightRenderers;
-        // protected MeshRenderer[] existingRenderers;
-        // protected GameObject highlightHolder;
-        // protected SkinnedMeshRenderer[] highlightSkinnedRenderers;
-        // protected SkinnedMeshRenderer[] existingSkinnedRenderers;
-        // protected static Material highlightMat;
+        
         [Tooltip("An array of child gameObjects to not render a highlight for. Things like transparent parts, vfx, etc.")]
         public GameObject[] hideHighlight;
+
+
+        HashSet<int> currentHoveringIDs = new HashSet<int>();
+        bool hasOwner;
+        int ownerID;
 
 
         [System.NonSerialized]
         public Hand attachedToHand;
 
-        [System.NonSerialized]
-        public Hand hoveringHand;
+        // [System.NonSerialized]
+        // public Hand hoveringHand;
 
-        public bool isDestroying { get; protected set; }
-        public bool isHovering { get; protected set; }
-        public bool wasHovering { get; protected set; }
-        
+        // public bool isDestroying { get; protected set; }
+        public bool isHovering { 
+            get {
+                return currentHoveringIDs.Count != 0;
+            }
+        // protected set; 
+        }
+        // public bool wasHovering { get; protected set; }
+        bool isHighlighted;
 
         private void Awake()
         {
@@ -87,11 +91,6 @@ namespace Valve.VR.InteractionSystem
 
         protected virtual void Start()
         {
-            // highlightMat = (Material)Resources.Load("SteamVR_HoverHighlight", typeof(Material));
-
-            // if (highlightMat == null)
-            //     Debug.LogError("<b>[SteamVR Interaction]</b> Hover Highlight Material is missing. Please create a material named 'SteamVR_HoverHighlight' and place it in a Resources folder");
-
             if (skeletonPoser != null)
             {
                 if (useHandObjectAttachmentPoint)
@@ -114,193 +113,58 @@ namespace Valve.VR.InteractionSystem
                 if (check == hideHighlight[ignoreIndex])
                     return true;
             }
-
             return false;
         }
 
 
         List<Renderer> _Renderers = new List<Renderer>();
 
-
-
-
-
-
         void SubmitForHighlight () {
             _Renderers.Clear();
 
-            
-
-            SkinnedMeshRenderer[] existingSkinnedRenderers = this.GetComponentsInChildren<SkinnedMeshRenderer>(true);
-            
-            
-            for (int skinnedIndex = 0; skinnedIndex < existingSkinnedRenderers.Length; skinnedIndex++)
+            Renderer[] renderers = this.GetComponentsInChildren<Renderer>(true);
+                        
+            for (int i = 0; i < renderers.Length; i++)
             {
-                SkinnedMeshRenderer existingSkinned = existingSkinnedRenderers[skinnedIndex];
+                Renderer renderer = renderers[i];
 
-                if (ShouldIgnoreHighlight(existingSkinned))
+                if (ShouldIgnoreHighlight(renderer))
                     continue;
 
-                _Renderers.Add(existingSkinned);
+                _Renderers.Add(renderer);
             }
-
-            MeshFilter[] existingFilters = this.GetComponentsInChildren<MeshFilter>(true);
-            // MeshRenderer[] existingRenderers = new MeshRenderer[existingFilters.Length];
-            
-            for (int filterIndex = 0; filterIndex < existingFilters.Length; filterIndex++)
-            {
-                MeshFilter existingFilter = existingFilters[filterIndex];
-                MeshRenderer existingRenderer = existingFilter.GetComponent<MeshRenderer>();
-
-                if (existingFilter == null || existingRenderer == null || ShouldIgnoreHighlight(existingFilter))
-                    continue;
-                
-                _Renderers.Add(existingRenderer);
-
-                // existingRenderers[filterIndex] = existingRenderer;
-            }
-
-
 
             ObjectOutlines.Highlight_Renderers( _Renderers, 0 );
 
 
-
-            // HighlightsFX.instance.AddRenderers(
-            //     _Renderers, new Color(1,.5f,0,1), HighlightsFX.SortingType.DepthFiltered
-            // );
+            isHighlighted = true;
         }
         void UnHighlight() {
-            ObjectOutlines.UnHighlight_Renderers( _Renderers );
+            if (isHighlighted) {
+                isHighlighted = false;
+                ObjectOutlines.UnHighlight_Renderers( _Renderers );
+                _Renderers.Clear();
 
-            // HighlightsFX.instance.RemoveRenderers(_Renderers);
-            _Renderers.Clear();
+            }
         }
 
-        // protected virtual void CreateHighlightRenderers()
-        // {
-        //     existingSkinnedRenderers = this.GetComponentsInChildren<SkinnedMeshRenderer>(true);
-            
-        //     highlightHolder = new GameObject("Highlighter");
-        //     highlightSkinnedRenderers = new SkinnedMeshRenderer[existingSkinnedRenderers.Length];
-
-        //     for (int skinnedIndex = 0; skinnedIndex < existingSkinnedRenderers.Length; skinnedIndex++)
-        //     {
-        //         SkinnedMeshRenderer existingSkinned = existingSkinnedRenderers[skinnedIndex];
-
-        //         if (ShouldIgnoreHighlight(existingSkinned))
-        //             continue;
-
-        //         GameObject newSkinnedHolder = new GameObject("SkinnedHolder");
-        //         newSkinnedHolder.transform.parent = highlightHolder.transform;
-        //         SkinnedMeshRenderer newSkinned = newSkinnedHolder.AddComponent<SkinnedMeshRenderer>();
-        //         Material[] materials = new Material[existingSkinned.sharedMaterials.Length];
-        //         for (int materialIndex = 0; materialIndex < materials.Length; materialIndex++)
-        //         {
-        //             materials[materialIndex] = highlightMat;
-        //         }
-
-        //         newSkinned.sharedMaterials = materials;
-        //         newSkinned.sharedMesh = existingSkinned.sharedMesh;
-        //         newSkinned.rootBone = existingSkinned.rootBone;
-        //         newSkinned.updateWhenOffscreen = existingSkinned.updateWhenOffscreen;
-        //         newSkinned.bones = existingSkinned.bones;
-
-        //         highlightSkinnedRenderers[skinnedIndex] = newSkinned;
-        //     }
-
-        //     MeshFilter[] existingFilters = this.GetComponentsInChildren<MeshFilter>(true);
-        //     existingRenderers = new MeshRenderer[existingFilters.Length];
-        //     highlightRenderers = new MeshRenderer[existingFilters.Length];
-
-        //     for (int filterIndex = 0; filterIndex < existingFilters.Length; filterIndex++)
-        //     {
-        //         MeshFilter existingFilter = existingFilters[filterIndex];
-        //         MeshRenderer existingRenderer = existingFilter.GetComponent<MeshRenderer>();
-
-        //         if (existingFilter == null || existingRenderer == null || ShouldIgnoreHighlight(existingFilter))
-        //             continue;
-
-        //         GameObject newFilterHolder = new GameObject("FilterHolder");
-        //         newFilterHolder.transform.parent = highlightHolder.transform;
-        //         MeshFilter newFilter = newFilterHolder.AddComponent<MeshFilter>();
-        //         newFilter.sharedMesh = existingFilter.sharedMesh;
-        //         MeshRenderer newRenderer = newFilterHolder.AddComponent<MeshRenderer>();
-
-        //         Material[] materials = new Material[existingRenderer.sharedMaterials.Length];
-        //         for (int materialIndex = 0; materialIndex < materials.Length; materialIndex++)
-        //         {
-        //             materials[materialIndex] = highlightMat;
-        //         }
-        //         newRenderer.sharedMaterials = materials;
-
-        //         highlightRenderers[filterIndex] = newRenderer;
-        //         existingRenderers[filterIndex] = existingRenderer;
-        //     }
-        // }
-
-        // protected virtual void UpdateHighlightRenderers()
-        // {
-        //     if (highlightHolder == null)
-        //         return;
-
-        //     for (int skinnedIndex = 0; skinnedIndex < existingSkinnedRenderers.Length; skinnedIndex++)
-        //     {
-        //         SkinnedMeshRenderer existingSkinned = existingSkinnedRenderers[skinnedIndex];
-        //         SkinnedMeshRenderer highlightSkinned = highlightSkinnedRenderers[skinnedIndex];
-
-        //         if (existingSkinned != null && highlightSkinned != null && attachedToHand == false)
-        //         {
-        //             highlightSkinned.transform.position = existingSkinned.transform.position;
-        //             highlightSkinned.transform.rotation = existingSkinned.transform.rotation;
-        //             highlightSkinned.transform.localScale = existingSkinned.transform.lossyScale;
-        //             highlightSkinned.localBounds = existingSkinned.localBounds;
-        //             highlightSkinned.enabled = isHovering && existingSkinned.enabled && existingSkinned.gameObject.activeInHierarchy;
-
-        //             int blendShapeCount = existingSkinned.sharedMesh.blendShapeCount;
-        //             for (int blendShapeIndex = 0; blendShapeIndex < blendShapeCount; blendShapeIndex++)
-        //             {
-        //                 highlightSkinned.SetBlendShapeWeight(blendShapeIndex, existingSkinned.GetBlendShapeWeight(blendShapeIndex));
-        //             }
-        //         }
-        //         else if (highlightSkinned != null)
-        //             highlightSkinned.enabled = false;
-
-        //     }
-
-        //     for (int rendererIndex = 0; rendererIndex < highlightRenderers.Length; rendererIndex++)
-        //     {
-        //         MeshRenderer existingRenderer = existingRenderers[rendererIndex];
-        //         MeshRenderer highlightRenderer = highlightRenderers[rendererIndex];
-
-        //         if (existingRenderer != null && highlightRenderer != null && attachedToHand == false)
-        //         {
-        //             // Debug.Log("wtf");
-        //             highlightRenderer.transform.position = existingRenderer.transform.position;
-        //             highlightRenderer.transform.rotation = existingRenderer.transform.rotation;
-        //             highlightRenderer.transform.localScale = existingRenderer.transform.lossyScale;
-        //             highlightRenderer.enabled = isHovering && existingRenderer.enabled && existingRenderer.gameObject.activeInHierarchy;
-        //         }
-        //         else if (highlightRenderer != null)
-        //             highlightRenderer.enabled = false;
-        //     }
-        // }
 
         /// <summary>
         /// Called when a Hand starts hovering over this object
         /// </summary>
         protected virtual void OnHandHoverBegin(Hand hand)
         {
-            wasHovering = isHovering;
-            isHovering = true;
+            int handID = hand.GetInstanceID();
+            currentHoveringIDs.Add(handID);
 
-            hoveringHand = hand;
+            // wasHovering = isHovering;
+            // isHovering = true;
+
+            // hoveringHand = hand;
 
             if (highlightOnHover == true)
             {
                 SubmitForHighlight();
-                // CreateHighlightRenderers();
-                // UpdateHighlightRenderers();
             }
         }
 
@@ -310,23 +174,25 @@ namespace Valve.VR.InteractionSystem
         /// </summary>
         private void OnHandHoverEnd(Hand hand)
         {
-            wasHovering = isHovering;
-            isHovering = false;
+            int handID = hand.GetInstanceID();
+            currentHoveringIDs.Remove(handID);
 
-            if (highlightOnHover)// && highlightHolder != null)
+
+
+
+            // wasHovering = isHovering;
+            // isHovering = false;
+
+            if (highlightOnHover)
                 UnHighlight();
-                // Destroy(highlightHolder);
         }
 
         protected virtual void Update()
         {
             if (highlightOnHover)
             {
-                // UpdateHighlightRenderers();
-
-                if (isHovering == false)// && highlightHolder != null)
+                if (isHovering == false)
                     UnHighlight();
-                    // Destroy(highlightHolder);
             }
         }
         
@@ -381,7 +247,7 @@ namespace Valve.VR.InteractionSystem
 
         protected virtual void OnDestroy()
         {
-            isDestroying = true;
+            // isDestroying = true;
 
             if (attachedToHand != null)
             {
@@ -391,15 +257,12 @@ namespace Valve.VR.InteractionSystem
 
             
             UnHighlight();
-            // if (highlightHolder != null)
-            //     Destroy(highlightHolder);
-            
         }
 
 
         protected virtual void OnDisable()
         {
-            isDestroying = true;
+            // isDestroying = true;
 
             if (attachedToHand != null)
             {
@@ -407,8 +270,6 @@ namespace Valve.VR.InteractionSystem
             }
 
             UnHighlight();
-            // if (highlightHolder != null)
-            //     Destroy(highlightHolder);
         }
     }
 }

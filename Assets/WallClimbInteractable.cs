@@ -34,8 +34,6 @@ public class WallClimbInteractable : MonoBehaviour
 		private void OnHandHoverBegin( Hand hand )
 		{
             Player.instance.GetComponent<TouchpadLocomotion>().SetClimbAbility(hand.handType, true);
-
-
 		}
 
 
@@ -132,6 +130,7 @@ public class WallClimbInteractable : MonoBehaviour
 		//-------------------------------------------------
 		private void OnHandFocusAcquired( Hand hand )
 		{
+			Debug.LogError("hand focus acquired climbable");
 		}
 
 
@@ -140,6 +139,7 @@ public class WallClimbInteractable : MonoBehaviour
 		//-------------------------------------------------
 		private void OnHandFocusLost( Hand hand )
 		{
+			Debug.LogError("hand focus Lost climbable");
 		}
 	}
 

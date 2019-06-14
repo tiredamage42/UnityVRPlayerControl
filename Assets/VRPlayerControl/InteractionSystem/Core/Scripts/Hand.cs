@@ -43,7 +43,7 @@ namespace Valve.VR.InteractionSystem
         public Hand otherHand;
         public SteamVR_Input_Sources handType;
 
-        public SteamVR_Behaviour_Pose trackedObject;
+        SteamVR_Behaviour_Pose trackedObject;
         
         public SteamVR_Action_Boolean grabPinchAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("GrabPinch");
         
@@ -161,33 +161,39 @@ namespace Valve.VR.InteractionSystem
             get { return _hoveringInteractable; }
             set
             {
-                if (_hoveringInteractable != value)
+                Interactable oldInteractable = _hoveringInteractable;
+                Interactable newInteractable = value;
+                if (oldInteractable != value)
                 {
-                    if (_hoveringInteractable != null)
+                    if (oldInteractable != null)
                     {
                         if (spewDebugText)
-                            HandDebugLog("HoverEnd " + _hoveringInteractable.gameObject);
-                        _hoveringInteractable.SendMessage("OnHandHoverEnd", this, SendMessageOptions.DontRequireReceiver);
+                            HandDebugLog("HoverEnd " + oldInteractable.gameObject);
 
-                        //Note: The _hoveringInteractable can change after sending the OnHandHoverEnd message so we need to check it again before broadcasting this message
+                        oldInteractable.SendMessage("OnHandHoverEnd", this, SendMessageOptions.DontRequireReceiver);
+
+                        //Note: The _hoveringInteractable can change after sending the OnHandHoverEnd message 
+                        //so we need to check it again before broadcasting this message
                         if (_hoveringInteractable != null)
                         {
-                            this.BroadcastMessage("OnParentHandHoverEnd", _hoveringInteractable, SendMessageOptions.DontRequireReceiver); // let objects attached to the hand know that a hover has ended
+                            // let objects attached to the hand know that a hover has ended
+                            this.BroadcastMessage("OnParentHandHoverEnd", oldInteractable, SendMessageOptions.DontRequireReceiver); 
                         }
                     }
 
-                    _hoveringInteractable = value;
+                    _hoveringInteractable = newInteractable;
 
-                    if (_hoveringInteractable != null)
+                    if (newInteractable != null)
                     {
                         if (spewDebugText)
-                            HandDebugLog("HoverBegin " + _hoveringInteractable.gameObject);
-                        _hoveringInteractable.SendMessage("OnHandHoverBegin", this, SendMessageOptions.DontRequireReceiver);
+                            HandDebugLog("HoverBegin " + newInteractable.gameObject);
+                        newInteractable.SendMessage("OnHandHoverBegin", this, SendMessageOptions.DontRequireReceiver);
 
-                        //Note: The _hoveringInteractable can change after sending the OnHandHoverBegin message so we need to check it again before broadcasting this message
+                        //Note: The _hoveringInteractable can change after sending the OnHandHoverBegin message 
+                        //so we need to check it again before broadcasting this message
                         if (_hoveringInteractable != null)
                         {
-                            this.BroadcastMessage("OnParentHandHoverBegin", _hoveringInteractable, SendMessageOptions.DontRequireReceiver); // let objects attached to the hand know that a hover has begun
+                            this.BroadcastMessage("OnParentHandHoverBegin", newInteractable, SendMessageOptions.DontRequireReceiver); // let objects attached to the hand know that a hover has begun
                         }
                     }
                 }
@@ -650,7 +656,7 @@ namespace Valve.VR.InteractionSystem
 
                 if (attachedObjects[index].attachedObject != null)
                 {
-                    if (attachedObjects[index].interactable == null || (attachedObjects[index].interactable != null && attachedObjects[index].interactable.isDestroying == false))
+                    if (attachedObjects[index].interactable == null || (attachedObjects[index].interactable != null))// && attachedObjects[index].interactable.isDestroying == false))
                         attachedObjects[index].attachedObject.SetActive(true);
 
                     attachedObjects[index].attachedObject.SendMessage("OnDetachedFromHand", this, SendMessageOptions.DontRequireReceiver);
@@ -1064,6 +1070,9 @@ namespace Valve.VR.InteractionSystem
             // Stagger updates between hands
             float hoverUpdateBegin = ((otherHand != null) && (otherHand.GetInstanceID() < GetInstanceID())) ? (0.5f * hoverUpdateInterval) : (0.0f);
             InvokeRepeating("UpdateHovering", hoverUpdateBegin, hoverUpdateInterval);
+
+
+
             InvokeRepeating("UpdateDebugText", hoverUpdateBegin, hoverUpdateInterval);
         }
 
