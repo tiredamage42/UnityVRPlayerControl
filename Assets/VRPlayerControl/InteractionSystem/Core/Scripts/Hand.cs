@@ -713,7 +713,7 @@ namespace Valve.VR.InteractionSystem
 
                 if (ao.attachedObject != null)
                 {
-                    // if (ao.interactable == null || (ao.interactable != null))// && attachedObjects[index].interactable.isDestroying == false))
+                    if (ao.interactable == null || (ao.interactable != null && ao.interactable.isDestroying == false))
                         ao.attachedObject.SetActive(true);
 
                     ao.attachedObject.SendMessage("OnDetachedFromHand", this, SendMessageOptions.DontRequireReceiver);
