@@ -596,6 +596,7 @@ namespace Valve.VR.InteractionSystem
 
             // attachedObjects.Add(attachedObject);
             currentAttached = attachedObject;
+            Debug.Log("Setting current Attached ::" + currentAttached.attachedObject);
             hasCurrentAttached = true;
 
             UpdateHovering();
@@ -721,6 +722,7 @@ namespace Valve.VR.InteractionSystem
 
                 // attachedObjects.RemoveAt(index);
                 hasCurrentAttached = false;
+                Debug.Log("Unsetting current attached " + name);
                 // currentAttached = null;
 
                 // CleanUpAttachedObjectStack();

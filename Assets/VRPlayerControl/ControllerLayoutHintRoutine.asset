@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a71bd2cb1576484aae14155e286e2f3, type: 3}
+  m_Name: ControllerLayoutHintRoutine
+  m_EditorClassIdentifier: 
+  routineNodes:
+  - hand: 1
+    name: Jump
+    inputType: 0
+  - hand: 1
+    name: Move
+    inputType: 3
+  - hand: 1
+    name: Run
+    inputType: 4
+  - hand: 1
+    name: Crouch
+    inputType: 9
+  - hand: 2
+    name: Turn Left
+    inputType: 6
+  - hand: 2
+    name: Turn Right
+    inputType: 7
+  - hand: 2
+    name: Teleport
+    inputType: 9
+  - hand: 2
+    name: Interact
+    inputType: 0
+  timeBetweenButtons: 2
+  timeBetweenRepeats: 3

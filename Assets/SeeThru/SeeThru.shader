@@ -18,22 +18,22 @@ Shader "Valve/VR/SeeThru"
 		Pass
 		{
 			// Render State ---------------------------------------------------------------------------------------------------------------------------------------------
-			Blend SrcAlpha OneMinusSrcAlpha // Alpha blending
-			Cull Off
-			ZWrite Off
-			ZTest Greater
-			Stencil
-			{
-				Ref 2
-				Comp notequal
-				Pass replace
-				Fail keep
-			}
+			// Blend SrcAlpha OneMinusSrcAlpha // Alpha blending
+			// Cull Off
+			// ZWrite Off
+			// ZTest Greater
+			// Stencil
+			// {
+			// 	Ref 2
+			// 	Comp notequal
+			// 	Pass replace
+			// 	Fail keep
+			// }
 
 			CGPROGRAM
-				#pragma target 5.0
-				#pragma only_renderers d3d11 vulkan glcore
-				#pragma exclude_renderers gles
+				// #pragma target 5.0
+				// #pragma only_renderers d3d11 vulkan glcore
+				// #pragma exclude_renderers gles
 
 				#pragma vertex MainVS
 				#pragma fragment MainPS
@@ -44,20 +44,20 @@ Shader "Valve/VR/SeeThru"
 				// Structs --------------------------------------------------------------------------------------------------------------------------------------------------
 				struct VertexInput
 				{
-					float4 vertex : POSITION;
-					// float2 uv : TEXCOORD0;
+					fixed4 vertex : POSITION;
+					// fixed2 uv : TEXCOORD0;
 				};
 				
 				struct VertexOutput
 				{
-					// float2 uv : TEXCOORD0;
-					float4 vertex : SV_POSITION;
+					// fixed2 uv : TEXCOORD0;
+					fixed4 vertex : SV_POSITION;
 				};
 				
 				// Globals --------------------------------------------------------------------------------------------------------------------------------------------------
 				// sampler2D _MainTex;
-				// float4 _MainTex_ST;
-				float4 _Color;
+				// fixed4 _MainTex_ST;
+				fixed4 _Color;
 				
 				// MainVs ---------------------------------------------------------------------------------------------------------------------------------------------------
 				VertexOutput MainVS( VertexInput i )
@@ -69,10 +69,11 @@ Shader "Valve/VR/SeeThru"
 				}
 				
 				// MainPs ---------------------------------------------------------------------------------------------------------------------------------------------------
-				float4 MainPS( VertexOutput i ) : SV_Target
+				fixed4 MainPS( VertexOutput i ) : SV_Target
 				{
-					float4 vColor = _Color.rgba;
-					return vColor.rgba;
+					return _Color;
+					// fixed4 vColor = _Color.rgba;
+					// return vColor.rgba;
 				}
 
 			ENDCG

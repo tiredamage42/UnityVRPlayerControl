@@ -11,7 +11,8 @@ using Valve.VR;
 
 namespace Valve.VR
 {
-    [ExecuteInEditMode, RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
+    // [ExecuteInEditMode, RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
+    [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
     public class SteamVR_PlayArea : MonoBehaviour
     {
         public float borderThickness = 0.15f;
@@ -213,14 +214,14 @@ namespace Valve.VR
 
         void OnDrawGizmos()
         {
-            if (!drawWireframeWhenSelectedOnly)
-                DrawWireframe();
+            // if (!drawWireframeWhenSelectedOnly)
+            //     DrawWireframe();
         }
 
         void OnDrawGizmosSelected()
         {
-            if (drawWireframeWhenSelectedOnly)
-                DrawWireframe();
+            // if (drawWireframeWhenSelectedOnly)
+            //     DrawWireframe();
         }
 
         public void DrawWireframe()

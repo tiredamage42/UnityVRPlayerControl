@@ -250,6 +250,8 @@ namespace Valve.VR.InteractionSystem
 			{
 				trackingOriginTransform = this.transform;
 			}
+
+			InitializeMessageCenters();
 		}
 
 
@@ -278,6 +280,8 @@ namespace Valve.VR.InteractionSystem
         {
             if (SteamVR.initializedState != SteamVR.InitializedStates.InitializeSuccess)
                 return;
+
+			UpdateMessageCenters();
 
             if (headsetOnHead != null)
             {
@@ -409,5 +413,30 @@ namespace Valve.VR.InteractionSystem
 		// {
 			//Do something appropriate here
 		// }
+
+
+		void InitializeMessageCenters () {
+			MessageCenter r = GetHand(SteamVR_Input_Sources.RightHand).GetComponentInChildren<MessageCenter>();
+			r.transform.localRotation = Quaternion.Euler(90.0f, 0.0f, 0.0f);
+			r.transform.localPosition = new Vector3(-0.05f, 0.0f, 0.0f);
+			r.textAlignment = TextAlignment.Right;
+			r.textAnchor = TextAnchor.UpperRight;
+
+			MessageCenter l = GetHand(SteamVR_Input_Sources.LeftHand).GetComponentInChildren<MessageCenter>();
+			l.transform.localRotation = Quaternion.Euler(90.0f, 0.0f, 0.0f);
+			l.transform.localPosition = new Vector3(0.05f, 0.0f, 0.0f);
+			l.textAlignment = TextAlignment.Left;
+			l.textAnchor = TextAnchor.UpperLeft;
+
+
+			MessageCenter.AddInstance(r);
+			MessageCenter.AddInstance(l);			
+		}
+
+		//TODO: make the main one whichever is in front of the camera
+		void UpdateMessageCenters () {
+
+		}
+
 	}
 }
