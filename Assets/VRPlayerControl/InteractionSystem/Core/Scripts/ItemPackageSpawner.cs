@@ -199,7 +199,7 @@ namespace Valve.VR.InteractionSystem
 			// GameObject currentAttachedObject = hand.currentAttachedObject;
 
 			// if ( currentAttachedObject == null ) // verify the hand is holding something
-			if (hand.hasCurrentAttached)
+			if (!hand.hasCurrentAttached)
 			{
 				return null;
 			}
