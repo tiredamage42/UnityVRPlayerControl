@@ -140,7 +140,7 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void Update()
 		{
-			Debug.Log("USING SEE THRU");
+			Debug.Log("USING SEE THRU " + name);
 			if ( seeThruRenderer.gameObject.activeInHierarchy )
 			{
 				Material[] seeThruMaterials = seeThruRenderer.materials;

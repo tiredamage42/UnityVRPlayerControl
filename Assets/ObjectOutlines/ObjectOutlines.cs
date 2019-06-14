@@ -7,6 +7,11 @@ using UnityEngine.Rendering;
 public class ObjectOutlines : MonoBehaviour 
 {
     /*
+    
+            CHECK FOR NULL RENDERERES
+    
+     */
+    /*
         for flicker:
             try increase depth buffer
             lower near clip plane
@@ -171,6 +176,7 @@ public class ObjectOutlines : MonoBehaviour
         }
         public void Stage (int stagedLayer) {
             foreach (var renderer in rKeys) {
+
                 renderers[renderer] = renderer.gameObject.layer;
                 renderer.gameObject.layer = stagedLayer;
             }
