@@ -20,6 +20,22 @@ namespace Valve.VR.InteractionSystem
     //-------------------------------------------------------------------------
     public class Hand : MonoBehaviour
     {
+
+        [HideInInspector] public VelocityEstimator velocityEstimator;
+
+
+        void AdditionalInitialization () {
+            velocityEstimator = GetComponent<VelocityEstimator>();
+            if (velocityEstimator == null) {
+                Debug.LogError("Attach velocity estimator to: " + name);
+            }
+        }
+
+
+
+
+
+
         // The flags used to determine how an object is attached to the hand.
         [Flags]
         public enum AttachmentFlags
@@ -94,7 +110,7 @@ namespace Valve.VR.InteractionSystem
             public bool attachedRigidbodyUsedGravity;
             public GameObject originalParent;
             public bool isParentedToHand;
-            public GrabTypes grabbedWithType;
+            // public GrabTypes grabbedWithType;
             public AttachmentFlags attachmentFlags;
             public Vector3 initialPositionalOffset;
             public Quaternion initialRotationalOffset;
@@ -350,7 +366,9 @@ namespace Valve.VR.InteractionSystem
         // flags - The flags to use for attaching the object
         // attachmentPoint - Name of the GameObject in the hierarchy of this Hand which should act as the attachment point for this GameObject
         //-------------------------------------------------
-        public void AttachObject(GameObject objectToAttach, GrabTypes grabbedWithType, AttachmentFlags flags = defaultAttachmentFlags, Transform attachmentOffset = null)
+        public void AttachObject(GameObject objectToAttach, 
+            // GrabTypes grabbedWithType, 
+            AttachmentFlags flags = defaultAttachmentFlags, Transform attachmentOffset = null)
         {
             AttachedObject attachedObject = new AttachedObject();
             attachedObject.attachmentFlags = flags;
@@ -450,7 +468,7 @@ namespace Valve.VR.InteractionSystem
                 }
             }
 
-            attachedObject.grabbedWithType = grabbedWithType;
+            // attachedObject.grabbedWithType = grabbedWithType;
 
             if (attachedObject.HasAttachFlag(AttachmentFlags.ParentToHand))
             {
@@ -563,6 +581,16 @@ namespace Valve.VR.InteractionSystem
 
             if (spewDebugText)
                 HandDebugLog("AttachObject " + objectToAttach);
+
+
+
+            
+
+
+
+
+
+
             objectToAttach.SendMessage("OnAttachedToHand", this, SendMessageOptions.DontRequireReceiver);
         }
 
@@ -765,6 +793,7 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         protected virtual void Awake()
         {
+            AdditionalInitialization();
             inputFocusAction = SteamVR_Events.InputFocusAction(OnInputFocus);
 
             if (hoverSphereTransform == null)
@@ -1089,6 +1118,13 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         protected virtual void Update()
         {
+            if (attachedObjects.Count > 1) {
+                Debug.LogError("have more than one attached object");
+                for (int i = 0; i < attachedObjects.Count; i++) {
+                    Debug.LogError("\t" + attachedObjects[i].attachedObject.name);
+                    
+                }
+            }
             UpdateNoSteamVRFallback();
 
             GameObject attachedObject = currentAttachedObject;
@@ -1331,7 +1367,9 @@ namespace Valve.VR.InteractionSystem
             else
             {
                 applicationLostFocusObject.SetActive(true);
-                AttachObject(applicationLostFocusObject, GrabTypes.Scripted, AttachmentFlags.ParentToHand);
+                AttachObject(applicationLostFocusObject, 
+                // GrabTypes.Scripted, 
+                AttachmentFlags.ParentToHand);
                 BroadcastMessage("OnParentHandInputFocusLost", SendMessageOptions.DontRequireReceiver);
             }
         }
@@ -1428,160 +1466,171 @@ namespace Valve.VR.InteractionSystem
             ControllerButtonHints.ShowTextHint(this, grabGripAction, text);
         }
 
-        public GrabTypes GetGrabStarting(GrabTypes explicitType = GrabTypes.None)
-        {
-            if (explicitType != GrabTypes.None)
-            {
-                if (noSteamVRFallbackCamera)
-                {
-                    if (Input.GetMouseButtonDown(0))
-                        return explicitType;
-                }
 
-                if (explicitType == GrabTypes.Pinch && grabPinchAction.GetStateDown(handType))
-                    return GrabTypes.Pinch;
-                if (explicitType == GrabTypes.Grip && grabGripAction.GetStateDown(handType))
-                    return GrabTypes.Grip;
-            }
-            else
-            {
-                if (noSteamVRFallbackCamera)
-                {
-                    if (Input.GetMouseButtonDown(0))
-                        return GrabTypes.Grip;
-                }
-
-                if (grabPinchAction.GetStateDown(handType))
-                    return GrabTypes.Pinch;
-                if (grabGripAction.GetStateDown(handType))
-                    return GrabTypes.Grip;
-            }
-
-            return GrabTypes.None;
+        public bool GetGrabDown ( ) {
+            return grabPinchAction.GetStateDown(handType);
+        }
+        public bool GetGrabUp ( ) {
+            return grabPinchAction.GetStateUp(handType);
+        }
+        public bool IsGrabbing ( ) {
+            return grabPinchAction.GetState(handType);
         }
 
-        public GrabTypes GetGrabEnding(GrabTypes explicitType = GrabTypes.None)
-        {
-            if (explicitType != GrabTypes.None)
-            {
-                if (noSteamVRFallbackCamera)
-                {
-                    if (Input.GetMouseButtonUp(0))
-                        return explicitType;
-                }
+        // public GrabTypes GetGrabStarting(GrabTypes explicitType = GrabTypes.None)
+        // {
+        //     if (explicitType != GrabTypes.None)
+        //     {
+        //         if (noSteamVRFallbackCamera)
+        //         {
+        //             if (Input.GetMouseButtonDown(0))
+        //                 return explicitType;
+        //         }
 
-                if (explicitType == GrabTypes.Pinch && grabPinchAction.GetStateUp(handType))
-                    return GrabTypes.Pinch;
-                if (explicitType == GrabTypes.Grip && grabGripAction.GetStateUp(handType))
-                    return GrabTypes.Grip;
-            }
-            else
-            {
-                if (noSteamVRFallbackCamera)
-                {
-                    if (Input.GetMouseButtonUp(0))
-                        return GrabTypes.Grip;
-                }
+        //         if (explicitType == GrabTypes.Pinch && grabPinchAction.GetStateDown(handType))
+        //             return GrabTypes.Pinch;
+        //         if (explicitType == GrabTypes.Grip && grabGripAction.GetStateDown(handType))
+        //             return GrabTypes.Grip;
+        //     }
+        //     else
+        //     {
+        //         if (noSteamVRFallbackCamera)
+        //         {
+        //             if (Input.GetMouseButtonDown(0))
+        //                 return GrabTypes.Grip;
+        //         }
 
-                if (grabPinchAction.GetStateUp(handType))
-                    return GrabTypes.Pinch;
-                if (grabGripAction.GetStateUp(handType))
-                    return GrabTypes.Grip;
-            }
+        //         if (grabPinchAction.GetStateDown(handType))
+        //             return GrabTypes.Pinch;
+        //         if (grabGripAction.GetStateDown(handType))
+        //             return GrabTypes.Grip;
+        //     }
 
-            return GrabTypes.None;
-        }
+        //     return GrabTypes.None;
+        // }
 
-        public bool IsGrabEnding(GameObject attachedObject)
-        {
-            for (int attachedObjectIndex = 0; attachedObjectIndex < attachedObjects.Count; attachedObjectIndex++)
-            {
-                if (attachedObjects[attachedObjectIndex].attachedObject == attachedObject)
-                {
-                    return IsGrabbingWithType(attachedObjects[attachedObjectIndex].grabbedWithType) == false;
-                }
-            }
+        // public GrabTypes GetGrabEnding(GrabTypes explicitType = GrabTypes.None)
+        // {
+        //     if (explicitType != GrabTypes.None)
+        //     {
+        //         if (noSteamVRFallbackCamera)
+        //         {
+        //             if (Input.GetMouseButtonUp(0))
+        //                 return explicitType;
+        //         }
 
-            return false;
-        }
+        //         if (explicitType == GrabTypes.Pinch && grabPinchAction.GetStateUp(handType))
+        //             return GrabTypes.Pinch;
+        //         if (explicitType == GrabTypes.Grip && grabGripAction.GetStateUp(handType))
+        //             return GrabTypes.Grip;
+        //     }
+        //     else
+        //     {
+        //         if (noSteamVRFallbackCamera)
+        //         {
+        //             if (Input.GetMouseButtonUp(0))
+        //                 return GrabTypes.Grip;
+        //         }
 
-        public bool IsGrabbingWithType(GrabTypes type)
-        {
-            if (noSteamVRFallbackCamera)
-            {
-                if (Input.GetMouseButton(0))
-                    return true;
-            }
+        //         if (grabPinchAction.GetStateUp(handType))
+        //             return GrabTypes.Pinch;
+        //         if (grabGripAction.GetStateUp(handType))
+        //             return GrabTypes.Grip;
+        //     }
 
-            switch (type)
-            {
-                case GrabTypes.Pinch:
-                    return grabPinchAction.GetState(handType);
+        //     return GrabTypes.None;
+        // }
 
-                case GrabTypes.Grip:
-                    return grabGripAction.GetState(handType);
+        // public bool IsGrabEnding(GameObject attachedObject)
+        // {
+        //     for (int attachedObjectIndex = 0; attachedObjectIndex < attachedObjects.Count; attachedObjectIndex++)
+        //     {
+        //         if (attachedObjects[attachedObjectIndex].attachedObject == attachedObject)
+        //         {
+        //             return IsGrabbingWithType(attachedObjects[attachedObjectIndex].grabbedWithType) == false;
+        //         }
+        //     }
 
-                default:
-                    return false;
-            }
-        }
+        //     return false;
+        // }
 
-        public bool IsGrabbingWithOppositeType(GrabTypes type)
-        {
-            if (noSteamVRFallbackCamera)
-            {
-                if (Input.GetMouseButton(0))
-                    return true;
-            }
+        // public bool IsGrabbingWithType(GrabTypes type)
+        // {
+        //     if (noSteamVRFallbackCamera)
+        //     {
+        //         if (Input.GetMouseButton(0))
+        //             return true;
+        //     }
 
-            switch (type)
-            {
-                case GrabTypes.Pinch:
-                    return grabGripAction.GetState(handType);
+        //     switch (type)
+        //     {
+        //         case GrabTypes.Pinch:
+        //             return grabPinchAction.GetState(handType);
 
-                case GrabTypes.Grip:
-                    return grabPinchAction.GetState(handType);
+        //         case GrabTypes.Grip:
+        //             return grabGripAction.GetState(handType);
 
-                default:
-                    return false;
-            }
-        }
+        //         default:
+        //             return false;
+        //     }
+        // }
 
-        public GrabTypes GetBestGrabbingType()
-        {
-            return GetBestGrabbingType(GrabTypes.None);
-        }
+        // public bool IsGrabbingWithOppositeType(GrabTypes type)
+        // {
+        //     if (noSteamVRFallbackCamera)
+        //     {
+        //         if (Input.GetMouseButton(0))
+        //             return true;
+        //     }
 
-        public GrabTypes GetBestGrabbingType(GrabTypes preferred, bool forcePreference = false)
-        {
-            if (noSteamVRFallbackCamera)
-            {
-                if (Input.GetMouseButton(0))
-                    return preferred;
-            }
+        //     switch (type)
+        //     {
+        //         case GrabTypes.Pinch:
+        //             return grabGripAction.GetState(handType);
 
-            if (preferred == GrabTypes.Pinch)
-            {
-                if (grabPinchAction.GetState(handType))
-                    return GrabTypes.Pinch;
-                else if (forcePreference)
-                    return GrabTypes.None;
-            }
-            if (preferred == GrabTypes.Grip)
-            {
-                if (grabGripAction.GetState(handType))
-                    return GrabTypes.Grip;
-                else if (forcePreference)
-                    return GrabTypes.None;
-            }
+        //         case GrabTypes.Grip:
+        //             return grabPinchAction.GetState(handType);
 
-            if (grabPinchAction.GetState(handType))
-                return GrabTypes.Pinch;
-            if (grabGripAction.GetState(handType))
-                return GrabTypes.Grip;
+        //         default:
+        //             return false;
+        //     }
+        // }
 
-            return GrabTypes.None;
-        }
+        // public GrabTypes GetBestGrabbingType()
+        // {
+        //     return GetBestGrabbingType(GrabTypes.None);
+        // }
+
+        // public GrabTypes GetBestGrabbingType(GrabTypes preferred, bool forcePreference = false)
+        // {
+        //     if (noSteamVRFallbackCamera)
+        //     {
+        //         if (Input.GetMouseButton(0))
+        //             return preferred;
+        //     }
+
+        //     if (preferred == GrabTypes.Pinch)
+        //     {
+        //         if (grabPinchAction.GetState(handType))
+        //             return GrabTypes.Pinch;
+        //         else if (forcePreference)
+        //             return GrabTypes.None;
+        //     }
+        //     if (preferred == GrabTypes.Grip)
+        //     {
+        //         if (grabGripAction.GetState(handType))
+        //             return GrabTypes.Grip;
+        //         else if (forcePreference)
+        //             return GrabTypes.None;
+        //     }
+
+        //     if (grabPinchAction.GetState(handType))
+        //         return GrabTypes.Pinch;
+        //     if (grabGripAction.GetState(handType))
+        //         return GrabTypes.Grip;
+
+        //     return GrabTypes.None;
+        // }
 
 
         //-------------------------------------------------

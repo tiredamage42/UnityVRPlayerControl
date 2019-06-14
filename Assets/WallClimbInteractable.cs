@@ -86,25 +86,10 @@ public class WallClimbInteractable : MonoBehaviour
 		}
 
 
-		//-------------------------------------------------
-		// Called when this GameObject becomes attached to the hand
-		//-------------------------------------------------
-		private void OnAttachedToHand( Hand hand )
-        {
-            // generalText.text = string.Format("Attached: {0}", hand.name);
-            // attachTime = Time.time;
-		}
-        
+		
 
 
-		//-------------------------------------------------
-		// Called when this GameObject is detached from the hand
-		//-------------------------------------------------
-		private void OnDetachedFromHand( Hand hand )
-		{
-            // generalText.text = string.Format("Detached: {0}", hand.name);
-		}
-
+		
 
 		//-------------------------------------------------
 		// Called every Update() while this GameObject is attached to the hand

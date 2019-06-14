@@ -38,7 +38,7 @@ namespace Valve.VR.InteractionSystem
 
         
 
-		protected VelocityEstimator velocityEstimator;
+		// protected VelocityEstimator velocityEstimator;
         protected bool attached = false;
         protected float attachTime;
         protected Vector3 attachPosition;
@@ -61,7 +61,7 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         protected virtual void Awake()
 		{
-			velocityEstimator = GetComponent<VelocityEstimator>();
+			// velocityEstimator = GetComponent<VelocityEstimator>();
             interactable = GetComponent<Interactable>();
 
 
@@ -77,6 +77,15 @@ namespace Valve.VR.InteractionSystem
             }
 
 		}
+        void OnEnable () {
+			interactable.onEquipped += OnEquipped;
+			interactable.onUnequipped += OnUnequipped;
+		}
+		void OnDisable () {
+			interactable.onEquipped -= OnEquipped;
+			interactable.onUnequipped -= OnUnequipped;
+		}
+
 
 
         //-------------------------------------------------
@@ -91,13 +100,16 @@ namespace Valve.VR.InteractionSystem
             {
                 float catchingThreshold = catchingSpeedThreshold * SteamVR_Utils.GetLossyScale(Player.instance.trackingOriginTransform);
 
-                GrabTypes bestGrabType = hand.GetBestGrabbingType();
+                // GrabTypes bestGrabType = hand.GetBestGrabbingType();
 
-                if ( bestGrabType != GrabTypes.None )
-				{
+                // if ( bestGrabType != GrabTypes.None )
+				if (hand.IsGrabbing())
+                {
 					if (rigidbody.velocity.magnitude >= catchingThreshold)
 					{
-						hand.AttachObject( gameObject, bestGrabType, attachmentFlags );
+						hand.AttachObject( gameObject, 
+                            // bestGrabType, 
+                            attachmentFlags );
 						showHint = false;
 					}
 				}
@@ -120,18 +132,22 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         protected virtual void HandHoverUpdate( Hand hand )
         {
-            GrabTypes startingGrabType = hand.GetGrabStarting();
+            // GrabTypes startingGrabType = hand.GetGrabStarting();
             
-            if (startingGrabType != GrabTypes.None)
+            // if (startingGrabType != GrabTypes.None)
+            if (hand.GetGrabDown())
             {
-				hand.AttachObject( gameObject, startingGrabType, attachmentFlags, attachmentOffset );
+				hand.AttachObject( gameObject, 
+                    // startingGrabType, 
+                    attachmentFlags, attachmentOffset );
                 hand.HideGrabHint();
             }
 		}
 
         //-------------------------------------------------
-        protected virtual void OnAttachedToHand( Hand hand )
+        protected virtual void OnEquipped( Object owner )
 		{
+            Hand hand = (Hand)owner;
             //Debug.Log("<b>[SteamVR Interaction]</b> Pickup: " + hand.GetGrabStarting().ToString());
 
             hadInterpolation = this.rigidbody.interpolation;
@@ -144,7 +160,9 @@ namespace Valve.VR.InteractionSystem
             
             rigidbody.interpolation = RigidbodyInterpolation.None;
             
-		    velocityEstimator.BeginEstimatingVelocity();
+
+            
+		    hand.velocityEstimator.BeginEstimatingVelocity();
 
 			attachTime = Time.time;
 			attachPosition = transform.position;
@@ -154,8 +172,9 @@ namespace Valve.VR.InteractionSystem
 
 
         //-------------------------------------------------
-        protected virtual void OnDetachedFromHand(Hand hand)
+        protected virtual void OnUnequipped(Object owner)
         {
+            Hand hand = (Hand)owner;
             attached = false;
 
             onDetachFromHand.Invoke();
@@ -182,9 +201,9 @@ namespace Valve.VR.InteractionSystem
             switch (releaseVelocityStyle)
             {
                 case ReleaseStyle.ShortEstimation:
-                    velocityEstimator.FinishEstimatingVelocity();
-                    velocity = velocityEstimator.GetVelocityEstimate();
-                    angularVelocity = velocityEstimator.GetAngularVelocityEstimate();
+                    hand.velocityEstimator.FinishEstimatingVelocity();
+                    velocity = hand.velocityEstimator.GetVelocityEstimate();
+                    angularVelocity = hand.velocityEstimator.GetAngularVelocityEstimate();
                     break;
                 case ReleaseStyle.AdvancedEstimation:
                     hand.GetEstimatedPeakVelocities(out velocity, out angularVelocity);
@@ -207,9 +226,8 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         protected virtual void HandAttachedUpdate(Hand hand)
         {
-
-
-            if (hand.IsGrabEnding(this.gameObject))
+            // if (hand.IsGrabEnding(this.gameObject))
+            if (hand.GetGrabUp())
             {
                 hand.DetachObject(gameObject, restoreOriginalParent);
 
@@ -239,17 +257,19 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         protected virtual void OnHandFocusAcquired( Hand hand )
 		{
-            Debug.LogError("ON HAND FOCUS ACQUIRED");
+            Debug.LogError("ON HAND FOCUS ACQUIRED " + name);
 			gameObject.SetActive( true );
-			velocityEstimator.BeginEstimatingVelocity();
+			hand.velocityEstimator.BeginEstimatingVelocity();
 		}
 
 
         //-------------------------------------------------
         protected virtual void OnHandFocusLost( Hand hand )
 		{
+            Debug.LogError("ON HAND FOCUS Lost " + name);
+			
 			gameObject.SetActive( false );
-			velocityEstimator.FinishEstimatingVelocity();
+			hand.velocityEstimator.FinishEstimatingVelocity();
 		}
 	}
 

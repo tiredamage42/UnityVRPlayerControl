@@ -17,12 +17,10 @@ namespace Valve.VR.InteractionSystem
 		[Tooltip( "How many frames to average over for computing angular velocity" )]
 		public int angularVelocityAverageFrames = 11;
 
-		public bool estimateOnAwake = false;
-
-		private Coroutine routine;
-		private int sampleCount;
-		private Vector3[] velocitySamples;
-		private Vector3[] angularVelocitySamples;
+		Coroutine routine;
+		int sampleCount;
+		Vector3[] velocitySamples;
+		Vector3[] angularVelocitySamples;
 
 	
 		//-------------------------------------------------
@@ -59,7 +57,6 @@ namespace Valve.VR.InteractionSystem
 				}
 				velocity *= ( 1.0f / velocitySampleCount );
 			}
-
 			return velocity;
 		}
 
@@ -82,7 +79,6 @@ namespace Valve.VR.InteractionSystem
 			return angularVelocity;
 		}
 
-
 		//-------------------------------------------------
 		public Vector3 GetAccelerationEstimate()
 		{
@@ -103,22 +99,16 @@ namespace Valve.VR.InteractionSystem
 			return average;
 		}
 
-
 		//-------------------------------------------------
 		void Awake()
 		{
 			velocitySamples = new Vector3[velocityAverageFrames];
 			angularVelocitySamples = new Vector3[angularVelocityAverageFrames];
-
-			if ( estimateOnAwake )
-			{
-				BeginEstimatingVelocity();
-			}
 		}
 
 
 		//-------------------------------------------------
-		private IEnumerator EstimateVelocityCoroutine()
+		IEnumerator EstimateVelocityCoroutine()
 		{
 			sampleCount = 0;
 

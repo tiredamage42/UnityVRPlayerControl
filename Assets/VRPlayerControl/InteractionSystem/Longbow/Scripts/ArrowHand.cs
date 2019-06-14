@@ -29,7 +29,7 @@ namespace Valve.VR.InteractionSystem
 
 		private bool allowArrowSpawn = true;
 		private bool nocked;
-        private GrabTypes nockedWithType = GrabTypes.None;
+        // private GrabTypes nockedWithType = GrabTypes.None;
 
 		private bool inNockRange = false;
 		private bool arrowLerpComplete = false;
@@ -41,10 +41,11 @@ namespace Valve.VR.InteractionSystem
 		public int maxArrowCount = 10;
 		private List<GameObject> arrowList;
 
-
+		Interactable interactable;
 		//-------------------------------------------------
 		void Awake()
 		{
+			interactable = GetComponent<Interactable>();
 			// allowTeleport = GetComponent<AllowTeleportWhileAttachedToHand>();
 			
 			// //allowTeleport.teleportAllowed = true;
@@ -54,11 +55,21 @@ namespace Valve.VR.InteractionSystem
 			arrowList = new List<GameObject>();
 		}
 
+		void OnEnable () {
+			interactable.onEquipped += OnEquipped;
+			interactable.onUnequipped += OnUnequipped;
+		}
+		void OnDisable () {
+			interactable.onEquipped -= OnEquipped;
+			interactable.onUnequipped -= OnUnequipped;
+		}
+
+
 
 		//-------------------------------------------------
-		private void OnAttachedToHand( Hand attachedHand )
+		private void OnEquipped( Object attachedHand )
 		{
-			hand = attachedHand;
+			hand = (Hand)attachedHand;
 			FindBow();
 		}
 
@@ -172,10 +183,14 @@ namespace Valve.VR.InteractionSystem
 					}
 				}
 
-                GrabTypes bestGrab = hand.GetBestGrabbingType(GrabTypes.Pinch, true);
+                // GrabTypes bestGrab = hand.GetBestGrabbingType(GrabTypes.Pinch, true);
+				bool grabDown = hand.GetGrabDown();
 
                 // If arrow is close enough to the nock position and we're pressing the trigger, and we're not nocked yet, Nock
-                if ( ( distanceToNockPosition < nockDistance ) && bestGrab != GrabTypes.None && !nocked )
+                // if ( ( distanceToNockPosition < nockDistance ) && bestGrab != GrabTypes.None && !nocked )
+				
+				if ( ( distanceToNockPosition < nockDistance ) && grabDown && !nocked )
+				
 				{
 					if ( currentArrow == null )
 					{
@@ -183,7 +198,7 @@ namespace Valve.VR.InteractionSystem
 					}
 
 					nocked = true;
-                    nockedWithType = bestGrab;
+                    // nockedWithType = bestGrab;
 					bow.StartNock( this );
 					hand.HoverLock( GetComponent<Interactable>() );
 					
@@ -197,7 +212,9 @@ namespace Valve.VR.InteractionSystem
 
 
 			// If arrow is nocked, and we release the trigger
-			if ( nocked && hand.IsGrabbingWithType(nockedWithType) == false )
+			// if ( nocked && hand.IsGrabbingWithType(nockedWithType) == false )
+			if ( nocked && hand.GetGrabUp())
+			
 			{
 				if ( bow.pulled ) // If bow is pulled back far enough, fire arrow, otherwise reset arrow in arrowhand
 				{
@@ -209,7 +226,7 @@ namespace Valve.VR.InteractionSystem
 					currentArrow.transform.parent = arrowNockTransform;
 					Util.ResetTransform( currentArrow.transform );
 					nocked = false;
-                    nockedWithType = GrabTypes.None;
+                    // nockedWithType = GrabTypes.None;
 					bow.ReleaseNock();
 					hand.HoverUnlock( GetComponent<Interactable>() );
 					// allowTeleport.teleportAllowed = true;
@@ -221,7 +238,7 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private void OnDetachedFromHand( Hand hand )
+		private void OnUnequipped( Object hand )
 		{
 			Destroy( gameObject );
 		}
@@ -245,7 +262,7 @@ namespace Valve.VR.InteractionSystem
 			arrow.arrowHeadRB.AddTorque( currentArrow.transform.forward * 10 );
 
 			nocked = false;
-            nockedWithType = GrabTypes.None;
+            // nockedWithType = GrabTypes.None;
 
 			currentArrow.GetComponent<Arrow>().ArrowReleased( bow.GetArrowVelocity() );
 			bow.ArrowReleased();
@@ -287,6 +304,8 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void OnHandFocusLost( Hand hand )
 		{
+			Debug.LogError("ON HAND FOCUS Lost " + name);
+			
 			gameObject.SetActive( false );
 		}
 
@@ -294,6 +313,8 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void OnHandFocusAcquired( Hand hand )
 		{
+			Debug.LogError("ON HAND FOCUS ACQUIRED " + name);
+			
 			gameObject.SetActive( true );
 		}
 

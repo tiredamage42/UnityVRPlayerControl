@@ -7,12 +7,12 @@ using System.Text;
 
 namespace Valve.VR.InteractionSystem
 {
-    public enum GrabTypes
-    {
-        None,
-        Trigger,
-        Pinch,
-        Grip,
-        Scripted,
-    }
+    // public enum GrabTypes
+    // {
+    //     None,
+    //     Trigger,
+    //     Pinch,
+    //     Grip,
+    //     Scripted,
+    // }
 }

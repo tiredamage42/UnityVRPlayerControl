@@ -33,18 +33,28 @@ namespace Valve.VR.InteractionSystem
         private const bool onlyColorOnChange = true;
 
         public new Rigidbody rigidbody;
-
-        private void Awake()
-        {
+Interactable interactable;
+		void Awake () {
+			interactable = GetComponent<Interactable>();
             selfRenderers = this.GetComponentsInChildren<Renderer>();
             throwable = this.GetComponent<Throwable>();
             rigidbody = this.GetComponent<Rigidbody>();
             colliders = this.GetComponentsInChildren<Collider>();
         }
 
-        private void OnAttachedToHand( Hand hand )
+        void OnEnable () {
+			interactable.onEquipped += OnEquipped;
+			interactable.onUnequipped += OnUnequipped;
+		}
+		void OnDisable () {
+			interactable.onEquipped -= OnEquipped;
+			interactable.onUnequipped -= OnUnequipped;
+		}
+
+
+        private void OnEquipped( Object hand )
 		{
-            attachedToHand = hand;
+            attachedToHand = (Hand)hand;
 
             CreateMarker(Color.green);
         }
@@ -52,26 +62,28 @@ namespace Valve.VR.InteractionSystem
 
         protected virtual void HandAttachedUpdate(Hand hand)
         {
-            Color grabbedColor;
-            switch (hand.currentAttachedObjectInfo.Value.grabbedWithType)
-            {
-                case GrabTypes.Grip:
-                    grabbedColor = Color.blue;
-                    break;
-                case GrabTypes.Pinch:
-                    grabbedColor = Color.green;
-                    break;
-                case GrabTypes.Trigger:
-                    grabbedColor = Color.yellow;
-                    break;
-                case GrabTypes.Scripted:
-                    grabbedColor = Color.red;
-                    break;
-                case GrabTypes.None:
-                default:
-                    grabbedColor = Color.white;
-                    break;
-            }
+            // Color grabbedColor;
+            Color grabbedColor = Color.green;
+            
+            // switch (hand.currentAttachedObjectInfo.Value.grabbedWithType)
+            // {
+            //     case GrabTypes.Grip:
+            //         grabbedColor = Color.blue;
+            //         break;
+            //     case GrabTypes.Pinch:
+            //         grabbedColor = Color.green;
+            //         break;
+            //     case GrabTypes.Trigger:
+            //         grabbedColor = Color.yellow;
+            //         break;
+            //     case GrabTypes.Scripted:
+            //         grabbedColor = Color.red;
+            //         break;
+            //     case GrabTypes.None:
+            //     default:
+            //         grabbedColor = Color.white;
+            //         break;
+            // }
 
             if ((onlyColorOnChange && grabbedColor != lastColor) || onlyColorOnChange == false)
                 ColorSelf(grabbedColor);
@@ -80,8 +92,9 @@ namespace Valve.VR.InteractionSystem
         }
 
         
-        private void OnDetachedFromHand( Hand hand )
+        private void OnUnequipped( Object owner )
 		{
+            Hand hand = (Hand)owner;
             if (isThrowable)
             {
                 Vector3 velocity;
