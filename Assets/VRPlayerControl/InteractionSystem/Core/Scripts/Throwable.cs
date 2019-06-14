@@ -239,6 +239,7 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         protected virtual void OnHandFocusAcquired( Hand hand )
 		{
+            Debug.LogError("ON HAND FOCUS ACQUIRED");
 			gameObject.SetActive( true );
 			velocityEstimator.BeginEstimatingVelocity();
 		}

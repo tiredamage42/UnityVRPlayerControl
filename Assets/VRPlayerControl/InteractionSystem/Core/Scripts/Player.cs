@@ -7,11 +7,8 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-// using VRPlayer;
-
 
 namespace Valve.VR.InteractionSystem
-
 {
 	//-------------------------------------------------------------------------
 	// Singleton representing the local VR player/user, with methods for getting
@@ -44,7 +41,6 @@ namespace Valve.VR.InteractionSystem
         public SteamVR_Action_Boolean headsetOnHead = SteamVR_Input.GetBooleanAction("HeadsetOnHead");
 
 		public bool allowToggleTo2D = true;
-
 
 		//-------------------------------------------------
 		// Singleton instance of the Player. Only one can exist at a time.
