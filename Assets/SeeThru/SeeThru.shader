@@ -20,8 +20,8 @@ Shader "Valve/VR/SeeThru"
 			// Render State ---------------------------------------------------------------------------------------------------------------------------------------------
 			// Blend SrcAlpha OneMinusSrcAlpha // Alpha blending
 			// Cull Off
-			// ZWrite Off
-			// ZTest Greater
+			ZWrite Off
+			ZTest Greater
 			// Stencil
 			// {
 			// 	Ref 2
