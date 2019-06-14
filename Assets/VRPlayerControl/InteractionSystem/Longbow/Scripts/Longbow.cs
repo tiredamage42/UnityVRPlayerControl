@@ -78,11 +78,26 @@ namespace Valve.VR.InteractionSystem
 
 		SteamVR_Events.Action newPosesAppliedAction;
 
+		Interactable interactable;
+		void Awake () {
+			interactable = GetComponent<Interactable>();
+		}
+
+		void OnEnable () {
+			interactable.onEquipped += OnEquipped;
+			interactable.onUnequipped += OnUnequipped;
+		}
+		void OnDisable () {
+			interactable.onEquipped -= OnEquipped;
+			interactable.onUnequipped -= OnUnequipped;
+		}
+
+
 
 		//-------------------------------------------------
-		private void OnAttachedToHand( Hand attachedHand )
+		private void OnEquipped( Object attachedHand )
 		{
-			hand = attachedHand;
+			hand = (Hand)attachedHand;
 		}
 
 
@@ -365,6 +380,8 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void OnHandFocusLost( Hand hand )
 		{
+			Debug.LogError("ON HAND FOCUS Lost " + name);
+			
 			gameObject.SetActive( false );
 		}
 
@@ -372,13 +389,15 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void OnHandFocusAcquired( Hand hand )
 		{
+			Debug.LogError("ON HAND FOCUS ACQUIRED " + name);
+			
 			gameObject.SetActive( true );
-			OnAttachedToHand( hand );
+			OnEquipped( hand );
 		}
 
 
 		//-------------------------------------------------
-		private void OnDetachedFromHand( Hand hand )
+		private void OnUnequipped( Object hand )
 		{
 			Destroy( gameObject );
 		}

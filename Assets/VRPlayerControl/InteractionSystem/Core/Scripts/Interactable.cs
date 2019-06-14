@@ -31,11 +31,15 @@ namespace Valve.VR.InteractionSystem
         [Tooltip("The range of motion to set on the skeleton. None for no change.")]
         public SkeletalMotionRangeChange setRangeOfMotionOnPickup = SkeletalMotionRangeChange.None;
 
-        public delegate void OnAttachedToHandDelegate(Hand hand);
-        public delegate void OnDetachedFromHandDelegate(Hand hand);
+        // public delegate void OnAttachedToHandDelegate(Hand hand);
+        // public delegate void OnDetachedFromHandDelegate(Hand hand);
 
-        public event OnAttachedToHandDelegate onAttachedToHand;
-        public event OnDetachedFromHandDelegate onDetachedFromHand;
+        // public event OnAttachedToHandDelegate onAttachedToHand;
+        // public event OnDetachedFromHandDelegate onDetachedFromHand;
+
+        public event System.Action<Object> onEquipped;
+        public event System.Action<Object> onUnequipped;
+
 
 
         [Tooltip("Specify whether you want to snap to the hand's object attachment point, or just the raw hand")]
@@ -191,7 +195,7 @@ namespace Valve.VR.InteractionSystem
         {
             if (highlightOnHover)
             {
-                if (isHovering == false)
+                if (!isHovering)
                     UnHighlight();
             }
         }
@@ -200,26 +204,40 @@ namespace Valve.VR.InteractionSystem
         protected float blendToPoseTime = 0.1f;
         protected float releasePoseBlendTime = 0.2f;
 
+
+        //on equip
         protected virtual void OnAttachedToHand(Hand hand)
         {
+
+            //move to vr interactable
             if (activateActionSetOnAttach != null)
                 activateActionSetOnAttach.Activate(hand.handType);
 
-            if (onAttachedToHand != null)
-            {
-                onAttachedToHand.Invoke(hand);
-            }
+            //do callback
+            // if (onAttachedToHand != null)
+            // {
+            //     onAttachedToHand.Invoke(hand);
+            // }
 
+            //move to vr interactable
             if (skeletonPoser != null && hand.skeleton != null)
             {
                 hand.skeleton.BlendToPoser(skeletonPoser, blendToPoseTime);
             }
 
             attachedToHand = hand;
+
+
+            if (onEquipped != null) {
+                onEquipped(hand);
+            }
         }
 
+        // on unequip
         protected virtual void OnDetachedFromHand(Hand hand)
         {
+
+            //move to vr interactable
             if (activateActionSetOnAttach != null)
             {
                 if (hand.otherHand == null || hand.otherHand.currentAttachedObjectInfo.HasValue == false ||
@@ -230,12 +248,13 @@ namespace Valve.VR.InteractionSystem
                 }
             }
 
-            if (onDetachedFromHand != null)
-            {
-                onDetachedFromHand.Invoke(hand);
-            }
+            // do callback
+            // if (onDetachedFromHand != null)
+            // {
+            //     onDetachedFromHand.Invoke(hand);
+            // }
 
-
+            //move to vr interacable
             if (skeletonPoser != null)
             {
                 if (hand.skeleton != null)
@@ -243,6 +262,10 @@ namespace Valve.VR.InteractionSystem
             }
 
             attachedToHand = null;
+
+            if (onUnequipped != null) {
+                onUnequipped(hand);
+            }
         }
 
         protected virtual void OnDestroy()

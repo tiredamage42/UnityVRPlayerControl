@@ -238,16 +238,26 @@ namespace Valve.VR.InteractionSystem
 			handHoverLocked = null;
 		}
 
-        private GrabTypes grabbedWithType;
+
+        // private GrabTypes grabbedWithType;
+		bool isBeingGrabbed;
 		//-------------------------------------------------
 		private void HandHoverUpdate( Hand hand )
         {
-            GrabTypes startingGrabType = hand.GetGrabStarting();
-            bool isGrabEnding = hand.IsGrabbingWithType(grabbedWithType) == false;
+			
+            // GrabTypes startingGrabType = hand.GetGrabStarting();
 
-            if (grabbedWithType == GrabTypes.None && startingGrabType != GrabTypes.None)
+			bool grabDown = hand.GetGrabDown();
+
+
+            // bool isGrabEnding = hand.IsGrabbingWithType(grabbedWithType) == false;
+			bool grabUp = hand.GetGrabUp();
+
+			if (!isBeingGrabbed && grabDown)
+            // if (grabbedWithType == GrabTypes.None && startingGrabType != GrabTypes.None)
             {
-                grabbedWithType = startingGrabType;
+				isBeingGrabbed = true;
+                // grabbedWithType = startingGrabType;
                 // Trigger was just pressed
                 lastHandProjected = ComputeToTransformProjected( hand.hoverSphereTransform );
 
@@ -264,7 +274,10 @@ namespace Valve.VR.InteractionSystem
 
                 hand.HideGrabHint();
 			}
-            else if (grabbedWithType != GrabTypes.None && isGrabEnding)
+
+            // else if (grabbedWithType != GrabTypes.None && isGrabEnding)
+			else if (isBeingGrabbed && grabUp)
+			
 			{
 				// Trigger was just released
 				if ( hoverLock )
@@ -274,10 +287,14 @@ namespace Valve.VR.InteractionSystem
 				}
 
                 driving = false;
-                grabbedWithType = GrabTypes.None;
+
+				isBeingGrabbed = false;
+                // grabbedWithType = GrabTypes.None;
             }
 
-            if ( driving && isGrabEnding == false && hand.hoveringInteractable == this.interactable )
+            // if ( driving && isGrabEnding == false && hand.hoveringInteractable == this.interactable )
+			if ( driving && !grabUp && hand.hoveringInteractable == this.interactable )
+			
 			{
 				ComputeAngle( hand );
 				UpdateAll();

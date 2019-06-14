@@ -32,8 +32,8 @@ Shader "Valve/VR/SeeThru"
 
 			CGPROGRAM
 				#pragma target 5.0
-				#pragma only_renderers d3d11 vulkan glcore
-				#pragma exclude_renderers gles
+				// #pragma only_renderers d3d11 vulkan glcore
+				// #pragma exclude_renderers gles
 
 				#pragma vertex MainVS
 				#pragma fragment MainPS
@@ -63,13 +63,8 @@ Shader "Valve/VR/SeeThru"
 				VertexOutput MainVS( VertexInput i )
 				{
 					VertexOutput o;
-#if UNITY_VERSION >= 540
 					o.vertex = UnityObjectToClipPos(i.vertex);
-#else
-					o.vertex = mul(UNITY_MATRIX_MVP, i.vertex);
-#endif					
-					o.uv = TRANSFORM_TEX( i.uv, _MainTex );
-					
+					o.uv = TRANSFORM_TEX( i.uv, _MainTex );					
 					return o;
 				}
 				
@@ -77,7 +72,6 @@ Shader "Valve/VR/SeeThru"
 				float4 MainPS( VertexOutput i ) : SV_Target
 				{
 					float4 vColor = _Color.rgba;
-				
 					return vColor.rgba;
 				}
 
