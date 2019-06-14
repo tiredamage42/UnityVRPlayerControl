@@ -33,7 +33,7 @@ namespace Valve.VR.InteractionSystem
                 {
                     GameObject objectToAttach = GameObject.Instantiate(itemPrefab);
                     objectToAttach.SetActive(true);
-                    hand.AttachObject(objectToAttach, GrabTypes.Scripted);
+                    hand.AttachObject(objectToAttach);//, GrabTypes.Scripted);
                     hand.TriggerHapticPulse(800);
                     Destroy(gameObject);
 

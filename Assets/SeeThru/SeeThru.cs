@@ -10,18 +10,48 @@ using System.Collections.Generic;
 
 namespace Valve.VR.InteractionSystem
 {
+
 	//-------------------------------------------------------------------------
 	public class SeeThru : MonoBehaviour
 	{
+		
 		public Material seeThruMaterial;
 
-		private GameObject seeThru;
-		private Interactable interactable;
-		private Renderer sourceRenderer;
-		private Renderer destRenderer;
+		Interactable interactable;
+		Renderer sourceRenderer, seeThruRenderer;
+		
+
+		//-------------------------------------------------
+		void OnEnable()
+		{
+			interactable.onEquipped += AttachedToHand;
+			interactable.onUnequipped += DetachedFromHand;
+		}
 
 
 		//-------------------------------------------------
+		void OnDisable()
+		{
+			interactable.onEquipped -= AttachedToHand;
+			interactable.onUnequipped -= DetachedFromHand;
+		}
+
+
+		//-------------------------------------------------
+		private void AttachedToHand( Object hand )
+		{
+			seeThruRenderer.gameObject.SetActive( true );
+		}
+
+
+		//-------------------------------------------------
+		private void DetachedFromHand( Object hand )
+		{
+			seeThruRenderer.gameObject.SetActive( false );
+		}
+
+
+
 		void Awake()
 		{
 			interactable = GetComponentInParent<Interactable>();
@@ -29,7 +59,7 @@ namespace Valve.VR.InteractionSystem
 			//
 			// Create child game object for see thru renderer
 			//
-			seeThru = new GameObject( "_see_thru" );
+			GameObject seeThru = new GameObject( "_see_thru" );
 			seeThru.transform.parent = transform;
 			seeThru.transform.localPosition = Vector3.zero;
 			seeThru.transform.localRotation = Quaternion.identity;
@@ -52,7 +82,7 @@ namespace Valve.VR.InteractionSystem
 			if ( sourceMeshRenderer != null )
 			{
 				sourceRenderer = sourceMeshRenderer;
-				destRenderer = seeThru.AddComponent<MeshRenderer>();
+				seeThruRenderer = seeThru.AddComponent<MeshRenderer>();
 			}
 
 			//
@@ -64,7 +94,7 @@ namespace Valve.VR.InteractionSystem
 				SkinnedMeshRenderer destSkinnedMeshRenderer = seeThru.AddComponent<SkinnedMeshRenderer>();
 
 				sourceRenderer = sourceSkinnedMeshRenderer;
-				destRenderer = destSkinnedMeshRenderer;
+				seeThruRenderer = destSkinnedMeshRenderer;
 
 				destSkinnedMeshRenderer.sharedMesh = sourceSkinnedMeshRenderer.sharedMesh;
 				destSkinnedMeshRenderer.rootBone = sourceSkinnedMeshRenderer.rootBone;
@@ -76,7 +106,7 @@ namespace Valve.VR.InteractionSystem
 			//
 			// Create see thru materials
 			//
-			if ( sourceRenderer != null && destRenderer != null )
+			if ( sourceRenderer != null && seeThruRenderer != null )
 			{
 				int materialCount = sourceRenderer.sharedMaterials.Length;
 				Material[] destRendererMaterials = new Material[materialCount];
@@ -84,11 +114,11 @@ namespace Valve.VR.InteractionSystem
 				{
 					destRendererMaterials[i] = seeThruMaterial;
 				}
-				destRenderer.sharedMaterials = destRendererMaterials;
+				seeThruRenderer.sharedMaterials = destRendererMaterials;
 
-				for ( int i = 0; i < destRenderer.materials.Length; i++ )
+				for ( int i = 0; i < seeThruRenderer.materials.Length; i++ )
 				{
-					destRenderer.materials[i].renderQueue = 2001; // Rendered after geometry
+					seeThruRenderer.materials[i].renderQueue = 2001; // Rendered after geometry
 				}
 
 				for ( int i = 0; i < sourceRenderer.materials.Length; i++ )
@@ -104,46 +134,22 @@ namespace Valve.VR.InteractionSystem
 		}
 
 
-		//-------------------------------------------------
-		void OnEnable()
-		{
-			interactable.onAttachedToHand += AttachedToHand;
-			interactable.onDetachedFromHand += DetachedFromHand;
-		}
-
-
-		//-------------------------------------------------
-		void OnDisable()
-		{
-			interactable.onAttachedToHand -= AttachedToHand;
-			interactable.onDetachedFromHand -= DetachedFromHand;
-		}
-
-
-		//-------------------------------------------------
-		private void AttachedToHand( Hand hand )
-		{
-			seeThru.SetActive( true );
-		}
-
-
-		//-------------------------------------------------
-		private void DetachedFromHand( Hand hand )
-		{
-			seeThru.SetActive( false );
-		}
+		
 
 
 		//-------------------------------------------------
 		void Update()
 		{
-			if ( seeThru.activeInHierarchy )
+			Debug.Log("USING SEE THRU");
+			if ( seeThruRenderer.gameObject.activeInHierarchy )
 			{
-				int materialCount = Mathf.Min( sourceRenderer.materials.Length, destRenderer.materials.Length );
+				Material[] seeThruMaterials = seeThruRenderer.materials;
+				Material[] origMaterials = sourceRenderer.materials;
+				int materialCount = Mathf.Min( origMaterials.Length, seeThruMaterials.Length );
 				for ( int i = 0; i < materialCount; i++ )
 				{
-					destRenderer.materials[i].mainTexture = sourceRenderer.materials[i].mainTexture;
-					destRenderer.materials[i].color = destRenderer.materials[i].color * sourceRenderer.materials[i].color;
+					seeThruMaterials[i].mainTexture = origMaterials[i].mainTexture;
+					seeThruMaterials[i].color = seeThruMaterials[i].color * origMaterials[i].color;
 				}
 			}
 		}

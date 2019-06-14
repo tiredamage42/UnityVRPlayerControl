@@ -17,24 +17,37 @@ namespace Valve.VR.InteractionSystem
 
         [Tooltip("The local point which acts as a positional and rotational offset to use while held with a pinch type grab")]
         public Transform pinchOffset;
+
+        [Header("0-original 1-pinch 2-grip")]
+        [Range(0,2)] public int offsetIndex = 0;
         
         protected override void HandHoverUpdate(Hand hand)
         {
-            GrabTypes startingGrabType = hand.GetGrabStarting();
+            // GrabTypes startingGrabType = hand.GetGrabStarting();
 
-            if (startingGrabType != GrabTypes.None)
+            // if (startingGrabType != GrabTypes.None)
+            if (hand.GetGrabDown())
             {
-                if (startingGrabType == GrabTypes.Pinch)
+                if (offsetIndex == 1)
+                // if (startingGrabType == GrabTypes.Pinch)
                 {
-                    hand.AttachObject(gameObject, startingGrabType, attachmentFlags, pinchOffset);
+                    hand.AttachObject(gameObject, 
+                        // startingGrabType, 
+                        attachmentFlags, pinchOffset);
                 }
-                else if (startingGrabType == GrabTypes.Grip)
+                else if (offsetIndex == 2)
+                
+                // else if (startingGrabType == GrabTypes.Grip)
                 {
-                    hand.AttachObject(gameObject, startingGrabType, attachmentFlags, gripOffset);
+                    hand.AttachObject(gameObject, 
+                    // startingGrabType, 
+                    attachmentFlags, gripOffset);
                 }
                 else
                 {
-                    hand.AttachObject(gameObject, startingGrabType, attachmentFlags, attachmentOffset);
+                    hand.AttachObject(gameObject, 
+                    // startingGrabType, 
+                    attachmentFlags, attachmentOffset);
                 }
 
                 hand.HideGrabHint();
@@ -44,7 +57,8 @@ namespace Valve.VR.InteractionSystem
         {
             if (interactable.skeletonPoser != null)
             {
-                interactable.skeletonPoser.SetBlendingBehaviourEnabled("PinchPose", hand.currentAttachedObjectInfo.Value.grabbedWithType == GrabTypes.Pinch);
+                bool enablePinchPos = offsetIndex ==1;
+                interactable.skeletonPoser.SetBlendingBehaviourEnabled("PinchPose", enablePinchPos);//hand.currentAttachedObjectInfo.Value.grabbedWithType == GrabTypes.Pinch);
             }
 
             base.HandAttachedUpdate(hand);

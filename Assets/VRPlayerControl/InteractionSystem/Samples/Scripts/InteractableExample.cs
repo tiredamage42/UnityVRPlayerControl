@@ -37,6 +37,15 @@ namespace Valve.VR.InteractionSystem.Sample
             interactable = this.GetComponent<Interactable>();
 		}
 
+		void OnEnable () {
+			interactable.onEquipped += OnEquipped;
+			interactable.onUnequipped += OnUnequipped;
+		}
+		void OnDisable () {
+			interactable.onEquipped -= OnEquipped;
+			interactable.onUnequipped -= OnUnequipped;
+		}
+
 
 		//-------------------------------------------------
 		// Called when a Hand starts hovering over this object
@@ -45,6 +54,7 @@ namespace Valve.VR.InteractionSystem.Sample
 		{
 			generalText.text = "Hovering hand: " + hand.name;
 		}
+
 
 
 		//-------------------------------------------------
@@ -61,10 +71,14 @@ namespace Valve.VR.InteractionSystem.Sample
 		//-------------------------------------------------
 		private void HandHoverUpdate( Hand hand )
 		{
-            GrabTypes startingGrabType = hand.GetGrabStarting();
-            bool isGrabEnding = hand.IsGrabEnding(this.gameObject);
+			bool grabDown = hand.GetGrabDown();
 
-            if (interactable.attachedToHand == null && startingGrabType != GrabTypes.None)
+            // GrabTypes startingGrabType = hand.GetGrabStarting();
+            // bool isGrabEnding = hand.IsGrabEnding(this.gameObject);
+			
+			bool noGrab = hand.GetGrabUp();
+
+            if (interactable.attachedToHand == null && grabDown)//startingGrabType != GrabTypes.None)
             {
                 // Save our position/rotation so that we can restore it when we detach
                 oldPosition = transform.position;
@@ -75,10 +89,15 @@ namespace Valve.VR.InteractionSystem.Sample
                 hand.HoverLock(interactable);
 
                 // Attach this object to the hand
-                hand.AttachObject(gameObject, startingGrabType, attachmentFlags);
+                hand.AttachObject(gameObject, 
+					// startingGrabType, 
+					attachmentFlags);
             }
-            else if (isGrabEnding)
+            else if (noGrab)//isGrabEnding)
             {
+
+				//check if we're attached first
+
                 // Detach this object from the hand
                 hand.DetachObject(gameObject);
 
@@ -95,7 +114,7 @@ namespace Valve.VR.InteractionSystem.Sample
 		//-------------------------------------------------
 		// Called when this GameObject becomes attached to the hand
 		//-------------------------------------------------
-		private void OnAttachedToHand( Hand hand )
+		private void OnEquipped( Object hand )
         {
             generalText.text = string.Format("Attached: {0}", hand.name);
             attachTime = Time.time;
@@ -106,7 +125,7 @@ namespace Valve.VR.InteractionSystem.Sample
 		//-------------------------------------------------
 		// Called when this GameObject is detached from the hand
 		//-------------------------------------------------
-		private void OnDetachedFromHand( Hand hand )
+		private void OnUnequipped( Object hand )
 		{
             generalText.text = string.Format("Detached: {0}", hand.name);
 		}
@@ -136,6 +155,8 @@ namespace Valve.VR.InteractionSystem.Sample
 		//-------------------------------------------------
 		private void OnHandFocusAcquired( Hand hand )
 		{
+			Debug.LogError("ON HAND FOCUS ACQUIRED " + name);
+			
 		}
 
 
@@ -144,6 +165,8 @@ namespace Valve.VR.InteractionSystem.Sample
 		//-------------------------------------------------
 		private void OnHandFocusLost( Hand hand )
 		{
+			Debug.LogError("ON HAND FOCUS Lost " + name);
+			
 		}
 	}
 }

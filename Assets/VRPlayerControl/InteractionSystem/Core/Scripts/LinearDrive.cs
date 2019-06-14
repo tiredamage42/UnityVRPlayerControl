@@ -60,15 +60,19 @@ namespace Valve.VR.InteractionSystem
 
         protected virtual void HandHoverUpdate( Hand hand )
         {
-            GrabTypes startingGrabType = hand.GetGrabStarting();
+            // GrabTypes startingGrabType = hand.GetGrabStarting();
 
-            if (interactable.attachedToHand == null && startingGrabType != GrabTypes.None)
+
+
+            if (interactable.attachedToHand == null && hand.GetGrabDown())// startingGrabType != GrabTypes.None)
             {
                 initialMappingOffset = linearMapping.value - CalculateLinearMapping( hand.transform );
 				sampleCount = 0;
 				mappingChangeRate = 0.0f;
 
-                hand.AttachObject(gameObject, startingGrabType, attachmentFlags);
+                hand.AttachObject(gameObject, 
+					// startingGrabType, 
+					attachmentFlags);
             }
 		}
 
@@ -76,13 +80,14 @@ namespace Valve.VR.InteractionSystem
         {
             UpdateLinearMapping(hand.transform);
 
-            if (hand.IsGrabEnding(this.gameObject))
+			if (hand.GetGrabUp())
+            // if (hand.IsGrabEnding(this.gameObject))
             {
                 hand.DetachObject(gameObject);
             }
         }
 
-        protected virtual void OnDetachedFromHand(Hand hand)
+        protected virtual void OnUnequipped(Hand hand)
         {
             CalculateMappingChangeRate();
         }
