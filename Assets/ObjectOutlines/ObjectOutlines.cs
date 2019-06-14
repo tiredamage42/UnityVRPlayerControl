@@ -21,9 +21,9 @@ public class ObjectOutlines : MonoBehaviour
     public string outlineLayer = "Outline";
     
     Shader DrawSimple;
-    [SerializeField] Camera AttachedCamera, TempCam;
-    [SerializeField] Material Post_Mat;
-    [SerializeField] Texture defaultBlackTexture;
+    [HideInInspector] [SerializeField] Camera AttachedCamera, TempCam;
+    [HideInInspector] [SerializeField] Material Post_Mat;
+    [HideInInspector] [SerializeField] Texture defaultBlackTexture;
     int stagedLayer;
 
     const int maskOutPass = 0;
@@ -148,12 +148,17 @@ public class ObjectOutlines : MonoBehaviour
     [System.Serializable] public class HighlightGroup {
 
         public void OnEnable () {
-            if (renderers == null) {
-                renderers = new Dictionary<Renderer, int>();
-            }
-            if (rKeys == null) {
-                rKeys = new HashSet<Renderer>();
-            }
+            if (renderers == null)
+                renderers = new List<Renderer>();
+            if (originalLayers == null) 
+                originalLayers = new List<int>();
+
+            // if (renderers == null) {
+            //     renderers = new Dictionary<Renderer, int>();
+            // }
+            // if (rKeys == null) {
+            //     rKeys = new HashSet<Renderer>();
+            // }
         }
 
         public HighlightGroup (Color color, SortingType sortingType) {
@@ -164,27 +169,50 @@ public class ObjectOutlines : MonoBehaviour
         
         public Color highlightColor = Color.red;
         public SortingType sortingType;
-        public Dictionary<Renderer, int> renderers = new Dictionary<Renderer, int>();
-        public HashSet<Renderer> rKeys = new HashSet<Renderer>();
-        public void Remove (Renderer renderer) {
-            renderers.Remove(renderer);
-            rKeys.Remove(renderer);
-        }
-        public void Add (Renderer renderer) {
-            renderers.Add(renderer, renderer.gameObject.layer);
-            rKeys.Add(renderer);
-        }
-        public void Stage (int stagedLayer) {
-            foreach (var renderer in rKeys) {
+        public List<Renderer> renderers = new List<Renderer>();
+        public List<int> originalLayers = new List<int>();
+        // public Dictionary<Renderer, int> renderers = new Dictionary<Renderer, int>();
+        // public HashSet<Renderer> rKeys = new HashSet<Renderer>();
 
-                renderers[renderer] = renderer.gameObject.layer;
-                renderer.gameObject.layer = stagedLayer;
+        public void Clean () {
+            for (int i = renderers.Count -1; i >= 0; i--) {
+                if (renderers[i] == null) {
+                    renderers.RemoveAt(i);
+                    originalLayers.RemoveAt(i);
+                }
             }
         }
+        public void Remove (Renderer renderer) {
+            int i = renderers.IndexOf(renderer);
+            renderers.RemoveAt(i);
+            originalLayers.RemoveAt(i);
+            // renderers.Remove(renderer);
+            // rKeys.Remove(renderer);
+        }
+        public void Add (Renderer renderer) {
+            renderers.Add(renderer);
+            originalLayers.Add(renderer.gameObject.layer);
+            // renderers.Add(renderer, renderer.gameObject.layer);
+            // rKeys.Add(renderer);
+        }
+        public void Stage (int stagedLayer) {
+            for (int i = 0; i < renderers.Count; i++) {
+                originalLayers[i] = renderers[i].gameObject.layer;
+                renderers[i].gameObject.layer = stagedLayer;
+            }
+            // foreach (var renderer in rKeys) {
+            //     renderers[renderer] = renderer.gameObject.layer;
+            //     renderer.gameObject.layer = stagedLayer;
+            // }
+        }
         public void Unstage () {
-            foreach (var renderer in rKeys) {
-                renderer.gameObject.layer = renderers[renderer];   
-            }   
+        
+            for (int i = 0; i < renderers.Count; i++) {
+                renderers[i].gameObject.layer = originalLayers[i];
+            }
+            // foreach (var renderer in rKeys) {
+            //     renderer.gameObject.layer = renderers[renderer];   
+            // }   
         }
     }
 
@@ -194,7 +222,6 @@ public class ObjectOutlines : MonoBehaviour
         }
     }
     public void HighlightRenderers(List<Renderer> renderers, int highlightGroupIndex) {
-        Debug.Log("highlighting");
         for (int i = 0; i < renderers.Count; i++) {
             HighlightRenderer(renderers[i], highlightGroupIndex);
         }
@@ -204,7 +231,7 @@ public class ObjectOutlines : MonoBehaviour
 
         for (int i = 0; i < highlightGroups.Count; i++) {
             HighlightGroup group = highlightGroups[i];
-            if (group.rKeys.Contains(renderer)) {
+            if (group.renderers.Contains(renderer)) {
                 if (i != highlightGroupIndex) {
                     group.Remove(renderer);
                 }
@@ -221,7 +248,7 @@ public class ObjectOutlines : MonoBehaviour
 
         for (int i = 0; i < highlightGroups.Count; i++) {
             HighlightGroup group = highlightGroups[i];
-            if (group.rKeys.Contains(renderer)) {
+            if (group.renderers.Contains(renderer)) {
                 group.Remove(renderer);
             }
         }
@@ -269,11 +296,15 @@ public class ObjectOutlines : MonoBehaviour
         needsDepth = needsOverlay = false;
         for (int i = 0; i < highlightGroups.Count; i++) {
             HighlightGroup group = highlightGroups[i];
+
+            group.Clean();
+
             if (group.renderers.Count > 0) {
                 if (group.sortingType == SortingType.DepthFilter) needsDepth = true;
                 else needsOverlay = true;
             }
-            if (needsDepth && needsOverlay) return true;
+
+            // if (needsDepth && needsOverlay) return true;
         }
         return needsDepth || needsOverlay;
     }
@@ -332,9 +363,9 @@ public class ObjectOutlines : MonoBehaviour
 
     
 
- 
     void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
+
         bool needsDepth, needsOverlay;
         bool renderingHighlighted = HasAny(out needsDepth, out needsOverlay);
 
@@ -342,6 +373,7 @@ public class ObjectOutlines : MonoBehaviour
             // Graphics.Blit(source, destination);
             return;
         }
+
         
         int w = source.width;
         int h = source.height;

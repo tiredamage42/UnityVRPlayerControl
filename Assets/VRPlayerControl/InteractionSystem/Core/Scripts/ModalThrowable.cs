@@ -50,7 +50,7 @@ namespace Valve.VR.InteractionSystem
                     attachmentFlags, attachmentOffset);
                 }
 
-                hand.HideGrabHint();
+                // hand.HideGrabHint();
             }
         }
         protected override void HandAttachedUpdate(Hand hand)

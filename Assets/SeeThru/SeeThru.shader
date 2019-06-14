@@ -32,8 +32,8 @@ Shader "Valve/VR/SeeThru"
 
 			CGPROGRAM
 				#pragma target 5.0
-				// #pragma only_renderers d3d11 vulkan glcore
-				// #pragma exclude_renderers gles
+				#pragma only_renderers d3d11 vulkan glcore
+				#pragma exclude_renderers gles
 
 				#pragma vertex MainVS
 				#pragma fragment MainPS
@@ -45,18 +45,18 @@ Shader "Valve/VR/SeeThru"
 				struct VertexInput
 				{
 					float4 vertex : POSITION;
-					float2 uv : TEXCOORD0;
+					// float2 uv : TEXCOORD0;
 				};
 				
 				struct VertexOutput
 				{
-					float2 uv : TEXCOORD0;
+					// float2 uv : TEXCOORD0;
 					float4 vertex : SV_POSITION;
 				};
 				
 				// Globals --------------------------------------------------------------------------------------------------------------------------------------------------
-				sampler2D _MainTex;
-				float4 _MainTex_ST;
+				// sampler2D _MainTex;
+				// float4 _MainTex_ST;
 				float4 _Color;
 				
 				// MainVs ---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ Shader "Valve/VR/SeeThru"
 				{
 					VertexOutput o;
 					o.vertex = UnityObjectToClipPos(i.vertex);
-					o.uv = TRANSFORM_TEX( i.uv, _MainTex );					
+					// o.uv = TRANSFORM_TEX( i.uv, _MainTex );					
 					return o;
 				}
 				
