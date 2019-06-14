@@ -110,8 +110,11 @@ namespace VRPlayer {
         Coroutine currentHintRoutine;
 
         public void StopHintRoutine () {
-            StopCoroutine(currentHintRoutine);
-            currentHintRoutine = null;
+            if (currentHintRoutine != null) {
+
+                StopCoroutine(currentHintRoutine);
+                currentHintRoutine = null;
+            }
 
             Player player = Player.instance;
 
