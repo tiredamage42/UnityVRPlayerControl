@@ -78,7 +78,7 @@ namespace Valve.VR.InteractionSystem
         // [System.NonSerialized]
         // public Hand hoveringHand;
 
-        // public bool isDestroying { get; protected set; }
+        public bool isDestroying { get; protected set; }
         public bool isHovering { 
             get {
                 return currentHoveringIDs.Count != 0;
@@ -276,7 +276,7 @@ namespace Valve.VR.InteractionSystem
 
         protected virtual void OnDestroy()
         {
-            // isDestroying = true;
+            isDestroying = true;
 
             if (attachedToHand != null)
             {
@@ -291,7 +291,7 @@ namespace Valve.VR.InteractionSystem
 
         protected virtual void OnDisable()
         {
-            // isDestroying = true;
+            isDestroying = true;
 
             if (attachedToHand != null)
             {
