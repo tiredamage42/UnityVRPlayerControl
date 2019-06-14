@@ -240,9 +240,15 @@ namespace Valve.VR.InteractionSystem
             //move to vr interactable
             if (activateActionSetOnAttach != null)
             {
-                if (hand.otherHand == null || hand.otherHand.currentAttachedObjectInfo.HasValue == false ||
-                    (hand.otherHand.currentAttachedObjectInfo.Value.interactable != null &&
-                     hand.otherHand.currentAttachedObjectInfo.Value.interactable.activateActionSetOnAttach != this.activateActionSetOnAttach))
+                // if (hand.otherHand == null || hand.otherHand.currentAttachedObjectInfo.HasValue == false ||
+                //     (hand.otherHand.currentAttachedObjectInfo.Value.interactable != null &&
+                //      hand.otherHand.currentAttachedObjectInfo.Value.interactable.activateActionSetOnAttach != this.activateActionSetOnAttach))
+                
+                if (hand.otherHand == null || !hand.otherHand.hasCurrentAttached ||
+                    (hand.otherHand.currentAttached.interactable != null &&
+                     hand.otherHand.currentAttached.interactable.activateActionSetOnAttach != this.activateActionSetOnAttach))
+                
+                
                 {
                     activateActionSetOnAttach.Deactivate(hand.handType);
                 }

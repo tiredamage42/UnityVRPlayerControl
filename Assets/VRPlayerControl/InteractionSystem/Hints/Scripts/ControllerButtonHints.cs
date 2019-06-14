@@ -484,7 +484,6 @@ namespace Valve.VR.InteractionSystem
 			    renderModel.gameObject.SetActive( false );
 		}
 
-
 		//-------------------------------------------------
 		private void HideButtonHint( params ISteamVR_Action_In_Source[] actions )
 		{
@@ -569,7 +568,6 @@ namespace Valve.VR.InteractionSystem
 				yield return new WaitForSeconds( 3.0f );
 			}
 		}
-
 
 		//-------------------------------------------------
 		void Update()

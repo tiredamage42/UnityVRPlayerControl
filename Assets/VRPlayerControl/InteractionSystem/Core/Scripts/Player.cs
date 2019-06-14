@@ -19,8 +19,9 @@ namespace Valve.VR.InteractionSystem
 		[Tooltip( "Virtual transform corresponding to the meatspace tracking origin. Devices are tracked relative to this." )]
 		public Transform trackingOriginTransform;
 
-		[Tooltip( "List of possible transforms for the head/HMD, including the no-SteamVR fallback camera." )]
-		public Transform[] hmdTransforms;
+		public Transform hmdTransform;
+		// [Tooltip( "List of possible transforms for the head/HMD, including the no-SteamVR fallback camera." )]
+		// public Transform[] hmdTransforms;
 
 		[Tooltip( "List of possible Hands, including no-SteamVR fallback Hands." )]
 		public Hand[] hands;
@@ -28,19 +29,19 @@ namespace Valve.VR.InteractionSystem
 		// [Tooltip( "Reference to the physics collider that follows the player's HMD position." )]
 		// public Collider headCollider;
 
-		[Tooltip( "These objects are enabled when SteamVR is available" )]
-		public GameObject rigSteamVR;
+		// [Tooltip( "These objects are enabled when SteamVR is available" )]
+		// public GameObject rigSteamVR;
 
-		[Tooltip( "These objects are enabled when SteamVR is not available, or when the user toggles out of VR" )]
-		public GameObject rig2DFallback;
+		// [Tooltip( "These objects are enabled when SteamVR is not available, or when the user toggles out of VR" )]
+		// public GameObject rig2DFallback;
 
-		[Tooltip( "The audio listener for this player" )]
-		public Transform audioListener;
+		// [Tooltip( "The audio listener for this player" )]
+		// public Transform audioListener;
 
         [Tooltip("This action lets you know when the player has placed the headset on their head")]
         public SteamVR_Action_Boolean headsetOnHead = SteamVR_Input.GetBooleanAction("HeadsetOnHead");
 
-		public bool allowToggleTo2D = true;
+		// public bool allowToggleTo2D = true;
 
 		//-------------------------------------------------
 		// Singleton instance of the Player. Only one can exist at a time.
@@ -164,39 +165,39 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         // Get the HMD transform. This might return the fallback camera transform if SteamVR is unavailable or disabled.
         //-------------------------------------------------
-        public Transform hmdTransform
-		{
-			get
-			{
-                if (hmdTransforms != null)
-                {
-                    for (int i = 0; i < hmdTransforms.Length; i++)
-                    {
-                        if (hmdTransforms[i].gameObject.activeInHierarchy)
-                            return hmdTransforms[i];
-                    }
-                }
-				return null;
-			}
-		}
+        // public Transform hmdTransform
+		// {
+		// 	get
+		// 	{
+        //         if (hmdTransforms != null)
+        //         {
+        //             for (int i = 0; i < hmdTransforms.Length; i++)
+        //             {
+        //                 if (hmdTransforms[i].gameObject.activeInHierarchy)
+        //                     return hmdTransforms[i];
+        //             }
+        //         }
+		// 		return null;
+		// 	}
+		// }
 
 
 		//-------------------------------------------------
 		// Height of the eyes above the ground - useful for estimating player height.
 		//-------------------------------------------------
-		public float eyeHeight
-		{
-			get
-			{
-				Transform hmd = hmdTransform;
-				if ( hmd )
-				{
-					Vector3 eyeOffset = Vector3.Project( hmd.position - trackingOriginTransform.position, trackingOriginTransform.up );
-					return eyeOffset.magnitude / trackingOriginTransform.lossyScale.x;
-				}
-				return 0.0f;
-			}
-		}
+		// public float eyeHeight
+		// {
+		// 	get
+		// 	{
+		// 		Transform hmd = hmdTransform;
+		// 		if ( hmd )
+		// 		{
+		// 			Vector3 eyeOffset = Vector3.Project( hmd.position - trackingOriginTransform.position, trackingOriginTransform.up );
+		// 			return eyeOffset.magnitude / trackingOriginTransform.lossyScale.x;
+		// 		}
+		// 		return 0.0f;
+		// 	}
+		// }
 
 		
 
@@ -220,26 +221,26 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		// Guess for the world-space direction of the player's hips/torso. This is effectively just the gaze direction projected onto the floor plane.
 		//-------------------------------------------------
-		public Vector3 bodyDirectionGuess
-		{
-			get
-			{
-				Transform hmd = hmdTransform;
-				if ( hmd )
-				{
-					Vector3 direction = Vector3.ProjectOnPlane( hmd.forward, trackingOriginTransform.up );
-					if ( Vector3.Dot( hmd.up, trackingOriginTransform.up ) < 0.0f )
-					{
-						// The HMD is upside-down. Either
-						// -The player is bending over backwards
-						// -The player is bent over looking through their legs
-						direction = -direction;
-					}
-					return direction;
-				}
-				return trackingOriginTransform.forward;
-			}
-		}
+		// public Vector3 bodyDirectionGuess
+		// {
+		// 	get
+		// 	{
+		// 		Transform hmd = hmdTransform;
+		// 		if ( hmd )
+		// 		{
+		// 			Vector3 direction = Vector3.ProjectOnPlane( hmd.forward, trackingOriginTransform.up );
+		// 			if ( Vector3.Dot( hmd.up, trackingOriginTransform.up ) < 0.0f )
+		// 			{
+		// 				// The HMD is upside-down. Either
+		// 				// -The player is bending over backwards
+		// 				// -The player is bent over looking through their legs
+		// 				direction = -direction;
+		// 			}
+		// 			return direction;
+		// 		}
+		// 		return trackingOriginTransform.forward;
+		// 	}
+		// }
 
 
 		//-------------------------------------------------
@@ -262,13 +263,14 @@ namespace Valve.VR.InteractionSystem
 
 			if ( SteamVR.instance != null )
 			{
-				ActivateRig( rigSteamVR );
+				// ActivateRig( rigSteamVR );
 			}
 			else
 			{
-#if !HIDE_DEBUG_UI
-				ActivateRig( rig2DFallback );
-#endif
+				Debug.LogError("there was a problem initializing steam vr");
+// #if !HIDE_DEBUG_UI
+// 				ActivateRig( rig2DFallback );
+// #endif
 			}
         }
 
@@ -356,47 +358,49 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		public void Draw2DDebug()
-		{
-			if ( !allowToggleTo2D )
-				return;
+		// public void Draw2DDebug()
+		// {
+		// 	if ( !allowToggleTo2D )
+		// 		return;
 
-			if ( !SteamVR.active )
-				return;
+		// 	if ( !SteamVR.active )
+		// 		return;
 
-			int width = 100;
-			int height = 25;
-			int left = Screen.width / 2 - width / 2;
-			int top = Screen.height - height - 10;
+		// 	int width = 100;
+		// 	int height = 25;
+		// 	int left = Screen.width / 2 - width / 2;
+		// 	int top = Screen.height - height - 10;
 
-			string text = ( rigSteamVR.activeSelf ) ? "2D Debug" : "VR";
+		// 	string text = ( rigSteamVR.activeSelf ) ? "2D Debug" : "VR";
 
-			if ( GUI.Button( new Rect( left, top, width, height ), text ) )
-			{
-				if ( rigSteamVR.activeSelf )
-				{
-					ActivateRig( rig2DFallback );
-				}
-				else
-				{
-					ActivateRig( rigSteamVR );
-				}
-			}
-		}
+		// 	if ( GUI.Button( new Rect( left, top, width, height ), text ) )
+		// 	{
+		// 		if ( rigSteamVR.activeSelf )
+		// 		{
+		// 			ActivateRig( rig2DFallback );
+		// 		}
+		// 		else
+		// 		{
+		// 			ActivateRig( rigSteamVR );
+		// 		}
+		// 	}
+		// }
 
 
 		//-------------------------------------------------
 		private void ActivateRig( GameObject rig )
 		{
-			rigSteamVR.SetActive( rig == rigSteamVR );
-			rig2DFallback.SetActive( rig == rig2DFallback );
+			// rigSteamVR.SetActive( rig == rigSteamVR );
+			
+			// rig2DFallback.SetActive( rig == rig2DFallback );
 
-			if ( audioListener )
-			{
-				audioListener.transform.parent = hmdTransform;
-				audioListener.transform.localPosition = Vector3.zero;
-				audioListener.transform.localRotation = Quaternion.identity;
-			}
+			
+			// if ( audioListener )
+			// {
+			// 	audioListener.transform.parent = hmdTransform;
+			// 	audioListener.transform.localPosition = Vector3.zero;
+			// 	audioListener.transform.localRotation = Quaternion.identity;
+			// }
 		}
 
 

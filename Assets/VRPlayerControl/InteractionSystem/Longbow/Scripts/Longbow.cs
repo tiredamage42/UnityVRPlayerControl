@@ -364,13 +364,17 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void ShutDown()
 		{
-			if ( hand != null && hand.otherHand.currentAttachedObject != null )
+
+			// if ( hand != null && hand.otherHand.currentAttachedObject != null )
+			if ( hand != null && hand.otherHand.hasCurrentAttached)
+			
 			{
-				if ( hand.otherHand.currentAttachedObject.GetComponent<ItemPackageReference>() != null )
+				GameObject otherHandCurrentAttached = hand.otherHand.currentAttached.attachedObject;
+				if ( otherHandCurrentAttached.GetComponent<ItemPackageReference>() != null )
 				{
-					if ( hand.otherHand.currentAttachedObject.GetComponent<ItemPackageReference>().itemPackage == arrowHandItemPackage )
+					if ( otherHandCurrentAttached.GetComponent<ItemPackageReference>().itemPackage == arrowHandItemPackage )
 					{
-						hand.otherHand.DetachObject( hand.otherHand.currentAttachedObject );
+						hand.otherHand.DetachObject( otherHandCurrentAttached );
 					}
 				}
 			}
