@@ -180,6 +180,7 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void FixedUpdate()
 		{
+			Debug.LogError(name + " using complex throwable");
 			if ( attachMode == AttachMode.Force )
 			{
 				for ( int i = 0; i < holdingHands.Count; i++ )
