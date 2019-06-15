@@ -3,12 +3,88 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Valve.VR;
-using Valve.VR.InteractionSystem;
+// using Valve.VR.InteractionSystem;
 
 namespace VRPlayer {
     public class SceneChaperone : MonoBehaviour
     {
-        SteamVR_Events.Action chaperoneInfoInitializedAction;
+
+        public bool initialized { get; private set; }
+		public float playAreaSizeX { get; private set; }
+		public float playAreaSizeZ { get; private set; }
+		public bool roomscale { get; private set; }
+
+		// public static SteamVR_Events.Event Initialized = new SteamVR_Events.Event();
+		// public static SteamVR_Events.Action InitializedAction( UnityAction action ) { return new SteamVR_Events.ActionNoArgs( Initialized, action ); }
+
+		//-------------------------------------------------
+		// private static ChaperoneInfo _instance;
+		// public static ChaperoneInfo instance
+		// {
+		// 	get
+		// 	{
+		// 		if ( _instance == null )
+		// 		{
+		// 			_instance = new GameObject( "[ChaperoneInfo]" ).AddComponent<ChaperoneInfo>();
+		// 			_instance.initialized = false;
+		// 			_instance.playAreaSizeX = 1.0f;
+		// 			_instance.playAreaSizeZ = 1.0f;
+		// 			_instance.roomscale = false;
+
+		// 			DontDestroyOnLoad( _instance.gameObject );
+		// 		}
+		// 		return _instance;
+		// 	}
+		// }
+
+
+		//-------------------------------------------------
+		IEnumerator Start()
+		{
+			// Uncomment for roomscale testing
+			//_instance.initialized = true;
+			//_instance.playAreaSizeX = UnityEngine.Random.Range( 1.0f, 4.0f );
+			//_instance.playAreaSizeZ = UnityEngine.Random.Range( 1.0f, _instance.playAreaSizeX );
+			//_instance.roomscale = true;
+			//ChaperoneInfo.Initialized.Send();
+			//yield break;
+
+			// Get interface pointer
+			var chaperone = OpenVR.Chaperone;
+			if ( chaperone == null )
+			{
+				Debug.LogWarning("<b>[SteamVR Interaction]</b> Failed to get IVRChaperone interface.");
+				initialized = true;
+				yield break;
+			}
+
+			// Get play area size
+			while ( true )
+			{
+				float px = 0.0f, pz = 0.0f;
+				if ( chaperone.GetPlayAreaSize( ref px, ref pz ) )
+				{
+					initialized = true;
+					playAreaSizeX = px;
+					playAreaSizeZ = pz;
+					roomscale = Mathf.Max( px, pz ) > 1.01f;
+
+					Debug.LogFormat("<b>[SteamVR Interaction]</b> ChaperoneInfo initialized. {2} play area {0:0.00}m x {1:0.00}m", px, pz, roomscale ? "Roomscale" : "Standing" );
+
+					// ChaperoneInfo.Initialized.Send();
+                    OnChaperoneInfoInitialized();
+
+					yield break;
+				}
+
+				yield return null;
+			}
+		}
+
+
+
+
+        // SteamVR_Events.Action chaperoneInfoInitializedAction;
 
         static SceneChaperone _instance;
         public static SceneChaperone instance {
@@ -27,7 +103,19 @@ namespace VRPlayer {
         bool built;
 
         void Awake () {
-            chaperoneInfoInitializedAction = ChaperoneInfo.InitializedAction( OnChaperoneInfoInitialized );
+            // chaperoneInfoInitializedAction = ChaperoneInfo.InitializedAction( OnChaperoneInfoInitialized );
+
+
+
+
+
+            initialized = false;
+            playAreaSizeX = 1.0f;
+            playAreaSizeZ = 1.0f;
+            roomscale = false;
+
+            DontDestroyOnLoad( gameObject );
+
 
             playAreaPreviewCorner.SetActive( false );
 			playAreaPreviewSide.SetActive( false );
@@ -36,7 +124,7 @@ namespace VRPlayer {
 
         void OnEnable()
 		{
-			chaperoneInfoInitializedAction.enabled = true;
+			// chaperoneInfoInitializedAction.enabled = true;
 			OnChaperoneInfoInitialized(); // In case it's already initialized
 		}
 
@@ -44,17 +132,19 @@ namespace VRPlayer {
 		//-------------------------------------------------
 		void OnDisable()
 		{
-			chaperoneInfoInitializedAction.enabled = false;
+			// chaperoneInfoInitializedAction.enabled = false;
 		}
 
         //Maybe adjust this to world scale
 		//-------------------------------------------------
 		private void OnChaperoneInfoInitialized()
 		{
-			ChaperoneInfo chaperone = ChaperoneInfo.instance;
+			// ChaperoneInfo chaperone = ChaperoneInfo.instance;
 
-			if ( chaperone.initialized && chaperone.roomscale )
-			{
+			// if ( chaperone.initialized && chaperone.roomscale )
+			if ( initialized && roomscale )
+			
+            {
 				//Set up the render model for the play area bounds
 
 				if ( !built)// playAreaPreviewTransform == null )
@@ -87,8 +177,10 @@ namespace VRPlayer {
 					}
 				}
 
-				float x = chaperone.playAreaSizeX;
-				float z = chaperone.playAreaSizeZ;
+				// float x = chaperone.playAreaSizeX;
+				// float z = chaperone.playAreaSizeZ;
+                float x = playAreaSizeX;
+				float z = playAreaSizeZ;
 
 				playAreaPreviewSides[0].localPosition = new Vector3( 0.0f, 0.0f, 0.5f * z - 0.25f );
 				playAreaPreviewSides[1].localPosition = new Vector3( 0.0f, 0.0f, -0.5f * z + 0.25f );

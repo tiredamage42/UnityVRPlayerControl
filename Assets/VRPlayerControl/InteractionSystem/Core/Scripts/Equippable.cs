@@ -44,12 +44,15 @@ namespace Valve.VR.InteractionSystem
         
         private void Start()
         {
+            Debug.Log("Equippable used on " + name);
             initialScale = transform.localScale;
             interactable = GetComponent<Interactable>();
         }
         
         private void Update()
         {
+            Debug.Log("Equippable update used on " + name);
+            
             if (interactable.attachedToHand)
             {
                 Vector3 flipScale = initialScale;
