@@ -21,8 +21,8 @@ namespace Valve.VR.InteractionSystem
 
         public SteamVR_Action_Vibration hapticFlash = SteamVR_Input.GetAction<SteamVR_Action_Vibration>("Haptic");
 
-        [Header( "Debug" )]
-		public bool debugHints = false;
+        // [Header( "Debug" )]
+		// public bool debugHints = false;
 
 		private SteamVR_RenderModel renderModel;
 		private Player player;
@@ -91,13 +91,13 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private void HintDebugLog( string msg )
-		{
-			if ( debugHints )
-			{
-				Debug.Log("<b>[SteamVR Interaction]</b> Hints: " + msg );
-			}
-		}
+		// private void HintDebugLog( string msg )
+		// {
+		// 	if ( debugHints )
+		// 	{
+		// 		Debug.Log("<b>[SteamVR Interaction]</b> Hints: " + msg );
+		// 	}
+		// }
 
 
 		//-------------------------------------------------
@@ -193,8 +193,8 @@ namespace Valve.VR.InteractionSystem
             {
                 string renderModelDebug = "";
 
-                if (debugHints)
-                    renderModelDebug = "Components for render model " + renderModel.index;
+                // if (debugHints)
+                //     renderModelDebug = "Components for render model " + renderModel.index;
 
                 for (int childIndex = 0; childIndex < renderModel.transform.childCount; childIndex++)
                 {
@@ -202,18 +202,18 @@ namespace Valve.VR.InteractionSystem
 
                     if (componentTransformMap.ContainsKey(child.name))
                     {
-                        if (debugHints)
-                            renderModelDebug += "\n\t!    Child component already exists with name: " + child.name;
+                        // if (debugHints)
+                        //     renderModelDebug += "\n\t!    Child component already exists with name: " + child.name;
                     }
                     else
                         componentTransformMap.Add(child.name, child);
 
-                    if (debugHints)
-                        renderModelDebug += "\n\t" + child.name + ".";
+                    // if (debugHints)
+                    //     renderModelDebug += "\n\t" + child.name + ".";
                 }
 
                 //Uncomment to show the button mask for each component of the render model
-                HintDebugLog(renderModelDebug);
+                // HintDebugLog(renderModelDebug);
             }
 
             actionHintInfos = new Dictionary<ISteamVR_Action_In_Source, ActionHintInfo>();
@@ -242,45 +242,45 @@ namespace Valve.VR.InteractionSystem
 			Transform buttonTransform = null;
 			List<MeshRenderer> buttonRenderers = new List<MeshRenderer>();
 
-            StringBuilder buttonDebug = new StringBuilder();
-            buttonDebug.Append("Looking for action: ");
+            // StringBuilder buttonDebug = new StringBuilder();
+            // buttonDebug.Append("Looking for action: ");
 
-            buttonDebug.AppendLine(action.GetShortName());
+            // buttonDebug.AppendLine(action.GetShortName());
 
-            buttonDebug.Append("Action localized origin: ");
-            buttonDebug.AppendLine(action.GetLocalizedOrigin(inputSource));
+            // buttonDebug.Append("Action localized origin: ");
+            // buttonDebug.AppendLine(action.GetLocalizedOrigin(inputSource));
 
             string actionComponentName = action.GetRenderModelComponentName(inputSource);
 
             if (componentTransformMap.ContainsKey(actionComponentName))
             {
-                buttonDebug.AppendLine(string.Format("Found component: {0} for {1}", actionComponentName, action.GetShortName()));
+                // buttonDebug.AppendLine(string.Format("Found component: {0} for {1}", actionComponentName, action.GetShortName()));
                 Transform componentTransform = componentTransformMap[actionComponentName];
 
                 buttonTransform = componentTransform;
 
-                buttonDebug.AppendLine(string.Format("Found componentTransform: {0}. buttonTransform: {1}", componentTransform, buttonTransform));
+                // buttonDebug.AppendLine(string.Format("Found componentTransform: {0}. buttonTransform: {1}", componentTransform, buttonTransform));
 
                 buttonRenderers.AddRange(componentTransform.GetComponentsInChildren<MeshRenderer>());
             }
             else
             {
-                buttonDebug.AppendLine(string.Format("Can't find component transform for action: {0}. Component name: \"{1}\"", action.GetShortName(), actionComponentName));
+                // buttonDebug.AppendLine(string.Format("Can't find component transform for action: {0}. Component name: \"{1}\"", action.GetShortName(), actionComponentName));
             }
 
-            buttonDebug.AppendLine(string.Format("Found {0} renderers for {1}", buttonRenderers.Count, action.GetShortName()));
+            // buttonDebug.AppendLine(string.Format("Found {0} renderers for {1}", buttonRenderers.Count, action.GetShortName()));
 
 			foreach ( MeshRenderer renderer in buttonRenderers )
 			{
-                buttonDebug.Append("\t");
-                buttonDebug.AppendLine(renderer.name);
+                // buttonDebug.Append("\t");
+                // buttonDebug.AppendLine(renderer.name);
 			}
 
-			HintDebugLog( buttonDebug.ToString() );
+			// HintDebugLog( buttonDebug.ToString() );
 
 			if ( buttonTransform == null )
 			{
-				HintDebugLog( "Couldn't find buttonTransform for " + action.GetShortName());
+				// HintDebugLog( "Couldn't find buttonTransform for " + action.GetShortName());
 				return;
 			}
 
@@ -417,7 +417,9 @@ namespace Valve.VR.InteractionSystem
 
 				//Spread out the text end positions based on the distance from the center
 				float t = hintInfo.Value.distanceFromCenter / maxDistanceFromCenter;
-				float scale = hintInfo.Value.distanceFromCenter * Mathf.Pow( 2, 10 * ( t - 1.0f ) ) * 20.0f;
+				
+				// float scale = hintInfo.Value.distanceFromCenter * Mathf.Pow( 2, 10 * ( t - 1.0f ) ) * 20.0f;
+				float scale = hintInfo.Value.distanceFromCenter * Mathf.Pow( 2, 10 * ( t - 1.0f ) ) * 40.0f;
 
 				//Flip the direction of the end pos based on which hand this is
 				float endPosOffset = 0.1f;
@@ -667,7 +669,7 @@ namespace Valve.VR.InteractionSystem
 
 				if ( highlightButton )
 				{
-					ShowButtonHint(action);
+					ShowButtonHint( action );
 				}
 
 				renderModel.gameObject.SetActive( true );
@@ -726,7 +728,7 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 
 		//-------------------------------------------------
-		private static ControllerButtonHints GetControllerButtonHints( Hand hand )
+		static ControllerButtonHints GetControllerButtonHints( Hand hand )
 		{
 			if ( hand != null )
 			{

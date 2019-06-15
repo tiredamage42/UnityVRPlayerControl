@@ -308,6 +308,7 @@ namespace Valve.VR
 #if UNITY_2017_1_OR_NEWER
 	    void OnBeforeRender() 
         { 
+            Debug.Log("use on before render");
             if (SteamVR.active == false)
                 return;
 
@@ -319,19 +320,20 @@ namespace Valve.VR
 #else
         void OnCameraPreCull(Camera cam)
         {
+            Debug.Log("use on camera pre cull");
             if (SteamVR.active == false)
                 return;
 
-#if UNITY_2017_1_OR_NEWER
+// #if UNITY_2017_1_OR_NEWER
 		if (cam.cameraType != CameraType.VR)
 			return;
-#else
-            //custom code
-            if (!cam.stereoEnabled) //if not main camera (stereoEnabled isn't perfect, but it is the fast/easiest way to check this in Unity 5.4)
-            {
-                return;
-            }
-#endif
+// #else
+//             //custom code
+//             if (!cam.stereoEnabled) //if not main camera (stereoEnabled isn't perfect, but it is the fast/easiest way to check this in Unity 5.4)
+//             {
+//                 return;
+//             }
+// #endif
             // Only update poses on the first camera per frame.
             if (Time.frameCount != lastFrameCount)
             {

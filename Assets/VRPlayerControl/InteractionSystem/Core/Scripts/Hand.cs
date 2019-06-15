@@ -902,6 +902,7 @@ namespace Valve.VR.InteractionSystem
                 yield return null;
             }
         }
+       
 
 
         //-------------------------------------------------
@@ -1094,55 +1095,43 @@ namespace Valve.VR.InteractionSystem
 
 
         //-------------------------------------------------
-        // private void UpdateDebugText()
-        // {
-        //     if (showDebugText)
-        //     {
-        //         if (debugText == null)
-        //         {
-        //             debugText = new GameObject("_debug_text").AddComponent<TextMesh>();
-        //             debugText.fontSize = 120;
-        //             debugText.characterSize = 0.001f;
-        //             debugText.transform.parent = transform;
+        private void UpdateDebugText()
+        {
+                if (debugText == null)
+                {
+                    debugText = new GameObject("_debug_text").AddComponent<TextMesh>();
+                    debugText.fontSize = 120;
+                    debugText.characterSize = 0.001f;
+                    debugText.transform.parent = transform;
 
-        //             debugText.transform.localRotation = Quaternion.Euler(90.0f, 0.0f, 0.0f);
-        //         }
+                    debugText.transform.localRotation = Quaternion.Euler(90.0f, 0.0f, 0.0f);
+                }
 
-        //         if (handType == SteamVR_Input_Sources.RightHand)
-        //         {
-        //             debugText.transform.localPosition = new Vector3(-0.05f, 0.0f, 0.0f);
-        //             debugText.alignment = TextAlignment.Right;
-        //             debugText.anchor = TextAnchor.UpperRight;
-        //         }
-        //         else
-        //         {
-        //             debugText.transform.localPosition = new Vector3(0.05f, 0.0f, 0.0f);
-        //             debugText.alignment = TextAlignment.Left;
-        //             debugText.anchor = TextAnchor.UpperLeft;
-        //         }
+                if (handType == SteamVR_Input_Sources.RightHand)
+                {
+                    debugText.transform.localPosition = new Vector3(-0.05f, 0.0f, 0.0f);
+                    debugText.alignment = TextAlignment.Right;
+                    debugText.anchor = TextAnchor.UpperRight;
+                }
+                else
+                {
+                    debugText.transform.localPosition = new Vector3(0.05f, 0.0f, 0.0f);
+                    debugText.alignment = TextAlignment.Left;
+                    debugText.anchor = TextAnchor.UpperLeft;
+                }
 
-        //         debugText.text = string.Format(
-        //             "Hovering: {0}\n" +
-        //             "Hover Lock: {1}\n" +
-        //             "Attached: {2}\n" +
-        //             // "Total Attached: {3}\n" +
-        //             "Type: {3}\n",
-        //             (hoveringInteractable ? hoveringInteractable.gameObject.name : "null"),
-        //             hoverLocked,
-        //             // (currentAttachedObject ? currentAttachedObject.name : "null"),
-        //             (hasCurrentAttached ? currentAttached.attachedObject.name : "null"),
+                debugText.text = string.Format(
+                    "Hovering: {0}\n" +
+                    "Hover Lock: {1}\n" +
+                    "Attached: {2}\n" +
+                    "Type: {3}\n",
+                    (hoveringInteractable ? hoveringInteractable.gameObject.name : "null"),
+                    hoverLocked,
+                    (currentAttached != null ? currentAttached.attachedObject.name : "null"),
                     
-        //             // attachedObjects.Count,
-        //             handType.ToString());
-        //     }
-        //     else
-        //     {
-        //         if (debugText != null)
-        //         {
-        //             Destroy(debugText.gameObject);
-        //         }
-        //     }
-        // }
+                    handType.ToString());
+           
+        }
 
 
         //-------------------------------------------------
@@ -1154,7 +1143,7 @@ namespace Valve.VR.InteractionSystem
             float hoverUpdateBegin = ((otherHand != null) && (otherHand.GetInstanceID() < GetInstanceID())) ? (0.5f * hoverUpdateInterval) : (0.0f);
             InvokeRepeating("UpdateHovering", hoverUpdateBegin, hoverUpdateInterval);
 
-            // InvokeRepeating("UpdateDebugText", hoverUpdateBegin, hoverUpdateInterval);
+            InvokeRepeating("UpdateDebugText", hoverUpdateBegin, hoverUpdateInterval);
         }
 
 
@@ -1514,7 +1503,7 @@ namespace Valve.VR.InteractionSystem
             if (spewDebugText)
                 HandDebugLog("HoverLock " + interactable);
             hoverLocked = true;
-            hoveringInteractable = interactable;
+            // hoveringInteractable = interactable;
         }
 
 

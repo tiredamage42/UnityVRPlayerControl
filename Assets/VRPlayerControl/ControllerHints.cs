@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
 
+    /*
 public class ControllerHints : MonoBehaviour
 {
 
-    /*
 
 
     //-------------------------------------------------
@@ -35,5 +35,5 @@ public class ControllerHints : MonoBehaviour
                 yield return new WaitForSeconds(3.0f);
 			}
 		}
-     */
 }
+     */

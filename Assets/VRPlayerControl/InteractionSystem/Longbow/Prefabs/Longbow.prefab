@@ -424,7 +424,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d623a50b67320940b97e93e31d0a21b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seeThruMaterial: {fileID: 2100000, guid: 3bbb445147c574240a8b87a1193788b5, type: 2}
 --- !u!1 &108256
 GameObject:
   m_ObjectHideFlags: 0
@@ -985,7 +984,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d623a50b67320940b97e93e31d0a21b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seeThruMaterial: {fileID: 2100000, guid: 3bbb445147c574240a8b87a1193788b5, type: 2}
 --- !u!1 &140374
 GameObject:
   m_ObjectHideFlags: 0
@@ -1885,7 +1883,7 @@ MonoBehaviour:
   snapAttachEaseInCompleted: 0
   skeletonPoser: {fileID: 0}
   handFollowTransform: 1
-  highlightOnHover: 1
+  highlightOnHover: 0
   hideHighlight: []
 --- !u!114 &11455624
 MonoBehaviour:

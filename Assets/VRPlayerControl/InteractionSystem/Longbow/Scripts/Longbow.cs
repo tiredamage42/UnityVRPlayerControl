@@ -259,8 +259,10 @@ namespace Valve.VR.InteractionSystem
 		public void StartNock( ArrowHand currentArrowHand )
 		{
 			arrowHand = currentArrowHand;
+			
 			hand.HoverLock( GetComponent<Interactable>() );
 			nocked = true;
+			
 			nockLerpStartTime = Time.time;
 			nockLerpStartRotation = pivotTransform.rotation;
 
