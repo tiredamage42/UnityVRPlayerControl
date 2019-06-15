@@ -59,6 +59,10 @@ Shader "Hidden/_FastBlur" {
         //     fixed4(0.0855, 0.0855, 0.0855, 0), 
         //     fixed4(0.0205, 0.0205, 0.0205, 0) 
         // };
+
+		/*
+			need to blur alpha as well
+		*/
         static const fixed4 curve4[7] = { 
             fixed4(0.0205, 0.0205, 0.0205, 0.0205), 
             fixed4(0.0855, 0.0855, 0.0855, 0.0855), 
