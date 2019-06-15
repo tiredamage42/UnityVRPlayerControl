@@ -96,11 +96,11 @@ namespace Valve.VR.InteractionSystem
         protected RenderModel mainRenderModel;
         protected RenderModel hoverhighlightRenderModel;
 
-        public bool showDebugText = false;
+        // public bool showDebugText = false;
         public bool spewDebugText = false;
         public bool showDebugInteractables = false;
 
-        public struct AttachedObject
+        public class EquippedObject
         {
             public GameObject attachedObject;
             public Interactable interactable;
@@ -127,8 +127,8 @@ namespace Valve.VR.InteractionSystem
         }
 
 
-        public AttachedObject currentAttached;
-        public bool hasCurrentAttached;
+        public EquippedObject currentAttached;
+        // public bool hasCurrentAttached;
 
 
         // private List<AttachedObject> attachedObjects = new List<AttachedObject>();
@@ -196,11 +196,11 @@ namespace Valve.VR.InteractionSystem
 
                         //Note: The _hoveringInteractable can change after sending the OnHandHoverEnd message 
                         //so we need to check it again before broadcasting this message
-                        if (_hoveringInteractable != null)
-                        {
-                            // let objects attached to the hand know that a hover has ended
-                            this.BroadcastMessage("OnParentHandHoverEnd", oldInteractable, SendMessageOptions.DontRequireReceiver); 
-                        }
+                        // if (_hoveringInteractable != null)
+                        // {
+                        //     // let objects attached to the hand know that a hover has ended
+                        //     this.BroadcastMessage("OnParentHandHoverEnd", oldInteractable, SendMessageOptions.DontRequireReceiver); 
+                        // }
                     }
 
                     _hoveringInteractable = newInteractable;
@@ -220,10 +220,10 @@ namespace Valve.VR.InteractionSystem
 
                         //Note: The _hoveringInteractable can change after sending the OnHandHoverBegin message 
                         //so we need to check it again before broadcasting this message
-                        if (_hoveringInteractable != null)
-                        {
-                            this.BroadcastMessage("OnParentHandHoverBegin", newInteractable, SendMessageOptions.DontRequireReceiver); // let objects attached to the hand know that a hover has begun
-                        }
+                        // if (_hoveringInteractable != null)
+                        // {
+                        //     this.BroadcastMessage("OnParentHandHoverBegin", newInteractable, SendMessageOptions.DontRequireReceiver); // let objects attached to the hand know that a hover has begun
+                        // }
                     }
                 }
             }
@@ -383,7 +383,7 @@ namespace Valve.VR.InteractionSystem
             // GrabTypes grabbedWithType, 
             AttachmentFlags flags = defaultAttachmentFlags, Transform attachmentOffset = null)
         {
-            AttachedObject attachedObject = new AttachedObject();
+            EquippedObject attachedObject = new EquippedObject();
             attachedObject.attachmentFlags = flags;
             attachedObject.attachedOffsetTransform = attachmentOffset;
             attachedObject.attachTime = Time.time;
@@ -408,7 +408,7 @@ namespace Valve.VR.InteractionSystem
             }
 
 
-            if (hasCurrentAttached) {
+            if (currentAttached != null) {
                 DetachObject(currentAttached.attachedObject);
             }
 
@@ -471,7 +471,7 @@ namespace Valve.VR.InteractionSystem
                     
                     // for (int attachedIndex = 0; attachedIndex < attachedObject.interactable.attachedToHand.attachedObjects.Count; attachedIndex++)
                     // {
-                        AttachedObject attachedObjectInList = attachedObject.interactable.attachedToHand.currentAttached;//.attachedObjects[attachedIndex];
+                        EquippedObject attachedObjectInList = attachedObject.interactable.attachedToHand.currentAttached;//.attachedObjects[attachedIndex];
                         if (attachedObjectInList.interactable == attachedObject.interactable)
                         {
                             attachedObject.attachedRigidbodyWasKinematic = attachedObjectInList.attachedRigidbodyWasKinematic;
@@ -596,8 +596,8 @@ namespace Valve.VR.InteractionSystem
 
             // attachedObjects.Add(attachedObject);
             currentAttached = attachedObject;
+            // hasCurrentAttached = true;
             Debug.Log("Setting current Attached ::" + currentAttached.attachedObject);
-            hasCurrentAttached = true;
 
             UpdateHovering();
 
@@ -640,7 +640,10 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         public void DetachObject(GameObject objectToDetach, bool restoreOriginalParent = true)
         {
-            if (!hasCurrentAttached) {
+            // if (!hasCurrentAttached) {
+            //     return;
+            // }
+            if (currentAttached == null) {
                 return;
             }
             if (currentAttached.attachedObject != objectToDetach) {
@@ -655,7 +658,7 @@ namespace Valve.VR.InteractionSystem
 
                 // GameObject prevTopObject = currentAttachedObject;
 
-                AttachedObject ao = currentAttached;
+                EquippedObject ao = currentAttached;
                 if (ao.interactable != null)
                 {
                     if (ao.interactable.hideHandOnAttach)
@@ -721,9 +724,9 @@ namespace Valve.VR.InteractionSystem
                 }
 
                 // attachedObjects.RemoveAt(index);
-                hasCurrentAttached = false;
+                // hasCurrentAttached = false;
                 Debug.Log("Unsetting current attached " + name);
-                // currentAttached = null;
+                currentAttached = null;
 
                 // CleanUpAttachedObjectStack();
 
@@ -1086,55 +1089,55 @@ namespace Valve.VR.InteractionSystem
 
 
         //-------------------------------------------------
-        private void UpdateDebugText()
-        {
-            if (showDebugText)
-            {
-                if (debugText == null)
-                {
-                    debugText = new GameObject("_debug_text").AddComponent<TextMesh>();
-                    debugText.fontSize = 120;
-                    debugText.characterSize = 0.001f;
-                    debugText.transform.parent = transform;
+        // private void UpdateDebugText()
+        // {
+        //     if (showDebugText)
+        //     {
+        //         if (debugText == null)
+        //         {
+        //             debugText = new GameObject("_debug_text").AddComponent<TextMesh>();
+        //             debugText.fontSize = 120;
+        //             debugText.characterSize = 0.001f;
+        //             debugText.transform.parent = transform;
 
-                    debugText.transform.localRotation = Quaternion.Euler(90.0f, 0.0f, 0.0f);
-                }
+        //             debugText.transform.localRotation = Quaternion.Euler(90.0f, 0.0f, 0.0f);
+        //         }
 
-                if (handType == SteamVR_Input_Sources.RightHand)
-                {
-                    debugText.transform.localPosition = new Vector3(-0.05f, 0.0f, 0.0f);
-                    debugText.alignment = TextAlignment.Right;
-                    debugText.anchor = TextAnchor.UpperRight;
-                }
-                else
-                {
-                    debugText.transform.localPosition = new Vector3(0.05f, 0.0f, 0.0f);
-                    debugText.alignment = TextAlignment.Left;
-                    debugText.anchor = TextAnchor.UpperLeft;
-                }
+        //         if (handType == SteamVR_Input_Sources.RightHand)
+        //         {
+        //             debugText.transform.localPosition = new Vector3(-0.05f, 0.0f, 0.0f);
+        //             debugText.alignment = TextAlignment.Right;
+        //             debugText.anchor = TextAnchor.UpperRight;
+        //         }
+        //         else
+        //         {
+        //             debugText.transform.localPosition = new Vector3(0.05f, 0.0f, 0.0f);
+        //             debugText.alignment = TextAlignment.Left;
+        //             debugText.anchor = TextAnchor.UpperLeft;
+        //         }
 
-                debugText.text = string.Format(
-                    "Hovering: {0}\n" +
-                    "Hover Lock: {1}\n" +
-                    "Attached: {2}\n" +
-                    // "Total Attached: {3}\n" +
-                    "Type: {3}\n",
-                    (hoveringInteractable ? hoveringInteractable.gameObject.name : "null"),
-                    hoverLocked,
-                    // (currentAttachedObject ? currentAttachedObject.name : "null"),
-                    (hasCurrentAttached ? currentAttached.attachedObject.name : "null"),
+        //         debugText.text = string.Format(
+        //             "Hovering: {0}\n" +
+        //             "Hover Lock: {1}\n" +
+        //             "Attached: {2}\n" +
+        //             // "Total Attached: {3}\n" +
+        //             "Type: {3}\n",
+        //             (hoveringInteractable ? hoveringInteractable.gameObject.name : "null"),
+        //             hoverLocked,
+        //             // (currentAttachedObject ? currentAttachedObject.name : "null"),
+        //             (hasCurrentAttached ? currentAttached.attachedObject.name : "null"),
                     
-                    // attachedObjects.Count,
-                    handType.ToString());
-            }
-            else
-            {
-                if (debugText != null)
-                {
-                    Destroy(debugText.gameObject);
-                }
-            }
-        }
+        //             // attachedObjects.Count,
+        //             handType.ToString());
+        //     }
+        //     else
+        //     {
+        //         if (debugText != null)
+        //         {
+        //             Destroy(debugText.gameObject);
+        //         }
+        //     }
+        // }
 
 
         //-------------------------------------------------
@@ -1146,7 +1149,7 @@ namespace Valve.VR.InteractionSystem
             float hoverUpdateBegin = ((otherHand != null) && (otherHand.GetInstanceID() < GetInstanceID())) ? (0.5f * hoverUpdateInterval) : (0.0f);
             InvokeRepeating("UpdateHovering", hoverUpdateBegin, hoverUpdateInterval);
 
-            InvokeRepeating("UpdateDebugText", hoverUpdateBegin, hoverUpdateInterval);
+            // InvokeRepeating("UpdateDebugText", hoverUpdateBegin, hoverUpdateInterval);
         }
 
 
@@ -1173,7 +1176,8 @@ namespace Valve.VR.InteractionSystem
 
             // GameObject attachedObject = currentAttachedObject;
             // if (attachedObject != null)
-            if (hasCurrentAttached)
+            // if (hasCurrentAttached)
+            if (currentAttached != null)
             {
                 currentAttached.
                 attachedObject.SendMessage("HandAttachedUpdate", this, SendMessageOptions.DontRequireReceiver);
@@ -1202,7 +1206,8 @@ namespace Valve.VR.InteractionSystem
         {
             // GameObject attachedObject = currentAttachedObject;
             // if (attachedObject != null)
-            if (hasCurrentAttached)
+            // if (hasCurrentAttached)
+            if (currentAttached != null)
             {
 
                 // if (currentAttachedObjectInfo.Value.interactable != null)
@@ -1283,10 +1288,11 @@ namespace Valve.VR.InteractionSystem
         protected virtual void FixedUpdate()
         {
             // if (currentAttachedObject != null)
-            if (hasCurrentAttached)
+            // if (hasCurrentAttached)
+            if (currentAttached != null)
             
             {
-                AttachedObject attachedInfo = currentAttached;// currentAttachedObjectInfo.Value;
+                EquippedObject attachedInfo = currentAttached;// currentAttachedObjectInfo.Value;
                 if (attachedInfo.attachedObject != null)
                 {
                     if (attachedInfo.HasAttachFlag(AttachmentFlags.VelocityMovement))
@@ -1338,7 +1344,7 @@ namespace Valve.VR.InteractionSystem
         protected const float AngularVelocityMagic = 50f;
         protected const float MaxAngularVelocityChange = 20f;
 
-        protected void UpdateAttachedVelocity(AttachedObject attachedObjectInfo)
+        protected void UpdateAttachedVelocity(EquippedObject attachedObjectInfo)
         {
             Vector3 velocityTarget, angularTarget;
             bool success = GetUpdatedAttachedVelocities(attachedObjectInfo, out velocityTarget, out angularTarget);
@@ -1355,7 +1361,7 @@ namespace Valve.VR.InteractionSystem
             }
         }
 
-        protected Vector3 TargetItemPosition(AttachedObject attachedObject)
+        protected Vector3 TargetItemPosition(EquippedObject attachedObject)
         {
             if (attachedObject.interactable != null && attachedObject.interactable.skeletonPoser != null && HasSkeleton())
             {
@@ -1371,7 +1377,7 @@ namespace Valve.VR.InteractionSystem
             }
         }
 
-        protected Quaternion TargetItemRotation(AttachedObject attachedObject)
+        protected Quaternion TargetItemRotation(EquippedObject attachedObject)
         {
             if (attachedObject.interactable != null && attachedObject.interactable.skeletonPoser != null && HasSkeleton())
             {
@@ -1386,7 +1392,7 @@ namespace Valve.VR.InteractionSystem
             }
         }
 
-        protected bool GetUpdatedAttachedVelocities(AttachedObject attachedObjectInfo, out Vector3 velocityTarget, out Vector3 angularTarget)
+        protected bool GetUpdatedAttachedVelocities(EquippedObject attachedObjectInfo, out Vector3 velocityTarget, out Vector3 angularTarget)
         {
             bool realNumbers = false;
 
@@ -1439,6 +1445,7 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         protected virtual void OnInputFocus(bool hasFocus)
         {
+            Debug.Log("FOCUSING");
             if (hasFocus)
             {
                 DetachObject(applicationLostFocusObject, true);
