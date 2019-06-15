@@ -618,7 +618,7 @@ namespace Valve.VR.InteractionSystem
 
         public bool ObjectIsAttached(GameObject go)
         {
-            return currentAttached.attachedObject == go;
+            return currentAttached != null && currentAttached.attachedObject == go;
             // for (int attachedIndex = 0; attachedIndex < attachedObjects.Count; attachedIndex++)
             // {
             //     if (attachedObjects[attachedIndex].attachedObject == go)
@@ -915,8 +915,10 @@ namespace Valve.VR.InteractionSystem
             if (hoverLocked)
                 return;
 
-            if (applicationLostFocusObject.activeSelf)
+            if (applicationLostFocusObject.activeSelf) {
+                Debug.Log("this is why");
                 return;
+            }
 
             float closestDistance = float.MaxValue;
             Interactable closestInteractable = null;
@@ -937,6 +939,9 @@ namespace Valve.VR.InteractionSystem
             {
                 float scaledHoverRadius = fingerJointHoverRadius * Mathf.Abs(SteamVR_Utils.GetLossyScale(this.transform));
                 CheckHoveringForTransform(mainRenderModel.GetBonePosition((int)fingerJointHover), scaledHoverRadius / 2f, ref closestDistance, ref closestInteractable, Color.yellow);
+            }
+            if (closestInteractable != null) {
+                Debug.Log(closestInteractable);
             }
 
             // Hover on this one
@@ -1001,7 +1006,7 @@ namespace Valve.VR.InteractionSystem
                 // if (hoveringOverAttached)
                 //     continue;
 
-                if (currentAttached.attachedObject == contacting.gameObject)
+                if (currentAttached != null && currentAttached.attachedObject == contacting.gameObject)
                     continue;
 
                 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Valve.VR;
-// using Valve.VR.InteractionSystem;
+using Valve.VR.InteractionSystem;
 
 namespace VRPlayer {
     public class SceneChaperone : MonoBehaviour
@@ -97,7 +97,7 @@ namespace VRPlayer {
         }
         public GameObject playAreaPreviewCorner;
 		public GameObject playAreaPreviewSide;
-        // private Transform playAreaPreviewTransform;
+        [HideInInspector] public Transform playAreaPreviewTransform;
 		private Transform[] playAreaPreviewCorners;
 		private Transform[] playAreaPreviewSides;
         bool built;
@@ -139,6 +139,7 @@ namespace VRPlayer {
 		//-------------------------------------------------
 		private void OnChaperoneInfoInitialized()
 		{
+			Debug.Log("initializing chaperaon");
 			// ChaperoneInfo chaperone = ChaperoneInfo.instance;
 
 			// if ( chaperone.initialized && chaperone.roomscale )
@@ -147,12 +148,12 @@ namespace VRPlayer {
             {
 				//Set up the render model for the play area bounds
 
-				if ( !built)// playAreaPreviewTransform == null )
+				if ( playAreaPreviewTransform == null )
 				{
-                    built = true;
-					// playAreaPreviewTransform = new GameObject( "PlayAreaPreviewTransform" ).transform;
-					// playAreaPreviewTransform.parent = transform;
-					// Util.ResetTransform( playAreaPreviewTransform );
+                    // built = true;
+					playAreaPreviewTransform = new GameObject( "PlayAreaPreviewTransform" ).transform;
+					playAreaPreviewTransform.parent = transform;
+					Util.ResetTransform( playAreaPreviewTransform );
 
 					playAreaPreviewCorner.SetActive( true );
 					playAreaPreviewCorners = new Transform[4];
@@ -162,7 +163,7 @@ namespace VRPlayer {
 						playAreaPreviewCorners[i] = Instantiate( playAreaPreviewCorners[0] );
 					}
 					for (int i = 0; i < 4; i++) {
-						playAreaPreviewCorners[i].transform.parent = transform;// playAreaPreviewTransform;
+						playAreaPreviewCorners[i].transform.parent =  playAreaPreviewTransform;
 					}
 						
 					playAreaPreviewSide.SetActive( true );
@@ -173,7 +174,7 @@ namespace VRPlayer {
 						playAreaPreviewSides[i] = Instantiate( playAreaPreviewSides[0] );
 					}
 					for (int i = 0; i < 4; i++) {
-						playAreaPreviewSides[i].transform.parent = transform;// playAreaPreviewTransform;
+						playAreaPreviewSides[i].transform.parent =  playAreaPreviewTransform;
 					}
 				}
 
@@ -205,8 +206,8 @@ namespace VRPlayer {
 					playAreaPreviewCorners[i].localRotation = Quaternion.Euler( 0.0f, i * 90.0f, 0.0f );
 				}
 					
-				// playAreaPreviewTransform.gameObject.SetActive( false );
-                gameObject.SetActive( false );
+				playAreaPreviewTransform.gameObject.SetActive( false );
+                // gameObject.SetActive( false );
 			}
 		}
 
