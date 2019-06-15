@@ -199,7 +199,8 @@ namespace Valve.VR.InteractionSystem
 			// GameObject currentAttachedObject = hand.currentAttachedObject;
 
 			// if ( currentAttachedObject == null ) // verify the hand is holding something
-			if (!hand.hasCurrentAttached)
+			// if (!hand.hasCurrentAttached)
+			if (hand.currentAttached == null)
 			{
 				return null;
 			}
@@ -267,8 +268,11 @@ namespace Valve.VR.InteractionSystem
 		{
             if (hand == null)
                 return;
-			if (!hand.hasCurrentAttached)
+
+			if (hand.currentAttached == null)
 				return;
+			// if (!hand.hasCurrentAttached)
+			// 	return;
 
 			// for ( int i = 0; i < hand.AttachedObjects.Count; i++ )
 			// {
@@ -293,7 +297,8 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void RemoveMatchingItemTypesFromHand( ItemPackage.ItemPackageType packageType, Hand hand )
 		{
-			if (!hand.hasCurrentAttached)
+			if (hand.currentAttached == null)
+			// if (!hand.hasCurrentAttached)
 				return;
 
 			// for ( int i = 0; i < hand.AttachedObjects.Count; i++ )

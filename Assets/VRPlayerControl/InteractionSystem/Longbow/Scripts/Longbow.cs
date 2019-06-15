@@ -366,7 +366,7 @@ namespace Valve.VR.InteractionSystem
 		{
 
 			// if ( hand != null && hand.otherHand.currentAttachedObject != null )
-			if ( hand != null && hand.otherHand.hasCurrentAttached)
+			if ( hand != null && hand.otherHand.currentAttached != null)// hand.otherHand.hasCurrentAttached)
 			
 			{
 				GameObject otherHandCurrentAttached = hand.otherHand.currentAttached.attachedObject;

@@ -125,24 +125,28 @@ namespace Valve.VR.InteractionSystem
         List<Renderer> _Renderers = new List<Renderer>();
 
         void SubmitForHighlight () {
-            _Renderers.Clear();
+            if (!isHighlighted) {
+                Debug.Log("Highlighting " + name + " on hover");
 
-            Renderer[] renderers = this.GetComponentsInChildren<Renderer>(true);
-                        
-            for (int i = 0; i < renderers.Length; i++)
-            {
-                Renderer renderer = renderers[i];
+                _Renderers.Clear();
 
-                if (ShouldIgnoreHighlight(renderer))
-                    continue;
+                Renderer[] renderers = this.GetComponentsInChildren<Renderer>(true);
+                            
+                for (int i = 0; i < renderers.Length; i++)
+                {
+                    Renderer renderer = renderers[i];
 
-                _Renderers.Add(renderer);
+                    if (ShouldIgnoreHighlight(renderer))
+                        continue;
+
+                    _Renderers.Add(renderer);
+                }
+
+                ObjectOutlines.Highlight_Renderers( _Renderers, 0 );
+
+
+                isHighlighted = true;
             }
-
-            ObjectOutlines.Highlight_Renderers( _Renderers, 0 );
-
-
-            isHighlighted = true;
         }
         void UnHighlight() {
             if (isHighlighted) {
@@ -167,7 +171,7 @@ namespace Valve.VR.InteractionSystem
 
             // hoveringHand = hand;
 
-            if (highlightOnHover == true)
+            if (highlightOnHover)
             {
                 SubmitForHighlight();
             }
@@ -245,7 +249,7 @@ namespace Valve.VR.InteractionSystem
                 //     (hand.otherHand.currentAttachedObjectInfo.Value.interactable != null &&
                 //      hand.otherHand.currentAttachedObjectInfo.Value.interactable.activateActionSetOnAttach != this.activateActionSetOnAttach))
                 
-                if (hand.otherHand == null || !hand.otherHand.hasCurrentAttached ||
+                if (hand.otherHand == null || hand.otherHand.currentAttached == null ||
                     (hand.otherHand.currentAttached.interactable != null &&
                      hand.otherHand.currentAttached.interactable.activateActionSetOnAttach != this.activateActionSetOnAttach))
                 
