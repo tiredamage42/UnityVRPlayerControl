@@ -201,6 +201,7 @@ namespace Valve.VR.InteractionSystem
                     // nockedWithType = bestGrab;
 					bow.StartNock( this );
 					hand.HoverLock( GetComponent<Interactable>() );
+					Debug.Log("hoverLocking " + hand.name);
 					
 					// allowTeleport.teleportAllowed = false;
 					
@@ -229,6 +230,8 @@ namespace Valve.VR.InteractionSystem
                     // nockedWithType = GrabTypes.None;
 					bow.ReleaseNock();
 					hand.HoverUnlock( GetComponent<Interactable>() );
+					Debug.Log("hover unLocking " + hand.name);
+
 					// allowTeleport.teleportAllowed = true;
 				}
 

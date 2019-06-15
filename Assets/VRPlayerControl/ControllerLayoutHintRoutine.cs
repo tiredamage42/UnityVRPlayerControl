@@ -8,7 +8,6 @@ namespace VRPlayer {
     public class ControllerLayoutHintRoutine : ScriptableObject {
 
     
-
         [System.Serializable] public class RoutineNode {
             public SteamVR_Input_Sources hand;
             public string name;
