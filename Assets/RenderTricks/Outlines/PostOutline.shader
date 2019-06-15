@@ -1,4 +1,4 @@
-﻿Shader "Hidden/PostOutline"{
+﻿Shader "Hidden/Outline"{
     Properties {
         _MainTex("Main Texture", 2D)="black"{}
     }

@@ -5,8 +5,8 @@
 //=============================================================================
 
 using UnityEngine;
-
-namespace Valve.VR.InteractionSystem
+using Valve.VR.InteractionSystem;
+namespace VRPlayer
 {
     //-------------------------------------------------------------------------
     public class TeleportArc : MonoBehaviour

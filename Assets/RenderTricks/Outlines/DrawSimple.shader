@@ -1,4 +1,4 @@
-﻿Shader "Custom/DrawSimple" {
+﻿Shader "Hidden/DrawSimple" {
     SubShader {			
         Lighting Off
         ZWrite On

@@ -6,8 +6,9 @@
 
 using UnityEngine;
 using UnityEngine.Events;
-using System.Collections;
+// using System.Collections;
 using System.Collections.Generic;
+using RenderTricks;
 
 namespace Valve.VR.InteractionSystem
 {

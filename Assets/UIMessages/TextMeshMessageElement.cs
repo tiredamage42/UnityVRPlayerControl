@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 namespace UIMessaging {
     public class TextMeshMessageElement : MessageElement {
-        
         public int fontSize = 120;
         public float characterSize = .001f;
         TextMesh messageText;

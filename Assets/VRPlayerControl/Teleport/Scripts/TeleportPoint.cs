@@ -10,10 +10,12 @@ using UnityEngine.UI;
 using UnityEditor;
 #endif
 
-namespace Valve.VR.InteractionSystem
+using Valve.VR.InteractionSystem;
+
+namespace VRPlayer// Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
-	public class TeleportPoint : TeleportMarkerBase
+	public class TeleportPoint : MonoBehaviour// TeleportMarkerBase
 	{
 		public enum TeleportPointType
 		{
@@ -102,10 +104,18 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		public override bool ShouldActivate( Vector3 playerPosition )
+		public bool ShouldActivate( Vector3 playerPosition )
 		{
 			return ( Vector3.Distance( transform.position, playerPosition ) > 1.0f );
 		}
+		public bool locked = false;
+		public bool markerActive = true;
+		public void SetLocked( bool locked )
+		{
+			this.locked = locked;
+			UpdateVisuals();
+		}
+	
 
 
 		//-------------------------------------------------
@@ -116,7 +126,7 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		public override void Highlight( bool highlight )
+		public void Highlight( bool highlight )
 		{
 			if ( !locked )
 			{
@@ -144,7 +154,7 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		public override void UpdateVisuals()
+		public void UpdateVisuals()
 		{
 			if ( !gotReleventComponents )
 			{
@@ -187,7 +197,7 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		public override void SetAlpha( float tintAlpha, float alphaPercent )
+		public void SetAlpha( float tintAlpha, float alphaPercent )
 		{
 			tintColor = markerMesh.material.GetColor( tintColorID );
 			tintColor.a = tintAlpha;
