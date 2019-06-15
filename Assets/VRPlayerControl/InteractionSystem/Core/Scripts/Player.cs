@@ -7,7 +7,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using UIMessaging;
 namespace Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
@@ -16,6 +16,7 @@ namespace Valve.VR.InteractionSystem
 	//-------------------------------------------------------------------------
 	public class Player : MonoBehaviour
 	{
+		
 		[Tooltip( "Virtual transform corresponding to the meatspace tracking origin. Devices are tracked relative to this." )]
 		public Transform trackingOriginTransform;
 
@@ -282,6 +283,7 @@ namespace Valve.VR.InteractionSystem
                 return;
 
 			UpdateMessageCenters();
+			
 
             if (headsetOnHead != null)
             {
@@ -434,9 +436,14 @@ namespace Valve.VR.InteractionSystem
 		}
 
 		//TODO: make the main one whichever is in front of the camera
+
+		float timer;
 		void UpdateMessageCenters () {
-
+			timer += Time.deltaTime;
+			if (timer >= 3) {
+				UIMessaging.MessageCenter.DisplayMessage("A Message Here", Color.black, 4, .25f, .25f);
+				timer = 0;
+			}
 		}
-
 	}
 }

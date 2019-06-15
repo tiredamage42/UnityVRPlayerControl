@@ -7,8 +7,8 @@
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
-
-namespace Valve.VR.InteractionSystem
+using Valve.VR;
+namespace VRPlayer// Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
 	public class ChaperoneInfo : MonoBehaviour

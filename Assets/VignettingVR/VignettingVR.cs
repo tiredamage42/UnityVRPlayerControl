@@ -3,7 +3,6 @@
 [RequireComponent(typeof(Camera))]
 public class VignettingVR : MonoBehaviour
 {
-
     Color vignetteColor = Color.black;
     public void SetIntensity(float intensity) {
         vignettingIntensity = intensity;
@@ -22,6 +21,10 @@ public class VignettingVR : MonoBehaviour
     float vignettingIntensity = .5f;
     Vector4[] viewportSpaceOffset = new Vector4[2];
     Camera currentCamera;
+
+    static int _vignetteViewportSpaceOffset = Shader.PropertyToID("_vignetteViewportSpaceOffset");
+    static int _VignetteColor = Shader.PropertyToID("_VignetteColor");
+    
 
     private Material material;
     [HideInInspector] public Shader m_Shader;
@@ -65,9 +68,9 @@ public class VignettingVR : MonoBehaviour
         viewportSpaceOffset[1] = GetViewportSpaceOffset(vignetteCenterWorldSpace, Camera.StereoscopicEye.Right);
 
         // pass values to shader
-        material.SetVectorArray("_vignetteViewportSpaceOffset", viewportSpaceOffset);
+        material.SetVectorArray(_vignetteViewportSpaceOffset, viewportSpaceOffset);
                     
-        material.SetColor("_VignetteColor", new Color(vignetteColor.r, vignetteColor.g, vignetteColor.b, vignettingIntensity));
+        material.SetColor(_VignetteColor, new Color(vignetteColor.r, vignetteColor.g, vignetteColor.b, vignettingIntensity));
         
         Graphics.Blit(source, destination, material);
         
