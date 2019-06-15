@@ -476,7 +476,10 @@ namespace VRPlayer
 			bool showPlayAreaPreview = validAreaTargeted && ShowPlayArea(playerFeetOffset, pointedAtPosition);
 
 
-			SceneChaperone.instance.gameObject.SetActive(showPlayAreaPreview);
+			SceneChaperone.instance.playAreaPreviewTransform.gameObject.SetActive(showPlayAreaPreview);
+			if (showPlayAreaPreview) {
+				Debug.Log("showing preview");
+			}
 			// if ( playAreaPreviewTransform != null )
 			// {
 			// 	playAreaPreviewTransform.gameObject.SetActive( showPlayAreaPreview );
@@ -639,8 +642,11 @@ namespace VRPlayer
 			destinationReticleTransform.gameObject.SetActive( false );
 			invalidReticleTransform.gameObject.SetActive( false );
 			
+			if (SceneChaperone.instance.playAreaPreviewTransform != null) {
 
-			SceneChaperone.instance.gameObject.SetActive(false);
+			SceneChaperone.instance.playAreaPreviewTransform.gameObject.SetActive(false);
+			}
+			Debug.Log("no preview");
 			// if ( playAreaPreviewTransform != null )
 			// {
 			// 	playAreaPreviewTransform.gameObject.SetActive( false );
