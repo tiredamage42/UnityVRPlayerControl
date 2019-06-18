@@ -5,6 +5,11 @@ namespace Valve.VR.InteractionSystem
 {
 	public class TagOnEquip : MonoBehaviour, IInventoryItem
 	{
+		public void OnEquippedUseStart(Inventory inventory, int useIndex) {}
+        public void OnEquippedUseEnd(Inventory inventory, int useIndex) {}
+        public void OnEquippedUseUpdate(Inventory inventory, int useIndex) {}
+
+
 
 		
 		public void OnEquipped(Inventory inventory) {

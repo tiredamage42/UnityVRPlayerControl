@@ -17,6 +17,7 @@ namespace Valve.VR.InteractionSystem.Sample
 
 		}
         public void OnUseStart(Interactor interactor, int useIndex){
+            Debug.LogError("planting");
             StartCoroutine(DoPlant());
 		}
         public void OnUseEnd(Interactor interactor, int useIndex){

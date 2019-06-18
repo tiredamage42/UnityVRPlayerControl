@@ -17,6 +17,12 @@ namespace Valve.VR.InteractionSystem.Sample
 	public class InteractableExample : MonoBehaviour, IInventoryItem, IInteractable
     {
 
+		public void OnEquippedUseStart(Inventory inventory, int useIndex) {}
+        public void OnEquippedUseEnd(Inventory inventory, int useIndex) {}
+        public void OnEquippedUseUpdate(Inventory inventory, int useIndex) {}
+
+
+
 		public void OnEquipped(Inventory inventory) {
             generalText.text = string.Format("Attached: {0}", inventory.name);
             attachTime = Time.time;

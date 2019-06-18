@@ -1811,6 +1811,7 @@ GameObject:
   - component: {fileID: 9545886}
   - component: {fileID: 11461100}
   - component: {fileID: 114000012997745504}
+  - component: {fileID: 1942853335298397903}
   m_Layer: 0
   m_Name: Longbow
   m_TagString: Untagged
@@ -1846,6 +1847,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b93b6a877adcbf94c89a9d6e0c0e844d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useType: 0
   activateActionSetOnAttach:
     actionSetPath: 
   hideHandOnAttach: 0
@@ -2003,6 +2005,46 @@ MonoBehaviour:
   previewPoseSelection: 0
   blendingBehaviours: []
   scale: 1
+--- !u!114 &1942853335298397903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d380dbc77ea04bfc838ef2e8aff40c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useActionForEquip: 0
+  useActionForStash: 1
+  snapAttachEaseInCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  attachmentFlags: 0
+  parentInventory: {fileID: 0}
 --- !u!1 &173948
 GameObject:
   m_ObjectHideFlags: 0

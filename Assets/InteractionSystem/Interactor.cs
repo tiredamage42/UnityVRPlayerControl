@@ -107,7 +107,7 @@ namespace InteractionSystem {
                     {
                         // if (spewDebugText)
                         //     HandDebugLog("HoverBegin " + newInteractable.gameObject);
-
+                        //Debug.LogError("Found interactable start hover");
 
                         newInteractable.OnInspectStart(this);
                         if (onInspectStart != null) {
@@ -179,6 +179,8 @@ namespace InteractionSystem {
                 }
 
             }
+
+            UpdateHovering();
         }
 
         public Vector3 interactionPoint {
@@ -205,7 +207,7 @@ namespace InteractionSystem {
 
             for (int i =0 ; i < hoverCheckPositionsAndRadii.Length; i++) {
                 Vector3 hoverPosition = new Vector3 ( hoverCheckPositionsAndRadii[i].x, hoverCheckPositionsAndRadii[i].y, hoverCheckPositionsAndRadii[i].z );
-                float hoverRadius = hoverCheckPositionsAndRadii[i].z;
+                float hoverRadius = hoverCheckPositionsAndRadii[i].w;
 
                 CheckHoveringForTransform(hoverPosition, hoverRadius, ref closestDistance, ref closestInteractable);
             }
