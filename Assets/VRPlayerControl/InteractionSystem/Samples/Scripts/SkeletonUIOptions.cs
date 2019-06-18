@@ -4,12 +4,48 @@ using UnityEngine;
 using System.Collections;
 using Valve.VR.InteractionSystem;
 
+
+using VRPlayer;
+
+using InteractionSystem;
 namespace Valve.VR.InteractionSystem.Sample
 {
     public class SkeletonUIOptions : MonoBehaviour
     {
+        public Interactable showControllerInteractable, hideControllerInteractable;
+        public Interactable animateWithControllerInteractable, animateWithoutControllerInteractable;
 
-        public void AnimateHandWithController()
+        void OnEnable () {
+			if (showControllerInteractable != null)
+				showControllerInteractable.onUseStart += ShowController;
+			if (hideControllerInteractable != null)
+				hideControllerInteractable.onUseStart += HideController;
+
+
+            if (animateWithControllerInteractable != null)
+				animateWithControllerInteractable.onUseStart += AnimateHandWithController;
+			if (animateWithoutControllerInteractable != null)
+				animateWithoutControllerInteractable.onUseStart += AnimateHandWithoutController;
+		}
+		void OnDisable () {
+			if (showControllerInteractable != null)
+				showControllerInteractable.onUseStart -= ShowController;
+			if (hideControllerInteractable != null)
+				hideControllerInteractable.onUseStart -= HideController;
+			
+
+            if (animateWithControllerInteractable != null)
+				animateWithControllerInteractable.onUseStart -= AnimateHandWithController;
+			if (animateWithoutControllerInteractable != null)
+				animateWithoutControllerInteractable.onUseStart -= AnimateHandWithoutController;
+			
+		}
+
+
+
+
+
+        public void AnimateHandWithController(Interactor user, int useAction)
         {
             for (int handIndex = 0; handIndex < Player.instance.hands.Length; handIndex++)
             {
@@ -21,7 +57,7 @@ namespace Valve.VR.InteractionSystem.Sample
             }
         }
 
-        public void AnimateHandWithoutController()
+        public void AnimateHandWithoutController(Interactor user, int useAction)
         {
             for (int handIndex = 0; handIndex < Player.instance.hands.Length; handIndex++)
             {
@@ -33,7 +69,7 @@ namespace Valve.VR.InteractionSystem.Sample
             }
         }
 
-        public void ShowController()
+        public void ShowController(Interactor user, int useAction)
         {
             for (int handIndex = 0; handIndex < Player.instance.hands.Length; handIndex++)
             {
@@ -60,15 +96,12 @@ namespace Valve.VR.InteractionSystem.Sample
             }
         }
 
-        public void HideController()
+        public void HideController(Interactor user, int useAction)
         {
             for (int handIndex = 0; handIndex < Player.instance.hands.Length; handIndex++)
             {
-                Hand hand = Player.instance.hands[handIndex];
-                if (hand != null)
-                {
-                    hand.HideController(true);
-                }
+                Player.instance.hands[handIndex].HideController(true);
+                
             }
         }
     }

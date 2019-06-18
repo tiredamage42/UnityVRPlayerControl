@@ -15,17 +15,17 @@ namespace Valve.VR.InteractionSystem
 		public GameObject physParent;
 
 		//-------------------------------------------------
-		void OnCollisionEnter( Collision other )
-		{
-			Balloon contactBalloon = other.collider.GetComponentInParent<Balloon>();
-			if ( contactBalloon != null )
-			{
-				Hand hand = physParent.GetComponentInParent<Hand>();
-				if ( hand != null )
-				{
-					hand.TriggerHapticPulse( 500 );
-				}
-			}
-		}
+		// void OnCollisionEnter( Collision other )
+		// {
+		// 	Balloon contactBalloon = other.collider.GetComponentInParent<Balloon>();
+		// 	if ( contactBalloon != null )
+		// 	{
+		// 		Hand hand = physParent.GetComponentInParent<Hand>();
+		// 		if ( hand != null )
+		// 		{
+		// 			hand.TriggerHapticPulse( 500 );
+		// 		}
+		// 	}
+		// }
 	}
 }

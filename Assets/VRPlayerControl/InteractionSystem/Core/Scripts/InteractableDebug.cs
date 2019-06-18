@@ -12,203 +12,224 @@ using System.Collections.Generic;
 namespace Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
-	public class InteractableDebug : MonoBehaviour
-	{
-        [System.NonSerialized]
-        public Hand attachedToHand;
+// 	public class InteractableDebug : MonoBehaviour
+// 	{
+       
+// 		void OnInspectStart(Interactor interactor) {
 
-        public float simulateReleasesForXSecondsAroundRelease = 0;
-        public float simulateReleasesEveryXSeconds = 0.005f;
-        public bool setPositionsForSimulations = false;
+// 		}
+//         void OnInspectEnd(Interactor interactor){
 
-        private Renderer[] selfRenderers;
+// 		}
+//         void OnInspectUpdate(Interactor interactor){
 
-        private Collider[] colliders;
+// 		}
+//         void OnUseStart(Interactor interactor, int useIndex){
 
-        private Color lastColor;
+// 		}
+//         void OnUseEnd(Interactor interactor, int useIndex){
+			
+// 		}
+//         void OnUseUpdate(Interactor interactor, int useIndex){
 
-        private Throwable throwable;
-        private bool isThrowable { get { return throwable != null; } }
-
-        private const bool onlyColorOnChange = true;
-
-        public new Rigidbody rigidbody;
-Interactable interactable;
-		void Awake () {
-			interactable = GetComponent<Interactable>();
-            selfRenderers = this.GetComponentsInChildren<Renderer>();
-            throwable = this.GetComponent<Throwable>();
-            rigidbody = this.GetComponent<Rigidbody>();
-            colliders = this.GetComponentsInChildren<Collider>();
-        }
-
-        void OnEnable () {
-			interactable.onEquipped += OnEquipped;
-			interactable.onUnequipped += OnUnequipped;
-		}
-		void OnDisable () {
-			interactable.onEquipped -= OnEquipped;
-			interactable.onUnequipped -= OnUnequipped;
-		}
+// 		}
 
 
-        private void OnEquipped( Object hand )
-		{
-            attachedToHand = (Hand)hand;
+//         [System.NonSerialized]
+//         public Hand attachedToHand;
 
-            CreateMarker(Color.green);
-        }
+//         public float simulateReleasesForXSecondsAroundRelease = 0;
+//         public float simulateReleasesEveryXSeconds = 0.005f;
+//         public bool setPositionsForSimulations = false;
+
+//         private Renderer[] selfRenderers;
+
+//         private Collider[] colliders;
+
+//         private Color lastColor;
+
+//         private Throwable throwable;
+//         private bool isThrowable { get { return throwable != null; } }
+
+//         private const bool onlyColorOnChange = true;
+
+//         public new Rigidbody rigidbody;
+// Interactable interactable;
+// 		void Awake () {
+// 			interactable = GetComponent<Interactable>();
+//             selfRenderers = this.GetComponentsInChildren<Renderer>();
+//             throwable = this.GetComponent<Throwable>();
+//             rigidbody = this.GetComponent<Rigidbody>();
+//             colliders = this.GetComponentsInChildren<Collider>();
+//         }
+
+//         void OnEnable () {
+// 			interactable.onEquipped += OnEquipped;
+// 			interactable.onUnequipped += OnUnequipped;
+// 		}
+// 		void OnDisable () {
+// 			interactable.onEquipped -= OnEquipped;
+// 			interactable.onUnequipped -= OnUnequipped;
+// 		}
 
 
-        protected virtual void HandAttachedUpdate(Hand hand)
-        {
-            // Color grabbedColor;
-            Color grabbedColor = Color.green;
+//         private void OnEquipped( Object hand )
+// 		{
+//             attachedToHand = (Hand)hand;
+
+//             CreateMarker(Color.green);
+//         }
+
+
+//         protected virtual void HandAttachedUpdate(Hand hand)
+//         {
+//             // Color grabbedColor;
+//             Color grabbedColor = Color.green;
             
-            // switch (hand.currentAttachedObjectInfo.Value.grabbedWithType)
-            // {
-            //     case GrabTypes.Grip:
-            //         grabbedColor = Color.blue;
-            //         break;
-            //     case GrabTypes.Pinch:
-            //         grabbedColor = Color.green;
-            //         break;
-            //     case GrabTypes.Trigger:
-            //         grabbedColor = Color.yellow;
-            //         break;
-            //     case GrabTypes.Scripted:
-            //         grabbedColor = Color.red;
-            //         break;
-            //     case GrabTypes.None:
-            //     default:
-            //         grabbedColor = Color.white;
-            //         break;
-            // }
+//             // switch (hand.currentAttachedObjectInfo.Value.grabbedWithType)
+//             // {
+//             //     case GrabTypes.Grip:
+//             //         grabbedColor = Color.blue;
+//             //         break;
+//             //     case GrabTypes.Pinch:
+//             //         grabbedColor = Color.green;
+//             //         break;
+//             //     case GrabTypes.Trigger:
+//             //         grabbedColor = Color.yellow;
+//             //         break;
+//             //     case GrabTypes.Scripted:
+//             //         grabbedColor = Color.red;
+//             //         break;
+//             //     case GrabTypes.None:
+//             //     default:
+//             //         grabbedColor = Color.white;
+//             //         break;
+//             // }
 
-            if ((onlyColorOnChange && grabbedColor != lastColor) || onlyColorOnChange == false)
-                ColorSelf(grabbedColor);
+//             if ((onlyColorOnChange && grabbedColor != lastColor) || onlyColorOnChange == false)
+//                 ColorSelf(grabbedColor);
 
-            lastColor = grabbedColor;
-        }
+//             lastColor = grabbedColor;
+//         }
 
         
-        private void OnUnequipped( Object owner )
-		{
-            Hand hand = (Hand)owner;
-            if (isThrowable)
-            {
-                Vector3 velocity;
-                Vector3 angularVelocity;
+//         private void OnUnequipped( Object owner )
+// 		{
+//             Hand hand = (Hand)owner;
+//             if (isThrowable)
+//             {
+//                 Vector3 velocity;
+//                 Vector3 angularVelocity;
 
-                throwable.GetReleaseVelocities(hand, out velocity, out angularVelocity);
+//                 throwable.GetReleaseVelocities(hand, out velocity, out angularVelocity);
 
-                CreateMarker(Color.cyan, velocity.normalized);
-            }
+//                 CreateMarker(Color.cyan, velocity.normalized);
+//             }
 
-            CreateMarker(Color.red);
-            attachedToHand = null;
+//             CreateMarker(Color.red);
+//             attachedToHand = null;
 
-            if (isSimulation == false && simulateReleasesForXSecondsAroundRelease != 0)
-            {
-                float startTime = -simulateReleasesForXSecondsAroundRelease;
-                float endTime = simulateReleasesForXSecondsAroundRelease;
+//             if (isSimulation == false && simulateReleasesForXSecondsAroundRelease != 0)
+//             {
+//                 float startTime = -simulateReleasesForXSecondsAroundRelease;
+//                 float endTime = simulateReleasesForXSecondsAroundRelease;
 
-                List<InteractableDebug> list = new List<InteractableDebug>();
-                list.Add(this);
+//                 List<InteractableDebug> list = new List<InteractableDebug>();
+//                 list.Add(this);
 
-                for (float offset = startTime; offset <= endTime; offset += simulateReleasesEveryXSeconds)
-                {
-                    float lerp = Mathf.InverseLerp(startTime, endTime, offset);
-                    InteractableDebug copy = CreateSimulation(hand, offset, Color.Lerp(Color.red, Color.green, lerp));
-                    list.Add(copy);
-                }
+//                 for (float offset = startTime; offset <= endTime; offset += simulateReleasesEveryXSeconds)
+//                 {
+//                     float lerp = Mathf.InverseLerp(startTime, endTime, offset);
+//                     InteractableDebug copy = CreateSimulation(hand, offset, Color.Lerp(Color.red, Color.green, lerp));
+//                     list.Add(copy);
+//                 }
 
-                for (int index = 0; index < list.Count; index++)
-                {
-                    for (int otherIndex = 0; otherIndex < list.Count; otherIndex++)
-                    {
-                        list[index].IgnoreObject(list[otherIndex]);
-                    }
-                }
-            }
-		}
+//                 for (int index = 0; index < list.Count; index++)
+//                 {
+//                     for (int otherIndex = 0; otherIndex < list.Count; otherIndex++)
+//                     {
+//                         list[index].IgnoreObject(list[otherIndex]);
+//                     }
+//                 }
+//             }
+// 		}
 
-        public Collider[] GetColliders()
-        {
-            return colliders;
-        }
+//         public Collider[] GetColliders()
+//         {
+//             return colliders;
+//         }
 
-        public void IgnoreObject(InteractableDebug otherInteractable)
-        {
-            Collider[] otherColliders = otherInteractable.GetColliders();
+//         public void IgnoreObject(InteractableDebug otherInteractable)
+//         {
+//             Collider[] otherColliders = otherInteractable.GetColliders();
 
-            for (int myIndex = 0; myIndex < colliders.Length; myIndex++)
-            {
-                for (int otherIndex = 0; otherIndex < otherColliders.Length; otherIndex++)
-                {
-                    Physics.IgnoreCollision(colliders[myIndex], otherColliders[otherIndex]);
-                }
-            }
-        }
+//             for (int myIndex = 0; myIndex < colliders.Length; myIndex++)
+//             {
+//                 for (int otherIndex = 0; otherIndex < otherColliders.Length; otherIndex++)
+//                 {
+//                     Physics.IgnoreCollision(colliders[myIndex], otherColliders[otherIndex]);
+//                 }
+//             }
+//         }
 
-        private bool isSimulation = false;
-        public void SetIsSimulation()
-        {
-            isSimulation = true;
-        }
+//         private bool isSimulation = false;
+//         public void SetIsSimulation()
+//         {
+//             isSimulation = true;
+//         }
 
-        private InteractableDebug CreateSimulation(Hand fromHand, float timeOffset, Color copyColor)
-        {
-            GameObject copy = GameObject.Instantiate(this.gameObject);
-            InteractableDebug debugCopy = copy.GetComponent<InteractableDebug>();
-            debugCopy.SetIsSimulation();
-            debugCopy.ColorSelf(copyColor);
-            copy.name = string.Format("{0} [offset: {1:0.000}]", copy.name, timeOffset);
+//         private InteractableDebug CreateSimulation(Hand fromHand, float timeOffset, Color copyColor)
+//         {
+//             GameObject copy = GameObject.Instantiate(this.gameObject);
+//             InteractableDebug debugCopy = copy.GetComponent<InteractableDebug>();
+//             debugCopy.SetIsSimulation();
+//             debugCopy.ColorSelf(copyColor);
+//             copy.name = string.Format("{0} [offset: {1:0.000}]", copy.name, timeOffset);
 
-            Vector3 velocity = fromHand.GetTrackedObjectVelocity(timeOffset);
-            velocity *= throwable.scaleReleaseVelocity;
+//             Vector3 velocity = fromHand.GetTrackedObjectVelocity(timeOffset);
+//             velocity *= throwable.scaleReleaseVelocity;
 
-            debugCopy.rigidbody.velocity = velocity;
+//             debugCopy.rigidbody.velocity = velocity;
 
-            return debugCopy;
-        }
+//             return debugCopy;
+//         }
 
-        private void CreateMarker(Color markerColor, float destroyAfter = 10)
-        {
-            CreateMarker(markerColor, attachedToHand.GetTrackedObjectVelocity().normalized, destroyAfter);
-        }
+//         private void CreateMarker(Color markerColor, float destroyAfter = 10)
+//         {
+//             CreateMarker(markerColor, attachedToHand.GetTrackedObjectVelocity().normalized, destroyAfter);
+//         }
 
-        private void CreateMarker(Color markerColor, Vector3 forward, float destroyAfter = 10)
-        {
-            GameObject baseMarker = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            DestroyImmediate(baseMarker.GetComponent<Collider>());
-            baseMarker.transform.localScale = new Vector3(0.02f, 0.02f, 0.02f);
+//         private void CreateMarker(Color markerColor, Vector3 forward, float destroyAfter = 10)
+//         {
+//             GameObject baseMarker = GameObject.CreatePrimitive(PrimitiveType.Cube);
+//             DestroyImmediate(baseMarker.GetComponent<Collider>());
+//             baseMarker.transform.localScale = new Vector3(0.02f, 0.02f, 0.02f);
 
-            GameObject line = GameObject.Instantiate(baseMarker);
-            line.transform.localScale = new Vector3(0.01f, 0.01f, 0.25f);
-            line.transform.parent = baseMarker.transform;
-            line.transform.localPosition = new Vector3(0, 0, line.transform.localScale.z / 2f);
+//             GameObject line = GameObject.Instantiate(baseMarker);
+//             line.transform.localScale = new Vector3(0.01f, 0.01f, 0.25f);
+//             line.transform.parent = baseMarker.transform;
+//             line.transform.localPosition = new Vector3(0, 0, line.transform.localScale.z / 2f);
 
-            baseMarker.transform.position = attachedToHand.transform.position;
-            baseMarker.transform.forward = forward;
+//             baseMarker.transform.position = attachedToHand.transform.position;
+//             baseMarker.transform.forward = forward;
 
-            ColorThing(markerColor, baseMarker.GetComponentsInChildren<Renderer>());
+//             ColorThing(markerColor, baseMarker.GetComponentsInChildren<Renderer>());
 
-            if (destroyAfter > 0)
-                Destroy(baseMarker, destroyAfter);
-        }
+//             if (destroyAfter > 0)
+//                 Destroy(baseMarker, destroyAfter);
+//         }
 
-        private void ColorSelf(Color newColor)
-        {
-            ColorThing(newColor, selfRenderers);
-        }
+//         private void ColorSelf(Color newColor)
+//         {
+//             ColorThing(newColor, selfRenderers);
+//         }
 
-        private void ColorThing(Color newColor, Renderer[] renderers)
-        {
-            for (int rendererIndex = 0; rendererIndex < renderers.Length; rendererIndex++)
-            {
-                renderers[rendererIndex].material.color = newColor;
-            }
-        }
-    }
+//         private void ColorThing(Color newColor, Renderer[] renderers)
+//         {
+//             for (int rendererIndex = 0; rendererIndex < renderers.Length; rendererIndex++)
+//             {
+//                 renderers[rendererIndex].material.color = newColor;
+//             }
+//         }
+//     }
 }

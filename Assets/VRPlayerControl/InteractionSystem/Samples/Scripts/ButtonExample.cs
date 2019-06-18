@@ -1,23 +1,46 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using InteractionSystem;
 namespace Valve.VR.InteractionSystem.Sample
 {
-    public class ButtonExample : MonoBehaviour
+    public class ButtonExample : MonoBehaviour, IInteractable
     {
-        public HoverButton hoverButton;
+
+        
+		public void OnInspectStart(Interactor interactor) {
+
+		}
+        public void OnInspectEnd(Interactor interactor){
+
+		}
+        public void OnInspectUpdate(Interactor interactor){
+
+		}
+        public void OnUseStart(Interactor interactor, int useIndex){
+            StartCoroutine(DoPlant());
+		}
+        public void OnUseEnd(Interactor interactor, int useIndex){
+			
+		}
+        public void OnUseUpdate(Interactor interactor, int useIndex){
+
+		}
+
+
+
+        // public HoverButton hoverButton;
 
         public GameObject prefab;
 
-        private void Start()
-        {
-            hoverButton.onButtonDown.AddListener(OnButtonDown);
-        }
+        // private void Start()
+        // {
+        //     hoverButton.onButtonDown.AddListener(OnButtonDown);
+        // }
 
-        private void OnButtonDown(Hand hand)
-        {
-            StartCoroutine(DoPlant());
-        }
+        // private void OnButtonDown(Hand hand)
+        // {
+        //     StartCoroutine(DoPlant());
+        // }
 
         private IEnumerator DoPlant()
         {

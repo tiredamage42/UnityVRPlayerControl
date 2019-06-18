@@ -8,12 +8,57 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
 
+
+using InteractionSystem;
+using VRPlayer;
 namespace Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
 	[RequireComponent( typeof( Interactable ) )]
 	public class HapticRack : MonoBehaviour
 	{
+		
+		void OnInspectStart(Interactor interactor) {
+
+		}
+        void OnInspectEnd(Interactor interactor){
+
+		}
+        void OnInspectUpdate(Interactor interactor){
+
+		}
+        void OnUseStart(Interactor interactor, int useIndex){
+
+		}
+        void OnUseEnd(Interactor interactor, int useIndex){
+			
+		}
+        void OnUseUpdate(Interactor interactor, int useIndex){
+
+
+			Hand hand = interactor.GetComponent<Hand>();
+
+			int currentToothIndex = Mathf.RoundToInt( linearMapping.value * teethCount - 0.5f );
+			if ( currentToothIndex != previousToothIndex )
+			{
+				// Pulse();
+				// if ( hand && (hand.isActive) && ( hand.IsGrabbing() ) )
+				if ( hand && (hand.isActive) )
+			
+				{
+					ushort duration = (ushort)Random.Range( minimumPulseDuration, maximumPulseDuration + 1 );
+					StandardizedVRInput.instance.TriggerHapticPulse( hand.handType, duration );
+
+					onPulse.Invoke();
+				}
+
+				previousToothIndex = currentToothIndex;
+			}
+
+		}
+
+
+
 		[Tooltip( "The linear mapping driving the haptic rack" )]
 		public LinearMapping linearMapping;
 
@@ -29,7 +74,7 @@ namespace Valve.VR.InteractionSystem
 		[Tooltip( "This event is triggered every time a haptic pulse is made" )]
 		public UnityEvent onPulse;
 
-		private Hand hand;
+		// private Hand hand;
 		private int previousToothIndex = -1;
 
 		//-------------------------------------------------
@@ -43,44 +88,46 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private void OnHandHoverBegin( Hand hand )
-		{
-			this.hand = hand;
-		}
+		// private void OnHandHoverBegin( Hand hand )
+		// {
+		// 	this.hand = hand;
+		// }
+
+
+		// //-------------------------------------------------
+		// private void OnHandHoverEnd( Hand hand )
+		// {
+		// 	this.hand = null;
+		// }
+
+
 
 
 		//-------------------------------------------------
-		private void OnHandHoverEnd( Hand hand )
-		{
-			this.hand = null;
-		}
+		// void Update()
+		// {
+		// 	int currentToothIndex = Mathf.RoundToInt( linearMapping.value * teethCount - 0.5f );
+		// 	if ( currentToothIndex != previousToothIndex )
+		// 	{
+		// 		Pulse();
+		// 		previousToothIndex = currentToothIndex;
+		// 	}
+		// }
 
 
 		//-------------------------------------------------
-		void Update()
-		{
-			int currentToothIndex = Mathf.RoundToInt( linearMapping.value * teethCount - 0.5f );
-			if ( currentToothIndex != previousToothIndex )
-			{
-				Pulse();
-				previousToothIndex = currentToothIndex;
-			}
-		}
+		// private void Pulse()
+		// {
 
-
-		//-------------------------------------------------
-		private void Pulse()
-		{
-
-			// if ( hand && (hand.isActive) && ( hand.GetBestGrabbingType() != GrabTypes.None ) )
-			if ( hand && (hand.isActive) && ( hand.IsGrabbing() ) )
+		// 	// if ( hand && (hand.isActive) && ( hand.GetBestGrabbingType() != GrabTypes.None ) )
+		// 	if ( hand && (hand.isActive) && ( hand.IsGrabbing() ) )
 			
-			{
-				ushort duration = (ushort)Random.Range( minimumPulseDuration, maximumPulseDuration + 1 );
-				hand.TriggerHapticPulse( duration );
+		// 	{
+		// 		ushort duration = (ushort)Random.Range( minimumPulseDuration, maximumPulseDuration + 1 );
+		// 		hand.TriggerHapticPulse( duration );
 
-				onPulse.Invoke();
-			}
-		}
+		// 		onPulse.Invoke();
+		// 	}
+		// }
 	}
 }

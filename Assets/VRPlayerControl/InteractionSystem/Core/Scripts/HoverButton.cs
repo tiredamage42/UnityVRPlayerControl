@@ -7,13 +7,66 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.Events;
+using InteractionSystem;
 
+using VRPlayer;
 namespace Valve.VR.InteractionSystem
 {
     //-------------------------------------------------------------------------
     [RequireComponent(typeof(Interactable))]
     public class HoverButton : MonoBehaviour
     {
+        public int useActionIndex = 0;
+        
+		void OnInspectStart(Interactor interactor) {
+
+		}
+        void OnInspectEnd(Interactor interactor){
+
+		}
+        void OnInspectUpdate(Interactor interactor){
+            hovering = true;
+            // lastHoveredHand = hand;
+            lastInspector = interactor;
+
+            Vector3 inspectorPosition = interactor.transform.position;
+
+            bool wasEngaged = engaged;
+
+            float currentDistance = Vector3.Distance(movingPart.parent.InverseTransformPoint(inspectorPosition), endPosition);
+            float enteredDistance = Vector3.Distance(handEnteredPosition, endPosition);
+
+            if (currentDistance > enteredDistance)
+            {
+                enteredDistance = currentDistance;
+                handEnteredPosition = movingPart.parent.InverseTransformPoint(inspectorPosition);
+            }
+
+            float distanceDifference = enteredDistance - currentDistance;
+
+            float lerp = Mathf.InverseLerp(0, localMoveDistance.magnitude, distanceDifference);
+
+            if (lerp > engageAtPercent)
+                engaged = true;
+            else if (lerp < disengageAtPercent)
+                engaged = false;
+
+            movingPart.localPosition = Vector3.Lerp(startPosition, endPosition, lerp);
+
+            InvokeEvents(wasEngaged, engaged);
+
+		}
+        void OnUseStart(Interactor interactor, int useIndex){
+
+		}
+        void OnUseEnd(Interactor interactor, int useIndex){
+			
+		}
+        void OnUseUpdate(Interactor interactor, int useIndex){
+
+		}
+
+
         public Transform movingPart;
 
         public Vector3 localMoveDistance = new Vector3(0, -0.1f, 0);
@@ -23,6 +76,10 @@ namespace Valve.VR.InteractionSystem
 
         [Range(0, 1)]
         public float disengageAtPercent = 0.9f;
+
+
+        
+
 
         public HandEvent onButtonDown;
         public HandEvent onButtonUp;
@@ -39,7 +96,22 @@ namespace Valve.VR.InteractionSystem
 
         private bool hovering;
 
-        private Hand lastHoveredHand;
+        // private Hand lastHoveredHand;
+
+        Interactor lastInspector;
+
+        void Awake () {
+            interactable = GetComponent<Interactable>();
+            
+
+        }
+
+        // void OnEnable () {
+        //     interactable.onInspectUpdate += OnInspectUpdate;
+            
+        // }
+        Interactable interactable;
+
 
         private void Start()
         {
@@ -51,34 +123,39 @@ namespace Valve.VR.InteractionSystem
             handEnteredPosition = endPosition;
         }
 
-        private void HandHoverUpdate(Hand hand)
+        // private void HandHoverUpdate(Hand hand)
+        private void OnInspectUpdate(Object inspector)
+        
         {
-            hovering = true;
-            lastHoveredHand = hand;
+            // hovering = true;
+            // // lastHoveredHand = hand;
+            // lastInspector = inspector;
 
-            bool wasEngaged = engaged;
+            // Vector3 inspectorPosition = ((Hand)inspector).transform.position;
 
-            float currentDistance = Vector3.Distance(movingPart.parent.InverseTransformPoint(hand.transform.position), endPosition);
-            float enteredDistance = Vector3.Distance(handEnteredPosition, endPosition);
+            // bool wasEngaged = engaged;
 
-            if (currentDistance > enteredDistance)
-            {
-                enteredDistance = currentDistance;
-                handEnteredPosition = movingPart.parent.InverseTransformPoint(hand.transform.position);
-            }
+            // float currentDistance = Vector3.Distance(movingPart.parent.InverseTransformPoint(inspectorPosition), endPosition);
+            // float enteredDistance = Vector3.Distance(handEnteredPosition, endPosition);
 
-            float distanceDifference = enteredDistance - currentDistance;
+            // if (currentDistance > enteredDistance)
+            // {
+            //     enteredDistance = currentDistance;
+            //     handEnteredPosition = movingPart.parent.InverseTransformPoint(inspectorPosition);
+            // }
 
-            float lerp = Mathf.InverseLerp(0, localMoveDistance.magnitude, distanceDifference);
+            // float distanceDifference = enteredDistance - currentDistance;
 
-            if (lerp > engageAtPercent)
-                engaged = true;
-            else if (lerp < disengageAtPercent)
-                engaged = false;
+            // float lerp = Mathf.InverseLerp(0, localMoveDistance.magnitude, distanceDifference);
 
-            movingPart.localPosition = Vector3.Lerp(startPosition, endPosition, lerp);
+            // if (lerp > engageAtPercent)
+            //     engaged = true;
+            // else if (lerp < disengageAtPercent)
+            //     engaged = false;
 
-            InvokeEvents(wasEngaged, engaged);
+            // movingPart.localPosition = Vector3.Lerp(startPosition, endPosition, lerp);
+
+            // InvokeEvents(wasEngaged, engaged);
         }
 
         private void LateUpdate()
@@ -94,18 +171,24 @@ namespace Valve.VR.InteractionSystem
 
             hovering = false;
         }
+        
 
         private void InvokeEvents(bool wasEngaged, bool isEngaged)
         {
             buttonDown = wasEngaged == false && isEngaged == true;
             buttonUp = wasEngaged == true && isEngaged == false;
 
+
+
             if (buttonDown && onButtonDown != null)
-                onButtonDown.Invoke(lastHoveredHand);
-            if (buttonUp && onButtonUp != null)
-                onButtonUp.Invoke(lastHoveredHand);
+                interactable.OnUseStart(lastInspector, useActionIndex);
+                // onButtonDown.Invoke(lastHoveredHand);
             if (isEngaged && onButtonIsPressed != null)
-                onButtonIsPressed.Invoke(lastHoveredHand);
+                interactable.OnUseUpdate(lastInspector, useActionIndex);
+                // onButtonIsPressed.Invoke(lastHoveredHand);
+            if (buttonUp && onButtonUp != null)
+                interactable.OnUseEnd(lastInspector, useActionIndex);
+                // onButtonUp.Invoke(lastHoveredHand);
         }
     }
 }

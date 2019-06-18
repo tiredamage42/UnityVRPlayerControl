@@ -6,6 +6,8 @@
 
 using UnityEngine;
 using System.Collections;
+using VRPlayer;
+
 
 namespace Valve.VR.InteractionSystem
 {
@@ -29,7 +31,11 @@ namespace Valve.VR.InteractionSystem
                 if (hand != null)
                 { 
 					float pulse = distanceIntensityCurve.Evaluate( distance );
-                    hand.TriggerHapticPulse((ushort)pulse);
+
+					StandardizedVRInput.instance.TriggerHapticPulse(hand.handType,
+					// hand.TriggerHapticPulse(
+							(ushort)pulse
+					);
 
                     //SteamVR_Controller.Input( (int)trackedObject.index ).TriggerHapticPulse( (ushort)pulse );
 				}

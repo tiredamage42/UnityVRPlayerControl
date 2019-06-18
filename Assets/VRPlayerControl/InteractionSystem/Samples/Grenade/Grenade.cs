@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using InventorySystem;
 
 namespace Valve.VR.InteractionSystem.Sample
 {
@@ -10,16 +11,20 @@ namespace Valve.VR.InteractionSystem.Sample
 
         public float minMagnitudeToExplode = 1f;
 
-        private Interactable interactable;
+        // private Interactable interactable;
 
         private void Start()
         {
-            interactable = this.GetComponent<Interactable>();
+            // interactable = this.GetComponent<Interactable>();
         }
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (interactable != null && interactable.attachedToHand != null) //don't explode in hand
+                
+            
+            //don't explode in hand
+            // if (interactable != null && interactable.attachedToHand != null) 
+            if (GetComponent<Item>().parentInventory != null)
                 return;
 
             if (collision.impulse.magnitude > minMagnitudeToExplode)

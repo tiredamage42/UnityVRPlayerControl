@@ -7,6 +7,8 @@
 using UnityEngine.Events;
 using System;
 
+using VRPlayer;
+
 namespace Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
