@@ -636,9 +636,11 @@ namespace Valve.VR
                         GUILayout.Space(10);
 
                         if (handTexL == null)
-                            handTexL = (Texture)EditorGUIUtility.Load("Assets/SteamVR/Input/Editor/Resources/Icons/HandLeftIcon.png");
+                            // handTexL = (Texture)EditorGUIUtility.Load("Assets/SteamVR/Input/Editor/Resources/Icons/HandLeftIcon.png");
+                            handTexL = (Texture)EditorGUIUtility.Load("Assets/VRPlayerControl/SteamVR/Input/Editor/Resources/Icons/HandLeftIcon.png");
                         if (handTexR == null)
-                            handTexR = (Texture)EditorGUIUtility.Load("Assets/SteamVR/Input/Editor/Resources/Icons/HandRightIcon.png");
+                            // handTexR = (Texture)EditorGUIUtility.Load("Assets/SteamVR/Input/Editor/Resources/Icons/HandRightIcon.png");
+                            handTexR = (Texture)EditorGUIUtility.Load("Assets/VRPlayerControl/SteamVR/Input/Editor/Resources/Icons/HandRightIcon.png");
 
 
                         //Left Hand
@@ -789,12 +791,12 @@ namespace Valve.VR
         {
             if (handMaskTextures == null)
             {
-                handMaskTextures = new Texture[] { (Texture)EditorGUIUtility.Load("Assets/SteamVR/Input/Editor/Resources/Icons/handmask_Palm.png"),
-                (Texture)EditorGUIUtility.Load("Assets/SteamVR/Input/Editor/Resources/Icons/handmask_Thumb.png"),
-                (Texture)EditorGUIUtility.Load("Assets/SteamVR/Input/Editor/Resources/Icons/handmask_Index.png"),
-                (Texture)EditorGUIUtility.Load("Assets/SteamVR/Input/Editor/Resources/Icons/handmask_Middle.png"),
-                (Texture)EditorGUIUtility.Load("Assets/SteamVR/Input/Editor/Resources/Icons/handmask_Ring.png"),
-                (Texture)EditorGUIUtility.Load("Assets/SteamVR/Input/Editor/Resources/Icons/handmask_Pinky.png")
+                handMaskTextures = new Texture[] { (Texture)EditorGUIUtility.Load("Assets/VRPlayerControl/SteamVR/Input/Editor/Resources/Icons/handmask_Palm.png"),
+                (Texture)EditorGUIUtility.Load("Assets/VRPlayerControl/SteamVR/Input/Editor/Resources/Icons/handmask_Thumb.png"),
+                (Texture)EditorGUIUtility.Load("Assets/VRPlayerControl/SteamVR/Input/Editor/Resources/Icons/handmask_Index.png"),
+                (Texture)EditorGUIUtility.Load("Assets/VRPlayerControl/SteamVR/Input/Editor/Resources/Icons/handmask_Middle.png"),
+                (Texture)EditorGUIUtility.Load("Assets/VRPlayerControl/SteamVR/Input/Editor/Resources/Icons/handmask_Ring.png"),
+                (Texture)EditorGUIUtility.Load("Assets/VRPlayerControl/SteamVR/Input/Editor/Resources/Icons/handmask_Pinky.png")
                 };
             }
 
@@ -986,15 +988,15 @@ namespace Valve.VR
             Texture icon = null;
             if (blenderType.intValue == (int)SteamVR_Skeleton_Poser.PoseBlendingBehaviour.BlenderTypes.Manual)
             {
-                icon = (Texture)EditorGUIUtility.Load("Assets/SteamVR/Input/Editor/Resources/Icons/BlenderBehaviour_Manual_Icon.png");
+                icon = (Texture)EditorGUIUtility.Load("Assets/VRPlayerControl/VRPlayerControl/SteamVR/Input/Editor/Resources/Icons/BlenderBehaviour_Manual_Icon.png");
             }
             if (blenderType.intValue == (int)SteamVR_Skeleton_Poser.PoseBlendingBehaviour.BlenderTypes.AnalogAction)
             {
-                icon = (Texture)EditorGUIUtility.Load("Assets/SteamVR/Input/Editor/Resources/Icons/BlenderBehaviour_Analog_Icon.png");
+                icon = (Texture)EditorGUIUtility.Load("Assets/VRPlayerControl/SteamVR/Input/Editor/Resources/Icons/BlenderBehaviour_Analog_Icon.png");
             }
             if (blenderType.intValue == (int)SteamVR_Skeleton_Poser.PoseBlendingBehaviour.BlenderTypes.BooleanAction)
             {
-                icon = (Texture)EditorGUIUtility.Load("Assets/SteamVR/Input/Editor/Resources/Icons/BlenderBehaviour_Boolean_Icon.png");
+                icon = (Texture)EditorGUIUtility.Load("Assets/VRPlayerControl/SteamVR/Input/Editor/Resources/Icons/BlenderBehaviour_Boolean_Icon.png");
             }
 
             GUILayout.Label(icon, GUILayout.MaxHeight(32), GUILayout.MaxWidth(32));
@@ -1006,7 +1008,7 @@ namespace Valve.VR
 
         void DrawMaskDisabled(SerializedProperty mask)
         {
-            Texture m = (Texture)EditorGUIUtility.Load("Assets/SteamVR/Input/Editor/Resources/Icons/handmask.png");
+            Texture m = (Texture)EditorGUIUtility.Load("Assets/VRPlayerControl/SteamVR/Input/Editor/Resources/Icons/handmask.png");
             GUI.color = maskColorUnused;
             GUILayout.Label(m, GUILayout.MaxHeight(100), GUILayout.MaxWidth(100));
             GUI.color = Color.white;
