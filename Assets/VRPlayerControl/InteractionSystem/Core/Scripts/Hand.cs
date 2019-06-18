@@ -593,16 +593,14 @@ namespace VRPlayer
 
             if (item.skeletonPoser != null && skeleton != null)
             {
+                Debug.Log("blendign to poser skeleton " + name);
                 skeleton.BlendToPoser(item.skeletonPoser, blendToPoseTime);
             }
 
             if (item.activateActionSetOnAttach != null)
                 item.activateActionSetOnAttach.Activate(handType);
-
-
-            
-
         }
+
         void OnItemUnequipped(Inventory inventory, Item item){//.EquippedItem equippedItem) {
             // Item item = equippedItem.item;//.GetComponent<VR_Item>();
             if (!item) return;
@@ -657,8 +655,10 @@ namespace VRPlayer
             //move to vr interacable
             if (item.skeletonPoser != null)
             {
-                if (skeleton != null)
+                if (skeleton != null) {
                     skeleton.BlendToSkeleton(releasePoseBlendTime);
+                    Debug.Log(name + "releasing pose to skeleton");
+                }
             }
 
         }
@@ -1641,8 +1641,6 @@ pos.x, pos.y, pos.z,
             return useAction.GetState(handType);
         }
 
-
-
         //-------------------------------------------------
         private void InitController()
         {
@@ -1682,6 +1680,8 @@ pos.x, pos.y, pos.z,
                 mainRenderModel.SetSkeletonRangeOfMotion(oldRM_rom);
 
             this.BroadcastMessage("SetInputSource", handType, SendMessageOptions.DontRequireReceiver); // let child objects know we've initialized
+            Debug.Log("Set Input source");
+            
             this.BroadcastMessage("OnHandInitialized", deviceIndex, SendMessageOptions.DontRequireReceiver); // let child objects know we've initialized
         }
 
