@@ -15,6 +15,44 @@ public class Inventory : MonoBehaviour
 
 {
 
+    public void OnUseStart (int useIndex) {
+            if (equippedItem != null) {
+                // bool isUseable = hoveringInteractable.useType != Interactable.UseType.Scripted;
+                // if (isUseable) {
+                    equippedItem.item.OnEquippedUseStart(this, useIndex);
+                // }
+            }
+            // if (onUseStart != null) {
+            //     onUseStart (this, useIndex, hoveringInteractable);
+            // }
+        }
+        public void OnUseEnd (int useIndex) {
+            if (equippedItem != null) {
+                // bool isUseable = hoveringInteractable.useType != Interactable.UseType.Scripted;
+                // if (isUseable) {
+                
+                equippedItem.item.OnEquippedUseEnd(this, useIndex);
+                // }
+            }
+            // if (onUseEnd != null) {
+            //     onUseEnd (this, useIndex, hoveringInteractable);
+            // }
+        }
+        public void OnUseUpdate (int useIndex) {
+            if (equippedItem != null) {
+                // bool isUseable = hoveringInteractable.useType != Interactable.UseType.Scripted;
+                // if (isUseable) {
+                
+                equippedItem.item.OnEquippedUseUpdate(this, useIndex);
+                // }
+            }
+            // if (onUseUpdate != null) {
+            //     onUseUpdate (this, useIndex, hoveringInteractable);
+            // }
+        }
+
+
+
     public Inventory otherInventory;
     public class EquippedItem
     {
@@ -57,10 +95,10 @@ public class Inventory : MonoBehaviour
         if (equippedItem != null)
         {
             equippedItem.item.OnEquippedUpdate(this);
-        }
         if (onEquipUpdate != null) {
             onEquipUpdate(this, equippedItem.item);
 
+        }
         }
     
     }
@@ -141,6 +179,8 @@ public const Hand.AttachmentFlags defaultAttachmentFlags = Hand.AttachmentFlags.
             
             EquippedItem attachedObject = new EquippedItem();
             attachedObject.attachFlags = flags;
+
+            attachedObject.item = item;
             // attachedObject.attachTime = Time.time;
 
             attachedObject.originalParent = item.transform.parent;
@@ -333,6 +373,8 @@ public const Hand.AttachmentFlags defaultAttachmentFlags = Hand.AttachmentFlags.
             if (equippedItem.item != item) {
                 return;
             }
+
+            Debug.LogError("unequuiping " + name);
             
             Transform parentTransform = null;
             if (equippedItem.isParentedToInventory)

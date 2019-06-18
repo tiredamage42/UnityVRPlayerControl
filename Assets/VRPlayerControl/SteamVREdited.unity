@@ -563,8 +563,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d380dbc77ea04bfc838ef2e8aff40c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverLockOnEquip: 1
   useActionForEquip: 0
   useActionForStash: 1
+  unequipOnUseEnd: 1
   snapAttachEaseInCurve:
     serializedVersion: 2
     m_Curve:
@@ -3752,8 +3754,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d380dbc77ea04bfc838ef2e8aff40c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverLockOnEquip: 1
   useActionForEquip: 0
   useActionForStash: 1
+  unequipOnUseEnd: 1
   snapAttachEaseInCurve:
     serializedVersion: 2
     m_Curve:
@@ -4022,8 +4026,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d380dbc77ea04bfc838ef2e8aff40c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverLockOnEquip: 1
   useActionForEquip: 0
   useActionForStash: 1
+  unequipOnUseEnd: 1
   snapAttachEaseInCurve:
     serializedVersion: 2
     m_Curve:
@@ -7697,8 +7703,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d380dbc77ea04bfc838ef2e8aff40c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverLockOnEquip: 1
   useActionForEquip: 0
   useActionForStash: 1
+  unequipOnUseEnd: 1
   snapAttachEaseInCurve:
     serializedVersion: 2
     m_Curve:
@@ -14970,6 +14978,25 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1072035825}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1074387564 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1000014042078020, guid: 88075a54c7fb1484ba25db394b612917,
+    type: 3}
+  m_PrefabInstance: {fileID: 1454063916}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1074387565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1074387564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80df3856ba408c944a3cf528cf7bad83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 1000011210241306, guid: 8a2487c189a464148aadc3af2effa7c8, type: 3}
 --- !u!1 &1075588038
 GameObject:
   m_ObjectHideFlags: 0
@@ -16493,6 +16520,11 @@ PrefabInstance:
       propertyPath: targetCollider
       value: 
       objectReference: {fileID: 1271963283}
+    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: scale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 114000013822852628, guid: e0b086fbb874df143b6ac8f53cea5424,
         type: 3}
       propertyPath: onHandHoverEnd.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
@@ -16508,11 +16540,6 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: ae954e68e9b70844292f588d1397a7f7, type: 2}
-    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
-        type: 3}
-      propertyPath: scale
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0b086fbb874df143b6ac8f53cea5424, type: 3}
 --- !u!4 &1189253811 stripped
@@ -19240,8 +19267,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d380dbc77ea04bfc838ef2e8aff40c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverLockOnEquip: 1
   useActionForEquip: 0
   useActionForStash: 1
+  unequipOnUseEnd: 1
   snapAttachEaseInCurve:
     serializedVersion: 2
     m_Curve:
@@ -19419,6 +19448,11 @@ PrefabInstance:
     - target: {fileID: 114000011668634522, guid: a7c2b37096983fb40addeabf8a2aefbe,
         type: 3}
       propertyPath: previewPoseSelection
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012262138290, guid: a7c2b37096983fb40addeabf8a2aefbe,
+        type: 3}
+      propertyPath: offsetIndex
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -19943,7 +19977,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1427368838
 Transform:
   m_ObjectHideFlags: 0
@@ -21617,8 +21651,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d380dbc77ea04bfc838ef2e8aff40c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverLockOnEquip: 1
   useActionForEquip: 0
   useActionForStash: 1
+  unequipOnUseEnd: 1
   snapAttachEaseInCurve:
     serializedVersion: 2
     m_Curve:
@@ -25376,6 +25412,11 @@ PrefabInstance:
       propertyPath: targetCollider
       value: 
       objectReference: {fileID: 1271963283}
+    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: scale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 114000013822852628, guid: e0b086fbb874df143b6ac8f53cea5424,
         type: 3}
       propertyPath: onHandHoverBegin.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
@@ -25391,11 +25432,6 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 5ebf65e069a3d3f4bbb68b42e5c4840e, type: 2}
-    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
-        type: 3}
-      propertyPath: scale
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0b086fbb874df143b6ac8f53cea5424, type: 3}
 --- !u!4 &1781798810 stripped
@@ -25633,7 +25669,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4000014285432570, guid: 4f8a76d2be4d1cb40a9aa32921fcb73c, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4000014285432570, guid: 4f8a76d2be4d1cb40a9aa32921fcb73c, type: 3}
       propertyPath: m_LocalScale.y
@@ -26881,6 +26917,18 @@ PrefabInstance:
     - target: {fileID: 11451472, guid: dc06161b6d97feb419f45f03b62e14b9, type: 3}
       propertyPath: color.b
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11450312, guid: dc06161b6d97feb419f45f03b62e14b9, type: 3}
+      propertyPath: useControllerHoverComponent
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11450312, guid: dc06161b6d97feb419f45f03b62e14b9, type: 3}
+      propertyPath: useFingerJointHover
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11465950, guid: dc06161b6d97feb419f45f03b62e14b9, type: 3}
+      propertyPath: resizePlayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dc06161b6d97feb419f45f03b62e14b9, type: 3}
@@ -28897,6 +28945,11 @@ PrefabInstance:
       propertyPath: targetCollider
       value: 
       objectReference: {fileID: 1271963283}
+    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: scale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 114000013822852628, guid: e0b086fbb874df143b6ac8f53cea5424,
         type: 3}
       propertyPath: onHandHoverEnd.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
@@ -28912,11 +28965,6 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: ae954e68e9b70844292f588d1397a7f7, type: 2}
-    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
-        type: 3}
-      propertyPath: scale
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0b086fbb874df143b6ac8f53cea5424, type: 3}
 --- !u!4 &2050838875 stripped
@@ -29193,8 +29241,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d380dbc77ea04bfc838ef2e8aff40c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverLockOnEquip: 1
   useActionForEquip: 0
   useActionForStash: 1
+  unequipOnUseEnd: 1
   snapAttachEaseInCurve:
     serializedVersion: 2
     m_Curve:

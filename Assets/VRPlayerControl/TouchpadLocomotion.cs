@@ -371,6 +371,7 @@ public class TouchpadLocomotion : MonoBehaviour
                 //mae sure this happens after any teleportation
                 //keep our transform flush with the ground to prevent jittering
                 Player.instance.KeepTransformFlushWithGround(floorY);
+                //Debug.Log("EYYY");
                 
             }
         // }

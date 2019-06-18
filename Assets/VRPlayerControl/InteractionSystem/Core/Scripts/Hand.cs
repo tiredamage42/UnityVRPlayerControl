@@ -777,13 +777,13 @@ namespace VRPlayer
         //-------------------------------------------------
         public Vector3 GetTrackedObjectVelocity(float timeOffset = 0)
         {
-            if (trackedObject == null)
-            {
-                Vector3 velocityTarget, angularTarget;
-                inventory.GetUpdatedEquippedVelocities(out velocityTarget, out angularTarget);
-                Debug.LogError("Getting tracked object velocity here");
-                return velocityTarget;
-            }
+            // if (trackedObject == null)
+            // {
+            //     Vector3 velocityTarget, angularTarget;
+            //     inventory.GetUpdatedEquippedVelocities(out velocityTarget, out angularTarget);
+            //     Debug.LogError("Getting tracked object velocity here");
+            //     return velocityTarget;
+            // }
 
                 if (isActive)
             {
@@ -829,6 +829,7 @@ namespace VRPlayer
 
         public void GetEstimatedPeakVelocities(out Vector3 velocity, out Vector3 angularVelocity)
         {
+            Debug.LogError("heiyyy!");
             trackedObject.GetEstimatedPeakVelocities(out velocity, out angularVelocity);
             velocity = VRManager.trackingOrigin.TransformVector(velocity);
             angularVelocity = VRManager.trackingOrigin.TransformDirection(angularVelocity);
@@ -910,7 +911,7 @@ namespace VRPlayer
                 Vector3 pos = mainRenderModel.GetControllerPosition(controllerHoverComponent);
                 setPosChecks.Add (new Vector4 (
 pos.x, pos.y, pos.z,
-                controllerHoverRadius * Mathf.Abs(SteamVR_Utils.GetLossyScale(this.transform))
+                controllerHoverRadius * Mathf.Abs(SteamVR_Utils.GetLossyScale(this.transform)) / 2f
                 ));
                 
                 // CheckHoveringForTransform(mainRenderModel.GetControllerPosition(controllerHoverComponent), scaledHoverRadius / 2f, ref closestDistance, ref closestInteractable, Color.blue);
@@ -921,7 +922,7 @@ pos.x, pos.y, pos.z,
                 Vector3 pos = mainRenderModel.GetBonePosition((int)fingerJointHover);
                 setPosChecks.Add (new Vector4 (
 pos.x, pos.y, pos.z,
-                    fingerJointHoverRadius * Mathf.Abs(SteamVR_Utils.GetLossyScale(this.transform))
+                    fingerJointHoverRadius * Mathf.Abs(SteamVR_Utils.GetLossyScale(this.transform)) / 2f
                 ));
                 
                 // CheckHoveringForTransform(mainRenderModel.GetBonePosition((int)fingerJointHover), scaledHoverRadius / 2f, ref closestDistance, ref closestInteractable, Color.yellow);
@@ -1091,7 +1092,7 @@ pos.x, pos.y, pos.z,
 
             // Stagger updates between hands
             float hoverUpdateBegin = ((otherHand != null) && (otherHand.GetInstanceID() < GetInstanceID())) ? (0.5f * hoverUpdateInterval) : (0.0f);
-            InvokeRepeating("UpdateHovering", hoverUpdateBegin, hoverUpdateInterval);
+            // InvokeRepeating("UpdateHovering", hoverUpdateBegin, hoverUpdateInterval);
 
             InvokeRepeating("UpdateDebugText", hoverUpdateBegin, hoverUpdateInterval);
 
@@ -1133,20 +1134,20 @@ pos.x, pos.y, pos.z,
         void OnInspectUpdate (Interactor interactor, Interactable hoveringInteractable) {
             if (hoveringInteractable)
             {
-                bool useDown = useAction.GetStateDown(handType);
-                bool useUp = useAction.GetStateUp(handType);
-                bool useHeld = useAction.GetState(handType);
+                // bool useDown = useAction.GetStateDown(handType);
+                // bool useUp = useAction.GetStateUp(handType);
+                // bool useHeld = useAction.GetState(handType);
                 
-                if (useDown) {
-                    StandardizedVRInput.instance.HideHint(this, useAction);
-                    interactor.OnUseStart(0);
-                }
-                if (useUp) {
-                    interactor.OnUseEnd(0);
-                }
-                if (useHeld) {
-                    interactor.OnUseUpdate(0);
-                }
+                // if (useDown) {
+                //     StandardizedVRInput.instance.HideHint(this, useAction);
+                //     interactor.OnUseStart(0);
+                // }
+                // if (useUp) {
+                //     interactor.OnUseEnd(0);
+                // }
+                // if (useHeld) {
+                //     interactor.OnUseUpdate(0);
+                // }
             }
 
         }
@@ -1175,6 +1176,25 @@ pos.x, pos.y, pos.z,
         //-------------------------------------------------
         protected virtual void Update()
         {
+            bool useDown = useAction.GetStateDown(handType);
+                bool useUp = useAction.GetStateUp(handType);
+                bool useHeld = useAction.GetState(handType);
+                
+                if (useDown) {
+                    StandardizedVRInput.instance.HideHint(this, useAction);
+                    interactor.OnUseStart(0);
+                    inventory.OnUseStart(0);
+                }
+                if (useUp) {
+                    interactor.OnUseEnd(0);
+                    inventory.OnUseEnd(0);
+                }
+                if (useHeld) {
+                    interactor.OnUseUpdate(0);
+                                        inventory.OnUseUpdate(0);
+
+                }
+            SetHoverPositions();
             
             // if (currentAttached != null)
             // {

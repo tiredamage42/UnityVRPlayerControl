@@ -17,6 +17,11 @@ namespace Valve.VR.InteractionSystem
 	[RequireComponent( typeof( Interactable ) )]
 	public class ComplexThrowable : MonoBehaviour, IInventoryItem
 	{
+		public void OnEquippedUseStart(Inventory inventory, int useIndex) {}
+        public void OnEquippedUseEnd(Inventory inventory, int useIndex) {}
+        public void OnEquippedUseUpdate(Inventory inventory, int useIndex) {}
+
+
 		public void OnEquipped(Inventory inventory) {
 			PhysicsAttach( inventory.transform );
 

@@ -308,7 +308,7 @@ namespace Valve.VR
 #if UNITY_2017_1_OR_NEWER
 	    void OnBeforeRender() 
         { 
-            Debug.Log("use on before render");
+            //Debug.Log("use on before render");
             if (SteamVR.active == false)
                 return;
 

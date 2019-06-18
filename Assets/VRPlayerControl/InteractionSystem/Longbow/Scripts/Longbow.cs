@@ -18,6 +18,12 @@ namespace Valve.VR.InteractionSystem
 	[RequireComponent( typeof( Interactable ) )]
 	public class Longbow : MonoBehaviour, IInventoryItem
 	{
+
+		public void OnEquippedUseStart(Inventory inventory, int useIndex) {}
+        public void OnEquippedUseEnd(Inventory inventory, int useIndex) {}
+        public void OnEquippedUseUpdate(Inventory inventory, int useIndex) {}
+
+
 		public void OnEquippedUpdate (Inventory inventory) {
 			// Reset transform since we cheated it right after getting poses on previous frame
 			//transform.localPosition = Vector3.zero;
@@ -203,6 +209,7 @@ namespace Valve.VR.InteractionSystem
 		// Interactable interactable;
 		void Awake () {
 			// interactable = GetComponent<Interactable>();
+			GetComponent<Item>().attachmentFlags = Inventory.defaultAttachmentFlags;
 		}
 
 		void OnEnable () {
@@ -380,6 +387,7 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		public void StartNock( ArrowHand currentArrowHand )
 		{
+			Debug.LogError("started nock here");
 			arrowHand = currentArrowHand;
 			
 
@@ -481,6 +489,7 @@ namespace Valve.VR.InteractionSystem
 		{
 			// ArrowHand tells us to do this when we release the buttons when bow is nocked but not drawn far enough
 			nocked = false;
+			Debug.LogError("release nock");
 			parentInventoryInteractor.HoverUnlock( GetComponent<Interactable>() );
 			this.StartCoroutine( this.ResetDrawAnim() );
 		}
