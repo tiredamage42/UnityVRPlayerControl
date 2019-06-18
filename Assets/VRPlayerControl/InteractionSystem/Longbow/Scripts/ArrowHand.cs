@@ -54,6 +54,8 @@ namespace Valve.VR.InteractionSystem
 			// allowTeleport.overrideHoverLock = false;
 
 			arrowList = new List<GameObject>();
+
+			GetComponent<Item>().attachmentFlags = Inventory.defaultAttachmentFlags;
 		}
 
 		// void OnEnable () {
@@ -71,13 +73,13 @@ namespace Valve.VR.InteractionSystem
 		public void OnEquipped(Inventory inventory)// Object attachedHand )
 		{
 			// hand = (Hand)attachedHand;
-			FindBow();
+			FindBow(inventory);
 		}
 		public void OnEquippedUpdate (Inventory inventory) {
 
 			if ( bow == null )
 			{
-				FindBow();
+				FindBow(inventory);
 			}
 
 			if ( bow == null )
@@ -189,8 +191,13 @@ namespace Valve.VR.InteractionSystem
 			
 		}
 
-		public void OnUseStart (Interactor interactor, int useIndex) {
 
+        public void OnEquippedUseUpdate(Inventory inventory, int useIndex) {}
+
+
+		public void OnEquippedUseStart(Inventory inventory, int useIndex) {
+		// public void OnUseStart (Interactor interactor, int useIndex) {
+				Debug.LogError("nocked");
                 // If arrow is close enough to the nock position and we're pressing the trigger, and we're not nocked yet, Nock
                 // if ( ( distanceToNockPosition < nockDistance ) && bestGrab != GrabTypes.None && !nocked )
 				
@@ -205,8 +212,8 @@ namespace Valve.VR.InteractionSystem
 					nocked = true;
                     // nockedWithType = bestGrab;
 					bow.StartNock( this );
-					interactor.HoverLock( GetComponent<Interactable>() );
-					Debug.Log("hoverLocking " + interactor.name);
+					inventory.GetComponent<Interactor>().HoverLock( GetComponent<Interactable>() );
+					Debug.Log("hoverLocking " + inventory.name);
 					
 					// allowTeleport.teleportAllowed = false;
 					
@@ -214,17 +221,18 @@ namespace Valve.VR.InteractionSystem
 					Util.ResetTransform( currentArrow.transform );
 					Util.ResetTransform( arrowNockTransform );
 				}
-			
-
-
 		}
 
-		public void OnUseEnd (Interactor interactor, int useIndex) {
+public void OnEquippedUseEnd(Inventory inventory, int useIndex) {
+        Debug.LogError("suse end arrow");
+		// public void OnUseEnd (Interactor interactor, int useIndex) {
 			// If arrow is nocked, and we release the trigger
 			// if ( nocked && hand.IsGrabbingWithType(nockedWithType) == false )
 			if ( nocked )
 			
 			{
+				Debug.LogError("suse end arrow nocked");
+		
 				if ( bow.pulled ) // If bow is pulled back far enough, fire arrow, otherwise reset arrow in arrowhand
 				{
 					FireArrow();
@@ -238,8 +246,8 @@ namespace Valve.VR.InteractionSystem
                     // nockedWithType = GrabTypes.None;
 					bow.ReleaseNock();
 
-					interactor.HoverUnlock( GetComponent<Interactable>() );
-					Debug.Log("hover unLocking " + interactor.name);
+					inventory.GetComponent<Interactor>().HoverUnlock( GetComponent<Interactable>() );
+					Debug.Log("hover unLocking " + inventory.name);
 
 					// allowTeleport.teleportAllowed = true;
 				}
@@ -249,6 +257,11 @@ namespace Valve.VR.InteractionSystem
 
 		}
 
+
+public void OnUseStart (Interactor interactor, int useIndex) {
+}
+public void OnUseEnd (Interactor interactor, int useIndex) {
+}
 		public void OnUseUpdate (Interactor interactor, int useIndex) {
 
 		}
@@ -518,9 +531,9 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private void FindBow()
+		private void FindBow(Inventory inventory)
 		{
-			bow = GetComponent<Item>().parentInventory.otherInventory.GetComponentInChildren<Longbow>();
+			bow = inventory.otherInventory.GetComponentInChildren<Longbow>();
 		}
 	}
 }

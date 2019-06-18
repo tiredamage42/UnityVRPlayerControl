@@ -8,8 +8,10 @@ namespace InventorySystem {
 
     public class Item : MonoBehaviour, IInteractable
     {
+        public bool hoverLockOnEquip = true;
 
         void Awake () {
+            InitializeInteractableComponents();
             
         }
         public int useActionForEquip = 0;
@@ -24,9 +26,11 @@ namespace InventorySystem {
             if (useIndex == useActionForEquip) {
                 Inventory inventory = interactor.GetComponent<Inventory>();
                 if (inventory != null) {
-                    interactor.HoverLock( null );
+                    if (hoverLockOnEquip)
+                        interactor.HoverLock( GetComponent<Interactable>() );
             
                     inventory.EquipItem(this, attachmentFlags);
+                    // this.parentInventory = inventory;
                 }
             }
             else if (useIndex == useActionForStash) {
@@ -37,14 +41,24 @@ namespace InventorySystem {
                     Debug.LogError("unknown action for item " + name + "\naction: " + useIndex + "\ninteractor:" + interactor.name);
             }
         }
+        public bool unequipOnUseEnd = true;
         public void OnUseEnd(Interactor interactor, int useIndex) {
+            if (!unequipOnUseEnd)
+                return;
+            // Debug.LogError("use end");
+                
             if (useIndex == useActionForEquip) {
+                // Debug.LogError("should beeee");
                 Inventory inventory = interactor.GetComponent<Inventory>();
                 if (inventory != null) {
+                    // Debug.LogError("inventory not null");
                     if (inventory == parentInventory) {
-                        interactor.HoverUnlock(null);
+                        // Debug.LogError("same as parent");
+
+                        if (hoverLockOnEquip)
+                            interactor.HoverUnlock(GetComponent<Interactable>());
                         inventory.UnequipItem(this);
-            
+                        
 
                         // Uncomment to detach ourselves late in the frame.
                         // This is so that any vehicles the player is attached to
@@ -58,6 +72,7 @@ namespace InventorySystem {
                 }
             }
             else if (useIndex == useActionForStash) {
+                Debug.LogError("stash!");
 
             }
             else {
@@ -197,11 +212,15 @@ namespace InventorySystem {
         public Inventory parentInventory;
 
         public void OnEquipped (Inventory inventory) {
+            this.parentInventory = inventory;
+            
             for (int i = 0; i < itemComponents.Count; i++) {
                 itemComponents[i].OnEquipped(inventory);
             }
         }
         public void OnUnequipped (Inventory inventory) {
+            this.parentInventory = null;
+            
             for (int i = 0; i < itemComponents.Count; i++) {
                 itemComponents[i].OnUnequipped(inventory);
             }
@@ -210,6 +229,32 @@ namespace InventorySystem {
             for (int i = 0; i < itemComponents.Count; i++) {
                 itemComponents[i].OnEquippedUpdate(inventory);
             }
+        }
+
+
+        public void OnEquippedUseStart (Inventory interactor, int useIndex) {
+            for (int i = 0; i < itemComponents.Count; i++) {
+                itemComponents[i].OnEquippedUseStart(interactor, useIndex);
+            }
+            // if (onUseStart != null) {
+            //     onUseStart(interactor, useIndex);
+            // }
+        }
+        public void OnEquippedUseEnd (Inventory interactor, int useIndex) {
+            for (int i = 0; i < itemComponents.Count; i++) {
+                itemComponents[i].OnEquippedUseEnd(interactor, useIndex);
+            }
+            // if (onUseEnd != null) {
+            //     onUseEnd(interactor, useIndex);
+            // }
+        }
+        public void OnEquippedUseUpdate(Inventory interactor, int useIndex) {
+            for (int i = 0; i < itemComponents.Count; i++) {
+                itemComponents[i].OnEquippedUseUpdate(interactor, useIndex);
+            }
+            // if (onUseUpdate != null) {
+            //     onUseUpdate(interactor, useIndex);
+            // }
         }
 
         List<IInventoryItem> itemComponents = new List<IInventoryItem>();

@@ -17,10 +17,15 @@ namespace Valve.VR.InteractionSystem
 	[RequireComponent( typeof( Interactable ) )]
 	[RequireComponent( typeof( Rigidbody ) )]
     // [RequireComponent( typeof(VelocityEstimator))]
-	public class Throwable : MonoBehaviour
+	public class Throwable : MonoBehaviour, IInventoryItem
 	{
+        public void OnEquippedUseStart(Inventory inventory, int useIndex) {}
+        public void OnEquippedUseEnd(Inventory inventory, int useIndex) {}
+        public void OnEquippedUseUpdate(Inventory inventory, int useIndex) {}
 
-        void OnEquipped (Inventory inventory) {
+
+
+        public void OnEquipped (Inventory inventory) {
 
             // Hand hand = (Hand)owner;
             //Debug.Log("<b>[SteamVR Interaction]</b> Pickup: " + hand.GetGrabStarting().ToString());
@@ -44,7 +49,7 @@ namespace Valve.VR.InteractionSystem
 			attachRotation = transform.rotation;
 
         }
-        void OnUnequipped (Inventory inventory) {
+        public void OnUnequipped (Inventory inventory) {
 
             attached = false;
 
@@ -64,7 +69,7 @@ namespace Valve.VR.InteractionSystem
             
         }
 
-        void OnEquippedUpdate (Inventory inventory) {
+        public void OnEquippedUpdate (Inventory inventory) {
             
             // if (onHeldUpdate != null)
             //     onHeldUpdate.Invoke(hand);
@@ -290,14 +295,17 @@ namespace Valve.VR.InteractionSystem
             switch (releaseVelocityStyle)
             {
                 case ReleaseStyle.ShortEstimation:
+                    Debug.Log("short estimeation");
                     hand.velocityEstimator.FinishEstimatingVelocity();
                     velocity = hand.velocityEstimator.GetVelocityEstimate();
                     angularVelocity = hand.velocityEstimator.GetAngularVelocityEstimate();
                     break;
                 case ReleaseStyle.AdvancedEstimation:
+                Debug.Log("advanced estimeation");
                     hand.GetEstimatedPeakVelocities(out velocity, out angularVelocity);
                     break;
                 case ReleaseStyle.GetFromHand:
+                Debug.Log("and");
                     velocity = hand.GetTrackedObjectVelocity(releaseVelocityTimeOffset);
                     angularVelocity = hand.GetTrackedObjectAngularVelocity(releaseVelocityTimeOffset);
                     break;

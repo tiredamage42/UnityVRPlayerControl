@@ -42,7 +42,12 @@ namespace VRPlayer
 			}
 		}
 		// how tall the player is in real life
-		[HideInInspector] public float realLifeHeight = -1;
+		[SerializeField] float _realLifeHeight = -1;
+		public float realLifeHeight {
+			get {
+				return _realLifeHeight == -1 ? 1 : _realLifeHeight;
+			}
+		}
 
 		// how much offset to put on the transform to simulate the player being
 		// the default height
@@ -60,21 +65,26 @@ namespace VRPlayer
 		}
 
 		bool recalibrateHeight;
-		public void RecalibrateRealLifeHeight () {
-			Debug.Log("Recalibrating Player real life hieght");
+		public IEnumerator RecalibrateRealLifeHeight () {
 					
-        	realLifeHeight = hmdTransform.localPosition.y;
+        	_realLifeHeight = hmdTransform.localPosition.y;
+
+			Debug.LogError("Recalibrating Player real life hieght " + _realLifeHeight);
 
 			if (totalHeightOffset != 0) {
+
+				yield return new WaitForFixedUpdate();
+				// yield return new WaitForFixedUpdate();
 				float floorY = moveScript.GetFloor().y;
 				KeepTransformFlushWithGround(floorY);
 			}
+			yield return null;
 		}
 
 
 		public float totalHeightOffset {
 			get {
-				return  extraHeightOffset + resizePlayerOffset;
+				return extraHeightOffset + resizePlayerOffset;
 			}
 		}
 
@@ -90,10 +100,23 @@ namespace VRPlayer
 
 		void CheckForInitialScaling () {
 
-			if (realLifeHeight == -1 || recalibrateHeight) {
-				if (VRManager.headsetIsOnPlayerHead) {
-					RecalibrateRealLifeHeight();
+			if (_realLifeHeight == -1 || recalibrateHeight) {
+				if (_realLifeHeight == -1) {
+					KeepTransformFlushWithGround(moveScript.GetFloor().y);
 				}
+				if (VRManager.headsetIsOnPlayerHead) {
+					StartCoroutine(
+
+					RecalibrateRealLifeHeight()
+					)
+					;
+
+
+				}
+				else {
+					// Debug.Log("eeeee");
+				}
+
 			}
 			recalibrateHeight = false;
 		}

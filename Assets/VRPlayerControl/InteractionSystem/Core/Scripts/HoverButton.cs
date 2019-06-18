@@ -14,17 +14,17 @@ namespace Valve.VR.InteractionSystem
 {
     //-------------------------------------------------------------------------
     [RequireComponent(typeof(Interactable))]
-    public class HoverButton : MonoBehaviour
+    public class HoverButton : MonoBehaviour, IInteractable
     {
         public int useActionIndex = 0;
         
-		void OnInspectStart(Interactor interactor) {
+		public void OnInspectStart(Interactor interactor) {
 
 		}
-        void OnInspectEnd(Interactor interactor){
+        public void OnInspectEnd(Interactor interactor){
 
 		}
-        void OnInspectUpdate(Interactor interactor){
+        public void OnInspectUpdate(Interactor interactor){
             hovering = true;
             // lastHoveredHand = hand;
             lastInspector = interactor;
@@ -56,13 +56,15 @@ namespace Valve.VR.InteractionSystem
             InvokeEvents(wasEngaged, engaged);
 
 		}
-        void OnUseStart(Interactor interactor, int useIndex){
+        public void OnUseStart(Interactor interactor, int useIndex){
+
+            Debug.LogError("hover button use start");
 
 		}
-        void OnUseEnd(Interactor interactor, int useIndex){
+        public void OnUseEnd(Interactor interactor, int useIndex){
 			
 		}
-        void OnUseUpdate(Interactor interactor, int useIndex){
+        public void OnUseUpdate(Interactor interactor, int useIndex){
 
 		}
 
@@ -180,13 +182,13 @@ namespace Valve.VR.InteractionSystem
 
 
 
-            if (buttonDown && onButtonDown != null)
+            if (buttonDown)// && onButtonDown != null)
                 interactable.OnUseStart(lastInspector, useActionIndex);
                 // onButtonDown.Invoke(lastHoveredHand);
-            if (isEngaged && onButtonIsPressed != null)
+            if (isEngaged)// && onButtonIsPressed != null)
                 interactable.OnUseUpdate(lastInspector, useActionIndex);
                 // onButtonIsPressed.Invoke(lastHoveredHand);
-            if (buttonUp && onButtonUp != null)
+            if (buttonUp)// && onButtonUp != null)
                 interactable.OnUseEnd(lastInspector, useActionIndex);
                 // onButtonUp.Invoke(lastHoveredHand);
         }

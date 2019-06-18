@@ -8,6 +8,11 @@ namespace Valve.VR.InteractionSystem.Sample
 {
     public class JoeJeffController : MonoBehaviour, IInventoryItem
     {
+        public void OnEquippedUseStart(Inventory inventory, int useIndex) {}
+        public void OnEquippedUseEnd(Inventory inventory, int useIndex) {}
+        public void OnEquippedUseUpdate(Inventory inventory, int useIndex) {}
+
+
         public Transform Joystick;
         public float joyMove = 0.1f;
         

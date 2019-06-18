@@ -145,6 +145,7 @@ namespace InteractionSystem
         private void Awake()
         {
             skeletonPoser = GetComponent<SteamVR_Skeleton_Poser>();
+            InitializeInteractableComponents();
         }
 
         protected virtual void Start()
@@ -179,7 +180,7 @@ namespace InteractionSystem
 
         void SubmitForHighlight () {
             if (!isHighlighted) {
-                Debug.Log("Highlighting " + name + " on hover");
+                //Debug.Log("Highlighting " + name + " on hover");
 
                 _Renderers.Clear();
 

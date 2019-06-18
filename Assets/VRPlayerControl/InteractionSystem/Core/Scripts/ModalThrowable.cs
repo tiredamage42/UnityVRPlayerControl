@@ -12,6 +12,11 @@ namespace Valve.VR.InteractionSystem
 {
     public class ModalThrowable : Throwable, IInventoryItem
     {
+        public void OnEquippedUseStart(Inventory inventory, int useIndex) {}
+        public void OnEquippedUseEnd(Inventory inventory, int useIndex) {}
+        public void OnEquippedUseUpdate(Inventory inventory, int useIndex) {}
+
+
 
         public void OnEquippedUpdate (Inventory inventory) {
             if (interactable.skeletonPoser != null)
