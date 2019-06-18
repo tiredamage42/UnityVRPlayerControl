@@ -7,29 +7,29 @@ using InteractionSystem;
 
 namespace Valve.VR.InteractionSystem.Sample
 {
-    public class RenderModelChangerUI : MonoBehaviour// UIElement
+    public class RenderModelChangerUI : MonoBehaviour, IInteractable// UIElement
     {
        
-		void OnInspectStart(Interactor interactor) {
+		public void OnInspectStart(Interactor interactor) {
 
 		}
-        void OnInspectEnd(Interactor interactor){
+        public void OnInspectEnd(Interactor interactor){
 
 		}
-        void OnInspectUpdate(Interactor interactor){
+        public void OnInspectUpdate(Interactor interactor){
 
 		}
-        void OnUseStart(Interactor interactor, int useIndex){
+        public void OnUseStart(Interactor interactor, int useIndex){
             if (ui != null)
             {
                 ui.SetRenderModel(this);
             }
 
 		}
-        void OnUseEnd(Interactor interactor, int useIndex){
+        public void OnUseEnd(Interactor interactor, int useIndex){
 			
 		}
-        void OnUseUpdate(Interactor interactor, int useIndex){
+        public void OnUseUpdate(Interactor interactor, int useIndex){
 
 		}
 
