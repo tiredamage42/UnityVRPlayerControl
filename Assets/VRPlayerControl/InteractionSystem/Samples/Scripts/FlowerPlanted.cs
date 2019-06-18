@@ -1,11 +1,9 @@
 ﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
 
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Valve.VR.InteractionSystem;
 
-namespace Valve.VR.InteractionSystem.Sample
+namespace Demo
 {
     public class FlowerPlanted : MonoBehaviour
     {
@@ -21,7 +19,7 @@ namespace Valve.VR.InteractionSystem.Sample
 
         private IEnumerator DoPlant()
         {
-            Vector3 plantPosition;
+            Vector3 plantPosition = this.transform.position;
 
             RaycastHit hitInfo;
             bool hit = Physics.Raycast(this.transform.position, Vector3.down, out hitInfo);
@@ -29,12 +27,7 @@ namespace Valve.VR.InteractionSystem.Sample
             {
                 plantPosition = hitInfo.point + (Vector3.up * 0.05f);
             }
-            else
-            {
-                plantPosition = this.transform.position;
-                plantPosition.y = Player.instance.transform.position.y;
-            }
-
+            
             GameObject planting = this.gameObject;
             planting.transform.position = plantPosition;
             planting.transform.rotation = Quaternion.Euler(0, Random.value * 360f, 0);

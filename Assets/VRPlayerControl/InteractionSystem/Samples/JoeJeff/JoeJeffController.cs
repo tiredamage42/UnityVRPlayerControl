@@ -2,10 +2,11 @@
 using System.Collections;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
-
+using InventorySystem;
+using VRPlayer;
 namespace Valve.VR.InteractionSystem.Sample
 {
-    public class JoeJeffController : MonoBehaviour
+    public class JoeJeffController : MonoBehaviour, IInventoryItem
     {
         public Transform Joystick;
         public float joyMove = 0.1f;
@@ -21,30 +22,52 @@ namespace Valve.VR.InteractionSystem.Sample
         private bool jump;
         private float glow;
         private SteamVR_Input_Sources hand;
-        private Interactable interactable;
+        // private Interactable interactable;
+
+
+        public void OnEquipped (Inventory inventory) {
+
+        }
+        public void OnUnequipped (Inventory inventory) {
+            movement = Vector2.zero;
+            jump = false;
+            glow = 0;
+
+        }
+        public void OnEquippedUpdate (Inventory inventory) {
+            SteamVR_Input_Sources hand = inventory.GetComponent<Hand>().handType;
+            // hand = interactable.attachedToHand.handType;
+            Vector2 m = moveAction[hand].axis;
+            movement = new Vector3(m.x, 0, m.y);
+
+            jump = jumpAction[hand].stateDown;
+            glow = Mathf.Lerp(glow, jumpAction[hand].state ? 1.5f : 1.0f, Time.deltaTime * 20);
+            
+
+        } 
 
         private void Start()
         {
-            interactable = GetComponent<Interactable>();
+            // interactable = GetComponent<Interactable>();
         }
 
         private void Update()
         {
-            if (interactable.attachedToHand)
-            {
-                hand = interactable.attachedToHand.handType;
-                Vector2 m = moveAction[hand].axis;
-                movement = new Vector3(m.x, 0, m.y);
+            // if (interactable.attachedToHand)
+            // {
+            //     hand = interactable.attachedToHand.handType;
+            //     Vector2 m = moveAction[hand].axis;
+            //     movement = new Vector3(m.x, 0, m.y);
 
-                jump = jumpAction[hand].stateDown;
-                glow = Mathf.Lerp(glow, jumpAction[hand].state ? 1.5f : 1.0f, Time.deltaTime * 20);
-            }
-            else
-            {
-                movement = Vector2.zero;
-                jump = false;
-                glow = 0;
-            }
+            //     jump = jumpAction[hand].stateDown;
+            //     glow = Mathf.Lerp(glow, jumpAction[hand].state ? 1.5f : 1.0f, Time.deltaTime * 20);
+            // }
+            // else
+            // {
+            //     movement = Vector2.zero;
+            //     jump = false;
+            //     glow = 0;
+            // }
 
             Joystick.localPosition = movement * joyMove;
 

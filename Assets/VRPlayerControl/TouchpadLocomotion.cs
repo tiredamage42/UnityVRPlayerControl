@@ -100,11 +100,6 @@ amplified walking (move tracking space along with camera movement vector so meat
 
 */
 
-
- 
- 
-
-
 /*
 
     make camera rig child of this transform (at origin)
@@ -119,10 +114,8 @@ public class TouchpadLocomotion : MonoBehaviour
 {
 
     public class ClimbTracker {
-        // SteamVR_Input_Sources hand;
         public bool isClimbable;
-        // Vector3 previousHandPosition;
-
+        
         public ClimbTracker(SteamVR_Input_Sources hand) {
             // this.hand = hand;
             // this.previousHandPosition = Player.instance.GetHand(hand).transform.localPosition;
@@ -295,37 +288,36 @@ public class TouchpadLocomotion : MonoBehaviour
     public SteamVR_Action_Boolean climbAction;
 
 
-
     public Color crouchVignetteColor = new Color(1, .5f, 0, 1);
 
     public bool easyCrouch = true;
 
-    public float defaultPlayerHeight = 1.8f;
+    // public float defaultPlayerHeight = 1.8f;
     // const float defaultCrouchHeight = 1.0f;
 
     // 1.0f / 1.8f = crouch height of 1 for default height of 1.8
     [Range(0,1)] public float crouchRatioThreshold = 1.0f / 1.8f;
-    public bool resizePlayer;
+    // public bool resizePlayer;
 
+    // float standingMeatspaceHeadHeight;
+    // public void RecalibratePlayerMeatspaceHeight () {
+    //     standingMeatspaceHeadHeight = head.localPosition.y;
 
-    float standingMeatspaceHeadHeight;
-    public void RecalibratePlayerMeatspaceHeight () {
-        standingMeatspaceHeadHeight = head.localPosition.y;
-
-        if (totalOfset != 0) {
-            transform.position = new Vector3(transform.position.x, moveScript.floorY + totalOfset, transform.position.z);
-        }
-    }
+    //     if (totalOfset != 0) {
+    //         transform.position = new Vector3(transform.position.x, moveScript.floorY + totalOfset, transform.position.z);
+    //     }
+    // }
 
     // this doenst count the resizing offset
     // so the actual physical act of crouching wont be difficult for taller than
     // default height players
     bool GetManualCrouching () {
-        return head.transform.localPosition.y / standingMeatspaceHeadHeight <= crouchRatioThreshold;
+        // return head.transform.localPosition.y / standingMeatspaceHeadHeight <= crouchRatioThreshold;
+        return head.transform.localPosition.y / Player.instance.realLifeHeight <= crouchRatioThreshold;
     }
 
 
-    public float currentCrouchOffset;
+    // public float currentCrouchOffset;
     float currentCrouchLerp;
     public float crouchTime = .25f;
     void HandleEasyCrouch (float deltaTime) {
@@ -344,11 +336,13 @@ public class TouchpadLocomotion : MonoBehaviour
             currentCrouchLerp = Mathf.Clamp01(currentCrouchLerp);
 
 
-float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHeight;
+            // float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHeight;
+            
+            float startHeight = Player.instance.gamespaceHeight;
             float crouchOffsetTarget = (startHeight * crouchRatioThreshold) - startHeight;
 
 
-            currentCrouchOffset = Mathf.Lerp(0, crouchOffsetTarget, currentCrouchLerp); 
+            Player.instance.extraHeightOffset = Mathf.Lerp(0, crouchOffsetTarget, currentCrouchLerp); 
 
 
 
@@ -372,12 +366,12 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
 
 
             if (moveScript.isGrounded) {
-                // Debug.Log("eermm");
                 float floorY = moveScript.floorY;
 
                 //mae sure this happens after any teleportation
-
-                transform.position = new Vector3(transform.position.x, floorY + totalOfset, transform.position.z);
+                //keep our transform flush with the ground to prevent jittering
+                Player.instance.KeepTransformFlushWithGround(floorY);
+                
             }
         // }
 
@@ -387,18 +381,18 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
     }
 
 
-    //negative if lpayer is taller, positive if shorter
-    float resizePlayerOffset {
-        get {
-            return resizePlayer ? defaultPlayerHeight - standingMeatspaceHeadHeight : 0;
-        }
-    }
+    // //negative if lpayer is taller, positive if shorter
+    // float resizePlayerOffset {
+    //     get {
+    //         return resizePlayer ? defaultPlayerHeight - standingMeatspaceHeadHeight : 0;
+    //     }
+    // }
 
-    public float totalOfset {
-        get {
-            return  currentCrouchOffset + resizePlayerOffset;
-        }
-    }
+    // public float totalOfset {
+    //     get {
+    //         return  currentCrouchOffset + resizePlayerOffset;
+    //     }
+    // }
 
     const float minCapsuleHeight = .1f;
 
@@ -412,10 +406,10 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
 
         float height = head.localPosition.y;//Mathf.Clamp(head.localPosition.y, minMaxHeight.x, minMaxHeight.y);
         
-        float totalHeightOffset = currentCrouchOffset + resizePlayerOffset;
+        // float totalHeightOffset = currentCrouchOffset + resizePlayerOffset;
 
         //adjust for crouch + resizing player
-        height += totalHeightOffset;
+        height += Player.instance.totalHeightOffset;// totalHeightOffset;
 
         if (height <= minCapsuleHeight) {
             height = minCapsuleHeight;
@@ -431,7 +425,7 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
         // the bottom of the capsule should protrude out from below our tracking origin
         // pushing it up
         
-        Vector3 newCenter = new Vector3(0, (height * .5f) - totalHeightOffset, 0);
+        Vector3 newCenter = new Vector3(0, (height * .5f) - Player.instance.totalHeightOffset, 0);
         newCenter.y += characterController.skinWidth;
 
         //move capsule in local space to adjust for headset moving around on its own
@@ -447,11 +441,11 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
 
 
     
-    [Range(.1f, 10)] public float worldScale = 1.0f;
+    // [Range(.1f, 10)] public float worldScale = 1.0f;
 
-    void UpdateWorldScale () {
-        transform.localScale = Vector3.one * (1.0f/worldScale);
-    }
+    // void UpdateWorldScale () {
+    //     transform.localScale = Vector3.one * (1.0f/worldScale);
+    // }
 
 
     // float defaultOriginYOffset;
@@ -462,46 +456,44 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
 
 
 
-    bool adjustedScale;
+    // bool adjustedScale;
+    // public bool recalibrateHeight;
 
     // public float crouchHeight = 1;
     public float crouchTransitionSpeed = 10f;
 
-    public bool recalibrateHeight;
 
     bool isCrouched;
     // float targetStandScale, targetCrouchScale, currentScaleLerp;
     
 
-    void CheckForInitialScaling () {
+    // void CheckForInitialScaling () {
 
         
-        if (!adjustedScale || recalibrateHeight) {
-            if (hmdOnHead.GetState(SteamVR_Input_Sources.Head)) {
-                Debug.Log("recalibrating player natural height");
-                RecalibratePlayerMeatspaceHeight();
-                // CalculateScaleTargets();
-                adjustedScale = true;
-            }
-        }
-        recalibrateHeight = false;
-    
-    }
+    //     if (!adjustedScale || recalibrateHeight) {
+            
+    //         if (hmdOnHead.GetState(SteamVR_Input_Sources.Head)) {
+    //             Debug.Log("recalibrating player natural height");
+    //             RecalibratePlayerMeatspaceHeight();
+    //             adjustedScale = true;
+    //         }
+    //     }
+    //     recalibrateHeight = false;
+    // }
 
-    void CheckForJump () {
-        if (moveScript.isGrounded) {
+    void CheckForJump (bool movementEnabled) {
+        if (moveScript.isGrounded && movementEnabled) {
 
             if (jumpAction.GetStateDown(moveHand)) {
-                isCrouched = false;
+                // isCrouched = false;
                 moveScript.Jump();
-                // Debug.Log("y no jump");
             }
         }
     }
 
     void CheckCrouched (float deltaTime) {
         if (!easyCrouch) {
-            currentCrouchOffset = 0;
+            Player.instance.extraHeightOffset = 0;
             isCrouched = GetManualCrouching();
             return;
         }
@@ -511,13 +503,13 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
             isCrouched = !isCrouched;
         }
 
-        if (!adjustedScale) {
-            if (isCrouched) {
-                isCrouched = false;
-                Debug.LogWarning("cant crouch yet, default player scale not adjusted");
-            }
-            return;
-        }
+        // if (!adjustedScale) {
+        //     if (isCrouched) {
+        //         isCrouched = false;
+        //         Debug.LogWarning("cant crouch yet, default player scale not adjusted");
+        //     }
+        //     return;
+        // }
 
         HandleEasyCrouch(deltaTime);
         
@@ -548,7 +540,6 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
     public Transform head;
     public float capsuleRadius = .25f;
     public Vector2 minMaxHeight = new Vector2(1, 2);
-
 
 
     [Header("Controls")]
@@ -613,13 +604,10 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
 
     void Update() {
         
-        Teleport.instance.SetCurrentTrackingTransformOffset(totalOfset);
+        // Teleport.instance.SetCurrentTrackingTransformOffset(totalOfset);
 
-        // GetComponent<Player>().SetTrackignOriginOffset(
-        //     totalOfset
-        // );
-        CheckForInitialScaling();
-        UpdateWorldScale();
+        // CheckForInitialScaling();
+        // UpdateWorldScale();
         InputUpdateLoop(Time.deltaTime);
     }
     void FixedUpdate () {
@@ -764,21 +752,18 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
     void InputUpdateLoop (float deltaTime) {
         CheckCrouched(deltaTime);
 
+        bool movementEnabled = !isClimbing;
         
-        CheckForJump();
-        
+        CheckForJump(movementEnabled); // also when jump hand isnt hovering
 
-        bool movementEnabled = !isClimbing;// true;//moveEnableAction.GetState(moveHand);
         HandleTurnInput(movementEnabled);
         HandleMoveInput(movementEnabled);
         if (!isClimbing) {
-
             moveScript.SetMoveVector(new Vector3 (currentMoveVector.x, 0, currentMoveVector.y));
         }
 
         bool enableComfortVignette = smoothTurnDirection != 0 || !moveScript.isGrounded || isCrouched;
         if (!enableComfortVignette) {
-            // bool isMoving = currentMoveVector != Vector2.zero;
             enableComfortVignette = moveScript.isMoving && currentMoveVector.sqrMagnitude >= vignetteMovementThreshold * vignetteMovementThreshold;
         }
         HandleComfortVignetting( enableComfortVignette, deltaTime );
@@ -789,17 +774,7 @@ float startHeight = resizePlayer ? defaultPlayerHeight : standingMeatspaceHeadHe
         SetCharacterControllerHeight ();
         
         moveScript.MoveCharacterController(deltaTime, transform);
-        // MoveCharacterController(deltaTime);        
     }
-
-    // void MoveCharacterController (float deltaTime) {
-
-    //     Transform relativeTransform = transform;
-
-    //     characterController.Move( relativeTransform.TransformDirection( new Vector3( currentMoveVector.x, 0, currentMoveVector.y) * deltaTime ) );
-    // }
-
-
 }
 
 }

@@ -11,69 +11,69 @@ using UnityEngine;
 namespace Valve.VR.InteractionSystem
 {
 
-    public enum WhichHand
-    {
-        Left,
-        Right
-    }
+    // public enum WhichHand
+    // {
+    //     Left,
+    //     Right
+    // }
 
-    [RequireComponent(typeof(Throwable))]
+    // [RequireComponent(typeof(Throwable))]
 
-    public class Equippable : MonoBehaviour
-    {
+    // public class Equippable : MonoBehaviour
+    // {
 
-        [Tooltip("Array of children you do not want to be mirrored. Text, logos, etc.")]
-        public Transform[] antiFlip;
+    //     [Tooltip("Array of children you do not want to be mirrored. Text, logos, etc.")]
+    //     public Transform[] antiFlip;
 
-        public WhichHand defaultHand = WhichHand.Right;
+    //     public WhichHand defaultHand = WhichHand.Right;
 
-        private Vector3 initialScale;
-        private Interactable interactable;
+    //     private Vector3 initialScale;
+    //     private Interactable interactable;
 
-        [HideInInspector]
-        public SteamVR_Input_Sources attachedHandType
-        {
-            get
-            {
-                if (interactable.attachedToHand)
-                    return interactable.attachedToHand.handType;
-                else
-                    return SteamVR_Input_Sources.Any;
-            }
-        }
+    //     [HideInInspector]
+    //     public SteamVR_Input_Sources attachedHandType
+    //     {
+    //         get
+    //         {
+    //             if (interactable.attachedToHand)
+    //                 return interactable.attachedToHand.handType;
+    //             else
+    //                 return SteamVR_Input_Sources.Any;
+    //         }
+    //     }
         
-        private void Start()
-        {
-            Debug.Log("Equippable used on " + name);
-            initialScale = transform.localScale;
-            interactable = GetComponent<Interactable>();
-        }
+    //     private void Start()
+    //     {
+    //         Debug.Log("Equippable used on " + name);
+    //         initialScale = transform.localScale;
+    //         interactable = GetComponent<Interactable>();
+    //     }
         
-        private void Update()
-        {
-            Debug.Log("Equippable update used on " + name);
+    //     private void Update()
+    //     {
+    //         Debug.Log("Equippable update used on " + name);
             
-            if (interactable.attachedToHand)
-            {
-                Vector3 flipScale = initialScale;
-                if ((attachedHandType == SteamVR_Input_Sources.RightHand && defaultHand == WhichHand.Right) || (attachedHandType == SteamVR_Input_Sources.LeftHand && defaultHand == WhichHand.Left))
-                {
-                    flipScale.x *= 1;
-                    for (int transformIndex = 0; transformIndex < antiFlip.Length; transformIndex++)
-                    {
-                        antiFlip[transformIndex].localScale = new Vector3(1, 1, 1);
-                    }
-                }
-                else
-                {
-                    flipScale.x *= -1;
-                    for (int transformIndex = 0; transformIndex < antiFlip.Length; transformIndex++)
-                    {
-                        antiFlip[transformIndex].localScale = new Vector3(-1, 1, 1);
-                    }
-                }
-                transform.localScale = flipScale;
-            }
-        }
-    }
+    //         if (interactable.attachedToHand)
+    //         {
+    //             Vector3 flipScale = initialScale;
+    //             if ((attachedHandType == SteamVR_Input_Sources.RightHand && defaultHand == WhichHand.Right) || (attachedHandType == SteamVR_Input_Sources.LeftHand && defaultHand == WhichHand.Left))
+    //             {
+    //                 flipScale.x *= 1;
+    //                 for (int transformIndex = 0; transformIndex < antiFlip.Length; transformIndex++)
+    //                 {
+    //                     antiFlip[transformIndex].localScale = new Vector3(1, 1, 1);
+    //                 }
+    //             }
+    //             else
+    //             {
+    //                 flipScale.x *= -1;
+    //                 for (int transformIndex = 0; transformIndex < antiFlip.Length; transformIndex++)
+    //                 {
+    //                     antiFlip[transformIndex].localScale = new Vector3(-1, 1, 1);
+    //                 }
+    //             }
+    //             transform.localScale = flipScale;
+    //         }
+    //     }
+    // }
 }

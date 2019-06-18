@@ -1,0 +1,374 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+using VRPlayer;
+
+
+using Valve.VR;
+
+
+namespace InventorySystem {
+
+public class Inventory : MonoBehaviour
+
+
+{
+
+    public Inventory otherInventory;
+    public class EquippedItem
+    {
+        public Item item;
+        // public Interactable interactable;
+        public Rigidbody attachedRigidbody;
+        public CollisionDetectionMode collisionDetectionMode;
+        public bool attachedRigidbodyWasKinematic;
+        public bool attachedRigidbodyUsedGravity;
+        public Transform originalParent;
+        public bool isParentedToInventory;
+        public Hand.AttachmentFlags attachFlags;
+        public Transform equipPoint;
+        public Vector3 initialPositionalOffset;
+        public Quaternion initialRotationalOffset;
+        // public Transform attachedOffsetTransform;
+        // public float attachTime;
+        
+        public bool HasAttachFlag(Hand.AttachmentFlags flag)
+        {
+            return (attachFlags & flag) == flag;
+        }
+    }
+    
+
+    public event System.Action<Inventory, Item> onUnequip, onEquip, onEquipUpdate;
+
+    public Transform alternateEquipPoint;
+
+    public EquippedItem equippedItem;
+
+    protected const float MaxVelocityChange = 10f;
+        protected const float VelocityMagic = 6000f;
+        protected const float AngularVelocityMagic = 50f;
+        protected const float MaxAngularVelocityChange = 20f;
+
+
+
+    void Update () {
+        if (equippedItem != null)
+        {
+            equippedItem.item.OnEquippedUpdate(this);
+        }
+        if (onEquipUpdate != null) {
+            onEquipUpdate(this, equippedItem.item);
+
+        }
+    
+    }
+    public bool GetUpdatedEquippedVelocities(out Vector3 velocityTarget, out Vector3 angularTarget)
+        {
+            bool realNumbers = false;
+
+
+            float velocityMagic = VelocityMagic;
+            float angularVelocityMagic = AngularVelocityMagic;
+
+            Vector3 targetItemPosition = TargetItemPosition();//equippedItem);
+            Vector3 positionDelta = (targetItemPosition - equippedItem.attachedRigidbody.position);
+            velocityTarget = (positionDelta * velocityMagic * Time.deltaTime);
+
+            if (float.IsNaN(velocityTarget.x) == false && float.IsInfinity(velocityTarget.x) == false)
+            {
+                realNumbers = true;
+            }
+            else
+                velocityTarget = Vector3.zero;
+
+
+            Quaternion targetItemRotation = TargetItemRotation();//equippedItem);
+            Quaternion rotationDelta = targetItemRotation * Quaternion.Inverse(equippedItem.item.transform.rotation);
+
+
+            float angle;
+            Vector3 axis;
+            rotationDelta.ToAngleAxis(out angle, out axis);
+
+            if (angle > 180)
+                angle -= 360;
+
+            if (angle != 0 && float.IsNaN(axis.x) == false && float.IsInfinity(axis.x) == false)
+            {
+                angularTarget = angle * axis * angularVelocityMagic * Time.deltaTime;
+
+                realNumbers &= true;
+            }
+            else
+                angularTarget = Vector3.zero;
+
+            return realNumbers;
+        }
+
+
+
+
+
+
+
+public const Hand.AttachmentFlags defaultAttachmentFlags = Hand.AttachmentFlags.ParentToHand |
+                                                            //   AttachmentFlags.DetachOthers |
+                                                              Hand.AttachmentFlags.DetachFromOtherHand |
+                                                              Hand.AttachmentFlags.TurnOnKinematic |
+                                                              Hand.AttachmentFlags.SnapOnAttach;
+
+
+
+
+     //-------------------------------------------------
+        // Attach a GameObject to this GameObject
+        //
+        // objectToAttach - The GameObject to attach
+        // flags - The flags to use for attaching the object
+        // attachmentPoint - Name of the GameObject in the hierarchy of this Hand which should act as the attachment point for this GameObject
+        //-------------------------------------------------
+        public void EquipItem(Item item, Hand.AttachmentFlags flags = defaultAttachmentFlags)
+        {
+            if(ItemIsEquipped(item))
+                return;
+
+            Rigidbody itemRB = item.GetComponent<Rigidbody>();
+
+            Vector3 originalItemPosition = item.transform.position;
+            Quaternion originalItemRotation = item.transform.rotation;
+            
+            EquippedItem attachedObject = new EquippedItem();
+            attachedObject.attachFlags = flags;
+            // attachedObject.attachTime = Time.time;
+
+            attachedObject.originalParent = item.transform.parent;
+
+            attachedObject.attachedRigidbody = itemRB;
+            
+            if (itemRB != null)
+            {
+                if (item.parentInventory != null) //already attached to another hand
+                {
+                    //if it was attached to another hand, get the flags from that hand
+                    
+                    EquippedItem attachedObjectInList = item.parentInventory.equippedItem;
+                    if (attachedObjectInList.item == attachedObject.item)
+                    {
+                        attachedObject.attachedRigidbodyWasKinematic = attachedObjectInList.attachedRigidbodyWasKinematic;
+                        attachedObject.attachedRigidbodyUsedGravity = attachedObjectInList.attachedRigidbodyUsedGravity;
+                        attachedObject.originalParent = attachedObjectInList.originalParent;
+                    }
+                }
+                else
+                {
+                    attachedObject.attachedRigidbodyWasKinematic = itemRB.isKinematic;
+                    attachedObject.attachedRigidbodyUsedGravity = itemRB.useGravity;
+                }
+
+                if (attachedObject.HasAttachFlag(Hand.AttachmentFlags.TurnOnKinematic)) {
+                    attachedObject.collisionDetectionMode = itemRB.collisionDetectionMode;
+                    if (attachedObject.collisionDetectionMode == CollisionDetectionMode.Continuous)
+                        itemRB.collisionDetectionMode = CollisionDetectionMode.Discrete;
+                    itemRB.isKinematic = true;
+                }
+                if (attachedObject.HasAttachFlag(Hand.AttachmentFlags.TurnOffGravity))
+                    itemRB.useGravity = false;
+            
+            }
+            attachedObject.equipPoint = item.useAlternateAttachementPoint ? alternateEquipPoint : transform;
+
+
+            if (attachedObject.HasAttachFlag(Hand.AttachmentFlags.ParentToHand))
+            {
+                //Parent the object to the hand
+                item.transform.parent = attachedObject.equipPoint;// this.transform;
+                attachedObject.isParentedToInventory = true;
+            }
+            else
+            {
+                attachedObject.isParentedToInventory = false;
+            }
+
+                
+            //Detach from the other hand if requested
+            // if (attachedObject.HasAttachFlag(Hand.AttachmentFlags.DetachFromOtherHand))
+            // {
+            //     if (otherHand != null)
+            //         otherHand.DetachObject(objectToAttach);
+            // }
+
+            
+            if (attachedObject.HasAttachFlag(Hand.AttachmentFlags.SnapOnAttach))
+            {
+                // if (attachedObject.item.skeletonPoser != null && HasSkeleton())
+                // {
+                //     SteamVR_Skeleton_PoseSnapshot pose = attachedObject.item.skeletonPoser.GetBlendedPose(skeleton);
+
+                //     //snap the object to the center of the attach point
+                //     item.transform.position = this.transform.TransformPoint(pose.position);
+                //     item.transform.rotation = this.transform.rotation * pose.rotation;
+                // }
+                // else
+                // { 
+                    //snap the object to the center of the attach point
+                    item.transform.rotation = attachedObject.equipPoint.rotation;
+                    item.transform.position = attachedObject.equipPoint.position;
+                // }
+            }
+
+
+            attachedObject.initialPositionalOffset = attachedObject.equipPoint.InverseTransformPoint(item.transform.position);
+            attachedObject.initialRotationalOffset = Quaternion.Inverse(attachedObject.equipPoint.rotation) * item.transform.rotation;
+
+
+            if (equippedItem != null) {
+                UnequipItem(equippedItem.item);
+            }
+
+
+            equippedItem = attachedObject;
+            
+            
+            
+            item.OnEquipped (this);
+            // objectToAttach.SendMessage("OnAttachedToHand", this, SendMessageOptions.DontRequireReceiver);
+                
+            if (onEquip != null) {
+                onEquip(this, equippedItem.item);
+            }
+        }
+
+
+        protected virtual void FixedUpdate()
+        {
+            if (equippedItem != null)
+            
+            {
+                EquippedItem attachedInfo = equippedItem;
+                
+                    if (attachedInfo.HasAttachFlag(Hand.AttachmentFlags.VelocityMovement))
+                    {
+                        UpdateAttachedVelocity(attachedInfo);
+
+                        /*if (attachedInfo.interactable.handFollowTransformPosition)
+                        {
+                            skeleton.transform.position = TargetSkeletonPosition(attachedInfo);
+                            skeleton.transform.rotation = attachedInfo.attachedObject.transform.rotation * attachedInfo.skeletonLockRotation;
+                        }*/
+                    }
+                    else
+                    {
+                        if (attachedInfo.HasAttachFlag(Hand.AttachmentFlags.ParentToHand))
+                        {
+                            attachedInfo.item.transform.position = TargetItemPosition();//attachedInfo);
+                            attachedInfo.item.transform.rotation = TargetItemRotation();//attachedInfo);
+                        }
+                    }
+
+
+                
+            }
+        }
+        protected void UpdateAttachedVelocity(EquippedItem attachedObjectInfo)
+        {
+            Vector3 velocityTarget, angularTarget;
+            bool success = GetUpdatedEquippedVelocities(out velocityTarget, out angularTarget);
+            if (success)
+            {
+                float scale = SteamVR_Utils.GetLossyScale(equippedItem.equipPoint);
+                
+                float maxAngularVelocityChange = MaxAngularVelocityChange * scale;
+                float maxVelocityChange = MaxVelocityChange * scale;
+
+                attachedObjectInfo.attachedRigidbody.velocity = Vector3.MoveTowards(attachedObjectInfo.attachedRigidbody.velocity, velocityTarget, maxVelocityChange);
+                attachedObjectInfo.attachedRigidbody.angularVelocity = Vector3.MoveTowards(attachedObjectInfo.attachedRigidbody.angularVelocity, angularTarget, maxAngularVelocityChange);
+            }
+        }
+
+        public Vector3 TargetItemPosition()//EquippedItem attachedObject)
+        {
+            // if (attachedObject.item.skeletonPoser != null && HasSkeleton())
+            // {
+            //     Vector3 tp = attachedObject.equipPoint.InverseTransformPoint(transform.TransformPoint(attachedObject.item.skeletonPoser.GetBlendedPose(skeleton).position));
+            //     //tp.x *= -1;
+            //     return equippedItem.equipPoint.TransformPoint(tp);
+            // }
+            // else
+            // {
+                return equippedItem.equipPoint.TransformPoint(equippedItem.initialPositionalOffset);
+            // }
+        }
+
+        public Quaternion TargetItemRotation()//EquippedItem attachedObject)
+        {
+            // if (attachedObject.item.skeletonPoser != null && HasSkeleton())
+            // {
+            //     Quaternion tr = Quaternion.Inverse(attachedObject.equipPoint.rotation) * (transform.rotation * attachedObject.item.skeletonPoser.GetBlendedPose(skeleton).rotation);
+            //     return equippedItem.equipPoint.rotation * tr;
+            // }
+            // else
+            // {
+                return equippedItem.equipPoint.rotation * equippedItem.initialRotationalOffset;
+            // }
+        }
+
+        public bool ItemIsEquipped(Item item)
+        {
+            return equippedItem != null && equippedItem.item == item;
+        }
+
+        
+        //-------------------------------------------------
+        // Detach this GameObject from the attached object stack of this Hand
+        //
+        // objectToDetach - The GameObject to detach from this Hand
+        //-------------------------------------------------
+        public void UnequipItem(Item item, bool restoreOriginalParent = true)
+        {
+            if (equippedItem == null) {
+                return;
+            }
+            if (equippedItem.item != item) {
+                return;
+            }
+            
+            Transform parentTransform = null;
+            if (equippedItem.isParentedToInventory)
+            {
+                if (restoreOriginalParent)
+                {
+                    parentTransform = equippedItem.originalParent;
+                }
+                item.transform.parent = parentTransform;
+            }
+
+            Rigidbody rb = equippedItem.attachedRigidbody;
+            if (rb != null)
+            {
+                if (equippedItem.HasAttachFlag(Hand.AttachmentFlags.TurnOnKinematic))
+                {
+                    rb.isKinematic = equippedItem.attachedRigidbodyWasKinematic;
+                    rb.collisionDetectionMode = equippedItem.collisionDetectionMode;
+                }
+                if (equippedItem.HasAttachFlag(Hand.AttachmentFlags.TurnOffGravity))
+                {   
+                    rb.useGravity = equippedItem.attachedRigidbodyUsedGravity;       
+                }
+            }
+
+            // if (ao.interactable == null || (ao.interactable != null && ao.interactable.isDestroying == false))
+            item.gameObject.SetActive(true);
+                
+            equippedItem = null;
+                
+            item.OnUnequipped (this);
+            // ao.attachedObject.SendMessage("OnDetachedFromHand", this, SendMessageOptions.DontRequireReceiver);
+                
+            if (onUnequip != null) {
+                onUnequip(this, item);
+            }
+        }
+    }
+}

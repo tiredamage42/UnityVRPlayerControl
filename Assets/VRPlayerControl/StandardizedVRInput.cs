@@ -1,16 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using Valve.VR;
+
 using Valve.VR.InteractionSystem;
 
 namespace VRPlayer {
 
-   
-
     public class StandardizedVRInput : MonoBehaviour
     {
+
+        public bool headsetIsOnPlayerHead;
+
+        void Update()
+        {
+            if (headsetOnHead.GetStateDown(SteamVR_Input_Sources.Head))
+            {
+                Debug.Log("<b>SteamVR Interaction System</b> Headset placed on head");
+                headsetIsOnPlayerHead = true;
+            }
+            else if (headsetOnHead.GetStateUp(SteamVR_Input_Sources.Head))
+            {
+                Debug.Log("<b>SteamVR Interaction System</b> Headset removed");
+                headsetIsOnPlayerHead = false;
+            }
+        }
         
         public ControllerLayoutHintRoutine debugRoutine;
         public void PlayDebugRoutine () {
@@ -74,6 +88,38 @@ namespace VRPlayer {
         public SteamVR_Action_Single TriggerAxis;
         public SteamVR_Action_Vector2 TrackpadAxis;
         public SteamVR_Action_Boolean DpadUp, DpadDown, DpadLeft, DpadRight;
+
+        [Tooltip("This action lets you know when the player has placed the headset on their head")]
+        public SteamVR_Action_Boolean headsetOnHead = SteamVR_Input.GetBooleanAction("HeadsetOnHead");
+        public SteamVR_Action_Vibration hapticAction = SteamVR_Input.GetAction<SteamVR_Action_Vibration>("Haptic");
+
+        public void TriggerHapticPulse(SteamVR_Input_Sources hand, ushort microSecondsDuration)
+        {
+            float seconds = (float)microSecondsDuration / 1000000f;
+            hapticAction.Execute(0, seconds, 1f / seconds, 1, hand);
+        }
+
+        public void TriggerHapticPulse(SteamVR_Input_Sources hand, float duration, float frequency, float amplitude)
+        {
+            hapticAction.Execute(0, duration, frequency, amplitude, hand);
+        }
+
+        public void ShowHint(Hand hand, ISteamVR_Action_In_Source action)
+        {
+            ControllerButtonHints.ShowButtonHint(hand, action); //todo: assess
+        }
+
+        public void HideHint(Hand hand, ISteamVR_Action_In_Source action)
+        {
+            ControllerButtonHints.HideButtonHint(hand, action); //todo: assess
+        }
+
+        public void ShowHint(Hand hand, ISteamVR_Action_In_Source action, string text)
+        {
+            ControllerButtonHints.ShowTextHint(hand, action, text);
+        }
+
+
 
         IEnumerator HintRoutine (ControllerLayoutHintRoutine routine) {
             Player player = Player.instance;

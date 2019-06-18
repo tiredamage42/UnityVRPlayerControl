@@ -38,8 +38,6 @@ namespace VRPlayer
 		public Material pointHighlightedMaterial;
 		public Transform destinationReticleTransform;
 		public Transform invalidReticleTransform;
-		// public GameObject playAreaPreviewCorner;
-		// public GameObject playAreaPreviewSide;
 		public Color pointerValidColor;
 		public Color pointerInvalidColor;
 		public Color pointerLockedColor;
@@ -96,23 +94,13 @@ namespace VRPlayer
 		private float invalidReticleMinScaleDistance = 0.4f;
 		private float invalidReticleMaxScaleDistance = 2.0f;
 		
-		// private Transform playAreaPreviewTransform;
-		// private Transform[] playAreaPreviewCorners;
-		// private Transform[] playAreaPreviewSides;
-
 		private float loopingAudioMaxVolume = 0.0f;
 
-		// private Coroutine hintCoroutine = null;
-
-		// private bool originalHoverLockState = false;
-		// private Interactable originalHoveringInteractable = null;
-		// private AllowTeleportWhileAttachedToHand allowTeleportWhileAttached = null;
-
+		
 		private Vector3 startingFeetOffset = Vector3.zero;
 		private bool movedFeetFarEnough = false;
 
-		// SteamVR_Events.Action chaperoneInfoInitializedAction;
-
+		
 		public float maxGroundAngle = 45;
 
 		
@@ -142,8 +130,7 @@ namespace VRPlayer
         {
             _instance = this;
 
-			// chaperoneInfoInitializedAction = ChaperoneInfo.InitializedAction( OnChaperoneInfoInitialized );
-
+			
 			pointerLineRenderer = GetComponentInChildren<LineRenderer>();
 			teleportPointerObject = pointerLineRenderer.gameObject;
 
@@ -155,8 +142,6 @@ namespace VRPlayer
 
 			loopingAudioMaxVolume = loopingAudioSource.volume;
 
-			// playAreaPreviewCorner.SetActive( false );
-			// playAreaPreviewSide.SetActive( false );
 
 			float invalidReticleStartingScale = invalidReticleTransform.localScale.x;
 			invalidReticleMinScale *= invalidReticleStartingScale;
@@ -180,49 +165,14 @@ namespace VRPlayer
 				return;
 			}
 
-			// CheckForSpawnPoint();
-
-			// Invoke( "ShowTeleportHint", 5.0f );
 		}
 
-
-		//-------------------------------------------------
-		// void OnEnable()
-		// {
-		// 	chaperoneInfoInitializedAction.enabled = true;
-		// 	OnChaperoneInfoInitialized(); // In case it's already initialized
-		// }
-
-
-		// //-------------------------------------------------
 		void OnDisable()
 		{
-		// 	chaperoneInfoInitializedAction.enabled = false;
 			HidePointer();
 		}
 
 
-
-			
-
-
-
-		//-------------------------------------------------
-		// private void CheckForSpawnPoint()
-		// {
-		// 	foreach ( TeleportPoint teleportMarker in teleportMarkers )
-		// 	{
-		// 		// TeleportPoint teleportPoint = teleportMarker as TeleportPoint;
-		// 		if ( teleportMarker.playerSpawnPoint )
-		// 		{
-		// 			teleportingToMarker = teleportMarker;
-		// 			TeleportPlayer();
-		// 			break;
-		// 		}
-		// 	}
-		// }
-
-		//-------------------------------------------------
 		void Update()
 		{
 			SmoothTeleport(Time.deltaTime);
@@ -231,43 +181,38 @@ namespace VRPlayer
 
 			if ( visible )
 			{
-				if ( WasTeleportButtonReleased(  ) )
+
+				if (teleportAction.GetStateUp(teleportHand))
 					
 				{
 						TryTeleportPlayer();
 				}
 			}
 
-			if ( WasTeleportButtonPressed(  ) )
+			
+
+			if ( teleportAction.GetStateDown(teleportHand) )
 				
 			{
 				teleportNewlyPressed = true;
 			}
 		
-			//If something is attached to the hand that is preventing teleport
-			// if ( allowTeleportWhileAttached && !allowTeleportWhileAttached.teleportAllowed )
-			// {
-			// 	HidePointer();
-			// }
-			// else
-			// {
-				if ( !visible && teleportNewlyPressed )
+			if ( !visible && teleportNewlyPressed )
+			
+			{
+				//Begin showing the pointer
+				ShowPointer( );
+			}
+			else if ( visible )
+			{
+
 				
+				if ( !teleportNewlyPressed && !teleportAction.GetState(teleportHand) )
 				{
-					//Begin showing the pointer
-					ShowPointer( );
+					//Hide the pointer
+					HidePointer();
 				}
-				else if ( visible )
-				{
-
-
-					if ( !teleportNewlyPressed && !IsTeleportButtonDown( ) )
-					{
-						//Hide the pointer
-						HidePointer();
-					}
-				}
-			// }
+			}
 
 			if ( visible )
 			{
@@ -290,12 +235,12 @@ namespace VRPlayer
 			pointerLineRenderer.startColor = color;
 			pointerLineRenderer.endColor = color;
 		}
+		void ShowPlayArea (bool validLocation, Vector3 playerFeetOffset, Vector3 pointedAtPosition) {
+			if (!validLocation) {
+				SceneChaperone.Activate(false);
+				return;
+			}
 
-
-		bool ShowPlayArea (Vector3 playerFeetOffset, Vector3 pointedAtPosition) {
-			if ( !showPlayAreaMarker ) return false;
-			// if ( playAreaPreviewTransform == null ) return false;
-			
 			Vector3 offsetToUse = playerFeetOffset;
 
 			//Adjust the actual offset to prevent the play area marker from moving too much
@@ -315,18 +260,8 @@ namespace VRPlayer
 					movedFeetFarEnough = true;
 				}
 			}
-
-			// SceneChaperone.instance.transform.position = pointedAtPosition + offsetToUse;
-			// SceneChaperone.instance.transform.rotation = Player.instance.transform.rotation;
-
-			SceneChaperone.SetTransform(
-pointedAtPosition + offsetToUse,
-Player.instance.transform.rotation
-
-			);
-			
-
-			return true;
+			SceneChaperone.SetTransform(pointedAtPosition + offsetToUse, Player.instance.transform.rotation);
+			SceneChaperone.Activate(true);
 		}
 
 
@@ -479,18 +414,9 @@ Player.instance.transform.rotation
 
 
 
-			bool showPlayAreaPreview = validAreaTargeted && ShowPlayArea(playerFeetOffset, pointedAtPosition);
+			ShowPlayArea(validAreaTargeted, playerFeetOffset, pointedAtPosition);
 
-			SceneChaperone.Activate(showPlayAreaPreview);
-			// SceneChaperone.instance.playAreaPreviewTransform.gameObject.SetActive(showPlayAreaPreview);
-			// if (showPlayAreaPreview) {
-			// 	Debug.Log("showing preview");
-			// }
-			// if ( playAreaPreviewTransform != null )
-			// {
-			// 	playAreaPreviewTransform.gameObject.SetActive( showPlayAreaPreview );
-			// }
-
+			
 			
 			destinationReticleTransform.position = pointedAtPosition;
 			invalidReticleTransform.position = pointerEnd;
@@ -515,92 +441,6 @@ Player.instance.transform.rotation
 
 				
 		}
-
-
-
-
-		// //Maybe adjust this to world scale
-		// //-------------------------------------------------
-		// private void OnChaperoneInfoInitialized()
-		// {
-		// 	ChaperoneInfo chaperone = ChaperoneInfo.instance;
-
-		// 	if ( chaperone.initialized && chaperone.roomscale )
-		// 	{
-		// 		//Set up the render model for the play area bounds
-
-		// 		if ( playAreaPreviewTransform == null )
-		// 		{
-		// 			playAreaPreviewTransform = new GameObject( "PlayAreaPreviewTransform" ).transform;
-		// 			playAreaPreviewTransform.parent = transform;
-		// 			Util.ResetTransform( playAreaPreviewTransform );
-
-		// 			playAreaPreviewCorner.SetActive( true );
-		// 			playAreaPreviewCorners = new Transform[4];
-
-		// 			playAreaPreviewCorners[0] = playAreaPreviewCorner.transform;
-		// 			for (int i = 1; i < 4; i++) {
-		// 				playAreaPreviewCorners[i] = Instantiate( playAreaPreviewCorners[0] );
-		// 			}
-		// 			for (int i = 0; i < 4; i++) {
-		// 				playAreaPreviewCorners[i].transform.parent = playAreaPreviewTransform;
-		// 			}
-						
-		// 			playAreaPreviewSide.SetActive( true );
-		// 			playAreaPreviewSides = new Transform[4];
-
-		// 			playAreaPreviewSides[0] = playAreaPreviewSide.transform;
-		// 			for (int i = 1; i < 4; i++) {
-		// 				playAreaPreviewSides[i] = Instantiate( playAreaPreviewSides[0] );
-		// 			}
-		// 			for (int i = 0; i < 4; i++) {
-		// 				playAreaPreviewSides[i].transform.parent = playAreaPreviewTransform;
-		// 			}
-		// 		}
-
-		// 		float x = chaperone.playAreaSizeX;
-		// 		float z = chaperone.playAreaSizeZ;
-
-		// 		playAreaPreviewSides[0].localPosition = new Vector3( 0.0f, 0.0f, 0.5f * z - 0.25f );
-		// 		playAreaPreviewSides[1].localPosition = new Vector3( 0.0f, 0.0f, -0.5f * z + 0.25f );
-		// 		playAreaPreviewSides[2].localPosition = new Vector3( 0.5f * x - 0.25f, 0.0f, 0.0f );
-		// 		playAreaPreviewSides[3].localPosition = new Vector3( -0.5f * x + 0.25f, 0.0f, 0.0f );
-
-		// 		for (int i = 0; i < 4; i++) {
-		// 			playAreaPreviewSides[i].localScale = new Vector3( (i < 2 ? x : z) - 0.5f, 1.0f, 1.0f );
-		// 		}
-				
-		// 		// playAreaPreviewSides[0].localScale = new Vector3( x - 0.5f, 1.0f, 1.0f );
-		// 		// playAreaPreviewSides[1].localScale = new Vector3( x - 0.5f, 1.0f, 1.0f );
-		// 		// playAreaPreviewSides[2].localScale = new Vector3( z - 0.5f, 1.0f, 1.0f );
-		// 		// playAreaPreviewSides[3].localScale = new Vector3( z - 0.5f, 1.0f, 1.0f );
-
-		// 		playAreaPreviewSides[0].localRotation = Quaternion.Euler( 0.0f, 0.0f, 0.0f );
-		// 		playAreaPreviewSides[1].localRotation = Quaternion.Euler( 0.0f, 180.0f, 0.0f );
-		// 		playAreaPreviewSides[2].localRotation = Quaternion.Euler( 0.0f, 90.0f, 0.0f );
-		// 		playAreaPreviewSides[3].localRotation = Quaternion.Euler( 0.0f, 270.0f, 0.0f );
-
-		// 		playAreaPreviewCorners[0].localPosition = new Vector3( 0.5f * x - 0.25f, 0.0f, 0.5f * z - 0.25f );
-		// 		playAreaPreviewCorners[1].localPosition = new Vector3( 0.5f * x - 0.25f, 0.0f, -0.5f * z + 0.25f );
-		// 		playAreaPreviewCorners[2].localPosition = new Vector3( -0.5f * x + 0.25f, 0.0f, -0.5f * z + 0.25f );
-		// 		playAreaPreviewCorners[3].localPosition = new Vector3( -0.5f * x + 0.25f, 0.0f, 0.5f * z - 0.25f );
-
-		// 		for (int i = 0; i < 4; i++) {
-		// 			playAreaPreviewCorners[i].localRotation = Quaternion.Euler( 0.0f, i * 90.0f, 0.0f );
-		// 		}
-					
-		// 		// playAreaPreviewCorners[0].localRotation = Quaternion.Euler( 0.0f, 0.0f, 0.0f );
-		// 		// playAreaPreviewCorners[1].localRotation = Quaternion.Euler( 0.0f, 90.0f, 0.0f );
-		// 		// playAreaPreviewCorners[2].localRotation = Quaternion.Euler( 0.0f, 180.0f, 0.0f );
-		// 		// playAreaPreviewCorners[3].localRotation = Quaternion.Euler( 0.0f, 270.0f, 0.0f );
-
-		// 		playAreaPreviewTransform.gameObject.SetActive( false );
-		// 	}
-		// }
-
-
-
-		//-------------------------------------------------
 		private void HidePointer()
 		{
 			
@@ -613,22 +453,6 @@ Player.instance.transform.rotation
 
 			if ( isPointing )
 			{
-				// if ( ShouldOverrideHoverLock() )
-				// {
-				// 	//Restore the original hovering interactable on the hand
-				// 	if ( originalHoverLockState == true )
-				// 	{
-				// 		teleportHandClass.HoverLock( originalHoveringInteractable );
-						
-				// 	}
-				// 	else
-				// 	{
-						
-				// 		teleportHandClass.HoverUnlock( null );
-
-				// 	}
-				// }
-
 				//Stop looping sound
 				loopingAudioSource.Stop();
 				PlayAudioClip( pointerAudioSource, pointerStopSound );
@@ -649,17 +473,6 @@ Player.instance.transform.rotation
 			invalidReticleTransform.gameObject.SetActive( false );
 
 			SceneChaperone.Activate(false);
-			
-			// if (SceneChaperone.instance.playAreaPreviewTransform != null) {
-
-			// SceneChaperone.instance.playAreaPreviewTransform.gameObject.SetActive(false);
-			// }
-			// Debug.Log("no preview");
-			// if ( playAreaPreviewTransform != null )
-			// {
-			// 	playAreaPreviewTransform.gameObject.SetActive( false );
-			// }
-
 			
 			isPointing = false;
 			
@@ -712,21 +525,8 @@ Player.instance.transform.rotation
 
 				Hand pointerHand = teleportHandClass;
 
-				pointerStartTransform = GetPointerStartTransform( pointerHand );
+				pointerStartTransform = pointerHand.transform;
 
-				// if ( pointerHand.currentAttachedObject != null )
-				// {
-				// 	allowTeleportWhileAttached = pointerHand.currentAttachedObject.GetComponent<AllowTeleportWhileAttachedToHand>();
-				// }
-
-				//Keep track of any existing hovering interactable on the hand
-				// originalHoverLockState = pointerHand.hoverLocked;
-				// originalHoveringInteractable = pointerHand.hoveringInteractable;
-
-				// if ( ShouldOverrideHoverLock() )
-				// {
-				// 	pointerHand.HoverLock( null );
-				// }
 
 				pointerAudioSource.transform.SetParent( pointerStartTransform );
 				pointerAudioSource.transform.localPosition = Vector3.zero;
@@ -772,15 +572,10 @@ Player.instance.transform.rotation
 		{
 			if (isPointing)
 			{
-				Hand pointerHand = teleportHandClass;
-				if ( validLocation )
-				{
-					pointerHand.TriggerHapticPulse( 800 );
-				}
-				else
-				{
-					pointerHand.TriggerHapticPulse( 100 );
-				}
+				StandardizedVRInput.instance.TriggerHapticPulse( 
+					teleportHand,
+					// this,
+					 (ushort)(validLocation ? 800 : 100) );
 			}
 		}
 
@@ -795,8 +590,6 @@ Player.instance.transform.rotation
 					//Pointing at an unlocked teleport marker
 					teleportingToMarker = pointedAtTeleportMarker;
 					InitiateTeleportFade();
-
-					// CancelTeleportHint();
 				}
 			}
 		}
@@ -975,218 +768,6 @@ Player.instance.transform.rotation
 					PlayPointerHaptic( !hitTeleportMarker.locked );
 				}
 			}
-		}
-
-
-		//-------------------------------------------------
-		// public void ShowTeleportHint()
-		// {
-		// 	CancelTeleportHint();
-
-		// 	hintCoroutine = StartCoroutine( TeleportHintCoroutine() );
-		// }
-
-
-		//-------------------------------------------------
-		// public void CancelTeleportHint()
-		// {
-		// 	if ( hintCoroutine != null )
-        //     {
-        //         ControllerButtonHints.HideTextHint(player.leftHand, teleportAction);
-        //         ControllerButtonHints.HideTextHint(player.rightHand, teleportAction);
-
-		// 		StopCoroutine( hintCoroutine );
-		// 		hintCoroutine = null;
-		// 	}
-
-		// 	CancelInvoke( "ShowTeleportHint" );
-		// }
-
-
-		//-------------------------------------------------
-		// private IEnumerator TeleportHintCoroutine()
-		// {
-		// 	float prevBreakTime = Time.time;
-		// 	float prevHapticPulseTime = Time.time;
-
-		// 	while ( true )
-		// 	{
-		// 		bool pulsed = false;
-
-		// 		//Show the hint on each eligible hand
-
-		// 			Hand hand = teleportHandClass;
-		// 			bool showHint = true;// IsEligibleForTeleport( hand );
-		// 			bool isShowingHint = !string.IsNullOrEmpty( ControllerButtonHints.GetActiveHintText( hand, teleportAction) );
-		// 			if ( showHint )
-		// 			{
-		// 				if ( !isShowingHint )
-		// 				{
-		// 					ControllerButtonHints.ShowTextHint( hand, teleportAction, "Teleport" );
-		// 					prevBreakTime = Time.time;
-		// 					prevHapticPulseTime = Time.time;
-		// 				}
-
-		// 				if ( Time.time > prevHapticPulseTime + 0.05f )
-		// 				{
-		// 					//Haptic pulse for a few seconds
-		// 					pulsed = true;
-
-		// 					hand.TriggerHapticPulse( 500 );
-		// 				}
-		// 			}
-		// 			else if ( !showHint && isShowingHint )
-		// 			{
-		// 				ControllerButtonHints.HideTextHint( hand, teleportAction);
-		// 			}
-				
-
-		// 		if ( Time.time > prevBreakTime + 3.0f )
-		// 		{
-		// 			//Take a break for a few seconds
-		// 			yield return new WaitForSeconds( 3.0f );
-
-		// 			prevBreakTime = Time.time;
-		// 		}
-
-		// 		if ( pulsed )
-		// 		{
-		// 			prevHapticPulseTime = Time.time;
-		// 		}
-
-		// 		yield return null;
-		// 	}
-		// }
-
-
-		//-------------------------------------------------
-		// public bool IsEligibleForTeleport( Hand hand )
-		// {
-		// 	if ( hand == null )
-		// 	{
-		// 		return false;
-		// 	}
-
-		// 	if ( !hand.gameObject.activeInHierarchy )
-		// 	{
-		// 		return false;
-		// 	}
-
-		// 	if ( hand.hoveringInteractable != null )
-		// 	{
-		// 		return false;
-		// 	}
-
-		// 	if ( hand.noSteamVRFallbackCamera == null )
-		// 	{
-		// 		if ( hand.isActive == false)
-		// 		{
-		// 			return false;
-		// 		}
-
-		// 		//Something is attached to the hand
-		// 		if ( hand.currentAttachedObject != null )
-		// 		{
-		// 			AllowTeleportWhileAttachedToHand allowTeleportWhileAttachedToHand = hand.currentAttachedObject.GetComponent<AllowTeleportWhileAttachedToHand>();
-
-		// 			return allowTeleportWhileAttachedToHand != null && allowTeleportWhileAttachedToHand.teleportAllowed == true;
-					
-		// 		}
-		// 	}
-
-		// 	return true;
-		// }
-
-
-		//-------------------------------------------------
-		// private bool ShouldOverrideHoverLock()
-		// {
-		// 	if ( !allowTeleportWhileAttached || allowTeleportWhileAttached.overrideHoverLock )
-		// 	{
-		// 		return true;
-		// 	}
-
-		// 	return false;
-		// }
-
-
-		//-------------------------------------------------
-		private bool WasTeleportButtonReleased()// Hand hand )
-		{
-			Hand hand = teleportHandClass;
-
-			// if ( IsEligibleForTeleport( hand ) )
-			// {
-				// if ( hand.noSteamVRFallbackCamera != null )
-				// {
-				// 	return Input.GetKeyUp( KeyCode.T );
-				// }
-				// else
-                // {
-                    return teleportAction.GetStateUp(hand.handType);
-
-                    //return hand.controller.GetPressUp( SteamVR_Controller.ButtonMask.Touchpad );
-                // }
-			// }
-
-			// return false;
-		}
-
-		//-------------------------------------------------
-		private bool IsTeleportButtonDown( )//Hand hand )
-		{
-			Hand hand = teleportHandClass;
-			
-			// if ( IsEligibleForTeleport( hand ) )
-			// {
-				// if ( hand.noSteamVRFallbackCamera != null )
-				// {
-				// 	return Input.GetKey( KeyCode.T );
-				// }
-				// else
-                // {
-                    return teleportAction.GetState(hand.handType);
-				// }
-			// }
-
-			// return false;
-		}
-
-
-		//-------------------------------------------------
-		private bool WasTeleportButtonPressed( )//Hand hand )
-		{
-			Hand hand = teleportHandClass;
-			
-			// if ( IsEligibleForTeleport( hand ) )
-			// {
-				// if ( hand.noSteamVRFallbackCamera != null )
-				// {
-				// 	return Input.GetKeyDown( KeyCode.T );
-				// }
-				// else
-                // {
-                    return teleportAction.GetStateDown(hand.handType);
-
-                    //return hand.controller.GetPressDown( SteamVR_Controller.ButtonMask.Touchpad );
-				// }
-			// }
-
-			// return false;
-		}
-
-
-		//-------------------------------------------------
-		private Transform GetPointerStartTransform( Hand hand )
-		{
-			// if ( hand.noSteamVRFallbackCamera != null )
-			// {
-			// 	return hand.noSteamVRFallbackCamera.transform;
-			// }
-			// else
-			// {
-				return hand.transform;
-			// }
-		}
+		}		
 	}
 }

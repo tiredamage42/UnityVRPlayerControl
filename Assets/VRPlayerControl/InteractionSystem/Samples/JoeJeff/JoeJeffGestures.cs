@@ -5,6 +5,8 @@ using System.Text;
 
 using UnityEngine;
 
+using VRPlayer;
+
 namespace Valve.VR.InteractionSystem.Sample
 {
     public class JoeJeffGestures : MonoBehaviour
@@ -33,8 +35,8 @@ namespace Valve.VR.InteractionSystem.Sample
 
             for (int handIndex = 0; handIndex < Player.instance.hands.Length; handIndex++)
             {
-                if (Player.instance.hands[handIndex] != null)
-                {
+                // if (Player.instance.hands[handIndex] != null)
+                // {
                     SteamVR_Behaviour_Skeleton skeleton = Player.instance.hands[handIndex].skeleton;
                     if (skeleton != null)
                     {
@@ -50,7 +52,7 @@ namespace Valve.VR.InteractionSystem.Sample
                             PeaceSignRecognized(false);
                         }
                     }
-                }
+                // }
             }
         }
 

@@ -6,13 +6,55 @@
 
 using UnityEngine;
 using System.Collections;
-
+using InteractionSystem;
+using InventorySystem;
+using VRPlayer;
 namespace Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
 	[RequireComponent( typeof( Interactable ) )]
-	public class LinearDrive : MonoBehaviour
+	public class LinearDrive : MonoBehaviour, IInteractable, IInventoryItem
 	{
+
+		public void OnEquipped (Inventory inventory) {
+
+			initialMappingOffset = linearMapping.value - CalculateLinearMapping( inventory.transform );
+			sampleCount = 0;
+			mappingChangeRate = 0.0f;
+
+		}
+		public void OnUnequipped (Inventory inventory) {
+			CalculateMappingChangeRate();
+
+		}
+		public void OnEquippedUpdate (Inventory inventory) {
+			UpdateLinearMapping(inventory.transform);
+
+
+		}
+
+
+		
+		public void OnInspectStart(Interactor interactor) {
+
+		}
+        public void OnInspectEnd(Interactor interactor){
+
+		}
+        public void OnInspectUpdate(Interactor interactor){
+
+		}
+        public void OnUseStart(Interactor interactor, int useIndex){
+
+		}
+        public void OnUseEnd(Interactor interactor, int useIndex){
+			
+		}
+        public void OnUseUpdate(Interactor interactor, int useIndex){
+
+		}
+
+
 		public Transform startPosition;
 		public Transform endPosition;
 		public LinearMapping linearMapping;
@@ -36,6 +78,8 @@ namespace Valve.VR.InteractionSystem
         {
             mappingChangeSamples = new float[numMappingChangeSamples];
             interactable = GetComponent<Interactable>();
+
+			GetComponent<Item>().attachmentFlags = attachmentFlags;
         }
 
         protected virtual void Start()
@@ -58,39 +102,38 @@ namespace Valve.VR.InteractionSystem
 			}
 		}
 
-        protected virtual void HandHoverUpdate( Hand hand )
-        {
-            // GrabTypes startingGrabType = hand.GetGrabStarting();
+        // protected virtual void HandHoverUpdate( Hand hand )
+        // {
+        //     // GrabTypes startingGrabType = hand.GetGrabStarting();
 
 
+        //     if (interactable.attachedToHand == null && hand.GetGrabDown())// startingGrabType != GrabTypes.None)
+        //     {
+        //         initialMappingOffset = linearMapping.value - CalculateLinearMapping( hand.transform );
+		// 		sampleCount = 0;
+		// 		mappingChangeRate = 0.0f;
 
-            if (interactable.attachedToHand == null && hand.GetGrabDown())// startingGrabType != GrabTypes.None)
-            {
-                initialMappingOffset = linearMapping.value - CalculateLinearMapping( hand.transform );
-				sampleCount = 0;
-				mappingChangeRate = 0.0f;
+        //         hand.AttachObject(gameObject, 
+		// 			// startingGrabType, 
+		// 			attachmentFlags);
+        //     }
+		// }
 
-                hand.AttachObject(gameObject, 
-					// startingGrabType, 
-					attachmentFlags);
-            }
-		}
+        // protected virtual void HandAttachedUpdate(Hand hand)
+        // {
+        //     UpdateLinearMapping(hand.transform);
 
-        protected virtual void HandAttachedUpdate(Hand hand)
-        {
-            UpdateLinearMapping(hand.transform);
+		// 	if (hand.GetGrabUp())
+        //     // if (hand.IsGrabEnding(this.gameObject))
+        //     {
+        //         hand.DetachObject(gameObject);
+        //     }
+        // }
 
-			if (hand.GetGrabUp())
-            // if (hand.IsGrabEnding(this.gameObject))
-            {
-                hand.DetachObject(gameObject);
-            }
-        }
-
-        protected virtual void OnUnequipped(Hand hand)
-        {
-            CalculateMappingChangeRate();
-        }
+        // protected virtual void OnUnequipped(Hand hand)
+        // {
+        //     CalculateMappingChangeRate();
+        // }
 
 
         protected void CalculateMappingChangeRate()
