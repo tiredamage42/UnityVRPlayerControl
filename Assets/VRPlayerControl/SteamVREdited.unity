@@ -563,35 +563,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d380dbc77ea04bfc838ef2e8aff40c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  equipType: 1
+  equipBehavior: {fileID: 0}
   hoverLockOnEquip: 1
   useActionForEquip: 0
   useActionForStash: 1
   unequipOnUseEnd: 1
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  attachmentFlags: 0
   parentInventory: {fileID: 0}
 --- !u!1 &26528790
 GameObject:
@@ -2201,6 +2178,11 @@ PrefabInstance:
       propertyPath: scale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3446162272499057429, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: equipType
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0b086fbb874df143b6ac8f53cea5424, type: 3}
 --- !u!4 &162690153 stripped
@@ -3754,35 +3736,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d380dbc77ea04bfc838ef2e8aff40c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  equipType: 1
+  equipBehavior: {fileID: 0}
   hoverLockOnEquip: 1
   useActionForEquip: 0
   useActionForStash: 1
   unequipOnUseEnd: 1
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  attachmentFlags: 0
   parentInventory: {fileID: 0}
 --- !u!1 &265666275
 GameObject:
@@ -4026,35 +3985,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d380dbc77ea04bfc838ef2e8aff40c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  equipType: 1
+  equipBehavior: {fileID: 0}
   hoverLockOnEquip: 1
   useActionForEquip: 0
   useActionForStash: 1
   unequipOnUseEnd: 1
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  attachmentFlags: 0
   parentInventory: {fileID: 0}
 --- !u!114 &276115640
 MonoBehaviour:
@@ -6350,6 +6286,11 @@ PrefabInstance:
       propertyPath: scale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3446162272499057429, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: equipType
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0b086fbb874df143b6ac8f53cea5424, type: 3}
 --- !u!4 &395861464 stripped
@@ -7703,35 +7644,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d380dbc77ea04bfc838ef2e8aff40c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  equipType: 0
+  equipBehavior: {fileID: 0}
   hoverLockOnEquip: 1
   useActionForEquip: 0
   useActionForStash: 1
   unequipOnUseEnd: 1
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  attachmentFlags: 0
   parentInventory: {fileID: 0}
 --- !u!114 &504149796
 MonoBehaviour:
@@ -13000,6 +12918,11 @@ PrefabInstance:
       propertyPath: targetCollider
       value: 
       objectReference: {fileID: 1271963283}
+    - target: {fileID: 8012020186531124803, guid: fb710a001890d9a44bb74a8ce4f20cc0,
+        type: 3}
+      propertyPath: equipType
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb710a001890d9a44bb74a8ce4f20cc0, type: 3}
 --- !u!4 &921222561 stripped
@@ -14237,6 +14160,11 @@ PrefabInstance:
       propertyPath: targetCollider
       value: 
       objectReference: {fileID: 1271963283}
+    - target: {fileID: 8012020186531124803, guid: fb710a001890d9a44bb74a8ce4f20cc0,
+        type: 3}
+      propertyPath: equipType
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb710a001890d9a44bb74a8ce4f20cc0, type: 3}
 --- !u!4 &1014114059 stripped
@@ -14437,6 +14365,11 @@ PrefabInstance:
       propertyPath: targetCollider
       value: 
       objectReference: {fileID: 1271963283}
+    - target: {fileID: 8012020186531124803, guid: fb710a001890d9a44bb74a8ce4f20cc0,
+        type: 3}
+      propertyPath: equipType
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb710a001890d9a44bb74a8ce4f20cc0, type: 3}
 --- !u!4 &1027333386 stripped
@@ -14702,6 +14635,11 @@ PrefabInstance:
       propertyPath: targetCollider
       value: 
       objectReference: {fileID: 1271963283}
+    - target: {fileID: 8012020186531124803, guid: fb710a001890d9a44bb74a8ce4f20cc0,
+        type: 3}
+      propertyPath: equipType
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb710a001890d9a44bb74a8ce4f20cc0, type: 3}
 --- !u!4 &1041691840 stripped
@@ -18110,6 +18048,11 @@ PrefabInstance:
       propertyPath: targetCollider
       value: 
       objectReference: {fileID: 1271963283}
+    - target: {fileID: 8012020186531124803, guid: fb710a001890d9a44bb74a8ce4f20cc0,
+        type: 3}
+      propertyPath: equipType
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb710a001890d9a44bb74a8ce4f20cc0, type: 3}
 --- !u!4 &1306549089 stripped
@@ -19277,35 +19220,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d380dbc77ea04bfc838ef2e8aff40c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  equipType: 1
+  equipBehavior: {fileID: 0}
   hoverLockOnEquip: 1
   useActionForEquip: 0
   useActionForStash: 1
   unequipOnUseEnd: 1
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  attachmentFlags: 0
   parentInventory: {fileID: 0}
 --- !u!1 &1390849075
 GameObject:
@@ -21641,6 +21561,11 @@ PrefabInstance:
       propertyPath: snapTo
       value: 
       objectReference: {fileID: 30303036}
+    - target: {fileID: 114833011777904540, guid: d9803cc69067105488f4a78449f2aeec,
+        type: 3}
+      propertyPath: handFollowTransform
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d9803cc69067105488f4a78449f2aeec, type: 3}
 --- !u!1 &1545105792 stripped
@@ -21661,35 +21586,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d380dbc77ea04bfc838ef2e8aff40c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  equipType: 1
+  equipBehavior: {fileID: 0}
   hoverLockOnEquip: 1
   useActionForEquip: 0
   useActionForStash: 1
   unequipOnUseEnd: 1
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  attachmentFlags: 0
   parentInventory: {fileID: 0}
 --- !u!1001 &1548887375
 PrefabInstance:
@@ -27914,6 +27816,11 @@ PrefabInstance:
       propertyPath: scale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3446162272499057429, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: equipType
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0b086fbb874df143b6ac8f53cea5424, type: 3}
 --- !u!4 &1957169593 stripped
@@ -29251,35 +29158,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d380dbc77ea04bfc838ef2e8aff40c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  equipType: 1
+  equipBehavior: {fileID: 0}
   hoverLockOnEquip: 1
   useActionForEquip: 0
   useActionForStash: 1
   unequipOnUseEnd: 1
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  attachmentFlags: 0
   parentInventory: {fileID: 0}
 --- !u!1001 &2060464149
 PrefabInstance:
