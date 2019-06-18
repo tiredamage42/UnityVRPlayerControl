@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Valve.VR.InteractionSystem;
-
+using InteractionSystem;
+using InventorySystem;
 namespace Valve.VR.InteractionSystem.Sample
 {
     public class JoeJeff : MonoBehaviour
@@ -41,7 +42,9 @@ namespace Valve.VR.InteractionSystem.Sample
         private bool held;
 
         private new Rigidbody rigidbody;
-        private Interactable interactable;
+        // private Interactable interactable;
+        Item item;
+        
 
         public FireSource fire;
 
@@ -50,13 +53,16 @@ namespace Valve.VR.InteractionSystem.Sample
         {
             animator = GetComponent<Animator>();
             rigidbody = GetComponent<Rigidbody>();
-            interactable = GetComponent<Interactable>();
+            // interactable = GetComponent<Interactable>();
+            item = GetComponent<Item>();
+            
             animator.speed = animationSpeed;
         }
 
         private void Update()
         {
-            held = interactable.attachedToHand != null;
+            held = item.parentInventory != null;
+            // held = interactable.attachedToHand != null;
 
             jumpTimer -= Time.deltaTime;
 

@@ -3,12 +3,38 @@ using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR.InteractionSystem;
 using VRPlayer;
-public class WallClimbInteractable : MonoBehaviour
+
+
+using InteractionSystem;
+
+public class WallClimbInteractable : MonoBehaviour//, IInteractable
 {
+
+		void OnInspectStart(Interactor interactor) {
+			// Player.instance.GetComponent<TouchpadLocomotion>().SetClimbAbility(hand.handType, true);
+			// Player.instance.GetComponent<TouchpadLocomotion>().SetClimbAbility(hand.handType, true);
+
+		}
+        void OnInspectEnd(Interactor interactor){
+			// Player.instance.GetComponent<TouchpadLocomotion>().SetClimbAbility(hand.handType, false);
+			// Player.instance.GetComponent<TouchpadLocomotion>().SetClimbAbility(hand.handType, false);
+
+		}
+        void OnInspectUpdate(Interactor interactor){
+
+		}
+        void OnUseStart(Interactor interactor, int useIndex){
+
+		}
+        void OnUseEnd(Interactor interactor, int useIndex){
+
+		}
+        void OnUseUpdate(Interactor interactor, int useIndex){
+
+		}
  
         
-		// private Hand.AttachmentFlags attachmentFlags = Hand.defaultAttachmentFlags & ( ~Hand.AttachmentFlags.SnapOnAttach ) & (~Hand.AttachmentFlags.DetachOthers) & (~Hand.AttachmentFlags.VelocityMovement);
-
+		
         private Interactable interactable;
 
 		//-------------------------------------------------
@@ -84,10 +110,10 @@ public class WallClimbInteractable : MonoBehaviour
 		//-------------------------------------------------
 		// Called every Update() while this GameObject is attached to the hand
 		//-------------------------------------------------
-		private void HandAttachedUpdate( Hand hand )
-		{
-            // generalText.text = string.Format("Attached: {0} :: Time: {1:F2}", hand.name, (Time.time - attachTime));
-		}
+		// private void HandAttachedUpdate( Hand hand )
+		// {
+        //     // generalText.text = string.Format("Attached: {0} :: Time: {1:F2}", hand.name, (Time.time - attachTime));
+		// }
 
         // private bool lastHovering = false;
         // private void Update()
@@ -103,19 +129,19 @@ public class WallClimbInteractable : MonoBehaviour
 		//-------------------------------------------------
 		// Called when this attached GameObject becomes the primary attached object
 		//-------------------------------------------------
-		private void OnHandFocusAcquired( Hand hand )
-		{
-			Debug.LogError("hand focus acquired climbable");
-		}
+		// private void OnHandFocusAcquired( Hand hand )
+		// {
+		// 	Debug.LogError("hand focus acquired climbable");
+		// }
 
 
 		//-------------------------------------------------
 		// Called when another attached GameObject becomes the primary attached object
 		//-------------------------------------------------
-		private void OnHandFocusLost( Hand hand )
-		{
-			Debug.LogError("hand focus Lost climbable");
-		}
+		// private void OnHandFocusLost( Hand hand )
+		// {
+		// 	Debug.LogError("hand focus Lost climbable");
+		// }
 	}
 
 

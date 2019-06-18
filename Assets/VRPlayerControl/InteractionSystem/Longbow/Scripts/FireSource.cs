@@ -24,7 +24,7 @@ namespace Valve.VR.InteractionSystem
 		public float ignitionDelay = 0;
 		private float ignitionTime;
 
-		private Hand hand;
+		// private Hand hand;
 
 		public AudioSource ignitionSound;
 
@@ -76,10 +76,10 @@ namespace Valve.VR.InteractionSystem
 				Invoke( "StartBurning", ignitionDelay );
 			}
 
-			if ( hand = GetComponentInParent<Hand>() )
-			{
-				hand.TriggerHapticPulse( 1000 );
-			}
+			// if ( hand = GetComponentInParent<Hand>() )
+			// {
+			// 	hand.TriggerHapticPulse( 1000 );
+			// }
 		}
 
 

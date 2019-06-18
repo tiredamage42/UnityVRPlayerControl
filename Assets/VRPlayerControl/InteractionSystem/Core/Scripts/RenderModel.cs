@@ -4,6 +4,8 @@ using UnityEngine;
 using System.Collections;
 using System;
 
+using VRPlayer;
+
 namespace Valve.VR.InteractionSystem
 {
     public class RenderModel : MonoBehaviour

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using InventorySystem;
 
 namespace Valve.VR.InteractionSystem.Sample
 {
@@ -12,19 +12,20 @@ namespace Valve.VR.InteractionSystem.Sample
         public float snapTime = 2;
 
         private float dropTimer;
-        private Interactable interactable;
+        // private Interactable interactable;
         
         private void Start()
         {
-            interactable = GetComponent<Interactable>();
+            // interactable = GetComponent<Interactable>();
             body = GetComponent<Rigidbody>();
         }
         
         private void FixedUpdate()
         {
-            bool used = false;
-            if (interactable != null)
-                used = interactable.attachedToHand;
+            bool used = GetComponent<Item>().parentInventory != null;
+            // bool used = false;
+            // if (interactable != null)
+            //     used = interactable.attachedToHand;
 
             if (used)
             {

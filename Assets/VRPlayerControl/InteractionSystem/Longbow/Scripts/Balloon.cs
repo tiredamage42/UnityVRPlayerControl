@@ -14,7 +14,7 @@ namespace Valve.VR.InteractionSystem
 	{
 		public enum BalloonColor { Red, OrangeRed, Orange, YellowOrange, Yellow, GreenYellow, Green, BlueGreen, Blue, VioletBlue, Violet, RedViolet, LightGray, DarkGray, Random };
 
-		private Hand hand;
+		// private Hand hand;
 
 		public GameObject popPrefab;
 
@@ -27,7 +27,7 @@ namespace Valve.VR.InteractionSystem
 		public SoundPlayOneshot lifetimeEndSound;
 
 		private float destructTime = 0f;
-		private float releaseTime = 99999f;
+		// private float releaseTime = 99999f;
 
 		public SoundPlayOneshot collisionSound;
 		private float lastSoundTime = 0f;
@@ -44,7 +44,7 @@ namespace Valve.VR.InteractionSystem
 		void Start()
 		{
 			destructTime = Time.time + lifetime + Random.value;
-			hand = GetComponentInParent<Hand>();
+			// hand = GetComponentInParent<Hand>();
 			balloonRigidbody = GetComponent<Rigidbody>();
 		}
 
@@ -123,31 +123,31 @@ namespace Valve.VR.InteractionSystem
 				return;
 			}
 
-			Hand collisionParentHand = null;
+			// Hand collisionParentHand = null;
 
-			BalloonHapticBump balloonColliderScript = collision.gameObject.GetComponent<BalloonHapticBump>();
 
-			if ( balloonColliderScript != null && balloonColliderScript.physParent != null )
-			{
-				collisionParentHand = balloonColliderScript.physParent.GetComponentInParent<Hand>();
-			}
+			// BalloonHapticBump balloonColliderScript = collision.gameObject.GetComponent<BalloonHapticBump>();
+			// if ( balloonColliderScript != null && balloonColliderScript.physParent != null )
+			// {
+			// 	collisionParentHand = balloonColliderScript.physParent.GetComponentInParent<Hand>();
+			// }
 
 			if ( Time.time > ( lastSoundTime + soundDelay ) )
 			{
-				if ( collisionParentHand != null ) // If the collision was with a controller
-				{
-					if ( Time.time > ( releaseTime + soundDelay ) ) // Only play sound if it's not immediately after release
-					{
-						collisionSound.Play();
-						lastSoundTime = Time.time;
-					}
-				}
-				else // Collision was not with a controller, play sound
-				{
+				// if ( collisionParentHand != null ) // If the collision was with a controller
+				// {
+				// 	if ( Time.time > ( releaseTime + soundDelay ) ) // Only play sound if it's not immediately after release
+				// 	{
+				// 		collisionSound.Play();
+				// 		lastSoundTime = Time.time;
+				// 	}
+				// }
+				// else // Collision was not with a controller, play sound
+				// {
 					collisionSound.Play();
 					lastSoundTime = Time.time;
 
-				}
+				// }
 			}
 
 			if ( destructTime > 0 ) // Balloon is released away from the controller, don't do the haptic stuff that follows
@@ -160,12 +160,12 @@ namespace Valve.VR.InteractionSystem
 				balloonRigidbody.velocity = balloonRigidbody.velocity.normalized * maxVelocity;
 			}
 
-			if ( hand != null )
-			{
-				ushort collisionStrength = (ushort)Mathf.Clamp( Util.RemapNumber( collision.relativeVelocity.magnitude, 0f, 3f, 500f, 800f ), 500f, 800f );
+			// if ( hand != null )
+			// {
+			// 	ushort collisionStrength = (ushort)Mathf.Clamp( Util.RemapNumber( collision.relativeVelocity.magnitude, 0f, 3f, 500f, 800f ), 500f, 800f );
 
-				hand.TriggerHapticPulse( collisionStrength );
-			}
+			// 	hand.TriggerHapticPulse( collisionStrength );
+			// }
 		}
 
 

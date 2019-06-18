@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Text;
 
+using VRPlayer;
+
 namespace Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
@@ -191,29 +193,17 @@ namespace Valve.VR.InteractionSystem
             var renderModels = OpenVR.RenderModels;
             if (renderModels != null)
             {
-                string renderModelDebug = "";
-
-                // if (debugHints)
-                //     renderModelDebug = "Components for render model " + renderModel.index;
-
                 for (int childIndex = 0; childIndex < renderModel.transform.childCount; childIndex++)
                 {
                     Transform child = renderModel.transform.GetChild(childIndex);
 
                     if (componentTransformMap.ContainsKey(child.name))
                     {
-                        // if (debugHints)
-                        //     renderModelDebug += "\n\t!    Child component already exists with name: " + child.name;
                     }
                     else
                         componentTransformMap.Add(child.name, child);
 
-                    // if (debugHints)
-                    //     renderModelDebug += "\n\t" + child.name + ".";
                 }
-
-                //Uncomment to show the button mask for each component of the render model
-                // HintDebugLog(renderModelDebug);
             }
 
             actionHintInfos = new Dictionary<ISteamVR_Action_In_Source, ActionHintInfo>();
@@ -242,45 +232,19 @@ namespace Valve.VR.InteractionSystem
 			Transform buttonTransform = null;
 			List<MeshRenderer> buttonRenderers = new List<MeshRenderer>();
 
-            // StringBuilder buttonDebug = new StringBuilder();
-            // buttonDebug.Append("Looking for action: ");
-
-            // buttonDebug.AppendLine(action.GetShortName());
-
-            // buttonDebug.Append("Action localized origin: ");
-            // buttonDebug.AppendLine(action.GetLocalizedOrigin(inputSource));
-
             string actionComponentName = action.GetRenderModelComponentName(inputSource);
 
             if (componentTransformMap.ContainsKey(actionComponentName))
             {
-                // buttonDebug.AppendLine(string.Format("Found component: {0} for {1}", actionComponentName, action.GetShortName()));
                 Transform componentTransform = componentTransformMap[actionComponentName];
 
                 buttonTransform = componentTransform;
 
-                // buttonDebug.AppendLine(string.Format("Found componentTransform: {0}. buttonTransform: {1}", componentTransform, buttonTransform));
-
                 buttonRenderers.AddRange(componentTransform.GetComponentsInChildren<MeshRenderer>());
             }
-            else
-            {
-                // buttonDebug.AppendLine(string.Format("Can't find component transform for action: {0}. Component name: \"{1}\"", action.GetShortName(), actionComponentName));
-            }
-
-            // buttonDebug.AppendLine(string.Format("Found {0} renderers for {1}", buttonRenderers.Count, action.GetShortName()));
-
-			foreach ( MeshRenderer renderer in buttonRenderers )
-			{
-                // buttonDebug.Append("\t");
-                // buttonDebug.AppendLine(renderer.name);
-			}
-
-			// HintDebugLog( buttonDebug.ToString() );
 
 			if ( buttonTransform == null )
 			{
-				// HintDebugLog( "Couldn't find buttonTransform for " + action.GetShortName());
 				return;
 			}
 

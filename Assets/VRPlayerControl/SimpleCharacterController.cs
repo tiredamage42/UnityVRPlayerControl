@@ -21,6 +21,21 @@ public class SimpleCharacterController : MonoBehaviour
         }
     }
 
+    public Vector3 GetFloor() {
+
+        //make sure we're checking from the actual capsule position (could be offset due to height or movement)        
+        Vector3 rayCheck = transform.position + (transform.rotation *characterController.center);
+        rayCheck.y -= ((characterController.height * .5f) + characterController.skinWidth) - buffer;// myPos.y + buffer;
+        Ray ray = new Ray (rayCheck, Vector3.down);
+        
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 1, groundMask)) {
+            return hit.point;
+        }
+        return rayCheck;
+
+    }
+
     public void SetMoveVector(Vector3 currentMoveVector) {
         this.currentMoveVector = currentMoveVector;
         

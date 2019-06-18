@@ -5,6 +5,9 @@ using UnityEngine.UI;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
+using InventorySystem;
+using VRPlayer;
+
 namespace Valve.VR.InteractionSystem.Sample
 {
     public class BuggyController : MonoBehaviour
@@ -43,7 +46,7 @@ namespace Valve.VR.InteractionSystem.Sample
 
         private float usteer;
 
-        private Interactable interactable;
+        // private Interactable interactable;
 
         private Quaternion trigSRot;
 
@@ -58,7 +61,7 @@ namespace Valve.VR.InteractionSystem.Sample
             joySRot = modelJoystick.localRotation;
             trigSRot = modelTrigger.localRotation;
 
-            interactable = GetComponent<Interactable>();
+            // interactable = GetComponent<Interactable>();
 
             StartCoroutine(DoBuzz());
             buggy.controllerReference = transform;
@@ -67,6 +70,9 @@ namespace Valve.VR.InteractionSystem.Sample
 
         private void Update()
         {
+            bool isEquipped = GetComponent<Item>().parentInventory != null;
+
+
             Vector2 steer = Vector2.zero;
             float throttle = 0;
             float brake = 0;
@@ -77,9 +83,10 @@ namespace Valve.VR.InteractionSystem.Sample
             bool b_reset = false;
 
 
-            if (interactable.attachedToHand)
+            if (isEquipped)
             {
-                SteamVR_Input_Sources hand = interactable.attachedToHand.handType;
+            SteamVR_Input_Sources hand = GetComponent<Item>().parentInventory.GetComponent<Hand>().handType;
+                // SteamVR_Input_Sources hand = interactable.attachedToHand.handType;
 
                 steer = actionSteering.GetAxis(hand);
 
@@ -97,7 +104,7 @@ namespace Valve.VR.InteractionSystem.Sample
 
             if (ui_Canvas != null)
             {
-                ui_Canvas.gameObject.SetActive(interactable.attachedToHand);
+                ui_Canvas.gameObject.SetActive(isEquipped);// interactable.attachedToHand);
 
                 usteer = Mathf.Lerp(usteer, steer.x, Time.deltaTime * 9);
                 ui_steer.localEulerAngles = Vector3.forward * usteer * -ui_steerangle;
@@ -165,9 +172,16 @@ namespace Valve.VR.InteractionSystem.Sample
                 }
 
                 buzztimer = 0;
-                if (interactable.attachedToHand)
+
+
+                bool isEquipped = GetComponent<Item>().parentInventory != null;
+
+                if (isEquipped)
                 {
-                    interactable.attachedToHand.TriggerHapticPulse((ushort)Mathf.RoundToInt(300 * Mathf.Lerp(1.0f, 0.6f, buggy.mvol)));
+                SteamVR_Input_Sources hand = GetComponent<Item>().parentInventory.GetComponent<Hand>().handType;
+                    StandardizedVRInput.instance.TriggerHapticPulse(hand,
+                    // interactable.attachedToHand.TriggerHapticPulse(
+                        (ushort)Mathf.RoundToInt(300 * Mathf.Lerp(1.0f, 0.6f, buggy.mvol)));
                 }
             }
         }

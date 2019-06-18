@@ -8,13 +8,95 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
 
+using InteractionSystem;
+
 namespace Valve.VR.InteractionSystem
 {
 
 	//-------------------------------------------------------------------------
 	[RequireComponent( typeof( Interactable ) )]
-	public class CircularDrive : MonoBehaviour
+	public class CircularDrive : MonoBehaviour, IInteractable
 	{
+		
+		public void OnInspectStart(Interactor interactor) {
+
+			
+
+		}
+        public void OnInspectEnd(Interactor interactor){
+			if ( driving)// && hand )
+			{
+                //hand.TriggerHapticPulse() //todo: fix
+				// StartCoroutine( HapticPulses( hand, 1.0f, 10 ) );
+			}
+
+			driving = false;
+			handHoverLocked = null;
+		}
+        public void OnInspectUpdate(Interactor interactor){
+
+		}
+        public void OnUseStart(Interactor interactor, int useIndex){
+			if (!isBeingGrabbed)// && grabDown)
+            // if (grabbedWithType == GrabTypes.None && startingGrabType != GrabTypes.None)
+            {
+				isBeingGrabbed = true;
+                // grabbedWithType = startingGrabType;
+                // Trigger was just pressed
+                lastHandProjected = ComputeToTransformProjected( interactor.interactionPoint);// hand.hoverSphereTransform );
+
+				if ( hoverLock )
+				{
+
+					// hand.HoverLock(interactable);
+					interactor.HoverLock(interactable);
+					
+					// handHoverLocked = hand;
+
+					handHoverLocked = interactor;
+				}
+
+				driving = true;
+
+				ComputeAngle( interactor.interactionPoint );// hand );
+				UpdateAll();
+
+                // hand.HideGrabHint();
+			}
+
+		}
+        public void OnUseEnd(Interactor interactor, int useIndex) {
+
+			if (isBeingGrabbed)// && grabUp)
+			
+			{
+				// Trigger was just released
+				if ( hoverLock )
+				{
+					interactor.HoverUnlock(interactable);
+					handHoverLocked = null;
+				}
+
+                driving = false;
+
+				isBeingGrabbed = false;
+                // grabbedWithType = GrabTypes.None;
+            }
+			
+		}
+        public void OnUseUpdate(Interactor interactor, int useIndex){
+			if ( driving )// && !grabUp && hand.hoveringInteractable == this.interactable )
+			
+			{
+				ComputeAngle( interactor.interactionPoint);//hand );
+				UpdateAll();
+			}
+
+		}
+
+
+
+
 		public enum Axis_t
 		{
 			XAxis,
@@ -101,16 +183,17 @@ namespace Valve.VR.InteractionSystem
 		private Vector3 frozenHandWorldPos = new Vector3( 0.0f, 0.0f, 0.0f );
 		private Vector2 frozenSqDistanceMinMaxThreshold = new Vector2( 0.0f, 0.0f );
 
-		private Hand handHoverLocked = null;
+		// private Hand handHoverLocked = null;
+		private Interactor handHoverLocked = null;
 
         private Interactable interactable;
 
 		//-------------------------------------------------
-		private void Freeze( Hand hand )
+		private void Freeze( Vector3 interactionPoint )
 		{
 			frozen = true;
 			frozenAngle = outAngle;
-			frozenHandWorldPos = hand.hoverSphereTransform.position;
+			frozenHandWorldPos = interactionPoint;//hand.hoverSphereTransform.position;
 			frozenSqDistanceMinMaxThreshold.x = frozenDistanceMinMaxThreshold.x * frozenDistanceMinMaxThreshold.x;
 			frozenSqDistanceMinMaxThreshold.y = frozenDistanceMinMaxThreshold.y * frozenDistanceMinMaxThreshold.y;
 		}
@@ -195,117 +278,117 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private IEnumerator HapticPulses( Hand hand, float flMagnitude, int nCount )
-		{
-			if ( hand != null )
-			{
-				int nRangeMax = (int)Util.RemapNumberClamped( flMagnitude, 0.0f, 1.0f, 100.0f, 900.0f );
-				nCount = Mathf.Clamp( nCount, 1, 10 );
+		// private IEnumerator HapticPulses( Hand hand, float flMagnitude, int nCount )
+		// {
+		// 	// if ( hand != null )
+		// 	// {
+		// 		int nRangeMax = (int)Util.RemapNumberClamped( flMagnitude, 0.0f, 1.0f, 100.0f, 900.0f );
+		// 		nCount = Mathf.Clamp( nCount, 1, 10 );
 
-                //float hapticDuration = nRangeMax * nCount;
+        //         //float hapticDuration = nRangeMax * nCount;
 
-                //hand.TriggerHapticPulse(hapticDuration, nRangeMax, flMagnitude);
+        //         //hand.TriggerHapticPulse(hapticDuration, nRangeMax, flMagnitude);
 
-				for ( ushort i = 0; i < nCount; ++i )
-				{
-					ushort duration = (ushort)Random.Range( 100, nRangeMax );
-					hand.TriggerHapticPulse( duration );
-					yield return new WaitForSeconds( .01f );
-				}
-			}
-		}
-
-
-		//-------------------------------------------------
-		private void OnHandHoverBegin( Hand hand )
-		{
-            // hand.ShowGrabHint();
-		}
+		// 		for ( ushort i = 0; i < nCount; ++i )
+		// 		{
+		// 			ushort duration = (ushort)Random.Range( 100, nRangeMax );
+		// 			hand.TriggerHapticPulse( duration );
+		// 			yield return new WaitForSeconds( .01f );
+		// 		}
+		// 	// }
+		// }
 
 
 		//-------------------------------------------------
-		private void OnHandHoverEnd( Hand hand )
-		{
-            // hand.HideGrabHint();
+		// private void OnHandHoverBegin( Hand hand )
+		// {
+        //     // hand.ShowGrabHint();
+		// }
 
-			if ( driving && hand )
-			{
-                //hand.TriggerHapticPulse() //todo: fix
-				StartCoroutine( HapticPulses( hand, 1.0f, 10 ) );
-			}
 
-			driving = false;
-			handHoverLocked = null;
-		}
+		//-------------------------------------------------
+		// private void OnHandHoverEnd( Hand hand )
+		// {
+        //     // hand.HideGrabHint();
+
+		// 	// if ( driving && hand )
+		// 	// {
+        //     //     //hand.TriggerHapticPulse() //todo: fix
+		// 	// 	StartCoroutine( HapticPulses( hand, 1.0f, 10 ) );
+		// 	// }
+
+		// 	// driving = false;
+		// 	// handHoverLocked = null;
+		// }
 
 
         // private GrabTypes grabbedWithType;
 		bool isBeingGrabbed;
 		//-------------------------------------------------
-		private void HandHoverUpdate( Hand hand )
-        {
+		// private void HandHoverUpdate( Hand hand )
+        // {
 			
             // GrabTypes startingGrabType = hand.GetGrabStarting();
 
-			bool grabDown = hand.GetGrabDown();
+			// bool grabDown = hand.GetGrabDown();
 
 
-            // bool isGrabEnding = hand.IsGrabbingWithType(grabbedWithType) == false;
-			bool grabUp = hand.GetGrabUp();
+            // // bool isGrabEnding = hand.IsGrabbingWithType(grabbedWithType) == false;
+			// bool grabUp = hand.GetGrabUp();
 
-			if (!isBeingGrabbed && grabDown)
-            // if (grabbedWithType == GrabTypes.None && startingGrabType != GrabTypes.None)
-            {
-				isBeingGrabbed = true;
-                // grabbedWithType = startingGrabType;
-                // Trigger was just pressed
-                lastHandProjected = ComputeToTransformProjected( hand.hoverSphereTransform );
+			// if (!isBeingGrabbed && grabDown)
+            // // if (grabbedWithType == GrabTypes.None && startingGrabType != GrabTypes.None)
+            // {
+			// 	isBeingGrabbed = true;
+            //     // grabbedWithType = startingGrabType;
+            //     // Trigger was just pressed
+            //     lastHandProjected = ComputeToTransformProjected( hand.hoverSphereTransform );
 
-				if ( hoverLock )
-				{
-					hand.HoverLock(interactable);
-					handHoverLocked = hand;
-				}
+			// 	if ( hoverLock )
+			// 	{
+			// 		hand.HoverLock(interactable);
+			// 		handHoverLocked = hand;
+			// 	}
 
-				driving = true;
+			// 	driving = true;
 
-				ComputeAngle( hand );
-				UpdateAll();
+			// 	ComputeAngle( hand );
+			// 	UpdateAll();
 
-                // hand.HideGrabHint();
-			}
+            //     // hand.HideGrabHint();
+			// }
 
             // else if (grabbedWithType != GrabTypes.None && isGrabEnding)
-			else if (isBeingGrabbed && grabUp)
+			// else if (isBeingGrabbed && grabUp)
 			
-			{
-				// Trigger was just released
-				if ( hoverLock )
-				{
-					hand.HoverUnlock(interactable);
-					handHoverLocked = null;
-				}
+			// {
+			// 	// Trigger was just released
+			// 	if ( hoverLock )
+			// 	{
+			// 		hand.HoverUnlock(interactable);
+			// 		handHoverLocked = null;
+			// 	}
 
-                driving = false;
+            //     driving = false;
 
-				isBeingGrabbed = false;
-                // grabbedWithType = GrabTypes.None;
-            }
+			// 	isBeingGrabbed = false;
+            //     // grabbedWithType = GrabTypes.None;
+            // }
 
             // if ( driving && isGrabEnding == false && hand.hoveringInteractable == this.interactable )
-			if ( driving && !grabUp && hand.hoveringInteractable == this.interactable )
+			// if ( driving && !grabUp && hand.hoveringInteractable == this.interactable )
 			
-			{
-				ComputeAngle( hand );
-				UpdateAll();
-			}
-		}
+			// {
+			// 	ComputeAngle( hand );
+			// 	UpdateAll();
+			// }
+		// }
 
 
 		//-------------------------------------------------
-		private Vector3 ComputeToTransformProjected( Transform xForm )
+		private Vector3 ComputeToTransformProjected( Vector3 interactionPoint)//Transform xForm )
 		{
-			Vector3 toTransform = ( xForm.position - transform.position ).normalized;
+			Vector3 toTransform = ( interactionPoint - transform.position ).normalized;
 			Vector3 toTransformProjected = new Vector3( 0.0f, 0.0f, 0.0f );
 
 			// Need a non-zero distance from the hand to the center of the CircularDrive
@@ -321,7 +404,7 @@ namespace Valve.VR.InteractionSystem
 
 			if ( debugPath && dbgPathLimit > 0 )
 			{
-				DrawDebugPath( xForm, toTransformProjected );
+				DrawDebugPath( interactionPoint, toTransformProjected );
 			}
 
 			return toTransformProjected;
@@ -329,7 +412,7 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private void DrawDebugPath( Transform xForm, Vector3 toTransformProjected )
+		private void DrawDebugPath( Vector3 interactionPoint, Vector3 toTransformProjected )
 		{
 			if ( dbgObjectCount == 0 )
 			{
@@ -355,7 +438,7 @@ namespace Valve.VR.InteractionSystem
 			}
 
 			gSphere.name = string.Format( "actual_{0}", (int)( ( 1.0f - red.r ) * 10.0f ) );
-			gSphere.transform.position = xForm.position;
+			gSphere.transform.position = interactionPoint;
 			gSphere.transform.rotation = Quaternion.Euler( 0.0f, 0.0f, 0.0f );
 			gSphere.transform.localScale = new Vector3( 0.004f, 0.004f, 0.004f );
 			gSphere.gameObject.GetComponent<Renderer>().material.color = red;
@@ -461,9 +544,9 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		// Computes the angle to rotate the game object based on the change in the transform
 		//-------------------------------------------------
-		private void ComputeAngle( Hand hand )
+		private void ComputeAngle( Vector3 interactionPoint)// Hand hand )
 		{
-			Vector3 toHandProjected = ComputeToTransformProjected( hand.hoverSphereTransform );
+			Vector3 toHandProjected = ComputeToTransformProjected( interactionPoint);// hand.hoverSphereTransform );
 
 			if ( !toHandProjected.Equals( lastHandProjected ) )
 			{
@@ -473,20 +556,20 @@ namespace Valve.VR.InteractionSystem
 				{
 					if ( frozen )
 					{
-						float frozenSqDist = ( hand.hoverSphereTransform.position - frozenHandWorldPos ).sqrMagnitude;
+						float frozenSqDist = ( interactionPoint - frozenHandWorldPos ).sqrMagnitude;
 						if ( frozenSqDist > frozenSqDistanceMinMaxThreshold.x )
 						{
 							outAngle = frozenAngle + Random.Range( -1.0f, 1.0f );
 
-							float magnitude = Util.RemapNumberClamped( frozenSqDist, frozenSqDistanceMinMaxThreshold.x, frozenSqDistanceMinMaxThreshold.y, 0.0f, 1.0f );
-							if ( magnitude > 0 )
-							{
-								StartCoroutine( HapticPulses( hand, magnitude, 10 ) );
-							}
-							else
-							{
-								StartCoroutine( HapticPulses( hand, 0.5f, 10 ) );
-							}
+							// float magnitude = Util.RemapNumberClamped( frozenSqDist, frozenSqDistanceMinMaxThreshold.x, frozenSqDistanceMinMaxThreshold.y, 0.0f, 1.0f );
+							// if ( magnitude > 0 )
+							// {
+							// 	StartCoroutine( HapticPulses( hand, magnitude, 10 ) );
+							// }
+							// else
+							// {
+							// 	StartCoroutine( HapticPulses( hand, 0.5f, 10 ) );
+							// }
 
 							if ( frozenSqDist >= frozenSqDistanceMinMaxThreshold.y )
 							{
@@ -533,7 +616,7 @@ namespace Valve.VR.InteractionSystem
 								onMinAngle.Invoke();
 								if ( freezeOnMin )
 								{
-									Freeze( hand );
+									Freeze( interactionPoint);//hand );
 								}
 							}
 							else if ( angleTmp == maxAngle )
@@ -543,7 +626,7 @@ namespace Valve.VR.InteractionSystem
 								onMaxAngle.Invoke();
 								if ( freezeOnMax )
 								{
-									Freeze( hand );
+									Freeze( interactionPoint);//hand );
 								}
 							}
 							else
