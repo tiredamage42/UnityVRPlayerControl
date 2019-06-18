@@ -77,6 +77,10 @@ namespace Valve.VR
         
         private static SteamVR_Action_Boolean p_vRControlActionSet_HeadsetOnHead;
         
+        private static SteamVR_Action_Skeleton p_vRControlActionSet_SkeletonLeftHand;
+        
+        private static SteamVR_Action_Skeleton p_vRControlActionSet_SkeletonRightHand;
+        
         private static SteamVR_Action_Vibration p_vRControlActionSet_Haptic;
         
         public static SteamVR_Action_Boolean default_InteractUI
@@ -319,6 +323,22 @@ namespace Valve.VR
             }
         }
         
+        public static SteamVR_Action_Skeleton vRControlActionSet_SkeletonLeftHand
+        {
+            get
+            {
+                return SteamVR_Actions.p_vRControlActionSet_SkeletonLeftHand.GetCopy<SteamVR_Action_Skeleton>();
+            }
+        }
+        
+        public static SteamVR_Action_Skeleton vRControlActionSet_SkeletonRightHand
+        {
+            get
+            {
+                return SteamVR_Actions.p_vRControlActionSet_SkeletonRightHand.GetCopy<SteamVR_Action_Skeleton>();
+            }
+        }
+        
         public static SteamVR_Action_Vibration vRControlActionSet_Haptic
         {
             get
@@ -360,6 +380,8 @@ namespace Valve.VR
                     SteamVR_Actions.vRControlActionSet_TrackpadDPadLeft,
                     SteamVR_Actions.vRControlActionSet_Pose,
                     SteamVR_Actions.vRControlActionSet_HeadsetOnHead,
+                    SteamVR_Actions.vRControlActionSet_SkeletonLeftHand,
+                    SteamVR_Actions.vRControlActionSet_SkeletonRightHand,
                     SteamVR_Actions.vRControlActionSet_Haptic};
             Valve.VR.SteamVR_Input.actionsIn = new Valve.VR.ISteamVR_Action_In[] {
                     SteamVR_Actions.default_InteractUI,
@@ -390,7 +412,9 @@ namespace Valve.VR
                     SteamVR_Actions.vRControlActionSet_TrackpadDPadRight,
                     SteamVR_Actions.vRControlActionSet_TrackpadDPadLeft,
                     SteamVR_Actions.vRControlActionSet_Pose,
-                    SteamVR_Actions.vRControlActionSet_HeadsetOnHead};
+                    SteamVR_Actions.vRControlActionSet_HeadsetOnHead,
+                    SteamVR_Actions.vRControlActionSet_SkeletonLeftHand,
+                    SteamVR_Actions.vRControlActionSet_SkeletonRightHand};
             Valve.VR.SteamVR_Input.actionsOut = new Valve.VR.ISteamVR_Action_Out[] {
                     SteamVR_Actions.default_Haptic,
                     SteamVR_Actions.vRControlActionSet_Haptic};
@@ -431,7 +455,9 @@ namespace Valve.VR
             Valve.VR.SteamVR_Input.actionsVector3 = new Valve.VR.SteamVR_Action_Vector3[0];
             Valve.VR.SteamVR_Input.actionsSkeleton = new Valve.VR.SteamVR_Action_Skeleton[] {
                     SteamVR_Actions.default_SkeletonLeftHand,
-                    SteamVR_Actions.default_SkeletonRightHand};
+                    SteamVR_Actions.default_SkeletonRightHand,
+                    SteamVR_Actions.vRControlActionSet_SkeletonLeftHand,
+                    SteamVR_Actions.vRControlActionSet_SkeletonRightHand};
             Valve.VR.SteamVR_Input.actionsNonPoseNonSkeletonIn = new Valve.VR.ISteamVR_Action_In[] {
                     SteamVR_Actions.default_InteractUI,
                     SteamVR_Actions.default_Teleport,
@@ -491,6 +517,8 @@ namespace Valve.VR
             SteamVR_Actions.p_vRControlActionSet_TrackpadDPadLeft = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/VRControlActionSet/in/TrackpadDPadLeft")));
             SteamVR_Actions.p_vRControlActionSet_Pose = ((SteamVR_Action_Pose)(SteamVR_Action.Create<SteamVR_Action_Pose>("/actions/VRControlActionSet/in/Pose")));
             SteamVR_Actions.p_vRControlActionSet_HeadsetOnHead = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/VRControlActionSet/in/HeadsetOnHead")));
+            SteamVR_Actions.p_vRControlActionSet_SkeletonLeftHand = ((SteamVR_Action_Skeleton)(SteamVR_Action.Create<SteamVR_Action_Skeleton>("/actions/VRControlActionSet/in/SkeletonLeftHand")));
+            SteamVR_Actions.p_vRControlActionSet_SkeletonRightHand = ((SteamVR_Action_Skeleton)(SteamVR_Action.Create<SteamVR_Action_Skeleton>("/actions/VRControlActionSet/in/SkeletonRightHand")));
             SteamVR_Actions.p_vRControlActionSet_Haptic = ((SteamVR_Action_Vibration)(SteamVR_Action.Create<SteamVR_Action_Vibration>("/actions/VRControlActionSet/out/Haptic")));
         }
     }
