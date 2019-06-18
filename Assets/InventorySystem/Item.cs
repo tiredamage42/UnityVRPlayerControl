@@ -8,12 +8,14 @@ namespace InventorySystem {
 
     public class Item : MonoBehaviour, IInteractable
     {
+        public Inventory.EquipType equipType = Inventory.EquipType.Normal;
+        public EquipBehavior equipBehavior;
         public bool hoverLockOnEquip = true;
 
         void Awake () {
             InitializeInteractableComponents();
-            
         }
+
         public int useActionForEquip = 0;
 
         [Header("Set to -1 for no stash")]
@@ -29,7 +31,7 @@ namespace InventorySystem {
                     if (hoverLockOnEquip)
                         interactor.HoverLock( GetComponent<Interactable>() );
             
-                    inventory.EquipItem(this, attachmentFlags);
+                    inventory.EquipItem(this);//, attachmentFlags);
                     // this.parentInventory = inventory;
                 }
             }
@@ -89,7 +91,6 @@ namespace InventorySystem {
 			yield return new WaitForEndOfFrame();
             inventory.UnequipItem(this);
 		}
-
 
         public SteamVR_ActionSet activateActionSetOnAttach
         {
@@ -157,33 +158,33 @@ namespace InventorySystem {
 
 
         // [Tooltip("Specify whether you want to snap to the inventory's object attachment point, or just the raw inventory transform")]
-        public bool useAlternateAttachementPoint {
-            get {
-                return GetComponent<Interactable>().useHandObjectAttachmentPoint;
-            }
-        }
-        public bool attachEaseIn{// = false;
-        get {
-                return GetComponent<Interactable>().attachEaseIn;
-            }
-        }
-        [HideInInspector] public AnimationCurve snapAttachEaseInCurve = AnimationCurve.EaseInOut(0.0f, 0.0f, 1.0f, 1.0f);
-        public float snapAttachEaseInTime{// = 0.15f;
-        get {
-                return GetComponent<Interactable>().snapAttachEaseInTime;
-            }
-        }
-        public Hand.AttachmentFlags attachmentFlags; 
+        // public bool useAlternateAttachementPoint {
+        //     get {
+        //         return GetComponent<Interactable>().useHandObjectAttachmentPoint;
+        //     }
+        // }
+        // public bool attachEaseIn{// = false;
+        // get {
+        //         return GetComponent<Interactable>().attachEaseIn;
+        //     }
+        // }
+        // [HideInInspector] public AnimationCurve snapAttachEaseInCurve = AnimationCurve.EaseInOut(0.0f, 0.0f, 1.0f, 1.0f);
+        // public float snapAttachEaseInTime{// = 0.15f;
+        // get {
+        //         return GetComponent<Interactable>().snapAttachEaseInTime;
+        //     }
+        // }
+        // public Hand.AttachmentFlags attachmentFlags; 
         // {
         //     get {
         //         return GetComponent<Interactable>().attachmentFlags;
         //     }
         // }
-        public bool snapAttachEaseInCompleted {// = false;
-        get {
-                return GetComponent<Interactable>().snapAttachEaseInCompleted;
-            }
-        }
+        // public bool snapAttachEaseInCompleted {// = false;
+        // get {
+        //         return GetComponent<Interactable>().snapAttachEaseInCompleted;
+        //     }
+        // }
         public SteamVR_Skeleton_Poser skeletonPoser {// = false;
         get {
                 return GetComponent<Interactable>().skeletonPoser;

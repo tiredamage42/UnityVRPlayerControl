@@ -528,9 +528,10 @@ namespace Valve.VR.InteractionSystem
 
 
 
-			inventory.EquipItem( spawnedItem.GetComponent<Item>(), 
+			inventory.EquipItem( spawnedItem.GetComponent<Item>()//, 
 				// grabType, 
-				attachmentFlags );
+				// attachmentFlags 
+				);
 
 			if ( ( itemPackage.otherHandItemPrefab != null ) )// && ( hand.otherHand.isActive ) )
 			{
@@ -539,9 +540,10 @@ namespace Valve.VR.InteractionSystem
 
 				otherInventory.EquipItem(
 				// hand.otherHand.AttachObject( 
-					otherHandObjectToAttach.GetComponent<Item>(), 
+					otherHandObjectToAttach.GetComponent<Item>()//, 
 					// grabType, 
-					attachmentFlags );
+					// attachmentFlags 
+					);
 			}
 
 			itemIsSpawned = true;

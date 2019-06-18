@@ -67,7 +67,7 @@ namespace Valve.VR.InteractionSystem
 		public bool maintainMomemntum = true;
 		public float momemtumDampenRate = 5.0f;
 
-        protected Hand.AttachmentFlags attachmentFlags = Hand.AttachmentFlags.DetachFromOtherHand;
+        // protected Hand.AttachmentFlags attachmentFlags = Hand.AttachmentFlags.DetachFromOtherHand;
 
         protected float initialMappingOffset;
         protected int numMappingChangeSamples = 5;
@@ -84,7 +84,7 @@ namespace Valve.VR.InteractionSystem
             mappingChangeSamples = new float[numMappingChangeSamples];
             interactable = GetComponent<Interactable>();
 
-			GetComponent<Item>().attachmentFlags = attachmentFlags;
+			// GetComponent<Item>().attachmentFlags = attachmentFlags;
         }
 
         protected virtual void Start()

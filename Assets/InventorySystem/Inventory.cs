@@ -11,8 +11,6 @@ using Valve.VR;
 namespace InventorySystem {
 
 public class Inventory : MonoBehaviour
-
-
 {
 
     public void OnUseStart (int useIndex) {
@@ -66,10 +64,12 @@ public class Inventory : MonoBehaviour
         public bool isParentedToInventory;
         public Hand.AttachmentFlags attachFlags;
         public Transform equipPoint;
-        public Vector3 initialPositionalOffset;
-        public Quaternion initialRotationalOffset;
+        // public Vector3 targetLocalPos;
+        // public Quaternion initialRotationalOffset;
         // public Transform attachedOffsetTransform;
         // public float attachTime;
+
+        public EquipType equipType;
         
         public bool HasAttachFlag(Hand.AttachmentFlags flag)
         {
@@ -102,6 +102,18 @@ public class Inventory : MonoBehaviour
         }
     
     }
+
+
+
+    void GetLocalEquippedPositionTargets (Item item, out Vector3 localPosition, out Quaternion localRotation) {
+        localPosition = Vector3.zero;
+        localRotation = Quaternion.identity;
+        if (item.equipBehavior != null && item.equipBehavior.equipSettings.Length > 0) {
+            localPosition = item.equipBehavior.equipSettings[0].position;
+            localRotation = Quaternion.Euler(item.equipBehavior.equipSettings[0].rotation);
+        }
+    }
+
     public bool GetUpdatedEquippedVelocities(out Vector3 velocityTarget, out Vector3 angularTarget)
         {
             bool realNumbers = false;
@@ -110,7 +122,19 @@ public class Inventory : MonoBehaviour
             float velocityMagic = VelocityMagic;
             float angularVelocityMagic = AngularVelocityMagic;
 
-            Vector3 targetItemPosition = TargetItemPosition();//equippedItem);
+
+
+            Vector3 localPosition;
+            Quaternion localRotation;
+            GetLocalEquippedPositionTargets (equippedItem.item, out localPosition, out localRotation);
+
+
+            Vector3 targetItemPosition = equippedItem.equipPoint.TransformPoint(localPosition);//equippedItem.targetLocalPos);
+            // Vector3 targetItemPosition = TargetEquippedItemWorldPosition();//equippedItem);
+
+
+
+
             Vector3 positionDelta = (targetItemPosition - equippedItem.attachedRigidbody.position);
             velocityTarget = (positionDelta * velocityMagic * Time.deltaTime);
 
@@ -122,7 +146,13 @@ public class Inventory : MonoBehaviour
                 velocityTarget = Vector3.zero;
 
 
-            Quaternion targetItemRotation = TargetItemRotation();//equippedItem);
+
+
+
+
+            Quaternion targetItemRotation = equippedItem.equipPoint.rotation * localRotation;
+            // Quaternion targetItemRotation = TargetItemRotation();//equippedItem);
+            
             Quaternion rotationDelta = targetItemRotation * Quaternion.Inverse(equippedItem.item.transform.rotation);
 
 
@@ -151,14 +181,53 @@ public class Inventory : MonoBehaviour
 
 
 
-public const Hand.AttachmentFlags defaultAttachmentFlags = Hand.AttachmentFlags.ParentToHand |
-                                                            //   AttachmentFlags.DetachOthers |
+const Hand.AttachmentFlags defaultAttachmentFlags = Hand.AttachmentFlags.ParentToHand |
                                                               Hand.AttachmentFlags.DetachFromOtherHand |
                                                               Hand.AttachmentFlags.TurnOnKinematic |
                                                               Hand.AttachmentFlags.SnapOnAttach;
 
 
+const Hand.AttachmentFlags physicsEquipFlags = Hand.AttachmentFlags.VelocityMovement | Hand.AttachmentFlags.TurnOffGravity | Hand.AttachmentFlags.SnapOnAttach;
+const Hand.AttachmentFlags normalEquipFlags = Hand.AttachmentFlags.ParentToHand | Hand.AttachmentFlags.TurnOnKinematic | Hand.AttachmentFlags.SnapOnAttach;
+const Hand.AttachmentFlags staticEquipFlags = 0;
 
+Hand.AttachmentFlags GetFlags (EquipType equipType) {
+    switch (equipType) {
+        case EquipType.Static:
+            return staticEquipFlags;
+        case EquipType.Normal:
+            return normalEquipFlags;
+        case EquipType.Physics:
+            return physicsEquipFlags;
+    }
+    return 0;
+}
+
+public enum EquipType {
+    Static, // item stays where it is, isnt parented or moved around to hand
+    Normal, // item parented to hand
+    Physics, // item follows hand wiht velocities
+};
+
+/*
+
+    // The flags used to determine how an object is attached to the hand.
+        [Flags]
+        public enum AttachmentFlags
+        {
+            SnapOnAttach = 1 << 0, // The object should snap to the position of the specified attachment point on the hand.
+            DetachOthers = 1 << 1, // Other objects attached to this hand will be detached.
+            DetachFromOtherHand = 1 << 2, // This object will be detached from the other hand.
+            ParentToHand = 1 << 3, // The object will be parented to the hand.
+            VelocityMovement = 1 << 4, // The object will attempt to move to match the position and rotation of the hand.
+            TurnOnKinematic = 1 << 5, // The object will not respond to external physics.
+            TurnOffGravity = 1 << 6, // The object will not respond to external physics.
+            // AllowSidegrade = 1 << 7, // The object is able to switch from a pinch grab to a grip grab. Decreases likelyhood of a good throw but also decreases likelyhood of accidental drop
+        };
+
+
+
+ */
 
      //-------------------------------------------------
         // Attach a GameObject to this GameObject
@@ -167,7 +236,7 @@ public const Hand.AttachmentFlags defaultAttachmentFlags = Hand.AttachmentFlags.
         // flags - The flags to use for attaching the object
         // attachmentPoint - Name of the GameObject in the hierarchy of this Hand which should act as the attachment point for this GameObject
         //-------------------------------------------------
-        public void EquipItem(Item item, Hand.AttachmentFlags flags = defaultAttachmentFlags)
+        public void EquipItem(Item item)//, Hand.AttachmentFlags flags = defaultAttachmentFlags)
         {
             if(ItemIsEquipped(item))
                 return;
@@ -178,7 +247,7 @@ public const Hand.AttachmentFlags defaultAttachmentFlags = Hand.AttachmentFlags.
             Quaternion originalItemRotation = item.transform.rotation;
             
             EquippedItem attachedObject = new EquippedItem();
-            attachedObject.attachFlags = flags;
+            attachedObject.attachFlags = GetFlags(item.equipType);// flags;
 
             attachedObject.item = item;
             // attachedObject.attachTime = Time.time;
@@ -215,9 +284,9 @@ public const Hand.AttachmentFlags defaultAttachmentFlags = Hand.AttachmentFlags.
                 }
                 if (attachedObject.HasAttachFlag(Hand.AttachmentFlags.TurnOffGravity))
                     itemRB.useGravity = false;
-            
             }
-            attachedObject.equipPoint = item.useAlternateAttachementPoint ? alternateEquipPoint : transform;
+            
+            attachedObject.equipPoint = alternateEquipPoint != null ? alternateEquipPoint : this.transform;// item.useAlternateAttachementPoint ? alternateEquipPoint : transform;
 
 
             if (attachedObject.HasAttachFlag(Hand.AttachmentFlags.ParentToHand))
@@ -242,25 +311,46 @@ public const Hand.AttachmentFlags defaultAttachmentFlags = Hand.AttachmentFlags.
             
             if (attachedObject.HasAttachFlag(Hand.AttachmentFlags.SnapOnAttach))
             {
-                // if (attachedObject.item.skeletonPoser != null && HasSkeleton())
-                // {
-                //     SteamVR_Skeleton_PoseSnapshot pose = attachedObject.item.skeletonPoser.GetBlendedPose(skeleton);
 
-                //     //snap the object to the center of the attach point
-                //     item.transform.position = this.transform.TransformPoint(pose.position);
-                //     item.transform.rotation = this.transform.rotation * pose.rotation;
+                Vector3 localPosition;
+                Quaternion localRotation;
+                GetLocalEquippedPositionTargets (item, out localPosition, out localRotation);
+
+                Transform oldParent = item.transform.parent;
+                item.transform.parent = attachedObject.equipPoint;
+                item.transform.localPosition = localPosition;
+                item.transform.localRotation = localRotation;
+                item.transform.parent = oldParent;
+                
+                // if (item.equipBehavior != null && item.equipBehavior.equipSettings.Length > 0) {
+                //     Transform oldParent = item.transform.parent;
+                //     item.transform.parent = attachedObject.equipPoint;
+                //     item.transform.localPosition = item.equipBehavior.equipSettings[0].position;
+                //     item.transform.localRotation = Quaternion.Euler(item.equipBehavior.equipSettings[0].rotation);
+                //     item.transform.parent = oldParent;
                 // }
-                // else
-                // { 
-                    //snap the object to the center of the attach point
-                    item.transform.rotation = attachedObject.equipPoint.rotation;
-                    item.transform.position = attachedObject.equipPoint.position;
+                // else {
+                //     Debug.LogError(item.name + " :: has no equip behavior, or no equip settings, resetting to just equip point origin");
+                // // if (attachedObject.item.skeletonPoser != null && HasSkeleton())
+                // // {
+                // //     SteamVR_Skeleton_PoseSnapshot pose = attachedObject.item.skeletonPoser.GetBlendedPose(skeleton);
+
+                // //     //snap the object to the center of the attach point
+                // //     item.transform.position = this.transform.TransformPoint(pose.position);
+                // //     item.transform.rotation = this.transform.rotation * pose.rotation;
+                // // }
+                // // else
+                // // { 
+                //     //snap the object to the center of the attach point
+                //     item.transform.rotation = attachedObject.equipPoint.rotation;
+                //     item.transform.position = attachedObject.equipPoint.position;
+                // // }
                 // }
             }
 
 
-            attachedObject.initialPositionalOffset = attachedObject.equipPoint.InverseTransformPoint(item.transform.position);
-            attachedObject.initialRotationalOffset = Quaternion.Inverse(attachedObject.equipPoint.rotation) * item.transform.rotation;
+            // attachedObject.targetLocalPos = attachedObject.equipPoint.InverseTransformPoint(item.transform.position);
+            // attachedObject.initialRotationalOffset = Quaternion.Inverse(attachedObject.equipPoint.rotation) * item.transform.rotation;
 
 
             if (equippedItem != null) {
@@ -284,31 +374,45 @@ public const Hand.AttachmentFlags defaultAttachmentFlags = Hand.AttachmentFlags.
         protected virtual void FixedUpdate()
         {
             if (equippedItem != null)
-            
             {
                 EquippedItem attachedInfo = equippedItem;
+
+                if (attachedInfo.equipType == EquipType.Physics) {
+                    UpdateAttachedVelocity(attachedInfo);
+
+                }
+                else if (attachedInfo.equipType == EquipType.Normal) {
+
+                    Vector3 localPosition;
+                Quaternion localRotation;
+                GetLocalEquippedPositionTargets (attachedInfo.item, out localPosition, out localRotation);
+
+                    attachedInfo.item.transform.localPosition = localPosition;//attachedInfo.targetLocalPos;
+                    attachedInfo.item.transform.localRotation = localRotation;//attachedInfo.initialRotationalOffset;
+                }
                 
-                    if (attachedInfo.HasAttachFlag(Hand.AttachmentFlags.VelocityMovement))
-                    {
-                        UpdateAttachedVelocity(attachedInfo);
-
-                        /*if (attachedInfo.interactable.handFollowTransformPosition)
-                        {
-                            skeleton.transform.position = TargetSkeletonPosition(attachedInfo);
-                            skeleton.transform.rotation = attachedInfo.attachedObject.transform.rotation * attachedInfo.skeletonLockRotation;
-                        }*/
-                    }
-                    else
-                    {
-                        if (attachedInfo.HasAttachFlag(Hand.AttachmentFlags.ParentToHand))
-                        {
-                            attachedInfo.item.transform.position = TargetItemPosition();//attachedInfo);
-                            attachedInfo.item.transform.rotation = TargetItemRotation();//attachedInfo);
-                        }
-                    }
-
-
                 
+                    // if (attachedInfo.HasAttachFlag(Hand.AttachmentFlags.VelocityMovement))
+                    // {
+                    //     UpdateAttachedVelocity(attachedInfo);
+
+                    //     /*if (attachedInfo.interactable.handFollowTransformPosition)
+                    //     {
+                    //         skeleton.transform.position = TargetSkeletonPosition(attachedInfo);
+                    //         skeleton.transform.rotation = attachedInfo.attachedObject.transform.rotation * attachedInfo.skeletonLockRotation;
+                    //     }*/
+                    // }
+                    // else
+                    // {
+                    //     if (attachedInfo.HasAttachFlag(Hand.AttachmentFlags.ParentToHand))
+                    //     {
+                            
+                    //         attachedInfo.item.transform.position = TargetEquippedItemWorldPosition();//attachedInfo);
+                    //         attachedInfo.item.transform.rotation = TargetItemRotation();//attachedInfo);
+                    //     }
+                        
+                    // }
+
             }
         }
         protected void UpdateAttachedVelocity(EquippedItem attachedObjectInfo)
@@ -327,32 +431,32 @@ public const Hand.AttachmentFlags defaultAttachmentFlags = Hand.AttachmentFlags.
             }
         }
 
-        public Vector3 TargetItemPosition()//EquippedItem attachedObject)
-        {
-            // if (attachedObject.item.skeletonPoser != null && HasSkeleton())
-            // {
-            //     Vector3 tp = attachedObject.equipPoint.InverseTransformPoint(transform.TransformPoint(attachedObject.item.skeletonPoser.GetBlendedPose(skeleton).position));
-            //     //tp.x *= -1;
-            //     return equippedItem.equipPoint.TransformPoint(tp);
-            // }
-            // else
-            // {
-                return equippedItem.equipPoint.TransformPoint(equippedItem.initialPositionalOffset);
-            // }
-        }
+        // public Vector3 TargetEquippedItemWorldPosition()//EquippedItem attachedObject)
+        // {
+        //     // if (attachedObject.item.skeletonPoser != null && HasSkeleton())
+        //     // {
+        //     //     Vector3 tp = attachedObject.equipPoint.InverseTransformPoint(transform.TransformPoint(attachedObject.item.skeletonPoser.GetBlendedPose(skeleton).position));
+        //     //     //tp.x *= -1;
+        //     //     return equippedItem.equipPoint.TransformPoint(tp);
+        //     // }
+        //     // else
+        //     // {
+        //         return equippedItem.equipPoint.TransformPoint(equippedItem.targetLocalPos);
+        //     // }
+        // }
 
-        public Quaternion TargetItemRotation()//EquippedItem attachedObject)
-        {
-            // if (attachedObject.item.skeletonPoser != null && HasSkeleton())
-            // {
-            //     Quaternion tr = Quaternion.Inverse(attachedObject.equipPoint.rotation) * (transform.rotation * attachedObject.item.skeletonPoser.GetBlendedPose(skeleton).rotation);
-            //     return equippedItem.equipPoint.rotation * tr;
-            // }
-            // else
-            // {
-                return equippedItem.equipPoint.rotation * equippedItem.initialRotationalOffset;
-            // }
-        }
+        // public Quaternion TargetItemRotation()//EquippedItem attachedObject)
+        // {
+        //     // if (attachedObject.item.skeletonPoser != null && HasSkeleton())
+        //     // {
+        //     //     Quaternion tr = Quaternion.Inverse(attachedObject.equipPoint.rotation) * (transform.rotation * attachedObject.item.skeletonPoser.GetBlendedPose(skeleton).rotation);
+        //     //     return equippedItem.equipPoint.rotation * tr;
+        //     // }
+        //     // else
+        //     // {
+        //         return equippedItem.equipPoint.rotation * equippedItem.initialRotationalOffset;
+        //     // }
+        // }
 
         public bool ItemIsEquipped(Item item)
         {

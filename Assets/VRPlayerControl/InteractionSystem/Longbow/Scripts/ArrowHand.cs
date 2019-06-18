@@ -55,7 +55,7 @@ namespace Valve.VR.InteractionSystem
 
 			arrowList = new List<GameObject>();
 
-			GetComponent<Item>().attachmentFlags = Inventory.defaultAttachmentFlags;
+			// GetComponent<Item>().attachmentFlags = Inventory.defaultAttachmentFlags;
 		}
 
 		// void OnEnable () {

@@ -71,7 +71,7 @@ namespace VRPlayer
         public bool useHoverSphere = true;
         public Transform hoverSphereTransform;
         public float hoverSphereRadius = 0.05f;
-        public LayerMask hoverLayerMask = -1;
+        // public LayerMask hoverLayerMask = -1;
         public float hoverUpdateInterval = 0.1f;
 
         public bool useControllerHoverComponent = true;
@@ -91,7 +91,7 @@ namespace VRPlayer
         // protected RenderModel hoverhighlightRenderModel;
 
         public bool spewDebugText = false;
-        public bool showDebugInteractables = false;
+        // public bool showDebugInteractables = false;
 
         // public class EquippedObject
         // {
@@ -593,7 +593,7 @@ namespace VRPlayer
 
             if (item.skeletonPoser != null && skeleton != null)
             {
-                Debug.Log("blendign to poser skeleton " + name);
+                // Debug.Log("blendign to poser skeleton " + name);
                 skeleton.BlendToPoser(item.skeletonPoser, blendToPoseTime);
             }
 
@@ -657,7 +657,7 @@ namespace VRPlayer
             {
                 if (skeleton != null) {
                     skeleton.BlendToSkeleton(releasePoseBlendTime);
-                    Debug.Log(name + "releasing pose to skeleton");
+                    // Debug.Log(name + "releasing pose to skeleton");
                 }
             }
 
@@ -1159,8 +1159,8 @@ pos.x, pos.y, pos.z,
 
             //if its a ui element
             InputModule.instance.HoverBegin( hoveringInteractable.gameObject );
-
         }
+
         void OnInspectEnd (Interactor interactor, Interactable hoveringInteractable) {
              StandardizedVRInput.instance.HideHint(this, useAction);
 
@@ -1244,20 +1244,20 @@ pos.x, pos.y, pos.z,
                 if (item != null)//currentAttached.interactable != null)
                 
                 {
-                    SteamVR_Skeleton_PoseSnapshot pose = null;
+                    // SteamVR_Skeleton_PoseSnapshot pose = null;
 
-                    if (item.skeletonPoser != null && HasSkeleton())
-                    {
-                        pose = item.skeletonPoser.GetBlendedPose(skeleton);
-                    }
+                    // if (item.skeletonPoser != null && HasSkeleton())
+                    // {
+                    //     pose = item.skeletonPoser.GetBlendedPose(skeleton);
+                    // }
 
                     if (item.handFollowTransform)                    
                     {
                         Quaternion targetHandRotation;
                         Vector3 targetHandPosition;
 
-                        if (pose == null)
-                        {
+                        // if (pose == null)
+                        // {
                             Transform equipPoint = inventory.equippedItem.equipPoint;
                             // Quaternion offset = Quaternion.Inverse(this.transform.rotation) * item.handAttachmentPointTransform.rotation;
                             Quaternion offset = Quaternion.Inverse(this.transform.rotation) * equipPoint.rotation;
@@ -1270,24 +1270,24 @@ pos.x, pos.y, pos.z,
                             Quaternion rotationDiff = mainRenderModel.GetHandRotation() * Quaternion.Inverse(this.transform.rotation);
                             Vector3 localOffset = rotationDiff * worldOffset;
                             targetHandPosition = item.transform.position + localOffset;
-                        }
-                        else
-                        {
-                            Transform objectT = item.transform;
+                        // }
+                        // else
+                        // {
+                        //     Transform objectT = item.transform;
                             
-                            Vector3 oldItemPos = objectT.position;
-                            Quaternion oldItemRot = objectT.transform.rotation;
-                            objectT.position = inventory.TargetItemPosition();//currentAttached);
-                            objectT.rotation = inventory.TargetItemRotation();//currentAttached);
+                        //     Vector3 oldItemPos = objectT.position;
+                        //     Quaternion oldItemRot = objectT.transform.rotation;
+                        //     objectT.position = inventory.TargetItemPosition();//currentAttached);
+                        //     objectT.rotation = inventory.TargetItemRotation();//currentAttached);
                             
-                            Vector3 localSkelePos = objectT.InverseTransformPoint(transform.position);
-                            Quaternion localSkeleRot = Quaternion.Inverse(objectT.rotation) * transform.rotation;
-                            objectT.position = oldItemPos;
-                            objectT.rotation = oldItemRot;
+                        //     Vector3 localSkelePos = objectT.InverseTransformPoint(transform.position);
+                        //     Quaternion localSkeleRot = Quaternion.Inverse(objectT.rotation) * transform.rotation;
+                        //     objectT.position = oldItemPos;
+                        //     objectT.rotation = oldItemRot;
 
-                            targetHandPosition = objectT.TransformPoint(localSkelePos);
-                            targetHandRotation = objectT.rotation * localSkeleRot;
-                        }
+                        //     targetHandPosition = objectT.TransformPoint(localSkelePos);
+                        //     targetHandRotation = objectT.rotation * localSkeleRot;
+                        // }
 
                         if (mainRenderModel != null)
                             mainRenderModel.SetHandRotation(targetHandRotation);

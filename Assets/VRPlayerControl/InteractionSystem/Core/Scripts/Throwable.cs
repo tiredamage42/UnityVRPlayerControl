@@ -168,7 +168,7 @@ namespace Valve.VR.InteractionSystem
 			// velocityEstimator = GetComponent<VelocityEstimator>();
             interactable = GetComponent<Interactable>();
 
-            GetComponent<Item>().attachmentFlags = attachmentFlags;
+            // GetComponent<Item>().attachmentFlags = attachmentFlags;
 
             rigidbody = GetComponent<Rigidbody>();
             rigidbody.maxAngularVelocity = 50.0f;
