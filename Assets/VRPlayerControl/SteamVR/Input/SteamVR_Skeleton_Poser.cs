@@ -210,7 +210,7 @@ namespace Valve.VR
 
             if (inputSource == SteamVR_Input_Sources.RightHand)
                 blendedSnapshotR = snap;
-            if (inputSource == SteamVR_Input_Sources.LeftHand)
+            else if (inputSource == SteamVR_Input_Sources.LeftHand)
                 blendedSnapshotL = snap;
         }
 
@@ -289,35 +289,106 @@ namespace Valve.VR
                 }
             }
 
+            // public void UpdateAdditiveAnimation(SteamVR_Action_Skeleton skeletonAction, SteamVR_Input_Sources inputSource)
+            // {
+            //     SteamVR_Skeleton_PoseSnapshot snapshot = GetHandSnapshot(inputSource);
+            //     SteamVR_Skeleton_Pose_Hand poseHand = pose.GetHand(inputSource);
+
+            //     for (int boneIndex = 0; boneIndex < snapshotL.bonePositions.Length; boneIndex++)
+            //     {
+            //         int fingerIndex = SteamVR_Skeleton_JointIndexes.GetFingerForBone(boneIndex);
+            //         SteamVR_Skeleton_FingerExtensionTypes extensionType = poseHand.GetMovementTypeForBone(boneIndex);
+
+            //         if (extensionType == SteamVR_Skeleton_FingerExtensionTypes.Free)
+            //         {
+            //             snapshot.bonePositions[boneIndex] = skeletonAction.bonePositions[boneIndex];
+            //             snapshot.boneRotations[boneIndex] = skeletonAction.boneRotations[boneIndex];
+            //         }
+            //         if (extensionType == SteamVR_Skeleton_FingerExtensionTypes.Extend)
+            //         {
+            //             // lerp to open pose by fingercurl
+            //             snapshot.bonePositions[boneIndex] = Vector3.Lerp(poseHand.bonePositions[boneIndex], skeletonAction.bonePositions[boneIndex], 1 - skeletonAction.fingerCurls[fingerIndex]);
+            //             snapshot.boneRotations[boneIndex] = Quaternion.Lerp(poseHand.boneRotations[boneIndex], skeletonAction.boneRotations[boneIndex], 1 - skeletonAction.fingerCurls[fingerIndex]);
+            //         }
+            //         if (extensionType == SteamVR_Skeleton_FingerExtensionTypes.Contract)
+            //         {
+            //             // lerp to closed pose by fingercurl
+            //             snapshot.bonePositions[boneIndex] = Vector3.Lerp(poseHand.bonePositions[boneIndex], skeletonAction.bonePositions[boneIndex], skeletonAction.fingerCurls[fingerIndex]);
+            //             snapshot.boneRotations[boneIndex] = Quaternion.Lerp(poseHand.boneRotations[boneIndex], skeletonAction.boneRotations[boneIndex], skeletonAction.fingerCurls[fingerIndex]);
+            //         }
+            //     }
+            // }
+            //buffers for mirrored poses
+            private Vector3[] additivePositionBuffer;
+            private Quaternion[] additiveRotationBuffer;
+
             public void UpdateAdditiveAnimation(SteamVR_Action_Skeleton skeletonAction, SteamVR_Input_Sources inputSource)
             {
                 SteamVR_Skeleton_PoseSnapshot snapshot = GetHandSnapshot(inputSource);
                 SteamVR_Skeleton_Pose_Hand poseHand = pose.GetHand(inputSource);
+
+                //setup mirrored pose buffers
+                if (additivePositionBuffer == null) additivePositionBuffer = new Vector3[skeletonAction.boneCount];
+                if (additiveRotationBuffer == null) additiveRotationBuffer = new Quaternion[skeletonAction.boneCount];
+
 
                 for (int boneIndex = 0; boneIndex < snapshotL.bonePositions.Length; boneIndex++)
                 {
                     int fingerIndex = SteamVR_Skeleton_JointIndexes.GetFingerForBone(boneIndex);
                     SteamVR_Skeleton_FingerExtensionTypes extensionType = poseHand.GetMovementTypeForBone(boneIndex);
 
+                    //do target pose mirroring on left hand
+                    if(inputSource == SteamVR_Input_Sources.LeftHand)
+                    {
+                        SteamVR_Behaviour_Skeleton.MirrorBonePosition(ref skeletonAction.bonePositions[boneIndex], ref additivePositionBuffer[boneIndex], boneIndex);
+                        SteamVR_Behaviour_Skeleton.MirrorBoneRotation(ref skeletonAction.boneRotations[boneIndex], ref additiveRotationBuffer[boneIndex], boneIndex);
+                    }
+                    else
+                    {
+                        additivePositionBuffer[boneIndex] = skeletonAction.bonePositions[boneIndex];
+                        additiveRotationBuffer[boneIndex] = skeletonAction.boneRotations[boneIndex];
+                    }
+
+
+
                     if (extensionType == SteamVR_Skeleton_FingerExtensionTypes.Free)
                     {
-                        snapshot.bonePositions[boneIndex] = skeletonAction.bonePositions[boneIndex];
-                        snapshot.boneRotations[boneIndex] = skeletonAction.boneRotations[boneIndex];
+                        snapshot.bonePositions[boneIndex] = additivePositionBuffer[boneIndex];
+                        snapshot.boneRotations[boneIndex] = additiveRotationBuffer[boneIndex];
                     }
-                    if (extensionType == SteamVR_Skeleton_FingerExtensionTypes.Extend)
+                    else if (extensionType == SteamVR_Skeleton_FingerExtensionTypes.Extend)
                     {
+
                         // lerp to open pose by fingercurl
-                        snapshot.bonePositions[boneIndex] = Vector3.Lerp(poseHand.bonePositions[boneIndex], skeletonAction.bonePositions[boneIndex], 1 - skeletonAction.fingerCurls[fingerIndex]);
-                        snapshot.boneRotations[boneIndex] = Quaternion.Lerp(poseHand.boneRotations[boneIndex], skeletonAction.boneRotations[boneIndex], 1 - skeletonAction.fingerCurls[fingerIndex]);
+                        snapshot.bonePositions[boneIndex] = Vector3.Lerp(poseHand.bonePositions[boneIndex], additivePositionBuffer[boneIndex], 1 - skeletonAction.fingerCurls[fingerIndex]);
+                        snapshot.boneRotations[boneIndex] = Quaternion.Lerp(poseHand.boneRotations[boneIndex], additiveRotationBuffer[boneIndex], 1 - skeletonAction.fingerCurls[fingerIndex]);
+                        
+
                     }
-                    if (extensionType == SteamVR_Skeleton_FingerExtensionTypes.Contract)
+                    else if (extensionType == SteamVR_Skeleton_FingerExtensionTypes.Contract)
                     {
                         // lerp to closed pose by fingercurl
-                        snapshot.bonePositions[boneIndex] = Vector3.Lerp(poseHand.bonePositions[boneIndex], skeletonAction.bonePositions[boneIndex], skeletonAction.fingerCurls[fingerIndex]);
-                        snapshot.boneRotations[boneIndex] = Quaternion.Lerp(poseHand.boneRotations[boneIndex], skeletonAction.boneRotations[boneIndex], skeletonAction.fingerCurls[fingerIndex]);
+                        snapshot.bonePositions[boneIndex] = Vector3.Lerp(poseHand.bonePositions[boneIndex], additivePositionBuffer[boneIndex], skeletonAction.fingerCurls[fingerIndex]);
+                        snapshot.boneRotations[boneIndex] = Quaternion.Lerp(poseHand.boneRotations[boneIndex], additiveRotationBuffer[boneIndex], skeletonAction.fingerCurls[fingerIndex]);
                     }
                 }
             }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             /// <summary>
             /// Init based on an existing Skeleton_Pose
