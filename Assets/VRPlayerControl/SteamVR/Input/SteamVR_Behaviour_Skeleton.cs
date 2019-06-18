@@ -231,8 +231,10 @@ namespace Valve.VR
 
         protected virtual void CheckSkeletonAction()
         {
-            if (skeletonAction == null)
+            if (skeletonAction == null) {
                 skeletonAction = SteamVR_Input.GetAction<SteamVR_Action_Skeleton>("Skeleton" + inputSource.ToString());
+                Debug.LogError("set action: " + "Skeleton" + inputSource.ToString());
+            }
         }
 
         protected virtual void AssignBonesArray()
