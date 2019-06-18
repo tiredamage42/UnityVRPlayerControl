@@ -1644,7 +1644,7 @@ pos.x, pos.y, pos.z,
         //-------------------------------------------------
         private void InitController()
         {
-            if (spewDebugText)
+            //if (spewDebugText)
                 HandDebugLog("Hand " + name + " connected with type " + handType.ToString());
 
             bool hadOldRendermodel = mainRenderModel != null;
@@ -1680,7 +1680,9 @@ pos.x, pos.y, pos.z,
                 mainRenderModel.SetSkeletonRangeOfMotion(oldRM_rom);
 
             this.BroadcastMessage("SetInputSource", handType, SendMessageOptions.DontRequireReceiver); // let child objects know we've initialized
-            Debug.Log("Set Input source");
+            Debug.Log("Set Input source " + handType);
+            // Debug.Log("Set Input source " + mainRenderModel);
+            
             
             this.BroadcastMessage("OnHandInitialized", deviceIndex, SendMessageOptions.DontRequireReceiver); // let child objects know we've initialized
         }

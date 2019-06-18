@@ -127,6 +127,16 @@
       "requirement": "optional"
     },
     {
+      "name": "/actions/VRControlActionSet/in/SkeletonLeftHand",
+      "type": "skeleton",
+      "skeleton": "/skeleton/hand/left"
+    },
+    {
+      "name": "/actions/VRControlActionSet/in/SkeletonRightHand",
+      "type": "skeleton",
+      "skeleton": "/skeleton/hand/right"
+    },
+    {
       "name": "/actions/VRControlActionSet/out/Haptic",
       "type": "vibration"
     }
@@ -216,7 +226,9 @@
       "/actions/VRControlActionSet/in/TrackpadButton": "TrackpadButton",
       "/actions/VRControlActionSet/in/TriggerAxis": "TriggerAxis",
       "/actions/VRControlActionSet/in/Pose": "Pose",
-      "/actions/VRControlActionSet/in/HeadsetOnHead": "Headset on head (proximity sensor)"
+      "/actions/VRControlActionSet/in/HeadsetOnHead": "Headset on head (proximity sensor)",
+      "/actions/VRControlActionSet/in/SkeletonLeftHand": "Skeleton (Left)",
+      "/actions/VRControlActionSet/in/SkeletonRightHand": "Skeleton (Right)"
     }
   ]
 }
