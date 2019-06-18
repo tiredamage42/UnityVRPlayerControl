@@ -84,14 +84,14 @@ namespace Valve.VR.InteractionSystem.Sample
 
 		private float attachTime;
 
-		private Hand.AttachmentFlags attachmentFlags = Hand.defaultAttachmentFlags & ( ~Hand.AttachmentFlags.SnapOnAttach ) & (~Hand.AttachmentFlags.DetachOthers) & (~Hand.AttachmentFlags.VelocityMovement);
+		// private Hand.AttachmentFlags attachmentFlags = Hand.defaultAttachmentFlags & ( ~Hand.AttachmentFlags.SnapOnAttach ) & (~Hand.AttachmentFlags.DetachOthers) & (~Hand.AttachmentFlags.VelocityMovement);
 
         private Interactable interactable;
 
 		//-------------------------------------------------
 		void Awake()
 		{
-			GetComponent<Item>().attachmentFlags = attachmentFlags;
+			// GetComponent<Item>().attachmentFlags = attachmentFlags;
 			
 			var textMeshs = GetComponentsInChildren<TextMesh>();
             generalText = textMeshs[0];

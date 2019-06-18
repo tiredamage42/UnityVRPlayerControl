@@ -209,7 +209,7 @@ namespace Valve.VR.InteractionSystem
 		// Interactable interactable;
 		void Awake () {
 			// interactable = GetComponent<Interactable>();
-			GetComponent<Item>().attachmentFlags = Inventory.defaultAttachmentFlags;
+			// GetComponent<Item>().attachmentFlags = Inventory.defaultAttachmentFlags;
 		}
 
 		void OnEnable () {
