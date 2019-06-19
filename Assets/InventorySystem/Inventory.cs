@@ -130,6 +130,7 @@ public class Inventory : MonoBehaviour
 
 
             Vector3 targetItemPosition = equippedItem.equipPoint.TransformPoint(localPosition);//equippedItem.targetLocalPos);
+            
             // Vector3 targetItemPosition = TargetEquippedItemWorldPosition();//equippedItem);
 
 
@@ -248,6 +249,7 @@ public enum EquipType {
             
             EquippedItem attachedObject = new EquippedItem();
             attachedObject.attachFlags = GetFlags(item.equipType);// flags;
+            attachedObject.equipType = item.equipType;
 
             attachedObject.item = item;
             // attachedObject.attachTime = Time.time;
@@ -478,7 +480,7 @@ public enum EquipType {
                 return;
             }
 
-            Debug.LogError("unequuiping " + name);
+            // Debug.LogError("unequuiping " + name);
             
             Transform parentTransform = null;
             if (equippedItem.isParentedToInventory)

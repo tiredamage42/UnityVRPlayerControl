@@ -55,7 +55,7 @@ namespace Valve.VR.InteractionSystem
                 handInstance.transform.localScale = handPrefab.transform.localScale;
                 handSkeleton = handInstance.GetComponent<SteamVR_Behaviour_Skeleton>();
                 handSkeleton.origin = Player.instance.trackingOriginTransform;
-                // handSkeleton.updatePose = false;
+                handSkeleton.updatePose = false;
                 handSkeleton.skeletonAction.onActiveChange += OnSkeletonActiveChange;
 
                 handRenderers = handInstance.GetComponentsInChildren<Renderer>();
@@ -162,7 +162,9 @@ namespace Valve.VR.InteractionSystem
         {
             if (handInstance != null)
             {
+                // Debug.LogError("set position here");
                 handInstance.transform.position = newPosition;
+                // handInstance.transform.localScale = Vector3.one * 2;
             }
         }
 

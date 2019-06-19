@@ -829,7 +829,6 @@ namespace VRPlayer
 
         public void GetEstimatedPeakVelocities(out Vector3 velocity, out Vector3 angularVelocity)
         {
-            Debug.LogError("heiyyy!");
             trackedObject.GetEstimatedPeakVelocities(out velocity, out angularVelocity);
             velocity = VRManager.trackingOrigin.TransformVector(velocity);
             angularVelocity = VRManager.trackingOrigin.TransformDirection(angularVelocity);
@@ -1253,49 +1252,55 @@ pos.x, pos.y, pos.z,
 
                     if (item.handFollowTransform)                    
                     {
+                        // Debug.LogError("following with hand");
                         Quaternion targetHandRotation;
                         Vector3 targetHandPosition;
 
                         // if (pose == null)
                         // {
-                            Transform equipPoint = inventory.equippedItem.equipPoint;
+                            Transform equipPoint = inventory.equippedItem.item.transform;//.equipPoint;
                             // Quaternion offset = Quaternion.Inverse(this.transform.rotation) * item.handAttachmentPointTransform.rotation;
                             Quaternion offset = Quaternion.Inverse(this.transform.rotation) * equipPoint.rotation;
                             
-                            targetHandRotation = item.transform.rotation * Quaternion.Inverse(offset);
+                            targetHandRotation = item.transform.rotation;// * Quaternion.Inverse(offset);
 
                             // Vector3 worldOffset = (this.transform.position - currentAttached.handAttachmentPointTransform.position);
                             Vector3 worldOffset = (this.transform.position - equipPoint.position);
                             
                             Quaternion rotationDiff = mainRenderModel.GetHandRotation() * Quaternion.Inverse(this.transform.rotation);
                             Vector3 localOffset = rotationDiff * worldOffset;
-                            targetHandPosition = item.transform.position + localOffset;
+                            targetHandPosition = item.transform.position;// + localOffset;
                         // }
                         // else
                         // {
-                        //     Transform objectT = item.transform;
+                            // Transform objectT = item.transform;
                             
-                        //     Vector3 oldItemPos = objectT.position;
-                        //     Quaternion oldItemRot = objectT.transform.rotation;
-                        //     objectT.position = inventory.TargetItemPosition();//currentAttached);
-                        //     objectT.rotation = inventory.TargetItemRotation();//currentAttached);
+                            // Vector3 oldItemPos = objectT.position;
+                            // Quaternion oldItemRot = objectT.transform.rotation;
+                            // objectT.position = inventory.TargetItemPosition();//currentAttached);
+                            // objectT.rotation = inventory.TargetItemRotation();//currentAttached);
                             
-                        //     Vector3 localSkelePos = objectT.InverseTransformPoint(transform.position);
-                        //     Quaternion localSkeleRot = Quaternion.Inverse(objectT.rotation) * transform.rotation;
-                        //     objectT.position = oldItemPos;
-                        //     objectT.rotation = oldItemRot;
+                            // Vector3 localSkelePos = objectT.InverseTransformPoint(transform.position);
+                            // Quaternion localSkeleRot = Quaternion.Inverse(objectT.rotation) * transform.rotation;
+                            // objectT.position = oldItemPos;
+                            // objectT.rotation = oldItemRot;
 
-                        //     targetHandPosition = objectT.TransformPoint(localSkelePos);
-                        //     targetHandRotation = objectT.rotation * localSkeleRot;
+                            // targetHandPosition = objectT.TransformPoint(localSkelePos);
+                            // targetHandRotation = objectT.rotation * localSkeleRot;
                         // }
 
-                        if (mainRenderModel != null)
+                        if (mainRenderModel != null) {
                             mainRenderModel.SetHandRotation(targetHandRotation);
+                            // Debug.LogError("setting rotation");
+                        }
                         // if (hoverhighlightRenderModel != null)
                         //     hoverhighlightRenderModel.SetHandRotation(targetHandRotation);
 
-                        if (mainRenderModel != null)
+                        if (mainRenderModel != null) {
                             mainRenderModel.SetHandPosition(targetHandPosition);
+                            // Debug.LogError(targetHandPosition + "/" + localOffset);
+
+                        }
                         // if (hoverhighlightRenderModel != null)
                         //     hoverhighlightRenderModel.SetHandPosition(targetHandPosition);
                     }
