@@ -1,46 +1,8 @@
-﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
-//
-// Purpose: This object will get hover events and can be attached to the hands
-//
-//=============================================================================
-/*
-
-
-
-
-item:
-
-
-    rock:
-        not saveable
-
-        on use equip (no invenotry)
-        on end use unequip (no inventory)
-
-
-    //on use equip 
-
-
-
-    is equippable
-
-
-
-
-
-
-
-
-
-
-
-
-
- */
+﻿
 using UnityEngine;
 using UnityEngine.Events;
-// using System.Collections;
 using System.Collections.Generic;
+
 using RenderTricks;
 
 using Valve.VR;
@@ -48,22 +10,27 @@ using Valve.VR.InteractionSystem;
 
 namespace InteractionSystem
 {
+
+    [System.Serializable] public class InteractableInspectEvent : UnityEvent<Interactor> { }
+    [System.Serializable] public class InteractableUseEvent : UnityEvent<Interactor, int> { }
+
+        
     public class Interactable : MonoBehaviour
     {
         public enum UseType { Normal, Scripted };
         public UseType useType;
         
-        [Tooltip("Activates an action set on attach and deactivates on detach")]
-        public SteamVR_ActionSet activateActionSetOnAttach;
+        // [Tooltip("Activates an action set on attach and deactivates on detach")]
+        // public SteamVR_ActionSet activateActionSetOnAttach;
 
-        [Tooltip("Hide the whole hand on attachment and show on detach")]
-        public bool hideHandOnAttach = true;
+        // [Tooltip("Hide the whole hand on attachment and show on detach")]
+        // public bool hideHandOnAttach = true;
 
-        [Tooltip("Hide the skeleton part of the hand on attachment and show on detach")]
-        public bool hideSkeletonOnAttach = false;
+        // [Tooltip("Hide the skeleton part of the hand on attachment and show on detach")]
+        // public bool hideSkeletonOnAttach = false;
 
-        [Tooltip("Hide the controller part of the hand on attachment and show on detach")]
-        public bool hideControllerOnAttach = false;
+        // [Tooltip("Hide the controller part of the hand on attachment and show on detach")]
+        // public bool hideControllerOnAttach = false;
 
         [Tooltip("The integer in the animator to trigger on pickup. 0 for none")]
         public int handAnimationOnPickup = 0;
@@ -71,50 +38,46 @@ namespace InteractionSystem
         [Tooltip("The range of motion to set on the skeleton. None for no change.")]
         public SkeletalMotionRangeChange setRangeOfMotionOnPickup = SkeletalMotionRangeChange.None;
 
-        // public delegate void OnAttachedToHandDelegate(Hand hand);
-        // public delegate void OnDetachedFromHandDelegate(Hand hand);
-
-        // public event OnAttachedToHandDelegate onAttachedToHand;
-        // public event OnDetachedFromHandDelegate onDetachedFromHand;
-
-        // public event System.Action<Object> onEquipped;
-        // public event System.Action<Object> onUnequipped;
-
-
-        public event System.Action<Interactor, int> onUseStart, onUseUpdate, onUseEnd;
-        public event System.Action<Interactor> onInspectStart, onInspectUpdate, onInspectEnd;
+        // public event System.Action<Interactor, int> onUseStart, onUseUpdate, onUseEnd;
+        // public event System.Action<Interactor> onInspectStart, onInspectUpdate, onInspectEnd;
         
-
-        
-
-
-
-
-
-        [Tooltip("Specify whether you want to snap to the hand's object attachment point, or just the raw hand")]
-        public bool useHandObjectAttachmentPoint = true;
-
-        public bool attachEaseIn = false;
-        [HideInInspector]
-        public AnimationCurve snapAttachEaseInCurve = AnimationCurve.EaseInOut(0.0f, 0.0f, 1.0f, 1.0f);
-        public float snapAttachEaseInTime = 0.15f;
-
-        public bool snapAttachEaseInCompleted = false;
-
-
-        // [Tooltip("The skeleton pose to apply when grabbing. Can only set this or handFollowTransform.")]
-        [HideInInspector]
-        public SteamVR_Skeleton_Poser skeletonPoser;
-
-        [Tooltip("Should the rendered hand lock on to and follow the object")]
-        public bool handFollowTransform= true;
-
         [Tooltip("Set whether or not you want this interactible to highlight when hovering over it")]
         public bool highlightOnHover = true;
         
         [Tooltip("An array of child gameObjects to not render a highlight for. Things like transparent parts, vfx, etc.")]
         public GameObject[] hideHighlight;
 
+        
+        public InteractableUseEvent onUseStart, onUseUpdate, onUseEnd;
+        public InteractableInspectEvent onInspectStart, onInspectUpdate, onInspectEnd;
+        
+        // public UnityEvent<Interactor> testEvent;
+
+        
+
+
+
+
+
+        // [Tooltip("Specify whether you want to snap to the hand's object attachment point, or just the raw hand")]
+        // public bool useHandObjectAttachmentPoint = true;
+
+        // public bool attachEaseIn = false;
+        // [HideInInspector]
+        // public AnimationCurve snapAttachEaseInCurve = AnimationCurve.EaseInOut(0.0f, 0.0f, 1.0f, 1.0f);
+        // public float snapAttachEaseInTime = 0.15f;
+
+        // public bool snapAttachEaseInCompleted = false;
+
+
+        // [Tooltip("The skeleton pose to apply when grabbing. Can only set this or handFollowTransform.")]
+        // [HideInInspector]
+        // public SteamVR_Skeleton_Poser skeletonPoser;
+
+        // [Tooltip("Should the rendered hand lock on to and follow the object")]
+        // public bool handFollowTransform = true;
+
+        
 
         HashSet<int> currentHoveringIDs = new HashSet<int>();
         bool hasOwner;
@@ -144,21 +107,21 @@ namespace InteractionSystem
 
         private void Awake()
         {
-            skeletonPoser = GetComponent<SteamVR_Skeleton_Poser>();
+            // skeletonPoser = GetComponent<SteamVR_Skeleton_Poser>();
             InitializeInteractableComponents();
         }
 
-        protected virtual void Start()
-        {
-            if (skeletonPoser != null)
-            {
-                if (useHandObjectAttachmentPoint)
-                {
-                    Debug.LogWarning("<b>[SteamVR Interaction]</b> SkeletonPose and useHandObjectAttachmentPoint both set at the same time. Ignoring useHandObjectAttachmentPoint.");
-                    useHandObjectAttachmentPoint = false;
-                }
-            }
-        }
+        // protected virtual void Start()
+        // {
+        //     if (skeletonPoser != null)
+        //     {
+        //         if (useHandObjectAttachmentPoint)
+        //         {
+        //             Debug.LogWarning("<b>[SteamVR Interaction]</b> SkeletonPose and useHandObjectAttachmentPoint both set at the same time. Ignoring useHandObjectAttachmentPoint.");
+        //             useHandObjectAttachmentPoint = false;
+        //         }
+        //     }
+        // }
 
         protected virtual bool ShouldIgnoreHighlight(Component component)
         {
@@ -238,8 +201,9 @@ namespace InteractionSystem
             for (int i = 0; i < interactables.Count; i++) {
                 interactables[i].OnInspectStart(interactor);
             }
+        
             if (onInspectStart != null) {
-                onInspectStart(interactor);
+                onInspectStart.Invoke(interactor);
             }
         }
         public void OnInspectEnd (Interactor interactor) {
@@ -251,7 +215,7 @@ namespace InteractionSystem
                 interactables[i].OnInspectEnd(interactor);
             }
             if (onInspectEnd != null) {
-                onInspectEnd(interactor);
+                onInspectEnd.Invoke(interactor);
             }
         }
         public void OnInspectUpdate(Interactor interactor) {
@@ -259,7 +223,7 @@ namespace InteractionSystem
                 interactables[i].OnInspectUpdate(interactor);
             }
             if (onInspectUpdate != null) {
-                onInspectUpdate(interactor);
+                onInspectUpdate.Invoke(interactor);
             }
         }
 
@@ -268,7 +232,7 @@ namespace InteractionSystem
                 interactables[i].OnUseStart(interactor, useIndex);
             }
             if (onUseStart != null) {
-                onUseStart(interactor, useIndex);
+                onUseStart.Invoke(interactor, useIndex);
             }
         }
         public void OnUseEnd (Interactor interactor, int useIndex) {
@@ -276,7 +240,7 @@ namespace InteractionSystem
                 interactables[i].OnUseEnd(interactor, useIndex);
             }
             if (onUseEnd != null) {
-                onUseEnd(interactor, useIndex);
+                onUseEnd.Invoke(interactor, useIndex);
             }
         }
         public void OnUseUpdate(Interactor interactor, int useIndex) {
@@ -284,7 +248,7 @@ namespace InteractionSystem
                 interactables[i].OnUseUpdate(interactor, useIndex);
             }
             if (onUseUpdate != null) {
-                onUseUpdate(interactor, useIndex);
+                onUseUpdate.Invoke(interactor, useIndex);
             }
         }
 

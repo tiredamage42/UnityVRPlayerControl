@@ -12,19 +12,19 @@ namespace Valve.VR.InteractionSystem
 {
     public class ModalThrowable : Throwable//, IInventoryItem
     {
-        public void OnEquippedUseStart(Inventory inventory, int useIndex) {}
-        public void OnEquippedUseEnd(Inventory inventory, int useIndex) {}
-        public void OnEquippedUseUpdate(Inventory inventory, int useIndex) {}
+        // public void OnEquippedUseStart(Inventory inventory, int useIndex) {}
+        // public void OnEquippedUseEnd(Inventory inventory, int useIndex) {}
+        // public void OnEquippedUseUpdate(Inventory inventory, int useIndex) {}
 
 
 
-        public void OnEquippedUpdate (Inventory inventory) {
-            if (interactable.skeletonPoser != null)
-            {
-                bool enablePinchPos = offsetIndex == 1;
-                interactable.skeletonPoser.SetBlendingBehaviourEnabled("PinchPose", enablePinchPos);//hand.currentAttachedObjectInfo.Value.grabbedWithType == GrabTypes.Pinch);
-            }
-        }
+        // public void OnEquippedUpdate (Inventory inventory) {
+        //     if (interactable.skeletonPoser != null)
+        //     {
+        //         bool enablePinchPos = offsetIndex == 1;
+        //         interactable.skeletonPoser.SetBlendingBehaviourEnabled("PinchPose", enablePinchPos);//hand.currentAttachedObjectInfo.Value.grabbedWithType == GrabTypes.Pinch);
+        //     }
+        // }
 
 
         // public void OnEquipped(Inventory inventory) {
@@ -55,14 +55,14 @@ namespace Valve.VR.InteractionSystem
 
 
 
-        [Tooltip("The local point which acts as a positional and rotational offset to use while held with a grip type grab")]
-        public Transform gripOffset;
+        // [Tooltip("The local point which acts as a positional and rotational offset to use while held with a grip type grab")]
+        // public Transform gripOffset;
 
-        [Tooltip("The local point which acts as a positional and rotational offset to use while held with a pinch type grab")]
-        public Transform pinchOffset;
+        // [Tooltip("The local point which acts as a positional and rotational offset to use while held with a pinch type grab")]
+        // public Transform pinchOffset;
 
-        [Header("0-original 1-pinch 2-grip")]
-        [Range(0,2)] public int offsetIndex = 0;
+        // [Header("0-original 1-pinch 2-grip")]
+        // [Range(0,2)] public int offsetIndex = 0;
         
         // protected override void HandHoverUpdate(Hand hand)
         // {

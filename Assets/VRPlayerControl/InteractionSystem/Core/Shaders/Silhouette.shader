@@ -49,11 +49,11 @@ Shader "Valve/VR/Silhouette"
 			PS_INPUT o;
 			o.vPositionOs.xyzw = i.vPositionOs.xyzw;
 			o.vNormalOs.xyz = i.vNormalOs.xyz;
-#if UNITY_VERSION >= 540
+// #if UNITY_VERSION >= 540
 			o.vPositionPs = UnityObjectToClipPos( i.vPositionOs.xyzw );
-#else
-			o.vPositionPs = mul( UNITY_MATRIX_MVP, i.vPositionOs.xyzw );
-#endif
+// #else
+// 			o.vPositionPs = mul( UNITY_MATRIX_MVP, i.vPositionOs.xyzw );
+// #endif
 			return o;
 		}
 
@@ -68,11 +68,11 @@ Shader "Valve/VR/Silhouette"
 			vOffsetPs.xy = normalize( vOffsetPs.xy );
 
 			// Calculate position
-#if UNITY_VERSION >= 540
+// #if UNITY_VERSION >= 540
 			extruded.vPositionPs = UnityObjectToClipPos( vertex.vPositionOs.xyzw );
-#else
-			extruded.vPositionPs = mul( UNITY_MATRIX_MVP, vertex.vPositionOs.xyzw );
-#endif
+// #else
+// 			extruded.vPositionPs = mul( UNITY_MATRIX_MVP, vertex.vPositionOs.xyzw );
+// #endif
 			extruded.vPositionPs.xy += vOffsetPs.xy * extruded.vPositionPs.w * g_flOutlineWidth;
 
 			return extruded;
