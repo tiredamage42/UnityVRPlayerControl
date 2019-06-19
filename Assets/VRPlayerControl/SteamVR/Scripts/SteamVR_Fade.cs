@@ -43,16 +43,16 @@ namespace Valve.VR
                 compositor.FadeToColor(duration, newColor.r, newColor.g, newColor.b, newColor.a, false);
         }
 
-#if TEST_FADE_VIEW
-	void Update()
-	{
-		if (Input.GetKeyDown(KeyCode.Space))
-		{
-			SteamVR_Fade.View(Color.black, 0);
-			SteamVR_Fade.View(Color.clear, 1);
-		}
-	}
-#endif
+// #if TEST_FADE_VIEW
+// 	void Update()
+// 	{
+// 		if (Input.GetKeyDown(KeyCode.Space))
+// 		{
+// 			SteamVR_Fade.View(Color.black, 0);
+// 			SteamVR_Fade.View(Color.clear, 1);
+// 		}
+// 	}
+// #endif
 
         public void OnStartFade(Color newColor, float duration, bool fadeOverlay)
         {

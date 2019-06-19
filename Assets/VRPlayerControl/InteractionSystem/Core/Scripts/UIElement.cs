@@ -28,8 +28,8 @@ namespace Valve.VR.InteractionSystem
 		}
         public void OnUseStart(Interactor interactor, int useIndex){
 			InputModule.instance.Submit( gameObject );
-
 		}
+
         public void OnUseEnd(Interactor interactor, int useIndex){
 			
 		}
@@ -40,19 +40,19 @@ namespace Valve.VR.InteractionSystem
 
 
 
-		public CustomEvents.UnityEventHand onHandClick;
+		// public CustomEvents.UnityEventHand onHandClick;
 
         // protected Hand currentHand;
 
 		//-------------------------------------------------
-		protected virtual void Awake()
-		{
-			Button button = GetComponent<Button>();
-			if ( button )
-			{
-				button.onClick.AddListener( OnButtonClick );
-			}
-		}
+		// protected virtual void Awake()
+		// {
+		// 	Button button = GetComponent<Button>();
+		// 	if ( button )
+		// 	{
+		// 		button.onClick.AddListener( OnButtonClick );
+		// 	}
+		// }
 
 
 		// //-------------------------------------------------
@@ -82,30 +82,30 @@ namespace Valve.VR.InteractionSystem
 
 
         //-------------------------------------------------
-        protected virtual void OnButtonClick()
-		{
-			// onHandClick.Invoke( currentHand );
-		}
+        // protected virtual void OnButtonClick()
+		// {
+		// 	// onHandClick.Invoke( currentHand );
+		// }
 	}
 
-#if UNITY_EDITOR
-	//-------------------------------------------------------------------------
-	[UnityEditor.CustomEditor( typeof( UIElement ) )]
-	public class UIElementEditor : UnityEditor.Editor
-	{
-		//-------------------------------------------------
-		// Custom Inspector GUI allows us to click from within the UI
-		//-------------------------------------------------
-		public override void OnInspectorGUI()
-		{
-			DrawDefaultInspector();
+// #if UNITY_EDITOR
+// 	//-------------------------------------------------------------------------
+// 	[UnityEditor.CustomEditor( typeof( UIElement ) )]
+// 	public class UIElementEditor : UnityEditor.Editor
+// 	{
+// 		//-------------------------------------------------
+// 		// Custom Inspector GUI allows us to click from within the UI
+// 		//-------------------------------------------------
+// 		public override void OnInspectorGUI()
+// 		{
+// 			DrawDefaultInspector();
 
-			UIElement uiElement = (UIElement)target;
-			if ( GUILayout.Button( "Click" ) )
-			{
-				InputModule.instance.Submit( uiElement.gameObject );
-			}
-		}
-	}
-#endif
+// 			UIElement uiElement = (UIElement)target;
+// 			if ( GUILayout.Button( "Click" ) )
+// 			{
+// 				InputModule.instance.Submit( uiElement.gameObject );
+// 			}
+// 		}
+// 	}
+// #endif
 }

@@ -571,54 +571,115 @@ namespace VRPlayer
 
 
         void OnItemEquipped (Inventory inventory, Item item){//Inventory.EquippedItem equippedItem) {
-            // VR_Item item = equippedItem.item.GetComponent<VR_Item>();
+            if (item.equipType != Inventory.EquipType.Static) {
+                GetComponent<VelocityEstimator>().BeginEstimatingVelocity();
+            }
+            
+            
+            VR_Item vr_item = item.GetComponent<VR_Item>();
+            if (!vr_item) {
+                Debug.LogError(item.name + " :: does not have a vr item component");
+                return;
+            }
+            
             // Item item = equippedItem.item;//.GetComponent<Item>();
             
-            if (!item) return;
-            if (item.hideHandOnAttach)
+            // if (!item) return;
+            if (vr_item.hideHandOnAttach)
                 Hide();
 
-            if (item.hideSkeletonOnAttach && mainRenderModel != null && mainRenderModel.displayHandByDefault)
-                HideSkeleton();
+            // if (vr_item.hideSkeletonOnAttach && mainRenderModel != null && mainRenderModel.displayHandByDefault)
+            //     HideSkeleton();
 
-            if (item.hideControllerOnAttach && mainRenderModel != null && mainRenderModel.displayControllerByDefault)
+            // if (vr_item.hideControllerOnAttach && 
+            if (mainRenderModel != null && mainRenderModel.displayControllerByDefault)
                 HideController();
 
-            if (item.handAnimationOnPickup != 0)
-                SetAnimationState(item.handAnimationOnPickup);
+            if (vr_item.handAnimationOnPickup != 0)
+                SetAnimationState(vr_item.handAnimationOnPickup);
 
-            if (item.setRangeOfMotionOnPickup != SkeletalMotionRangeChange.None)
-                SetTemporarySkeletonRangeOfMotion(item.setRangeOfMotionOnPickup);
+            if (vr_item.setRangeOfMotionOnPickup != SkeletalMotionRangeChange.None)
+                SetTemporarySkeletonRangeOfMotion(vr_item.setRangeOfMotionOnPickup);
 
 
-            if (item.skeletonPoser != null && skeleton != null)
+            if (vr_item.skeletonPoser != null && skeleton != null)
             {
                 // Debug.Log("blendign to poser skeleton " + name);
-                skeleton.BlendToPoser(item.skeletonPoser, blendToPoseTime);
+                skeleton.BlendToPoser(vr_item.skeletonPoser, blendToPoseTime);
             }
 
-            if (item.activateActionSetOnAttach != null)
-                item.activateActionSetOnAttach.Activate(handType);
+            if (vr_item.activateActionSetOnAttach != null)
+                vr_item.activateActionSetOnAttach.Activate(handType);
         }
 
-        void OnItemUnequipped(Inventory inventory, Item item){//.EquippedItem equippedItem) {
-            // Item item = equippedItem.item;//.GetComponent<VR_Item>();
-            if (!item) return;
+
+
+        public virtual void GetReleaseVelocities(Rigidbody rigidbody, out Vector3 velocity, out Vector3 angularVelocity)
+        {
+            Player player = Player.instance;
+            switch (player.releaseVelocityStyle)
+            {
+                case ReleaseStyle.ShortEstimation:
+                    velocityEstimator.FinishEstimatingVelocity();
+                    velocity = velocityEstimator.GetVelocityEstimate();
+                    angularVelocity = velocityEstimator.GetAngularVelocityEstimate();
+                    break;
+                case ReleaseStyle.AdvancedEstimation:
+                    GetEstimatedPeakVelocities(out velocity, out angularVelocity);
+                    break;
+                case ReleaseStyle.GetFromHand:
+                    velocity = GetTrackedObjectVelocity(player.releaseVelocityTimeOffset);
+                    angularVelocity = GetTrackedObjectAngularVelocity(player.releaseVelocityTimeOffset);
+                    break;
+                default:
+                case ReleaseStyle.NoChange:
+                    velocity = rigidbody.velocity;
+                    angularVelocity = rigidbody.angularVelocity;
+                    break;
+            }
+
+            if (player.releaseVelocityStyle != ReleaseStyle.NoChange)
+                velocity *= player.scaleReleaseVelocity;
+        }
+
+        void OnItemUnequipped(Inventory inventory, Item item){
+            if (item.equipType != Inventory.EquipType.Static) {
             
-            if (item.hideHandOnAttach)
-                        Show();
+                Vector3 velocity;
+                Vector3 angularVelocity;
 
-                    if (item.hideSkeletonOnAttach && mainRenderModel != null && mainRenderModel.displayHandByDefault)
-                        ShowSkeleton();
+                Rigidbody rigidbody = item.GetComponent<Rigidbody>();
 
-                    if (item.hideControllerOnAttach && mainRenderModel != null && mainRenderModel.displayControllerByDefault)
-                        ShowController();
+                GetReleaseVelocities(rigidbody, out velocity, out angularVelocity);
 
-                    if (item.handAnimationOnPickup != 0)
-                        StopAnimation();
+                rigidbody.velocity = velocity;
+                rigidbody.angularVelocity = angularVelocity;
+            }
 
-                    if (item.setRangeOfMotionOnPickup != SkeletalMotionRangeChange.None)
-                        ResetTemporarySkeletonRangeOfMotion();
+
+
+
+            VR_Item vr_item = item.GetComponent<VR_Item>();
+            if (!vr_item) {
+                Debug.LogError(item.name + " :: does not have a vr item component");
+                return;
+            }
+            
+            if (vr_item.hideHandOnAttach)
+                Show();
+
+            // if (vr_item.hideSkeletonOnAttach && mainRenderModel != null && mainRenderModel.displayHandByDefault)
+            //     ShowSkeleton();
+
+            // if (vr_item.hideControllerOnAttach && 
+            if (mainRenderModel != null && mainRenderModel.displayControllerByDefault)
+                ShowController();
+
+            if (vr_item.handAnimationOnPickup != 0)
+                StopAnimation();
+
+            if (vr_item.setRangeOfMotionOnPickup != SkeletalMotionRangeChange.None)
+                ResetTemporarySkeletonRangeOfMotion();
               
             if (mainRenderModel != null)
                 mainRenderModel.MatchHandToTransform(mainRenderModel.transform);
@@ -629,20 +690,20 @@ namespace VRPlayer
 
 
 
-            if (item.activateActionSetOnAttach != null)
+            if (vr_item.activateActionSetOnAttach != null)
             {
                 // if (hand.otherHand == null || hand.otherHand.currentAttachedObjectInfo.HasValue == false ||
                 //     (hand.otherHand.currentAttachedObjectInfo.Value.interactable != null &&
                 //      hand.otherHand.currentAttachedObjectInfo.Value.interactable.activateActionSetOnAttach != this.activateActionSetOnAttach))
                 
-                if (inventory.otherInventory.equippedItem == null || inventory.otherInventory.equippedItem.item.activateActionSetOnAttach != item.activateActionSetOnAttach)
+                if (inventory.otherInventory.equippedItem == null || inventory.otherInventory.equippedItem.item.GetComponent<VR_Item>().activateActionSetOnAttach != vr_item.activateActionSetOnAttach)
                 // if (otherHand == null || otherHand.currentAttached == null ||
                 //     (hand.otherHand.currentAttached.interactable != null &&
                 //      hand.otherHand.currentAttached.interactable.activateActionSetOnAttach != this.activateActionSetOnAttach))
                 
                 
                 {
-                    item.activateActionSetOnAttach.Deactivate(handType);
+                    vr_item.activateActionSetOnAttach.Deactivate(handType);
                 }
             }
 
@@ -653,7 +714,7 @@ namespace VRPlayer
             // }
 
             //move to vr interacable
-            if (item.skeletonPoser != null)
+            if (vr_item.skeletonPoser != null)
             {
                 if (skeleton != null) {
                     skeleton.BlendToSkeleton(releasePoseBlendTime);
@@ -1238,9 +1299,9 @@ pos.x, pos.y, pos.z,
 
             // if (currentAttached != null)
             // {
-                // Item item = currentAttached.item;//.GetComponent<VR_Item>();
+                VR_Item vr_item = item.GetComponent<VR_Item>();
 
-                if (item != null)//currentAttached.interactable != null)
+                if (vr_item != null)//currentAttached.interactable != null)
                 
                 {
                     // SteamVR_Skeleton_PoseSnapshot pose = null;
@@ -1250,7 +1311,7 @@ pos.x, pos.y, pos.z,
                     //     pose = item.skeletonPoser.GetBlendedPose(skeleton);
                     // }
 
-                    if (item.handFollowTransform)                    
+                    if (vr_item.handFollowTransform)                    
                     {
                         // Debug.LogError("following with hand");
                         Quaternion targetHandRotation;

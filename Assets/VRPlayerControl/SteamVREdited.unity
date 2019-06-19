@@ -1239,7 +1239,7 @@ Transform:
   - {fileID: 777894233}
   - {fileID: 276115636}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 90.00001, z: 0}
 --- !u!1001 &65749683
 PrefabInstance:
@@ -1529,24 +1529,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffefbea063cab884ca33e5a449e5c22c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachmentFlags: 21
-  attachmentOffset: {fileID: 0}
-  catchingSpeedThreshold: -1
-  releaseVelocityStyle: 4
-  releaseVelocityTimeOffset: -0.011
-  scaleReleaseVelocity: 1.1
-  restoreOriginalParent: 0
-  onPickUp:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  onDetachFromHand:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  interactable: {fileID: 0}
 --- !u!114 &80417567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1560,45 +1542,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 0
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 1
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &80417568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1750,6 +1727,58 @@ Transform:
   m_Children:
   - {fileID: 658288526}
   m_Father: {fileID: 248063983}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &100296710
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 100296712}
+  - component: {fileID: 100296711}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &100296711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100296710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7a12eebc36ea417b8cfd7cd80ac71cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pauseFog:
+    fogColor: {r: 0.21698111, g: 0.13407795, b: 0.13407795, a: 1}
+    startDistance: 0
+    endDistance: 300
+    density: 0.1
+    useFog: 0
+    fogMode: 3
+  pauseFlashColor: {r: 0, g: 0, b: 1, a: 1}
+  pauseFlashTime: 0.25
+--- !u!4 &100296712
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100296710}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.0409999, y: 1.05, z: 5.8849998}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &104288035
@@ -2225,7 +2254,7 @@ Transform:
   - {fileID: 1311847215}
   - {fileID: 1250547326}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &176462795
 GameObject:
@@ -2596,45 +2625,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 0
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 0
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!65 &195351161
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2705,7 +2729,7 @@ Transform:
   m_LocalScale: {x: 1, y: 0.1, z: 0.5}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 18
+  m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!54 &195351165
 Rigidbody:
@@ -3252,45 +3276,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 0
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 0
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!65 &230496664
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3361,7 +3380,7 @@ Transform:
   m_LocalScale: {x: 1, y: 0.1, z: 0.5}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 21
+  m_RootOrder: 22
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!54 &230496668
 Rigidbody:
@@ -3685,45 +3704,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 1
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &260467139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3955,24 +3969,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffefbea063cab884ca33e5a449e5c22c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachmentFlags: 85
-  attachmentOffset: {fileID: 0}
-  catchingSpeedThreshold: -1
-  releaseVelocityStyle: 3
-  releaseVelocityTimeOffset: -0.011
-  scaleReleaseVelocity: 1.1
-  restoreOriginalParent: 0
-  onPickUp:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  onDetachFromHand:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  interactable: {fileID: 0}
 --- !u!114 &276115639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4005,45 +4001,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 0
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 1
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 1
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!54 &276115641
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4188,45 +4179,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 1
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &277229949
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6115,45 +6101,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 1
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &388899355
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7150,45 +7131,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 0
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 0
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!65 &489424888
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7259,7 +7235,7 @@ Transform:
   m_LocalScale: {x: 1, y: 0.1, z: 0.5}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 20
+  m_RootOrder: 21
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!54 &489424892
 Rigidbody:
@@ -7395,45 +7371,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 0
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 0
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!65 &500542597
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7504,7 +7475,7 @@ Transform:
   m_LocalScale: {x: 1, y: 0.1, z: 0.5}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 23
+  m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!54 &500542601
 Rigidbody:
@@ -7664,45 +7635,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 0
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 1
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!54 &504149797
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8883,22 +8849,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53cd2ef2dd3d5d64e96af4420220d1d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onHandClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1957381615}
-        m_MethodName: ShowTextHints
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: Valve.VR.InteractionSystem.CustomEvents+UnityEventHand, Assembly-CSharp,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &634688661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8912,45 +8862,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 1
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &634688662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10276,7 +10221,7 @@ Transform:
   - {fileID: 260467136}
   - {fileID: 116368374}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 45, z: 0}
 --- !u!1 &733478931
 GameObject:
@@ -12285,45 +12230,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 1
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!64 &888846723
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -12524,7 +12464,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 475244, guid: 7a135b1a2cb9c8f488d4dd00c55ab283, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 475244, guid: 7a135b1a2cb9c8f488d4dd00c55ab283, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -16468,21 +16408,6 @@ PrefabInstance:
       propertyPath: targetCollider
       value: 
       objectReference: {fileID: 1271963283}
-    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
-        type: 3}
-      propertyPath: scale
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
-        type: 3}
-      propertyPath: showLeftPreview
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
-        type: 3}
-      propertyPath: previewLeftInstance
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 114000013822852628, guid: e0b086fbb874df143b6ac8f53cea5424,
         type: 3}
       propertyPath: onHandHoverEnd.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
@@ -16498,6 +16423,21 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: ae954e68e9b70844292f588d1397a7f7, type: 2}
+    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: scale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: showLeftPreview
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: previewLeftInstance
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0b086fbb874df143b6ac8f53cea5424, type: 3}
 --- !u!4 &1189253811 stripped
@@ -16734,7 +16674,7 @@ Transform:
   - {fileID: 1412107909}
   - {fileID: 1957381614}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: -80.261, z: 0}
 --- !u!1 &1213838181
 GameObject:
@@ -16966,7 +16906,7 @@ Transform:
   - {fileID: 236112116}
   - {fileID: 504149792}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &1224984514
 GameObject:
@@ -17022,22 +16962,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53cd2ef2dd3d5d64e96af4420220d1d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onHandClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2066795614}
-        m_MethodName: HideController
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: Valve.VR.InteractionSystem.CustomEvents+UnityEventHand, Assembly-CSharp,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &1224984517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17051,45 +16975,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 1
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &1224984518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17691,22 +17610,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53cd2ef2dd3d5d64e96af4420220d1d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onHandClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2066795614}
-        m_MethodName: AnimateHandWithoutController
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: Valve.VR.InteractionSystem.CustomEvents+UnityEventHand, Assembly-CSharp,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &1298765614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17720,45 +17623,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 1
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &1298765615
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18180,7 +18078,7 @@ Transform:
   - {fileID: 661083456}
   - {fileID: 734244106}
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: -90.00001, z: 0}
 --- !u!1 &1316167243
 GameObject:
@@ -19899,7 +19797,7 @@ Transform:
   - {fileID: 1016020152}
   - {fileID: 1323397063}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &1427368837
 GameObject:
@@ -21847,22 +21745,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53cd2ef2dd3d5d64e96af4420220d1d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onHandClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1957381615}
-        m_MethodName: DisableHints
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: Valve.VR.InteractionSystem.CustomEvents+UnityEventHand, Assembly-CSharp,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &1566332640
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21876,45 +21758,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 1
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &1566332641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22190,45 +22067,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 1
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1 &1578856789
 GameObject:
   m_ObjectHideFlags: 0
@@ -22375,45 +22247,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 0
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 0
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!65 &1585279629
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -22484,7 +22351,7 @@ Transform:
   m_LocalScale: {x: 1, y: 0.1, z: 0.5}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 22
+  m_RootOrder: 23
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!54 &1585279633
 Rigidbody:
@@ -23250,45 +23117,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 1
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &1655820027
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23520,22 +23382,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53cd2ef2dd3d5d64e96af4420220d1d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onHandClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2066795614}
-        m_MethodName: AnimateHandWithController
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: Valve.VR.InteractionSystem.CustomEvents+UnityEventHand, Assembly-CSharp,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &1679363260
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23549,45 +23395,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 1
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &1679363261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23964,7 +23805,7 @@ Transform:
   - {fileID: 380913467}
   - {fileID: 1427368838}
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &1703345919
 GameObject:
@@ -24020,22 +23861,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53cd2ef2dd3d5d64e96af4420220d1d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onHandClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2066795614}
-        m_MethodName: ShowController
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: Valve.VR.InteractionSystem.CustomEvents+UnityEventHand, Assembly-CSharp,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &1703345922
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24049,45 +23874,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 1
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &1703345923
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24321,7 +24141,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 15
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1713794555
 GameObject:
@@ -25009,45 +24829,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 0
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 0
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!65 &1770256563
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -25118,7 +24933,7 @@ Transform:
   m_LocalScale: {x: 1, y: 0.1, z: 0.5}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 24
+  m_RootOrder: 25
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!54 &1770256567
 Rigidbody:
@@ -25334,11 +25149,6 @@ PrefabInstance:
       propertyPath: targetCollider
       value: 
       objectReference: {fileID: 1271963283}
-    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
-        type: 3}
-      propertyPath: scale
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 114000013822852628, guid: e0b086fbb874df143b6ac8f53cea5424,
         type: 3}
       propertyPath: onHandHoverBegin.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
@@ -25354,6 +25164,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 5ebf65e069a3d3f4bbb68b42e5c4840e, type: 2}
+    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: scale
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0b086fbb874df143b6ac8f53cea5424, type: 3}
 --- !u!4 &1781798810 stripped
@@ -26466,7 +26281,7 @@ Transform:
   - {fileID: 720330321}
   - {fileID: 20582819}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1860971226
 GameObject:
@@ -26810,7 +26625,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 447954, guid: dc06161b6d97feb419f45f03b62e14b9, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 447954, guid: dc06161b6d97feb419f45f03b62e14b9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -27452,45 +27267,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 0
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 0
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!65 &1922955647
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -27561,7 +27371,7 @@ Transform:
   m_LocalScale: {x: 1, y: 0.1, z: 0.5}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 19
+  m_RootOrder: 20
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!54 &1922955651
 Rigidbody:
@@ -27668,7 +27478,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 16
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1945560246
 GameObject:
@@ -27813,6 +27623,37 @@ PrefabInstance:
         type: 3}
       propertyPath: scale
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: showLeftPreview
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: previewLeftInstance
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: showRightPreview
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: previewRightInstance
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: skeletonMainPose
+      value: 
+      objectReference: {fileID: 11400000, guid: ccd16738d1f943640aa2aed1071a3897,
+        type: 2}
+    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: poseNames.Array.data[0]
+      value: sphereSmallPose (MAIN)
       objectReference: {fileID: 0}
     - target: {fileID: 3446162272499057429, guid: e0b086fbb874df143b6ac8f53cea5424,
         type: 3}
@@ -28141,45 +27982,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 1
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &1989132726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28860,11 +28696,6 @@ PrefabInstance:
       propertyPath: targetCollider
       value: 
       objectReference: {fileID: 1271963283}
-    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
-        type: 3}
-      propertyPath: scale
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 114000013822852628, guid: e0b086fbb874df143b6ac8f53cea5424,
         type: 3}
       propertyPath: onHandHoverEnd.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
@@ -28880,6 +28711,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: ae954e68e9b70844292f588d1397a7f7, type: 2}
+    - target: {fileID: 114000012554025852, guid: e0b086fbb874df143b6ac8f53cea5424,
+        type: 3}
+      propertyPath: scale
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0b086fbb874df143b6ac8f53cea5424, type: 3}
 --- !u!4 &2050838875 stripped
@@ -28995,45 +28831,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 1
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &2053235234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29062,24 +28893,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffefbea063cab884ca33e5a449e5c22c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachmentFlags: 84
-  attachmentOffset: {fileID: 0}
-  catchingSpeedThreshold: -1
-  releaseVelocityStyle: 1
-  releaseVelocityTimeOffset: -0.011
-  scaleReleaseVelocity: 1.1
-  restoreOriginalParent: 0
-  onPickUp:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  onDetachFromHand:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  interactable: {fileID: 0}
 --- !u!136 &2053235236
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -29445,7 +29258,7 @@ Transform:
   - {fileID: 43743850}
   - {fileID: 1649279625}
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: -49.147003, z: 0}
 --- !u!1 &2080863239
 GameObject:
@@ -29539,7 +29352,7 @@ Transform:
   m_LocalScale: {x: 1, y: 0.1, z: 0.5}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 17
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &2080863244
 MonoBehaviour:
@@ -29566,45 +29379,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 0
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 0
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 1
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 0
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!54 &2080863246
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -29857,24 +29665,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffefbea063cab884ca33e5a449e5c22c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachmentFlags: 45
-  attachmentOffset: {fileID: 0}
-  catchingSpeedThreshold: -1
-  releaseVelocityStyle: 3
-  releaseVelocityTimeOffset: -0.011
-  scaleReleaseVelocity: 1.1
-  restoreOriginalParent: 0
-  onPickUp:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  onDetachFromHand:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  interactable: {fileID: 0}
 --- !u!114 &2108325450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29888,45 +29678,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 0
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 1
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
-  useHandObjectAttachmentPoint: 0
-  attachEaseIn: 0
-  snapAttachEaseInCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  snapAttachEaseInTime: 0.15
-  snapAttachEaseInCompleted: 0
-  skeletonPoser: {fileID: 0}
-  handFollowTransform: 1
   highlightOnHover: 1
   hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &2108325451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30147,7 +29932,7 @@ Transform:
   - {fileID: 70322349}
   - {fileID: 289104848}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2116414874
 PrefabInstance:
@@ -30728,7 +30513,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2027429898788993991
 PrefabInstance:
@@ -30780,7 +30565,7 @@ PrefabInstance:
     - target: {fileID: 6774652471665237567, guid: 02714ede47e7b479ebfdeecf429e4b41,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6774652471665237567, guid: 02714ede47e7b479ebfdeecf429e4b41,
         type: 3}

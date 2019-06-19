@@ -58,6 +58,7 @@ public class Inventory : MonoBehaviour
         // public Interactable interactable;
         public Rigidbody attachedRigidbody;
         public CollisionDetectionMode collisionDetectionMode;
+        public RigidbodyInterpolation rbInterpolation;
         public bool attachedRigidbodyWasKinematic;
         public bool attachedRigidbodyUsedGravity;
         public Transform originalParent;
@@ -270,13 +271,23 @@ public enum EquipType {
                         attachedObject.attachedRigidbodyWasKinematic = attachedObjectInList.attachedRigidbodyWasKinematic;
                         attachedObject.attachedRigidbodyUsedGravity = attachedObjectInList.attachedRigidbodyUsedGravity;
                         attachedObject.originalParent = attachedObjectInList.originalParent;
+
+                        attachedObject.rbInterpolation = attachedObjectInList.rbInterpolation;
+
+                        
                     }
                 }
                 else
                 {
+                    attachedObject.rbInterpolation = itemRB.interpolation;
+
                     attachedObject.attachedRigidbodyWasKinematic = itemRB.isKinematic;
                     attachedObject.attachedRigidbodyUsedGravity = itemRB.useGravity;
                 }
+                
+                itemRB.interpolation = RigidbodyInterpolation.None;
+
+
 
                 if (attachedObject.HasAttachFlag(Hand.AttachmentFlags.TurnOnKinematic)) {
                     attachedObject.collisionDetectionMode = itemRB.collisionDetectionMode;
@@ -495,6 +506,8 @@ public enum EquipType {
             Rigidbody rb = equippedItem.attachedRigidbody;
             if (rb != null)
             {
+                rb.interpolation = equippedItem.rbInterpolation;
+
                 if (equippedItem.HasAttachFlag(Hand.AttachmentFlags.TurnOnKinematic))
                 {
                     rb.isKinematic = equippedItem.attachedRigidbodyWasKinematic;

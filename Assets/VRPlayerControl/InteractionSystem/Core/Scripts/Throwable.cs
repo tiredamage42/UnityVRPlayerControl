@@ -30,42 +30,44 @@ namespace Valve.VR.InteractionSystem
             // Hand hand = (Hand)owner;
             //Debug.Log("<b>[SteamVR Interaction]</b> Pickup: " + hand.GetGrabStarting().ToString());
 
-            hadInterpolation = this.rigidbody.interpolation;
+            // hadInterpolation = this.rigidbody.interpolation;
 
-            attached = true;
+            // attached = true;
 
-			onPickUp.Invoke();
+			// onPickUp.Invoke();
 
 			// hand.HoverLock( null );
             
-            rigidbody.interpolation = RigidbodyInterpolation.None;
+            // rigidbody.interpolation = RigidbodyInterpolation.None;
             
 
-            inventory.GetComponent<VelocityEstimator>().BeginEstimatingVelocity();
+            // inventory.GetComponent<VelocityEstimator>().BeginEstimatingVelocity();
 		    // hand.velocityEstimator.BeginEstimatingVelocity();
 
-			attachTime = Time.time;
-			attachPosition = transform.position;
-			attachRotation = transform.rotation;
-
+			// attachTime = Time.time;
+			// attachPosition = transform.position;
+			// attachRotation = transform.rotation;
         }
+
+
+
         public void OnUnequipped (Inventory inventory) {
 
-            attached = false;
+            // attached = false;
 
-            onDetachFromHand.Invoke();
+            // onDetachFromHand.Invoke();
 
             // hand.HoverUnlock(null);
             
-            rigidbody.interpolation = hadInterpolation;
+            // rigidbody.interpolation = hadInterpolation;
 
-            Vector3 velocity;
-            Vector3 angularVelocity;
+            // Vector3 velocity;
+            // Vector3 angularVelocity;
 
-            GetReleaseVelocities(inventory.GetComponent<Hand>(), out velocity, out angularVelocity);
+            // GetReleaseVelocities(inventory.GetComponent<Hand>(), out velocity, out angularVelocity);
 
-            rigidbody.velocity = velocity;
-            rigidbody.angularVelocity = angularVelocity;
+            // rigidbody.velocity = velocity;
+            // rigidbody.angularVelocity = angularVelocity;
             
         }
 
@@ -120,53 +122,53 @@ namespace Valve.VR.InteractionSystem
 
 
 
-		[EnumFlags]
-		[Tooltip( "The flags used to attach this object to the hand." )]
-		public Hand.AttachmentFlags attachmentFlags = Hand.AttachmentFlags.ParentToHand | Hand.AttachmentFlags.DetachFromOtherHand | Hand.AttachmentFlags.TurnOnKinematic;
+		// [EnumFlags]
+		// [Tooltip( "The flags used to attach this object to the hand." )]
+		// public Hand.AttachmentFlags attachmentFlags = Hand.AttachmentFlags.ParentToHand | Hand.AttachmentFlags.DetachFromOtherHand | Hand.AttachmentFlags.TurnOnKinematic;
 
-        [Tooltip("The local point which acts as a positional and rotational offset to use while held")]
-        public Transform attachmentOffset;
+        // [Tooltip("The local point which acts as a positional and rotational offset to use while held")]
+        // public Transform attachmentOffset;
 
-		[Tooltip( "How fast must this object be moving to attach due to a trigger hold instead of a trigger press? (-1 to disable)" )]
-        public float catchingSpeedThreshold = -1;
+		// [Tooltip( "How fast must this object be moving to attach due to a trigger hold instead of a trigger press? (-1 to disable)" )]
+        // public float catchingSpeedThreshold = -1;
 
-        public ReleaseStyle releaseVelocityStyle = ReleaseStyle.GetFromHand;
+        // public ReleaseStyle releaseVelocityStyle = ReleaseStyle.GetFromHand;
 
-        [Tooltip("The time offset used when releasing the object with the RawFromHand option")]
-        public float releaseVelocityTimeOffset = -0.011f;
+        // [Tooltip("The time offset used when releasing the object with the RawFromHand option")]
+        // public float releaseVelocityTimeOffset = -0.011f;
 
-        public float scaleReleaseVelocity = 1.1f;
+        // public float scaleReleaseVelocity = 1.1f;
 
-		[Tooltip( "When detaching the object, should it return to its original parent?" )]
-		public bool restoreOriginalParent = false;
+		// [Tooltip( "When detaching the object, should it return to its original parent?" )]
+		// public bool restoreOriginalParent = false;
 
         
 
 		// protected VelocityEstimator velocityEstimator;
-        protected bool attached = false;
-        protected float attachTime;
-        protected Vector3 attachPosition;
-        protected Quaternion attachRotation;
-        protected Transform attachEaseInTransform;
+        // protected bool attached = false;
+        // protected float attachTime;
+        // protected Vector3 attachPosition;
+        // protected Quaternion attachRotation;
+        // protected Transform attachEaseInTransform;
 
-		public UnityEvent onPickUp;
-        public UnityEvent onDetachFromHand;
-        public UnityEvent<Hand> onHeldUpdate;
+		// public UnityEvent onPickUp;
+        // public UnityEvent onDetachFromHand;
+        // public UnityEvent<Hand> onHeldUpdate;
 
         
-        protected RigidbodyInterpolation hadInterpolation = RigidbodyInterpolation.None;
+        // protected RigidbodyInterpolation hadInterpolation = RigidbodyInterpolation.None;
 
         protected new Rigidbody rigidbody;
 
-        [HideInInspector]
-        public Interactable interactable;
+        // [HideInInspector]
+        // public Interactable interactable;
 
 
         //-------------------------------------------------
         protected virtual void Awake()
 		{
 			// velocityEstimator = GetComponent<VelocityEstimator>();
-            interactable = GetComponent<Interactable>();
+            // interactable = GetComponent<Interactable>();
 
             // GetComponent<Item>().attachmentFlags = attachmentFlags;
 
@@ -174,11 +176,11 @@ namespace Valve.VR.InteractionSystem
             rigidbody.maxAngularVelocity = 50.0f;
 
 
-            if(attachmentOffset != null)
-            {
+            // if(attachmentOffset != null)
+            // {
                 // remove?
                 //interactable.handFollowTransform = attachmentOffset;
-            }
+            // }
 
 		}
         // void OnEnable () {
@@ -287,38 +289,35 @@ namespace Valve.VR.InteractionSystem
         // }
 
 
-        public virtual void GetReleaseVelocities(Hand hand, out Vector3 velocity, out Vector3 angularVelocity)
-        {
-            // if (hand.noSteamVRFallbackCamera && releaseVelocityStyle != ReleaseStyle.NoChange)
-            //     releaseVelocityStyle = ReleaseStyle.ShortEstimation; // only type that works with fallback hand is short estimation.
+        // public virtual void GetReleaseVelocities(Hand hand, out Vector3 velocity, out Vector3 angularVelocity)
+        // {
+        //     // if (hand.noSteamVRFallbackCamera && releaseVelocityStyle != ReleaseStyle.NoChange)
+        //     //     releaseVelocityStyle = ReleaseStyle.ShortEstimation; // only type that works with fallback hand is short estimation.
 
-            switch (releaseVelocityStyle)
-            {
-                case ReleaseStyle.ShortEstimation:
-                    Debug.Log("short estimeation");
-                    hand.velocityEstimator.FinishEstimatingVelocity();
-                    velocity = hand.velocityEstimator.GetVelocityEstimate();
-                    angularVelocity = hand.velocityEstimator.GetAngularVelocityEstimate();
-                    break;
-                case ReleaseStyle.AdvancedEstimation:
-                Debug.Log("advanced estimeation");
-                    hand.GetEstimatedPeakVelocities(out velocity, out angularVelocity);
-                    break;
-                case ReleaseStyle.GetFromHand:
-                Debug.Log("and");
-                    velocity = hand.GetTrackedObjectVelocity(releaseVelocityTimeOffset);
-                    angularVelocity = hand.GetTrackedObjectAngularVelocity(releaseVelocityTimeOffset);
-                    break;
-                default:
-                case ReleaseStyle.NoChange:
-                    velocity = rigidbody.velocity;
-                    angularVelocity = rigidbody.angularVelocity;
-                    break;
-            }
+        //     switch (releaseVelocityStyle)
+        //     {
+        //         case ReleaseStyle.ShortEstimation:
+        //             hand.velocityEstimator.FinishEstimatingVelocity();
+        //             velocity = hand.velocityEstimator.GetVelocityEstimate();
+        //             angularVelocity = hand.velocityEstimator.GetAngularVelocityEstimate();
+        //             break;
+        //         case ReleaseStyle.AdvancedEstimation:
+        //             hand.GetEstimatedPeakVelocities(out velocity, out angularVelocity);
+        //             break;
+        //         case ReleaseStyle.GetFromHand:
+        //             velocity = hand.GetTrackedObjectVelocity(releaseVelocityTimeOffset);
+        //             angularVelocity = hand.GetTrackedObjectAngularVelocity(releaseVelocityTimeOffset);
+        //             break;
+        //         default:
+        //         case ReleaseStyle.NoChange:
+        //             velocity = rigidbody.velocity;
+        //             angularVelocity = rigidbody.angularVelocity;
+        //             break;
+        //     }
 
-            if (releaseVelocityStyle != ReleaseStyle.NoChange)
-                velocity *= scaleReleaseVelocity;
-        }
+        //     if (releaseVelocityStyle != ReleaseStyle.NoChange)
+        //         velocity *= scaleReleaseVelocity;
+        // }
 
         //-------------------------------------------------
         // protected virtual void HandAttachedUpdate(Hand hand)

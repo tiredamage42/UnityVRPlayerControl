@@ -20,15 +20,26 @@ namespace Demo
 
 		void OnEnable () {
 			if (showButton != null)
-				showButton.onUseStart += ShowTextHints;
+				showButton.onUseStart.AddListener( ShowTextHints );
 			if (hideButton != null)
-				hideButton.onUseStart += DisableHints;
+				hideButton.onUseStart.AddListener( DisableHints );
+
+
+			// if (showButton != null)
+			// 	showButton.onUseStart += ShowTextHints;
+			// if (hideButton != null)
+			// 	hideButton.onUseStart += DisableHints;
 		}
 		void OnDisable () {
 			if (showButton != null)
-				showButton.onUseStart -= ShowTextHints;
+				showButton.onUseStart.RemoveListener( ShowTextHints );
 			if (hideButton != null)
-				hideButton.onUseStart -= DisableHints;
+				hideButton.onUseStart.RemoveListener( DisableHints );
+
+			// if (showButton != null)
+			// 	showButton.onUseStart -= ShowTextHints;
+			// if (hideButton != null)
+			// 	hideButton.onUseStart -= DisableHints;
 		}
 			
 

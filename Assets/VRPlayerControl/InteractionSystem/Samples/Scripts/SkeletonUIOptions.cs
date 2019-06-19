@@ -17,27 +17,27 @@ namespace Valve.VR.InteractionSystem.Sample
 
         void OnEnable () {
 			if (showControllerInteractable != null)
-				showControllerInteractable.onUseStart += ShowController;
+				showControllerInteractable.onUseStart.AddListener( ShowController );
 			if (hideControllerInteractable != null)
-				hideControllerInteractable.onUseStart += HideController;
+				hideControllerInteractable.onUseStart.AddListener( HideController );
 
 
             if (animateWithControllerInteractable != null)
-				animateWithControllerInteractable.onUseStart += AnimateHandWithController;
+				animateWithControllerInteractable.onUseStart.AddListener( AnimateHandWithController );
 			if (animateWithoutControllerInteractable != null)
-				animateWithoutControllerInteractable.onUseStart += AnimateHandWithoutController;
+				animateWithoutControllerInteractable.onUseStart.AddListener( AnimateHandWithoutController );
 		}
 		void OnDisable () {
 			if (showControllerInteractable != null)
-				showControllerInteractable.onUseStart -= ShowController;
+				showControllerInteractable.onUseStart.RemoveListener( ShowController );
 			if (hideControllerInteractable != null)
-				hideControllerInteractable.onUseStart -= HideController;
+				hideControllerInteractable.onUseStart.RemoveListener( HideController );
 			
 
             if (animateWithControllerInteractable != null)
-				animateWithControllerInteractable.onUseStart -= AnimateHandWithController;
+				animateWithControllerInteractable.onUseStart.RemoveListener( AnimateHandWithController );
 			if (animateWithoutControllerInteractable != null)
-				animateWithoutControllerInteractable.onUseStart -= AnimateHandWithoutController;
+				animateWithoutControllerInteractable.onUseStart.RemoveListener( AnimateHandWithoutController );
 			
 		}
 
