@@ -157,13 +157,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useType: 0
-  activateActionSetOnAttach:
-    actionSetPath: 
-  hideHandOnAttach: 0
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 1
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
+  highlightOnHover: 1
+  hideHighlight: []
   onUseStart:
     m_PersistentCalls:
       m_Calls: []
@@ -194,8 +191,6 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  highlightOnHover: 1
-  hideHighlight: []
 --- !u!114 &114000012133941026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,24 +203,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffefbea063cab884ca33e5a449e5c22c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachmentFlags: 337
-  attachmentOffset: {fileID: 0}
-  catchingSpeedThreshold: -1
-  releaseVelocityStyle: 3
-  releaseVelocityTimeOffset: -0.011
-  scaleReleaseVelocity: 1.1
-  restoreOriginalParent: 0
-  onPickUp:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  onDetachFromHand:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  interactable: {fileID: 0}
 --- !u!114 &3446162272499057429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -260,12 +237,12 @@ MonoBehaviour:
   poseEditorExpanded: 1
   blendEditorExpanded: 1
   poseNames:
-  - sphereSmallPose (MAIN)
+  - sphereSmallPose_CHECKBACKWARDS (MAIN)
   previewLeftHandPrefab: {fileID: 1000013348574242, guid: 638779290bce1af49b356f33dcc6fccf,
     type: 3}
   previewRightHandPrefab: {fileID: 1000010304998954, guid: 6def53d002137b747aec0b29551e0e25,
     type: 3}
-  skeletonMainPose: {fileID: 11400000, guid: ccd16738d1f943640aa2aed1071a3897, type: 2}
+  skeletonMainPose: {fileID: 11400000, guid: d32dfb881d70d46bf8141afed3f0adc0, type: 2}
   skeletonAdditionalPoses: []
   showLeftPreview: 0
   showRightPreview: 0
@@ -289,8 +266,6 @@ MonoBehaviour:
   activateActionSetOnAttach:
     actionSetPath: 
   hideHandOnAttach: 0
-  hideSkeletonOnAttach: 0
-  hideControllerOnAttach: 1
   handAnimationOnPickup: 0
   setRangeOfMotionOnPickup: -1
   skeletonPoser: {fileID: 0}
