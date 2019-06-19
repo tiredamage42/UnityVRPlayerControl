@@ -753,7 +753,7 @@ public class TouchpadLocomotion : MonoBehaviour
     void InputUpdateLoop (float deltaTime) {
         CheckCrouched(deltaTime);
 
-        bool movementEnabled = !isClimbing;
+        bool movementEnabled = !VRGameAddon.gamePaused && !isClimbing;
         
         CheckForJump(movementEnabled); // also when jump hand isnt hovering
 

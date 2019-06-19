@@ -92,54 +92,54 @@ namespace InventorySystem {
             inventory.UnequipItem(this);
 		}
 
-        public SteamVR_ActionSet activateActionSetOnAttach
-        {
-            get 
-            {
-                return GetComponent<Interactable>().activateActionSetOnAttach;
-            }
-        }
+        // public SteamVR_ActionSet activateActionSetOnAttach
+        // {
+        //     get 
+        //     {
+        //         return GetComponent<Interactable>().activateActionSetOnAttach;
+        //     }
+        // }
 
-        public bool hideHandOnAttach
-        {
-            get 
-            {
-                return GetComponent<Interactable>().hideHandOnAttach;
-            }
-        }
+        // public bool hideHandOnAttach
+        // {
+        //     get 
+        //     {
+        //         return GetComponent<Interactable>().hideHandOnAttach;
+        //     }
+        // }
 
 
-        public bool hideSkeletonOnAttach
-        {
-            get 
-            {
-                return GetComponent<Interactable>().hideSkeletonOnAttach;
-            }
-        }
+        // public bool hideSkeletonOnAttach
+        // {
+        //     get 
+        //     {
+        //         return GetComponent<Interactable>().hideSkeletonOnAttach;
+        //     }
+        // }
 
-        public bool hideControllerOnAttach 
-        {
-            get 
-            {
-                return GetComponent<Interactable>().hideControllerOnAttach;
-            }
-        }
+        // public bool hideControllerOnAttach 
+        // {
+        //     get 
+        //     {
+        //         return GetComponent<Interactable>().hideControllerOnAttach;
+        //     }
+        // }
 
-        public int handAnimationOnPickup 
-        {
-            get 
-            {
-                return GetComponent<Interactable>().handAnimationOnPickup;
-            }
-        }
+        // public int handAnimationOnPickup 
+        // {
+        //     get 
+        //     {
+        //         return GetComponent<Interactable>().handAnimationOnPickup;
+        //     }
+        // }
 
-        public SkeletalMotionRangeChange setRangeOfMotionOnPickup 
-        {
-            get 
-            {
-                return GetComponent<Interactable>().setRangeOfMotionOnPickup;
-            }
-        }
+        // public SkeletalMotionRangeChange setRangeOfMotionOnPickup 
+        // {
+        //     get 
+        //     {
+        //         return GetComponent<Interactable>().setRangeOfMotionOnPickup;
+        //     }
+        // }
 
 
         
@@ -185,19 +185,17 @@ namespace InventorySystem {
         //         return GetComponent<Interactable>().snapAttachEaseInCompleted;
         //     }
         // }
-        public SteamVR_Skeleton_Poser skeletonPoser {// = false;
-        get {
-                return GetComponent<Interactable>().skeletonPoser;
-            }
-        }
+        // public SteamVR_Skeleton_Poser skeletonPoser {// = false;
+        // get {
+        //         return GetComponent<Interactable>().skeletonPoser;
+        //     }
+        // }
 
-        public bool handFollowTransform {// = false;
-        get {
-                return GetComponent<Interactable>().handFollowTransform;
-            }
-        }
-
-
+        // public bool handFollowTransform {// = false;
+        // get {
+        //         return GetComponent<Interactable>().handFollowTransform;
+        //     }
+        // }
 
 
 
@@ -210,7 +208,9 @@ namespace InventorySystem {
 
 
 
-        public Inventory parentInventory;
+
+
+        [HideInInspector] public Inventory parentInventory;
 
         public void OnEquipped (Inventory inventory) {
             this.parentInventory = inventory;

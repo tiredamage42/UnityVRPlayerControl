@@ -20,6 +20,15 @@ namespace VRPlayer
 	//-------------------------------------------------------------------------
 	public class Player : MonoBehaviour
 	{
+		public ReleaseStyle releaseVelocityStyle = ReleaseStyle.GetFromHand;
+
+        [Tooltip("The time offset used when releasing the object with the RawFromHand option")]
+        public float releaseVelocityTimeOffset = -0.011f;
+
+        public float scaleReleaseVelocity = 1.1f;
+
+
+
 		SimpleCharacterController moveScript;
 
 

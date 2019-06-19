@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-
 
 namespace InteractionSystem {
     public class TaggerInteractable : MonoBehaviour, IInteractable
@@ -12,6 +10,7 @@ namespace InteractionSystem {
                 interactor.AddInteractionTags(tags);
             }
         }
+
         void RemoveTags (Interactor interactor, List<string> tags) {
             if (tags.Count > 0) {
                 interactor.RemoveInteractionTags(tags);
@@ -39,7 +38,6 @@ namespace InteractionSystem {
 
         public void OnInspectUpdate(Interactor interactor) {}
         public void OnUseUpdate(Interactor interactor, int useIndex) {}
-
 
         public List<string> inspectTags, useTags;
 
