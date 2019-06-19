@@ -71,7 +71,6 @@ namespace Valve.VR.InteractionSystem
 				BaseEventData data = GetBaseEventData();
 				data.selectedObject = submitObject;
 				ExecuteEvents.Execute( submitObject, data, ExecuteEvents.submitHandler );
-
 				submitObject = null;
 			}
 		}
