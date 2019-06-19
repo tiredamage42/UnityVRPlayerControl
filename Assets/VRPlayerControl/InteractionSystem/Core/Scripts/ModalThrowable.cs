@@ -10,7 +10,7 @@ using System.Collections;
 using InventorySystem;
 namespace Valve.VR.InteractionSystem
 {
-    public class ModalThrowable : Throwable, IInventoryItem
+    public class ModalThrowable : Throwable//, IInventoryItem
     {
         public void OnEquippedUseStart(Inventory inventory, int useIndex) {}
         public void OnEquippedUseEnd(Inventory inventory, int useIndex) {}
@@ -27,12 +27,12 @@ namespace Valve.VR.InteractionSystem
         }
 
 
-        public void OnEquipped(Inventory inventory) {
+        // public void OnEquipped(Inventory inventory) {
 
-        }
-        public void OnUnequipped (Inventory inventory) {
+        // }
+        // public void OnUnequipped (Inventory inventory) {
 
-        }
+        // }
        
 		// void OnInspectStart(Interactor interactor) {
 
