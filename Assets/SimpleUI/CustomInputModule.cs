@@ -724,7 +724,12 @@ namespace SimpleUI
     {
       Vector2 zero = Vector2.zero;
       zero.x = GetInput().GetAxisRaw(this.m_HorizontalAxis);
+
+      // Debug.LogError("checkign: " + this.m_VerticalAxis);
+
       zero.y = GetInput().GetAxisRaw(this.m_VerticalAxis);
+      Debug.LogError("raw move " + zero);
+
       if (GetInput().GetButtonDown(this.m_HorizontalAxis))
       {
         if ((double) zero.x < 0.0)
@@ -751,21 +756,28 @@ namespace SimpleUI
     protected bool SendMoveEventToSelectedObject()
     {
       float unscaledTime = Time.unscaledTime;
+
       Vector2 rawMoveVector = this.GetRawMoveVector();
       if (Mathf.Approximately(rawMoveVector.x, 0.0f) && Mathf.Approximately(rawMoveVector.y, 0.0f))
       {
         this.m_ConsecutiveMoveCount = 0;
         return false;
       }
+      
       bool flag1 = GetInput().GetButtonDown(this.m_HorizontalAxis) || GetInput().GetButtonDown(this.m_VerticalAxis);
       bool flag2 = (double) Vector2.Dot(rawMoveVector, this.m_LastMoveVector) > 0.0;
       if (!flag1)
         flag1 = !flag2 || this.m_ConsecutiveMoveCount != 1 ? (double) unscaledTime > (double) this.m_PrevActionTime + 1.0 / (double) this.m_InputActionsPerSecond : (double) unscaledTime > (double) this.m_PrevActionTime + (double) this.m_RepeatDelay;
       if (!flag1)
         return false;
+
+      Debug.LogError("ehhh moving " + rawMoveVector);
+        
       AxisEventData axisEventData = this.GetAxisEventData(rawMoveVector.x, rawMoveVector.y, 0.6f);
       if (axisEventData.moveDir != MoveDirection.None)
       {
+
+        Debug.LogError("moving " + rawMoveVector);
         ExecuteEvents.Execute<IMoveHandler>(this.eventSystem.currentSelectedGameObject, (BaseEventData) axisEventData, ExecuteEvents.moveHandler);
         if (!flag2)
           this.m_ConsecutiveMoveCount = 0;
@@ -802,11 +814,17 @@ namespace SimpleUI
       this.ProcessDrag(pointerEventData.GetButtonState(PointerEventData.InputButton.Right).eventData.buttonData);
       this.ProcessMousePress(pointerEventData.GetButtonState(PointerEventData.InputButton.Middle).eventData);
       this.ProcessDrag(pointerEventData.GetButtonState(PointerEventData.InputButton.Middle).eventData.buttonData);
+      
       if (Mathf.Approximately(eventData.buttonData.scrollDelta.sqrMagnitude, 0.0f))
         return;
 
 
-    Debug.LogError("Scrolling!!");
+      // Debug.LogError("Scrolling!!" + eventData.buttonData.scrollDelta.sqrMagnitude);
+      // AxisEventData axisEventData = this.GetAxisEventData(eventData.buttonData.scrollDelta.x, eventData.buttonData.scrollDelta.y, 0.6f);
+      
+
+      // ExecuteEvents.Execute<IMoveHandler>(this.eventSystem.currentSelectedGameObject, (BaseEventData) axisEventData, ExecuteEvents.moveHandler);
+      
       ExecuteEvents.ExecuteHierarchy<IScrollHandler>(ExecuteEvents.GetEventHandler<IScrollHandler>(eventData.buttonData.pointerCurrentRaycast.gameObject), (BaseEventData) eventData.buttonData, ExecuteEvents.scrollHandler);
     }
 

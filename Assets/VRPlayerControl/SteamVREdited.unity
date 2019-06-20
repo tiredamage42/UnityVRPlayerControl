@@ -26817,7 +26817,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c8a85edb838148beab924bc69ae4c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  minDelta: 0.01
   deltaThreshold: 0.05
+  scrollSensitivity: 1
+  useExtremesMultiplier: 1
 --- !u!1 &1893138402 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 144230, guid: dc06161b6d97feb419f45f03b62e14b9,
@@ -28591,7 +28594,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c8a85edb838148beab924bc69ae4c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deltaThreshold: 0
+  minDelta: 0.01
+  deltaThreshold: 0.15
+  scrollSensitivity: 1
+  useExtremesMultiplier: 0
 --- !u!114 &2022222630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28668,8 +28674,9 @@ MonoBehaviour:
   m_VerticalAxis: Vertical
   m_SubmitButton: Submit
   m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_AllowActivationOnMobileDevice: 0
+  m_InputActionsPerSecond: 60
+  m_RepeatDelay: 0
+  m_ForceModuleActive: 0
 --- !u!1 &2031757272
 GameObject:
   m_ObjectHideFlags: 0
