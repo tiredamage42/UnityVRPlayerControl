@@ -12,21 +12,6 @@ namespace SimpleUI
         private Vector2 m_LastMousePosition;
         private Vector2 m_MousePosition;
 
-        // protected StandaloneInputModule()
-        // { }
-
-        // [Obsolete("Mode is no longer needed on input module as it handles both mouse and keyboard simultaneously.", false)]
-        // public enum InputMode
-        // {
-        //     Mouse,
-        //     Buttons
-        // }
-
-        // [Obsolete("Mode is no longer needed on input module as it handles both mouse and keyboard simultaneously.", false)]
-        // public InputMode inputMode
-        // {
-        //     get { return InputMode.Mouse; }
-        // }
 
         [SerializeField]
         private string m_HorizontalAxis = "Horizontal";
@@ -99,15 +84,13 @@ namespace SimpleUI
 
         BaseInput GetInput() {
             if (inputOverride != null) {
-            return inputOverride;
-        }
-        return input;
-            
+                return inputOverride;
+            }
+            return input;
         }
 
         public override void UpdateModule()
         {
-            // Debug.Log("updating update module()");
             m_LastMousePosition = m_MousePosition;
             m_MousePosition = GetInput().mousePosition;
         }
@@ -131,9 +114,6 @@ namespace SimpleUI
             shouldActivate |= !Mathf.Approximately(GetInput().GetAxisRaw(m_VerticalAxis), 0.0f);
             shouldActivate |= (m_MousePosition - m_LastMousePosition).sqrMagnitude > 0.0f;
             shouldActivate |= GetInput().GetMouseButtonDown(0);
-            if (shouldActivate) {
-                // Debug.LogError("activating module");
-            }
             return shouldActivate;
         }
 
@@ -144,8 +124,8 @@ namespace SimpleUI
             m_LastMousePosition = GetInput().mousePosition;
 
             var toSelect = eventSystem.currentSelectedGameObject;
-            if (toSelect == null)
-                toSelect = eventSystem.lastSelectedGameObject;
+            // if (toSelect == null)
+            //     toSelect = eventSystem.lastSelectedGameObject;
             if (toSelect == null)
                 toSelect = eventSystem.firstSelectedGameObject;
 
@@ -167,9 +147,7 @@ namespace SimpleUI
                 if (!usedEvent)
                     usedEvent |= SendMoveEventToSelectedObject();
 
-                if (usedEvent) 
-                    Debug.LogError("used move event");
-
+                
                 if (!usedEvent)
                     SendSubmitEventToSelectedObject();
             }
@@ -196,20 +174,11 @@ namespace SimpleUI
 
         private bool AllowMoveEventProcessing(float time)
         {
-            bool allow = false;// GetInput().GetButtonDown(m_HorizontalAxis);
+            bool allow = GetInput().GetButtonDown(m_HorizontalAxis);
 
-            if (allow) {
-                // Debug.LogError("axis ok!! horizontal");
-            }
-            // allow |= GetInput().GetButtonDown(m_VerticalAxis);
-            if (GetInput().GetButtonDown(m_VerticalAxis)) {
-                // Debug.LogError("axis ok!!");
-            }
+            allow |= GetInput().GetButtonDown(m_VerticalAxis);
             
             allow |= (time > m_NextAction);
-            if (time > m_NextAction) {
-                // Debug.LogError("time ok!! " + allow);
-            }
             
             return allow;
         }
@@ -234,9 +203,6 @@ namespace SimpleUI
                 if (move.y > 0)
                     move.y = 1f;
             }
-            if (move != Vector2.zero) {
-                // Debug.LogError("move ::  " + move);
-            }
             return move;
         }
 
@@ -248,23 +214,17 @@ namespace SimpleUI
             float time = Time.unscaledTime;
 
             if (!AllowMoveEventProcessing(time)) {
-                // Debug.LogError("not allowed");
                 return false;
             }
 
             Vector2 movement = GetRawMoveVector();
-            // Debug.LogError(movement);
-
-            // Debug.Log(m_ProcessingEvent.rawType + " axis:" + m_AllowAxisEvents + " value:" + "(" + x + "," + y + ")");
             var axisEventData = GetAxisEventData(movement.x, movement.y, 0.6f);
             
-            // Debug.LogError("move vector :: " + axisEventData.moveVector);
             
             if (!Mathf.Approximately(axisEventData.moveVector.x, 0f)
                 || !Mathf.Approximately(axisEventData.moveVector.y, 0f))
             {
-                            Debug.Log("processing SendMoveEventToSelectedObject()" + axisEventData.moveVector);
-
+            
                 ExecuteEvents.Execute(eventSystem.currentSelectedGameObject, axisEventData, ExecuteEvents.moveHandler);
             }
             m_NextAction = time + 1f / m_InputActionsPerSecond;

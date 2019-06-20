@@ -8,7 +8,7 @@ namespace VRPlayer{
 public class DemoGameManager : MonoBehaviour
 {
 
-    public static event System.Action<bool> onPauseRoutineStart, onPauseRoutineEnd;
+    public static event System.Action<bool, float> onPauseRoutineStart, onPauseRoutineEnd;
 
     public static bool isPaused;
 
@@ -31,12 +31,13 @@ public class DemoGameManager : MonoBehaviour
 
     static IEnumerator TogglePauseCoroutine () {
         isPaused = !isPaused;
+        float delay = instance.pauseDelay;
         
         if (onPauseRoutineStart != null) {
-            onPauseRoutineStart(isPaused);
+            onPauseRoutineStart(isPaused, delay);
         }
         
-        yield return new WaitForSeconds(instance.pauseDelay);
+        yield return new WaitForSeconds(delay);
 
         instance.uiMenu.SetActive(isPaused);
         if (isPaused) {
@@ -55,7 +56,7 @@ public class DemoGameManager : MonoBehaviour
 
 
         if (onPauseRoutineEnd != null) {
-            onPauseRoutineEnd(isPaused);
+            onPauseRoutineEnd(isPaused, delay);
         }
     }
 

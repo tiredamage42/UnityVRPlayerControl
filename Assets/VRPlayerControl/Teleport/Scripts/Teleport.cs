@@ -189,13 +189,15 @@ namespace VRPlayer
 				}
 			}
 
-			
+			if (!VRGameAddon.gamePaused) {
 
-			if ( teleportAction.GetStateDown(teleportHand) )
-				
-			{
-				teleportNewlyPressed = true;
+				if ( teleportAction.GetStateDown(teleportHand) )
+					
+				{
+					teleportNewlyPressed = true;
+				}
 			}
+
 		
 			if ( !visible && teleportNewlyPressed )
 			
