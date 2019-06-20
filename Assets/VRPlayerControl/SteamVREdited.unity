@@ -1763,11 +1763,13 @@ MonoBehaviour:
     fogColor: {r: 0.21698111, g: 0.13407795, b: 0.13407795, a: 1}
     startDistance: 0
     endDistance: 300
-    density: 0.1
+    density: 1
     useFog: 1
     fogMode: 3
-  pauseFlashColor: {r: 0, g: 0, b: 1, a: 1}
-  pauseFlashTime: 0.25
+  pauseFlashColor: {r: 0, g: 0, b: 0.33962262, a: 1}
+  pauseLightRange: 5
+  pauseLightIntensity: 1
+  pauseLightColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &100296712
 Transform:
   m_ObjectHideFlags: 0
@@ -23854,7 +23856,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1703345920
 RectTransform:
   m_ObjectHideFlags: 0
@@ -28664,7 +28666,7 @@ MonoBehaviour:
   m_VerticalAxis: Vertical
   m_SubmitButton: Submit
   m_CancelButton: Cancel
-  m_InputActionsPerSecond: 0.5
+  m_InputActionsPerSecond: 10
   m_AllowActivationOnMobileDevice: 0
 --- !u!1 &2031757272
 GameObject:
@@ -30758,7 +30760,7 @@ PrefabInstance:
     - target: {fileID: 1307753911880479153, guid: 97a72d2af139e4517bb2bda6523a3da0,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1307753911880479157, guid: 97a72d2af139e4517bb2bda6523a3da0,
         type: 3}
@@ -30888,12 +30890,12 @@ PrefabInstance:
     - target: {fileID: 3441709658417856140, guid: 97a72d2af139e4517bb2bda6523a3da0,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3441709658417856140, guid: 97a72d2af139e4517bb2bda6523a3da0,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3441709658417856140, guid: 97a72d2af139e4517bb2bda6523a3da0,
         type: 3}
@@ -30913,12 +30915,12 @@ PrefabInstance:
     - target: {fileID: 3441709659563704544, guid: 97a72d2af139e4517bb2bda6523a3da0,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3441709659563704544, guid: 97a72d2af139e4517bb2bda6523a3da0,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3441709659563704544, guid: 97a72d2af139e4517bb2bda6523a3da0,
         type: 3}
