@@ -6,7 +6,7 @@ using Valve.VR;
 
 namespace VRPlayer {
 
-    public class VR_Item : MonoBehaviour
+    public class VRItemAddon : MonoBehaviour
     {
         [Tooltip("Activates an action set on attach and deactivates on detach")]
         public SteamVR_ActionSet activateActionSetOnAttach;

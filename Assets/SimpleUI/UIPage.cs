@@ -159,7 +159,11 @@ namespace SimpleUI {
             SetColors ();
             SetSizes ();
             pageTitle.text = pageTitleText;
-            Canvas.ForceUpdateCanvases();
+            if (allSubButtons.Count > 0) {
+
+                GetComponent<SelectOnEnable>().toSelect = allSubButtons[0].gameObject;
+            }
+            // Canvas.ForceUpdateCanvases();
         }
             
 
@@ -197,10 +201,14 @@ namespace SimpleUI {
 
             if (Application.isPlaying) {
 
+                if (parentPage != null) {
                 if (UIManager.input.GetButtonDown(UIManager.cancelButton)) {
                     gameObject.SetActive(false);
                     parentPage.gameObject.SetActive(true);
                 }
+
+                }
+
             }
         }
     }

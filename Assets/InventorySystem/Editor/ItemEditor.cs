@@ -31,7 +31,7 @@ namespace InventorySystem {
 
                 GUILayout.Label("Playtime Editing:");
 
-                setIndex = EditorGUILayout.IntField(setIndex, "Equip Settings Index");
+                setIndex = EditorGUILayout.IntField( "Equip Settings Index", setIndex);
 
                 if (GUILayout.Button("Save Local Position And Rotation")) {
                     SaveLocalPositionAndRotation();
