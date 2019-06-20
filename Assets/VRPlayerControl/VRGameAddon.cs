@@ -41,7 +41,7 @@ namespace VRPlayer{
 
 
         public Color pauseFlashColor = Color.blue;
-        public float pauseFlashTime = .25f;
+        // public float pauseFlashTime = .25f;
 
 
         // DemoGameManager gameManager;
@@ -61,29 +61,76 @@ namespace VRPlayer{
         }
 
 
-        void OnPauseRoutineStart (bool isPaused) {
+        void OnPauseRoutineStart (bool isPaused, float routineTime) {
             SteamVR_Fade.Start( Color.clear, 0 );
-            SteamVR_Fade.Start( pauseFlashColor, pauseFlashTime * .5f );
+            SteamVR_Fade.Start( pauseFlashColor, routineTime );
         }
-        void OnPauseRoutineEnd (bool isPaused) {
-            SteamVR_Fade.Start( Color.clear, pauseFlashTime * .5f );
+        void OnPauseRoutineEnd (bool isPaused, float routineTime) {
+            SteamVR_Fade.Start( Color.clear, routineTime );
             if (!isPaused){
                 lastComponent.SetFog();
                 lastComponent = null;
+                EnableAllLights();
+                DisablePauseRoomLight();
             }
             else {
                 lastComponent = new FogComponent();
                 pauseFog.SetFog();
+                DisableAllLights();
+                EnablePauseRoomLight();
             }
         }
 
 
-        void FinishPause ( ) {
+        void DisableAllLights () {
+            allLights = GameObject.FindObjectsOfType<Light>();
+            for (int i = 0; i < allLights.Length;i++) {
+                allLights[i].enabled = false;
+            }
 
-            SteamVR_Fade.Start( Color.clear, pauseFlashTime * .5f );
-            lastComponent = new FogComponent();
-            pauseFog.SetFog();
         }
+        void EnableAllLights () {
+            for (int i = 0; i < allLights.Length;i++) {
+                allLights[i].enabled = true;
+            }
+        }
+
+        public float pauseLightRange = 5;
+        public float pauseLightIntensity = 1;
+        public Color pauseLightColor = Color.white;
+
+        void EnablePauseRoomLight () {
+            BuildPauseRoomLightIfNull ();
+
+            pauseLight.gameObject.SetActive(true);
+            pauseLight.color = pauseLightColor;
+            pauseLight.intensity = pauseLightIntensity;
+            pauseLight.range = pauseLightRange;
+        }
+        void DisablePauseRoomLight () {
+            pauseLight.gameObject.SetActive(false);
+        }
+        Light pauseLight;
+        Light[] allLights;
+
+        void BuildPauseRoomLightIfNull () {
+            if (pauseLight == null) {
+                GameObject lightGO = new GameObject("pauseSceneLight");
+                pauseLight = lightGO.AddComponent<Light>();
+                pauseLight.type = LightType.Point;
+                pauseLight.shadows = LightShadows.None;
+
+            }
+        }
+
+        
+
+        // void FinishPause ( ) {
+
+        //     SteamVR_Fade.Start( Color.clear, pauseFlashTime * .5f );
+        //     lastComponent = new FogComponent();
+        //     pauseFog.SetFog();
+        // }
 
 
         // void OnPauseGame(bool paused) {

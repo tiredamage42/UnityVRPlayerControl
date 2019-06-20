@@ -499,9 +499,10 @@ public class TouchpadLocomotion : MonoBehaviour
             return;
         }
 
-
-        if (crouchAction.GetStateDown(moveHand)) {
-            isCrouched = !isCrouched;
+        if (!VRGameAddon.gamePaused) {
+            if (crouchAction.GetStateDown(moveHand)) {
+                isCrouched = !isCrouched;
+            }
         }
 
         // if (!adjustedScale) {

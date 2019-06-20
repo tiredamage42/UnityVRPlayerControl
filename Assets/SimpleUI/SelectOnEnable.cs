@@ -28,7 +28,7 @@ public class SelectOnEnable : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!hasSelected){// && UIManager.input.GetAxisRaw(UIManager.verticalAxis) != 0) {
+        if (!hasSelected){
             // Debug.LogError("selected :: " + toSelect.name+ " on " + name);
             eventSystem.SetSelectedGameObject(toSelect);
             hasSelected = true;

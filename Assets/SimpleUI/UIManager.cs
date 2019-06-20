@@ -43,26 +43,26 @@ public class UIManager : MonoBehaviour
     }
 
 
-    public static string verticalAxis {
-        get {
-            return standaloneInputModule.verticalAxis;
-        }
-    }
-public static string horizontalAxis {
-        get {
-            return standaloneInputModule.horizontalAxis;
-        }
-    }
+//     public static string verticalAxis {
+//         get {
+//             return standaloneInputModule.verticalAxis;
+//         }
+//     }
+// public static string horizontalAxis {
+//         get {
+//             return standaloneInputModule.horizontalAxis;
+//         }
+//     }
 public static string cancelButton {
         get {
             return standaloneInputModule.cancelButton;
         }
     }
-public static string submitButton {
-        get {
-            return standaloneInputModule.submitButton;
-        }
-    }
+// public static string submitButton {
+//         get {
+//             return standaloneInputModule.submitButton;
+//         }
+//     }
 
 
 

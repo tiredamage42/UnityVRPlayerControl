@@ -168,7 +168,6 @@ namespace VRPlayer {
                 ControllerButtonHints.HideAllTextHints( player.hands[i] );
                 ControllerButtonHints.HideAllButtonHints( player.hands[i] );
             }
-
         }
 
         public void PlayControllerLayoutHintRoutine (ControllerLayoutHintRoutine routine) {
