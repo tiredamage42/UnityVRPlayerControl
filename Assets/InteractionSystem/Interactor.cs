@@ -107,7 +107,7 @@ namespace InteractionSystem {
                     {
                         // if (spewDebugText)
                         //     HandDebugLog("HoverBegin " + newInteractable.gameObject);
-                        //Debug.LogError("Found interactable start hover");
+                        Debug.LogError("Found interactable start hover");
 
                         newInteractable.OnInspectStart(this);
                         if (onInspectStart != null) {
