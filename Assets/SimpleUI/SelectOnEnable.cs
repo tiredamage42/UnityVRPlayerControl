@@ -13,6 +13,7 @@ public class SelectOnEnable : MonoBehaviour
 
     void OnDisable () {
         hasSelected = false;
+        eventSystem.SetSelectedGameObject(null);
     }
 
     void Awake () {
@@ -27,7 +28,8 @@ public class SelectOnEnable : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!hasSelected && UIManager.input.GetAxisRaw(UIManager.verticalAxis) != 0) {
+        if (!hasSelected){// && UIManager.input.GetAxisRaw(UIManager.verticalAxis) != 0) {
+            // Debug.LogError("selected :: " + toSelect.name+ " on " + name);
             eventSystem.SetSelectedGameObject(toSelect);
             hasSelected = true;
         }

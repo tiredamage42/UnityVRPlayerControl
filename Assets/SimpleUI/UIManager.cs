@@ -25,7 +25,7 @@ public class UIManager : MonoBehaviour
     }
 
 
-    static StandaloneInputModule standaloneInputModule;
+    static CustomInputModule standaloneInputModule;
     
     static UIManager _i;
     public static UIManager instance {
@@ -39,7 +39,7 @@ public class UIManager : MonoBehaviour
     }
     
     void Awake () {
-        standaloneInputModule = GetComponent<StandaloneInputModule>();
+        standaloneInputModule = GetComponent<CustomInputModule>();
     }
 
 

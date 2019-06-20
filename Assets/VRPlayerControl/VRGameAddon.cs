@@ -66,12 +66,12 @@ namespace VRPlayer{
             SteamVR_Fade.Start( pauseFlashColor, pauseFlashTime * .5f );
         }
         void OnPauseRoutineEnd (bool isPaused) {
+            SteamVR_Fade.Start( Color.clear, pauseFlashTime * .5f );
             if (!isPaused){
                 lastComponent.SetFog();
                 lastComponent = null;
             }
             else {
-                SteamVR_Fade.Start( Color.clear, pauseFlashTime * .5f );
                 lastComponent = new FogComponent();
                 pauseFog.SetFog();
             }
