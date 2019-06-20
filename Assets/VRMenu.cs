@@ -35,7 +35,7 @@ namespace VRPlayer {
             baseTransform = new GameObject(name + "_ui_base").transform;
             transform.SetParent(baseTransform);
             transform.localPosition = Vector3.zero;
-            transform.localRotation = Quaternion.Euler(0,180,0);
+            transform.localRotation = Quaternion.Euler(0,0, 0);//180,0);
 
         }
 

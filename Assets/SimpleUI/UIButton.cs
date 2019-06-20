@@ -82,7 +82,7 @@ public class UIButton : MonoBehaviour, ISelectHandler, IDeselectHandler
     {
         buttonImage.color = UIManager.instance.mainLightColor;
         text.color = UIManager.instance.mainDarkColor;
-        // Debug.Log(this.gameObject.name + " was selected");
+        Debug.Log(this.gameObject.name + " was selected");
     }
     public void OnDeselect(BaseEventData data)
     {

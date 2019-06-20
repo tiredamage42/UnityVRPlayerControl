@@ -576,7 +576,7 @@ namespace VRPlayer
             }
             
             
-            VR_Item vr_item = item.GetComponent<VR_Item>();
+            VRItemAddon vr_item = item.GetComponent<VRItemAddon>();
             if (!vr_item) {
                 Debug.LogError(item.name + " :: does not have a vr item component");
                 return;
@@ -659,7 +659,7 @@ namespace VRPlayer
 
 
 
-            VR_Item vr_item = item.GetComponent<VR_Item>();
+            VRItemAddon vr_item = item.GetComponent<VRItemAddon>();
             if (!vr_item) {
                 Debug.LogError(item.name + " :: does not have a vr item component");
                 return;
@@ -696,7 +696,7 @@ namespace VRPlayer
                 //     (hand.otherHand.currentAttachedObjectInfo.Value.interactable != null &&
                 //      hand.otherHand.currentAttachedObjectInfo.Value.interactable.activateActionSetOnAttach != this.activateActionSetOnAttach))
                 
-                if (inventory.otherInventory.equippedItem == null || inventory.otherInventory.equippedItem.item.GetComponent<VR_Item>().activateActionSetOnAttach != vr_item.activateActionSetOnAttach)
+                if (inventory.otherInventory.equippedItem == null || inventory.otherInventory.equippedItem.item.GetComponent<VRItemAddon>().activateActionSetOnAttach != vr_item.activateActionSetOnAttach)
                 // if (otherHand == null || otherHand.currentAttached == null ||
                 //     (hand.otherHand.currentAttached.interactable != null &&
                 //      hand.otherHand.currentAttached.interactable.activateActionSetOnAttach != this.activateActionSetOnAttach))
@@ -1299,7 +1299,7 @@ pos.x, pos.y, pos.z,
 
             // if (currentAttached != null)
             // {
-                VR_Item vr_item = item.GetComponent<VR_Item>();
+                VRItemAddon vr_item = item.GetComponent<VRItemAddon>();
 
                 if (vr_item != null)//currentAttached.interactable != null)
                 

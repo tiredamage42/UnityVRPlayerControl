@@ -39,6 +39,20 @@ public class DemoGameManager : MonoBehaviour
         yield return new WaitForSeconds(instance.pauseDelay);
 
         instance.uiMenu.SetActive(isPaused);
+        if (isPaused) {
+            yield return null;// new WaitForNextFrame();
+            instance.uiMenu.SetActive(!isPaused);
+            yield return null;// new WaitForNextFrame();
+            instance.uiMenu.SetActive(isPaused);
+            yield return null;// new WaitForNextFrame();
+            instance.uiMenu.SetActive(!isPaused);
+            yield return null;// new WaitForNextFrame();
+            instance.uiMenu.SetActive(isPaused);
+            
+            
+            // yield return new WaitForNextFrame();
+        }
+
 
         if (onPauseRoutineEnd != null) {
             onPauseRoutineEnd(isPaused);
