@@ -84,6 +84,7 @@ namespace SimpleUI
 
         BaseInput GetInput() {
             if (inputOverride != null) {
+                // Debug.Log("overrideen" + inputOverride);
                 return inputOverride;
             }
             return input;
@@ -187,7 +188,10 @@ namespace SimpleUI
         {
             Vector2 move = Vector2.zero;
             move.x = GetInput().GetAxisRaw(m_HorizontalAxis);
+
             move.y = GetInput().GetAxisRaw(m_VerticalAxis);
+
+            Debug.LogError(move + " :: vert axis");
 
             if (GetInput().GetButtonDown(m_HorizontalAxis))
             {

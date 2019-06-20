@@ -10,12 +10,13 @@ namespace VRPlayer{
         [System.Serializable] public class FogComponent {
 
             public Color fogColor;
+
             public float startDistance, endDistance, density;
-            public bool useFog;
+            // public bool useFog;
             public FogMode fogMode;
 
             public void SetFog () {
-                RenderSettings.fog = useFog;
+                // RenderSettings.fog = useFog;
                 RenderSettings.fogColor = fogColor;
                 RenderSettings.fogMode = fogMode;
                 RenderSettings.fogDensity = density;
@@ -24,15 +25,21 @@ namespace VRPlayer{
             }
 
             public FogComponent () {
-                useFog = RenderSettings.fog;
+                // useFog = RenderSettings.fog;
                 fogColor = RenderSettings.fogColor;
                 fogMode = RenderSettings.fogMode;
                 density = RenderSettings.fogDensity;
                 startDistance = RenderSettings.fogStartDistance;
                 endDistance = RenderSettings.fogEndDistance;
             }
-
         }
+
+
+        bool wasUsingFog;
+        CameraClearFlags lastClearFlags;
+        Camera hmdCamera;
+        public Color clearColor;
+        Color lastClearColor;
 
         public FogComponent pauseFog;
 
@@ -66,14 +73,29 @@ namespace VRPlayer{
             SteamVR_Fade.Start( pauseFlashColor, routineTime );
         }
         void OnPauseRoutineEnd (bool isPaused, float routineTime) {
+            hmdCamera = Player.instance.hmdTransform.GetComponent<Camera>();
             SteamVR_Fade.Start( Color.clear, routineTime );
             if (!isPaused){
+                RenderSettings.fog = wasUsingFog;
+                hmdCamera.clearFlags = lastClearFlags;
+                hmdCamera.backgroundColor = lastClearColor;
+                
                 lastComponent.SetFog();
                 lastComponent = null;
                 EnableAllLights();
                 DisablePauseRoomLight();
             }
             else {
+                wasUsingFog = RenderSettings.fog;
+                lastClearFlags = hmdCamera.clearFlags;
+                lastClearColor = hmdCamera.backgroundColor;
+
+                RenderSettings.fog = true;
+
+                hmdCamera.clearFlags = CameraClearFlags.SolidColor;
+                hmdCamera.backgroundColor = clearColor;
+
+            
                 lastComponent = new FogComponent();
                 pauseFog.SetFog();
                 DisableAllLights();
@@ -103,6 +125,7 @@ namespace VRPlayer{
             BuildPauseRoomLightIfNull ();
 
             pauseLight.gameObject.SetActive(true);
+            pauseLight.transform.position = Player.instance.hmdTransform.position + Vector3.up;
             pauseLight.color = pauseLightColor;
             pauseLight.intensity = pauseLightIntensity;
             pauseLight.range = pauseLightRange;

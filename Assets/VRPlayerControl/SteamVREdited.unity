@@ -1759,14 +1759,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7a12eebc36ea417b8cfd7cd80ac71cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  clearColor: {r: 0, g: 0, b: 0, a: 0}
   pauseFog:
-    fogColor: {r: 0.21698111, g: 0.13407795, b: 0.13407795, a: 1}
+    fogColor: {r: 0, g: 0, b: 0, a: 1}
     startDistance: 0
     endDistance: 300
     density: 1
-    useFog: 1
     fogMode: 3
-  pauseFlashColor: {r: 0, g: 0, b: 0.33962262, a: 1}
+  pauseFlashColor: {r: 0, g: 0, b: 0, a: 1}
   pauseLightRange: 5
   pauseLightIntensity: 1
   pauseLightColor: {r: 1, g: 1, b: 1, a: 1}
@@ -26817,6 +26817,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c8a85edb838148beab924bc69ae4c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deltaThreshold: 0.05
 --- !u!1 &1893138402 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 144230, guid: dc06161b6d97feb419f45f03b62e14b9,
@@ -28590,6 +28591,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c8a85edb838148beab924bc69ae4c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deltaThreshold: 0
 --- !u!114 &2022222630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31171,6 +31173,11 @@ PrefabInstance:
         type: 3}
       propertyPath: yOffset
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1307753911880479114, guid: 97a72d2af139e4517bb2bda6523a3da0,
+        type: 3}
+      propertyPath: matchXRotation
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8879587921430780419, guid: 97a72d2af139e4517bb2bda6523a3da0,
         type: 3}
