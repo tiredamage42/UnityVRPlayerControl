@@ -12,20 +12,88 @@ public class UIManager : MonoBehaviour
 
     public UIButton buttonPrefab;
     public UIPage pagePrefab;
+    public UIRadialElement radialElementPrefab;
 
 
-    public static UIPage ShowPage (Canvas parentCanvas, string title, int width, int lineHeight, float scale = 1f) {
-        UIPage page = Instantiate(instance.pagePrefab);
-        page.SetTitle(title);
-        page.SetSize(width, lineHeight);
-        page.transform.parent = parentCanvas.transform;
-        page.transform.localPosition = Vector3.zero;
-        page.transform.localScale = Vector3.one * scale;
-        return page;
+    HashSet<GameObject> shownUIsWithInput = new HashSet<GameObject>();
+
+    public static event System.Action<UIElementHolder> onUIShow;
+    static IEnumerator _ShowUI (GameObject uiObject, bool needsInput, bool tryRepeat) {
+        uiObject.SetActive(true);
+
+        if (tryRepeat) {
+            yield return null;
+            uiObject.SetActive(false);
+            yield return null;
+            uiObject.SetActive(true);
+            yield return null;
+            uiObject.SetActive(false);
+            yield return null;
+            uiObject.SetActive(true);
+        }
+						
+        if (needsInput) {
+            instance.gameObject.SetActive(true);
+            instance.shownUIsWithInput.Add(uiObject);
+        }
+
+    }
+    static void ShowUI (GameObject uiObject, bool needsInput, bool tryRepeat) {
+        instance.StartCoroutine(_ShowUI(uiObject, needsInput, tryRepeat));
+    }
+    static GameObject GetUIObj (UIElementHolder uiObject) {
+        return uiObject.baseObject != null ? uiObject.baseObject : uiObject.gameObject;
+    }
+    public static void ShowUI(UIElementHolder uiObject, bool needsInput, bool tryRepeat) {
+        
+        GameObject objToUse = GetUIObj(uiObject);
+        // uiObject.baseObject;
+        // if (objToUse == null) {
+        //     objToUse = uiObject.gameObject;
+        // }
+        ShowUI(objToUse, needsInput, tryRepeat);
+
+        if (onUIShow != null) {
+            onUIShow(uiObject);
+        }
+    }
+
+    public static void HideUI (UIElementHolder uiObject) {
+        GameObject objToUse = GetUIObj(uiObject);
+        
+
+        // GameObject objToUse = uiObject.baseObject;
+        // if (objToUse == null) {
+        //     objToUse = uiObject.gameObject;
+        // }
+        HideUI(objToUse);
     }
 
 
-    static CustomInputModule standaloneInputModule;
+        
+
+    static void HideUI (GameObject uiObject) {
+        if (instance.shownUIsWithInput.Contains(uiObject)) {
+            instance.shownUIsWithInput.Remove(uiObject);
+            if (instance.shownUIsWithInput.Count == 0) {
+                instance.gameObject.SetActive(false);
+            }
+        }
+        uiObject.SetActive(false);
+    }
+
+    // public static UIPage ShowPage (Transform parent, string title, int width, int lineHeight, float scale = 1f) {
+    //     UIPage page = Instantiate(instance.pagePrefab);
+    //     page.SetTitle(title);
+    //     page.SetSize(width, lineHeight);
+    //     page.transform.parent = parent;
+    //     page.transform.localPosition = Vector3.zero;
+    //     page.transform.localScale = Vector3.one * scale;
+    //     return page;
+    // }
+
+
+    static StandaloneInputModule standaloneInputModule;
     
     static UIManager _i;
     public static UIManager instance {
@@ -39,7 +107,7 @@ public class UIManager : MonoBehaviour
     }
     
     void Awake () {
-        standaloneInputModule = GetComponent<CustomInputModule>();
+        standaloneInputModule = GetComponent<StandaloneInputModule>();
     }
 
 
@@ -74,10 +142,11 @@ public static string cancelButton {
             Debug.LogError("No standaloneInputModule in scene or UIInputManager");
             return null;
         }
-        if (standaloneInputModule.inputOverride != null) {
-            return standaloneInputModule.inputOverride;
-        }
-        return standaloneInputModule.input;
+        return standaloneInputModule.GetInput();
+        // if (standaloneInputModule.inputOverride != null) {
+        //     return standaloneInputModule.inputOverride;
+        // }
+        // return standaloneInputModule.input;
         }
     }
 }

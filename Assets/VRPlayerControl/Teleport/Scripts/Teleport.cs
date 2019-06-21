@@ -189,9 +189,9 @@ namespace VRPlayer
 				}
 			}
 
-			if (!VRGameAddon.gamePaused) {
+			if (!VRGameAddon.gamePaused && teleportationAllowed) {
 
-				if ( teleportAction.GetStateDown(teleportHand) )
+				if (!VRInputModuleAddon.ActionIsOccupied(teleportAction, teleportHand) && teleportAction.GetStateDown(teleportHand) )
 					
 				{
 					teleportNewlyPressed = true;

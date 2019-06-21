@@ -6,12 +6,12 @@
 
 using UnityEngine;
 using System.Collections;
-// using System.Collections.Generic;
 using UIMessaging;
-
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
+using InventorySystem;
+using SimpleUI;
 namespace VRPlayer
 {
 	//-------------------------------------------------------------------------
@@ -20,6 +20,83 @@ namespace VRPlayer
 	//-------------------------------------------------------------------------
 	public class Player : MonoBehaviour
 	{
+		public UIRadial wristRadial;
+		public EquipBehavior radialEquipBehavior;
+
+		public bool wristRadialOpen {
+			get {
+				return wristRadial.gameObject.activeInHierarchy;
+			}
+		}
+		// ISteamVR_Action_In_Source occupiedAction = null;
+		// SteamVR_Input_Sources occupiedHand = SteamVR_Input_Sources.Any;
+		public SteamVR_Action_Boolean openEquipSelect;
+
+
+
+		void InitializeWristRadial () {
+			wristRadial.onBaseCancel += OnWristRadialBaseCancel;
+		}
+
+		void OnWristRadialBaseCancel () {
+			UIManager.HideUI(wristRadial);
+		}
+		
+
+        void UpdateWristRadial () {
+			bool together = handsTogether;
+			if (!wristRadialOpen) {
+
+				if (together) {
+					if (openEquipSelect.GetStateDown(SteamVR_Input_Sources.LeftHand)) {
+						
+						UIManager.ShowUI(wristRadial, true, false);
+						wristRadial.GetComponentInParent<LooseTransform>().SetParent(
+							GetHand(SteamVR_Input_Sources.LeftHand).transform, 
+							radialEquipBehavior.equipSettings[0].position, 
+							radialEquipBehavior.equipSettings[0].rotation
+						);
+						VRInputModuleAddon.SetUIHand(SteamVR_Input_Sources.LeftHand);
+						
+					}
+					else if (openEquipSelect.GetStateDown(SteamVR_Input_Sources.RightHand)) {
+						UIManager.ShowUI(wristRadial, true, false);
+						wristRadial.GetComponentInParent<LooseTransform>().SetParent(
+							GetHand(SteamVR_Input_Sources.LeftHand).transform, 
+							radialEquipBehavior.equipSettings[0].position, 
+							radialEquipBehavior.equipSettings[0].rotation
+						);
+						VRInputModuleAddon.SetUIHand(SteamVR_Input_Sources.RightHand);
+					}
+				}
+			}
+
+
+			/*
+				Assumes the open equip button is the side button
+				as well as teh teleport button
+			*/
+
+			// Teleport.instance.teleportEnabled = !together;
+
+		    
+        } 
+
+
+
+
+		public float handsTogetherThreshold = .25f;
+
+
+		public bool handsTogether {
+			get {
+				return Vector3.Distance(hands[0].transform.position, hands[1].transform.position) <= handsTogetherThreshold;
+			}
+		}
+
+
+
+
 		public ReleaseStyle releaseVelocityStyle = ReleaseStyle.GetFromHand;
 
         [Tooltip("The time offset used when releasing the object with the RawFromHand option")]
@@ -217,6 +294,7 @@ namespace VRPlayer
 		{
 			moveScript = GetComponent<SimpleCharacterController>();
 			InitializeMessageCenters();
+			InitializeWristRadial();
 		}
 
 
@@ -248,6 +326,7 @@ namespace VRPlayer
         
 
 			UpdateMessageCenters();
+			UpdateWristRadial();
         }
 
 		void InitializeMessageCenters () {

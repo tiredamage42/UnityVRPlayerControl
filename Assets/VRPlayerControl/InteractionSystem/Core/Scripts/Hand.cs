@@ -19,6 +19,9 @@ using Valve.VR.InteractionSystem;
 using InteractionSystem;
 using InventorySystem;
 
+
+using SimpleUI;
+
 namespace VRPlayer
 {
     //-------------------------------------------------------------------------
@@ -27,7 +30,7 @@ namespace VRPlayer
     //-------------------------------------------------------------------------
     public class Hand : MonoBehaviour
     {
-
+        
         [HideInInspector] public VelocityEstimator velocityEstimator;
 
 
@@ -39,24 +42,24 @@ namespace VRPlayer
         }
 
         // The flags used to determine how an object is attached to the hand.
-        [Flags]
-        public enum AttachmentFlags
-        {
-            SnapOnAttach = 1 << 0, // The object should snap to the position of the specified attachment point on the hand.
-            DetachOthers = 1 << 1, // Other objects attached to this hand will be detached.
-            DetachFromOtherHand = 1 << 2, // This object will be detached from the other hand.
-            ParentToHand = 1 << 3, // The object will be parented to the hand.
-            VelocityMovement = 1 << 4, // The object will attempt to move to match the position and rotation of the hand.
-            TurnOnKinematic = 1 << 5, // The object will not respond to external physics.
-            TurnOffGravity = 1 << 6, // The object will not respond to external physics.
-            // AllowSidegrade = 1 << 7, // The object is able to switch from a pinch grab to a grip grab. Decreases likelyhood of a good throw but also decreases likelyhood of accidental drop
-        };
+        // [Flags]
+        // public enum AttachmentFlags
+        // {
+        //     SnapOnAttach = 1 << 0, // The object should snap to the position of the specified attachment point on the hand.
+        //     DetachOthers = 1 << 1, // Other objects attached to this hand will be detached.
+        //     DetachFromOtherHand = 1 << 2, // This object will be detached from the other hand.
+        //     ParentToHand = 1 << 3, // The object will be parented to the hand.
+        //     VelocityMovement = 1 << 4, // The object will attempt to move to match the position and rotation of the hand.
+        //     TurnOnKinematic = 1 << 5, // The object will not respond to external physics.
+        //     TurnOffGravity = 1 << 6, // The object will not respond to external physics.
+        //     // AllowSidegrade = 1 << 7, // The object is able to switch from a pinch grab to a grip grab. Decreases likelyhood of a good throw but also decreases likelyhood of accidental drop
+        // };
 
-        public const AttachmentFlags defaultAttachmentFlags = AttachmentFlags.ParentToHand |
-                                                            //   AttachmentFlags.DetachOthers |
-                                                              AttachmentFlags.DetachFromOtherHand |
-                                                              AttachmentFlags.TurnOnKinematic |
-                                                              AttachmentFlags.SnapOnAttach;
+        // public const AttachmentFlags defaultAttachmentFlags = AttachmentFlags.ParentToHand |
+        //                                                     //   AttachmentFlags.DetachOthers |
+        //                                                       AttachmentFlags.DetachFromOtherHand |
+        //                                                       AttachmentFlags.TurnOnKinematic |
+        //                                                       AttachmentFlags.SnapOnAttach;
 
         public Hand otherHand;
         public SteamVR_Input_Sources handType;
@@ -574,6 +577,11 @@ namespace VRPlayer
             if (item.equipType != Inventory.EquipType.Static) {
                 GetComponent<VelocityEstimator>().BeginEstimatingVelocity();
             }
+
+            // if (vr_item.hideControllerOnAttach && 
+            if (mainRenderModel != null && mainRenderModel.displayControllerByDefault)
+                HideController();
+
             
             
             VRItemAddon vr_item = item.GetComponent<VRItemAddon>();
@@ -591,10 +599,7 @@ namespace VRPlayer
             // if (vr_item.hideSkeletonOnAttach && mainRenderModel != null && mainRenderModel.displayHandByDefault)
             //     HideSkeleton();
 
-            // if (vr_item.hideControllerOnAttach && 
-            if (mainRenderModel != null && mainRenderModel.displayControllerByDefault)
-                HideController();
-
+            
             if (vr_item.handAnimationOnPickup != 0)
                 SetAnimationState(vr_item.handAnimationOnPickup);
 
@@ -656,6 +661,11 @@ namespace VRPlayer
                 rigidbody.angularVelocity = angularVelocity;
             }
 
+            // if (vr_item.hideControllerOnAttach && 
+            if (mainRenderModel != null && mainRenderModel.displayControllerByDefault)
+                ShowController();
+
+
 
 
 
@@ -671,10 +681,7 @@ namespace VRPlayer
             // if (vr_item.hideSkeletonOnAttach && mainRenderModel != null && mainRenderModel.displayHandByDefault)
             //     ShowSkeleton();
 
-            // if (vr_item.hideControllerOnAttach && 
-            if (mainRenderModel != null && mainRenderModel.displayControllerByDefault)
-                ShowController();
-
+            
             if (vr_item.handAnimationOnPickup != 0)
                 StopAnimation();
 

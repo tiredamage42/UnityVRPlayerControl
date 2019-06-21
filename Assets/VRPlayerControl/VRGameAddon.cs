@@ -55,8 +55,9 @@ namespace VRPlayer{
 
         void Awake () {
             // gameManager = GetComponent<DemoGameManager>();
-
         }
+        
+
         void OnEnable () {
 
             DemoGameManager.onPauseRoutineStart += OnPauseRoutineStart;

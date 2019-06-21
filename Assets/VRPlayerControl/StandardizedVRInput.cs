@@ -10,6 +10,18 @@ namespace VRPlayer {
     public class StandardizedVRInput : MonoBehaviour
     {
 
+        public struct ActionHandPair {
+            
+            public ISteamVR_Action_In_Source action;
+            public SteamVR_Input_Sources hand;
+
+            public ActionHandPair(ISteamVR_Action_In_Source action, SteamVR_Input_Sources hand) {
+                this.action = action;
+                this.hand = hand;
+            }
+            
+        }
+
         public bool headsetIsOnPlayerHead;
 
         void Update()
@@ -174,7 +186,6 @@ namespace VRPlayer {
 
             currentHintRoutine = StartCoroutine(HintRoutine(routine));
             
-
         }
     }
 

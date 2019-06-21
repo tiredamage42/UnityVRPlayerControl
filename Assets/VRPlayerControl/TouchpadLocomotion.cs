@@ -188,10 +188,23 @@ public class TouchpadLocomotion : MonoBehaviour
     public Vector3 climbExitForceMultiplier = new Vector3(10, 100, 10);
     
     void UpdateClimbs () {
+
+        InteractionSystem.Interactor interactor = GetComponent<InteractionSystem.Interactor>();
+
+        SetClimbAbility(SteamVR_Input_Sources.LeftHand, interactor.HasTag("ClimbLeft"));
+        SetClimbAbility(SteamVR_Input_Sources.RightHand, interactor.HasTag("ClimbRight"));
+        
+        // if (interactor.HasTag("ClimbLeft")) {
+        // }
+        // if (interactor.HasTag("ClimbRight")) {
+
+        // }
         
         bool justLetGo = false;
 
         foreach (var hand in climbableChecks.Keys) {
+
+
             bool isClimbable = climbableChecks[hand].isClimbable;
 
             // if we just clicked to start climbing, make this the primary climb hand
@@ -237,7 +250,18 @@ public class TouchpadLocomotion : MonoBehaviour
         // bool rightClimb = climbableChecks[SteamVR_Input_Sources.RightHand].UpdateHand(climbAction);
         // isClimbing = leftClimb || rightClimb;
 
-        Teleport.instance.teleportationAllowed = !isClimbing;
+
+
+
+			/*
+				Assumes the open equip button is the side button
+				as well as teh teleport button
+			*/
+
+        Teleport.instance.teleportationAllowed = !isClimbing && !Player.instance.handsTogether;
+        
+        
+        
         // characterController.enabled = !isClimbing;
         moveScript.useRawMovement = isClimbing;
         if (isClimbing) {
@@ -279,7 +303,8 @@ public class TouchpadLocomotion : MonoBehaviour
     Vector3 previousHandPosition;
         
 
-    public void SetClimbAbility(SteamVR_Input_Sources source, bool climbable) {
+    // public 
+    void SetClimbAbility(SteamVR_Input_Sources source, bool climbable) {
         climbableChecks[source].isClimbable = climbable;
     }
 
@@ -485,7 +510,7 @@ public class TouchpadLocomotion : MonoBehaviour
     void CheckForJump (bool movementEnabled) {
         if (moveScript.isGrounded && movementEnabled) {
 
-            if (jumpAction.GetStateDown(moveHand)) {
+            if (!VRInputModuleAddon.ActionIsOccupied(jumpAction, moveHand) && jumpAction.GetStateDown(moveHand)) {
                 // isCrouched = false;
                 moveScript.Jump();
             }
@@ -500,8 +525,12 @@ public class TouchpadLocomotion : MonoBehaviour
         }
 
         if (!VRGameAddon.gamePaused) {
-            if (crouchAction.GetStateDown(moveHand)) {
-                isCrouched = !isCrouched;
+
+            if (!Player.instance.handsTogether && !VRInputModuleAddon.ActionIsOccupied(crouchAction, moveHand)) {
+
+                if (crouchAction.GetStateDown(moveHand)) {
+                    isCrouched = !isCrouched;
+                }
             }
         }
 

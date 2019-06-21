@@ -4,25 +4,41 @@ using UnityEngine;
 using UnityEditor;
 
 namespace SimpleUI{
-    [CustomEditor(typeof(UIPage))]
-    public class UIPageEditor : Editor
-    {
-        UIPage page;
+
+
+    public abstract class UIElementHolderEditor<T> : Editor where T : UIElementHolder {
+
+        T holder;
 
         void OnEnable () {
-            page = target as UIPage;
+            holder = target as T;
         }
-
         public override void OnInspectorGUI() {
             base.OnInspectorGUI();
-            if (GUILayout.Button("Add UI Button")) {
-                page.AddNewButton("New Button");
-                // SceneView.RepaintAll(); 
-
-                
-            }
-            // EditorUtility.SetDirty(target);
+            DrawAddElementButton();
         }
-        
+
+        protected abstract string NewElementString();
+
+        void DrawAddElementButton () {
+            if (GUILayout.Button("Add " + NewElementString())) {
+                holder.AddNewElement(NewElementString());
+            }
+        }
+    }
+
+    [CustomEditor(typeof(UIPage))]
+    public class UIPageEditor : UIElementHolderEditor<UIPage>
+    {
+        protected override string NewElementString () {
+            return "New Button";
+        }
+    }
+    [CustomEditor(typeof(UIRadial))]
+    public class UIRadialEditor : UIElementHolderEditor<UIRadial>
+    {
+        protected override string NewElementString () {
+            return "New Radial";
+        }
     }
 }
