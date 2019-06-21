@@ -36,14 +36,34 @@ namespace VRPlayer
 
 		void InitializeWristRadial () {
 			wristRadial.onBaseCancel += OnWristRadialBaseCancel;
+			wristRadial.onAnySubmit = OnAnyWristRadialSubmit;
+		}
+		void OnAnyWristRadialSubmit (SelectableElement element) {
+			OnWristRadialBaseCancel();
 		}
 
 		void OnWristRadialBaseCancel () {
 			UIManager.HideUI(wristRadial);
 		}
+
+		void OnGamePaused (bool isPaused) {
+			if (isPaused) {
+				OnWristRadialBaseCancel();
+			}
+		}
+
+		void OnEnable () {
+			VRGameAddon.onGamePaused += OnGamePaused;
+		} 
+		void OnDisable () {
+			VRGameAddon.onGamePaused -= OnGamePaused;
+		} 
 		
 
         void UpdateWristRadial () {
+			if (VRGameAddon.gamePaused) 
+				return;
+
 			bool together = handsTogether;
 			if (!wristRadialOpen) {
 
@@ -62,7 +82,7 @@ namespace VRPlayer
 					else if (openEquipSelect.GetStateDown(SteamVR_Input_Sources.RightHand)) {
 						UIManager.ShowUI(wristRadial, true, false);
 						wristRadial.GetComponentInParent<LooseTransform>().SetParent(
-							GetHand(SteamVR_Input_Sources.LeftHand).transform, 
+							GetHand(SteamVR_Input_Sources.RightHand).transform, 
 							radialEquipBehavior.equipSettings[0].position, 
 							radialEquipBehavior.equipSettings[0].rotation
 						);

@@ -716,7 +716,7 @@ namespace SimpleUI
       // Debug.LogError("checkign: " + this.m_VerticalAxis);
 
       zero.y = GetInput().GetAxisRaw(this.m_VerticalAxis);
-      Debug.LogError("raw move " + zero);
+      // Debug.LogError("raw move " + zero);
 
       if (GetInput().GetButtonDown(this.m_HorizontalAxis))
       {
@@ -759,13 +759,13 @@ namespace SimpleUI
       if (!flag1)
         return false;
 
-      Debug.LogError("ehhh moving " + rawMoveVector);
+      // Debug.LogError("ehhh moving " + rawMoveVector);
         
       AxisEventData axisEventData = this.GetAxisEventData(rawMoveVector.x, rawMoveVector.y, 0.6f);
       if (axisEventData.moveDir != MoveDirection.None)
       {
 
-        Debug.LogError("moving " + rawMoveVector);
+        // Debug.LogError("moving " + rawMoveVector);
         ExecuteEvents.Execute<IMoveHandler>(this.eventSystem.currentSelectedGameObject, (BaseEventData) axisEventData, ExecuteEvents.moveHandler);
         if (!flag2)
           this.m_ConsecutiveMoveCount = 0;

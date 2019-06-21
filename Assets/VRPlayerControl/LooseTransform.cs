@@ -22,7 +22,7 @@ public class LooseTransform : MonoBehaviour
     public void SetParent (Transform transform, Vector3 localPosition, Quaternion localRotation) {
         lockTransform.SetParent(transform);
         lockTransform.localPosition = localPosition;
-        lockTransform.localPosition = localPosition;
+        lockTransform.localRotation = localRotation;
         
     }
     public void SetParent (Transform transform, Vector3 localPosition, Vector3 rotation) {
@@ -34,8 +34,8 @@ public class LooseTransform : MonoBehaviour
     
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        FollowLock(Time.deltaTime);
+        FollowLock(Time.fixedDeltaTime);
     }
 }

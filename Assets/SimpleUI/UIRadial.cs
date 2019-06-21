@@ -165,12 +165,19 @@ namespace SimpleUI{
         public void SetSelection(Vector2 selection) {
             int lastSelected = currentSelected;
             currentSelected = -1;
-            if (allElements.Count > 0) {
+
+            if (selection != Vector2.zero && allElements.Count > 0) {
                 currentSelected = 0;
                 if (allElements.Count > 1) {
-                    float a = Mathf.Atan2(selection.y, selection.x) * Mathf.Rad2Deg;
+                    float a = Mathf.Atan2(selection.x, selection.y) * Mathf.Rad2Deg;
+                    // Debug.LogError("first angel :: " + a);
+                    
                     a += sliceAngle / 2.0f;
+                    // Debug.LogError("second angel :: " + a);
+                    
                     if (a < 0) a = a + 360.0f;
+                    // Debug.LogError("final angel :: " + a);
+                    
                     currentSelected = (int)(a / sliceAngle);
                 }
             }
@@ -184,6 +191,10 @@ namespace SimpleUI{
 
                     eventSystem.SetSelectedGameObject( allElements[currentSelected].gameObject );
                     // allElements[currentSelected].OnSelect(null);
+                }
+                else {
+                    eventSystem.SetSelectedGameObject( null );
+                    
                 }
             }
         }
