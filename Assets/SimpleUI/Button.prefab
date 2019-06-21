@@ -61,7 +61,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.52566385, g: 1, b: 0, a: 1}
+  m_Color: {r: 0.21176471, g: 0.21176471, b: 0.5176471, a: 0.8745098}
   m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -131,6 +131,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18407c31fdb7e4fd2bfb37f2ba8c329b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selected: 0
+  destination: {fileID: 0}
+  parentHolder: {fileID: 0}
+  data: []
+  onClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: SimpleUI.UIButtonClickWData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &7325171167100607159
 GameObject:
   m_ObjectHideFlags: 0
@@ -142,6 +151,8 @@ GameObject:
   - component: {fileID: 7325171167100607158}
   - component: {fileID: 7325171167100607152}
   - component: {fileID: 7325171167100607153}
+  - component: {fileID: 1190488019855999321}
+  - component: {fileID: 7496789052367611922}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -189,7 +200,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.12841073, g: 0.4433962, b: 0, a: 1}
+  m_Color: {r: 0, g: 0.5686275, b: 1, a: 1}
   m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -210,3 +221,31 @@ MonoBehaviour:
     m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: Somethisdfsdsdfssfsfsfsf
+--- !u!114 &1190488019855999321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7325171167100607159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: add4bb3876f2742cc9debb097b32ee22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  invert: 0
+--- !u!114 &7496789052367611922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7325171167100607159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -900027084, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0.21176471, g: 0.21176471, b: 0.5176471, a: 0.8745098}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1

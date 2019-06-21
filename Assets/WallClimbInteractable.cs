@@ -49,7 +49,7 @@ public class WallClimbInteractable : MonoBehaviour//, IInteractable
 		//-------------------------------------------------
 		private void OnHandHoverBegin( Hand hand )
 		{
-            Player.instance.GetComponent<TouchpadLocomotion>().SetClimbAbility(hand.handType, true);
+            // Player.instance.GetComponent<TouchpadLocomotion>().SetClimbAbility(hand.handType, true);
 		}
 
 
@@ -58,7 +58,7 @@ public class WallClimbInteractable : MonoBehaviour//, IInteractable
 		//-------------------------------------------------
 		private void OnHandHoverEnd( Hand hand )
 		{
-            Player.instance.GetComponent<TouchpadLocomotion>().SetClimbAbility(hand.handType, false);
+            // Player.instance.GetComponent<TouchpadLocomotion>().SetClimbAbility(hand.handType, false);
 		}
 
 
@@ -67,7 +67,7 @@ public class WallClimbInteractable : MonoBehaviour//, IInteractable
 		//-------------------------------------------------
 		private void HandHoverUpdate( Hand hand )
 		{
-            Player.instance.GetComponent<TouchpadLocomotion>().SetClimbAbility(hand.handType, true);
+            // Player.instance.GetComponent<TouchpadLocomotion>().SetClimbAbility(hand.handType, true);
             
             /*
             GrabTypes startingGrabType = hand.GetGrabStarting();

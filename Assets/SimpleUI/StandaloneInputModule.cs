@@ -11,14 +11,10 @@ namespace SimpleUI
 
 
 
-
-  /// <summary>
-  ///   <para>A BaseInputModule for pointer input.</para>
-  /// </summary>
   public abstract class PointerInputModule : BaseInputModule
   {
 
-        protected BaseInput GetInput () {
+        public BaseInput GetInput () {
             if (inputOverride != null) {
                 // Debug.Log("overrideen" + inputOverride);
                 return inputOverride;
@@ -103,10 +99,10 @@ namespace SimpleUI
     ///   <para>Given a mouse button return the current state for the frame.</para>
     /// </summary>
     /// <param name="buttonId">Mouse Button id.</param>
-    protected static PointerEventData.FramePressState StateForMouseButton(int buttonId)
+    protected PointerEventData.FramePressState StateForMouseButton(int buttonId)
     {
-      bool mouseButtonDown = Input.GetMouseButtonDown(buttonId);
-      bool mouseButtonUp = Input.GetMouseButtonUp(buttonId);
+      bool mouseButtonDown = GetInput().GetMouseButtonDown(buttonId);
+      bool mouseButtonUp = GetInput().GetMouseButtonUp(buttonId);
       if (mouseButtonDown && mouseButtonUp)
         return PointerEventData.FramePressState.PressedAndReleased;
       if (mouseButtonDown)
@@ -133,8 +129,8 @@ namespace SimpleUI
       bool pointerData = this.GetPointerData(-1, out data1, true);
       data1.Reset();
       if (pointerData)
-        data1.position = (Vector2) Input.mousePosition;
-      Vector2 mousePosition = (Vector2) Input.mousePosition;
+        data1.position = (Vector2) GetInput().mousePosition;
+      Vector2 mousePosition = (Vector2) GetInput().mousePosition;
       data1.delta = mousePosition - data1.position;
       data1.position = mousePosition;
 
@@ -153,9 +149,9 @@ namespace SimpleUI
       this.GetPointerData(-3, out data3, true);
       this.CopyFromTo(data1, data3);
       data3.button = PointerEventData.InputButton.Middle;
-      this.m_MouseState.SetButtonState(PointerEventData.InputButton.Left, PointerInputModule.StateForMouseButton(0), data1);
-      this.m_MouseState.SetButtonState(PointerEventData.InputButton.Right, PointerInputModule.StateForMouseButton(1), data2);
-      this.m_MouseState.SetButtonState(PointerEventData.InputButton.Middle, PointerInputModule.StateForMouseButton(2), data3);
+      this.m_MouseState.SetButtonState(PointerEventData.InputButton.Left, this.StateForMouseButton(0), data1);
+      this.m_MouseState.SetButtonState(PointerEventData.InputButton.Right, this.StateForMouseButton(1), data2);
+      this.m_MouseState.SetButtonState(PointerEventData.InputButton.Middle, this.StateForMouseButton(2), data3);
       return this.m_MouseState;
     }
 
@@ -387,18 +383,10 @@ namespace SimpleUI
   }
 
 
-
-
-
-
-
-
-  /// <summary>
-  ///   <para>A BaseInputModule designed for mouse  keyboard  controller input.</para>
-  /// </summary>
   [AddComponentMenu("Event/Standalone Input Module")]
-  public class CustomInputModule : PointerInputModule
+  public class StandaloneInputModule : PointerInputModule
   {
+    [Header("USING CUSTOM")] // just to make usre its ours
     [SerializeField]
     private string m_HorizontalAxis = "Horizontal";
     [SerializeField]
@@ -526,7 +514,7 @@ namespace SimpleUI
       }
     }
 
-    protected CustomInputModule()
+    protected StandaloneInputModule()
     {
     }
 
@@ -536,7 +524,7 @@ namespace SimpleUI
     public override void UpdateModule()
     {
       this.m_LastMousePosition = this.m_MousePosition;
-      this.m_MousePosition = (Vector2) Input.mousePosition;
+      this.m_MousePosition = (Vector2) GetInput().mousePosition;
     }
 
     /// <summary>
@@ -568,7 +556,7 @@ namespace SimpleUI
         !Mathf.Approximately(GetInput().GetAxisRaw(this.m_HorizontalAxis), 0.0f) | 
         !Mathf.Approximately(GetInput().GetAxisRaw(this.m_VerticalAxis), 0.0f) | 
         (double) (this.m_MousePosition - this.m_LastMousePosition).sqrMagnitude > 0.0 | 
-        Input.GetMouseButtonDown(0);
+        GetInput().GetMouseButtonDown(0);
 
 
 
@@ -584,8 +572,8 @@ namespace SimpleUI
     public override void ActivateModule()
     {
       base.ActivateModule();
-      this.m_MousePosition = (Vector2) Input.mousePosition;
-      this.m_LastMousePosition = (Vector2) Input.mousePosition;
+      this.m_MousePosition = (Vector2) GetInput().mousePosition;
+      this.m_LastMousePosition = (Vector2) GetInput().mousePosition;
       GameObject selectedGameObject = this.eventSystem.currentSelectedGameObject;
       if ((UnityEngine.Object) selectedGameObject == (UnityEngine.Object) null)
         selectedGameObject = this.eventSystem.firstSelectedGameObject;

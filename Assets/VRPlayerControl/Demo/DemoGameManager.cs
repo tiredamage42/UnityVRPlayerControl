@@ -13,7 +13,8 @@ public class DemoGameManager : MonoBehaviour
     public static bool isPaused;
 
 
-    public GameObject uiMenu;
+    [Header("The base page for the main menu")]
+    public UIPage uiMenuFirstPage;
 
     static DemoGameManager _i;
     public static DemoGameManager instance{
@@ -28,6 +29,15 @@ public class DemoGameManager : MonoBehaviour
     public float pauseDelay = .1f;
 
 
+    void Awake () {
+        uiMenuFirstPage.onBaseCancel += OnCancelMainMenuPage;
+    }
+
+    void OnCancelMainMenuPage () {
+        TogglePause();
+    }
+
+
 
     static IEnumerator TogglePauseCoroutine () {
         isPaused = !isPaused;
@@ -39,19 +49,13 @@ public class DemoGameManager : MonoBehaviour
         
         yield return new WaitForSeconds(delay);
 
-        instance.uiMenu.SetActive(isPaused);
         if (isPaused) {
-            yield return null;// new WaitForNextFrame();
-            instance.uiMenu.SetActive(!isPaused);
-            yield return null;// new WaitForNextFrame();
-            instance.uiMenu.SetActive(isPaused);
-            yield return null;// new WaitForNextFrame();
-            instance.uiMenu.SetActive(!isPaused);
-            yield return null;// new WaitForNextFrame();
-            instance.uiMenu.SetActive(isPaused);
             
-            
-            // yield return new WaitForNextFrame();
+            UIManager.ShowUI (instance.uiMenuFirstPage, true, true);
+
+        }
+        else {
+            UIManager.HideUI (instance.uiMenuFirstPage);
         }
 
 

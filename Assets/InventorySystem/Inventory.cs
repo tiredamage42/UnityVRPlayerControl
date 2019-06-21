@@ -7,11 +7,25 @@ using VRPlayer;
 
 using Valve.VR;
 
+using System;
+
 
 namespace InventorySystem {
 
 public class Inventory : MonoBehaviour
 {
+    [Flags]
+        public enum AttachmentFlags
+        {
+            SnapOnAttach = 1 << 0, // The object should snap to the position of the specified attachment point on the hand.
+            DetachOthers = 1 << 1, // Other objects attached to this hand will be detached.
+            DetachFromOtherHand = 1 << 2, // This object will be detached from the other hand.
+            ParentToHand = 1 << 3, // The object will be parented to the hand.
+            VelocityMovement = 1 << 4, // The object will attempt to move to match the position and rotation of the hand.
+            TurnOnKinematic = 1 << 5, // The object will not respond to external physics.
+            TurnOffGravity = 1 << 6, // The object will not respond to external physics.
+            // AllowSidegrade = 1 << 7, // The object is able to switch from a pinch grab to a grip grab. Decreases likelyhood of a good throw but also decreases likelyhood of accidental drop
+        };
 
     public void OnUseStart (int useIndex) {
             if (equippedItem != null) {
@@ -63,7 +77,7 @@ public class Inventory : MonoBehaviour
         public bool attachedRigidbodyUsedGravity;
         public Transform originalParent;
         public bool isParentedToInventory;
-        public Hand.AttachmentFlags attachFlags;
+        public AttachmentFlags attachFlags;
         public Transform equipPoint;
         // public Vector3 targetLocalPos;
         // public Quaternion initialRotationalOffset;
@@ -72,7 +86,7 @@ public class Inventory : MonoBehaviour
 
         public EquipType equipType;
         
-        public bool HasAttachFlag(Hand.AttachmentFlags flag)
+        public bool HasAttachFlag(AttachmentFlags flag)
         {
             return (attachFlags & flag) == flag;
         }
@@ -183,17 +197,17 @@ public class Inventory : MonoBehaviour
 
 
 
-const Hand.AttachmentFlags defaultAttachmentFlags = Hand.AttachmentFlags.ParentToHand |
-                                                              Hand.AttachmentFlags.DetachFromOtherHand |
-                                                              Hand.AttachmentFlags.TurnOnKinematic |
-                                                              Hand.AttachmentFlags.SnapOnAttach;
+const AttachmentFlags defaultAttachmentFlags = AttachmentFlags.ParentToHand |
+                                                              AttachmentFlags.DetachFromOtherHand |
+                                                              AttachmentFlags.TurnOnKinematic |
+                                                              AttachmentFlags.SnapOnAttach;
 
 
-const Hand.AttachmentFlags physicsEquipFlags = Hand.AttachmentFlags.VelocityMovement | Hand.AttachmentFlags.TurnOffGravity | Hand.AttachmentFlags.SnapOnAttach;
-const Hand.AttachmentFlags normalEquipFlags = Hand.AttachmentFlags.ParentToHand | Hand.AttachmentFlags.TurnOnKinematic | Hand.AttachmentFlags.SnapOnAttach;
-const Hand.AttachmentFlags staticEquipFlags = 0;
+const AttachmentFlags physicsEquipFlags = AttachmentFlags.VelocityMovement | AttachmentFlags.TurnOffGravity | AttachmentFlags.SnapOnAttach;
+const AttachmentFlags normalEquipFlags = AttachmentFlags.ParentToHand | AttachmentFlags.TurnOnKinematic | AttachmentFlags.SnapOnAttach;
+const AttachmentFlags staticEquipFlags = 0;
 
-Hand.AttachmentFlags GetFlags (EquipType equipType) {
+AttachmentFlags GetFlags (EquipType equipType) {
     switch (equipType) {
         case EquipType.Static:
             return staticEquipFlags;
@@ -289,20 +303,20 @@ public enum EquipType {
 
 
 
-                if (attachedObject.HasAttachFlag(Hand.AttachmentFlags.TurnOnKinematic)) {
+                if (attachedObject.HasAttachFlag(AttachmentFlags.TurnOnKinematic)) {
                     attachedObject.collisionDetectionMode = itemRB.collisionDetectionMode;
                     if (attachedObject.collisionDetectionMode == CollisionDetectionMode.Continuous)
                         itemRB.collisionDetectionMode = CollisionDetectionMode.Discrete;
                     itemRB.isKinematic = true;
                 }
-                if (attachedObject.HasAttachFlag(Hand.AttachmentFlags.TurnOffGravity))
+                if (attachedObject.HasAttachFlag(AttachmentFlags.TurnOffGravity))
                     itemRB.useGravity = false;
             }
             
             attachedObject.equipPoint = alternateEquipPoint != null ? alternateEquipPoint : this.transform;// item.useAlternateAttachementPoint ? alternateEquipPoint : transform;
 
 
-            if (attachedObject.HasAttachFlag(Hand.AttachmentFlags.ParentToHand))
+            if (attachedObject.HasAttachFlag(AttachmentFlags.ParentToHand))
             {
                 //Parent the object to the hand
                 item.transform.parent = attachedObject.equipPoint;// this.transform;
@@ -322,7 +336,7 @@ public enum EquipType {
             // }
 
             
-            if (attachedObject.HasAttachFlag(Hand.AttachmentFlags.SnapOnAttach))
+            if (attachedObject.HasAttachFlag(AttachmentFlags.SnapOnAttach))
             {
 
                 Vector3 localPosition;
@@ -508,12 +522,12 @@ public enum EquipType {
             {
                 rb.interpolation = equippedItem.rbInterpolation;
 
-                if (equippedItem.HasAttachFlag(Hand.AttachmentFlags.TurnOnKinematic))
+                if (equippedItem.HasAttachFlag(AttachmentFlags.TurnOnKinematic))
                 {
                     rb.isKinematic = equippedItem.attachedRigidbodyWasKinematic;
                     rb.collisionDetectionMode = equippedItem.collisionDetectionMode;
                 }
-                if (equippedItem.HasAttachFlag(Hand.AttachmentFlags.TurnOffGravity))
+                if (equippedItem.HasAttachFlag(AttachmentFlags.TurnOffGravity))
                 {   
                     rb.useGravity = equippedItem.attachedRigidbodyUsedGravity;       
                 }
