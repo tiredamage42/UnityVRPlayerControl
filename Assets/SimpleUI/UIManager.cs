@@ -7,6 +7,10 @@ namespace SimpleUI {
 
 public class UIManager : MonoBehaviour
 {
+    void Start() {
+                        instance.gameObject.SetActive(false);
+
+    }
 
     public Color32 mainLightColor = Color.red, mainDarkColor = Color.blue;
 
@@ -33,12 +37,18 @@ public class UIManager : MonoBehaviour
         }
 						
         if (needsInput) {
-            instance.gameObject.SetActive(true);
+            // instance.gameObject.SetActive(true);
             instance.shownUIsWithInput.Add(uiObject);
+        }
+        else {
+instance.gameObject.SetActive(false);
+            
         }
 
     }
     static void ShowUI (GameObject uiObject, bool needsInput, bool tryRepeat) {
+        instance.gameObject.SetActive(true);
+            
         instance.StartCoroutine(_ShowUI(uiObject, needsInput, tryRepeat));
     }
     static GameObject GetUIObj (UIElementHolder uiObject) {

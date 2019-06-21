@@ -40,6 +40,15 @@ public abstract class UIElementHolder : MonoBehaviour
             return onAnySelection;
         }
     }
+    public System.Action<SelectableElement> onAnySubmit;
+    System.Action<SelectableElement> _onAnySubmit {
+        get {
+            if (parentHolder != null) {
+                return parentHolder._onAnySubmit;
+            }
+            return onAnySubmit;
+        }
+    }
 
 
 
@@ -102,6 +111,8 @@ public abstract class UIElementHolder : MonoBehaviour
         for (int i = 0; i < _allElements.Length; i++) {
             _allElements[i].parentHolder = this;
             _allElements[i].onSelect = _onAnySelection;
+            _allElements[i].onSubmit = _onAnySubmit;
+            
             allElements.Add(_allElements[i]);                
         }
     }

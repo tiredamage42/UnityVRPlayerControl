@@ -37,8 +37,8 @@ namespace VRPlayer{
 
 
             SteamVR_Input_Sources hand = currentUIHand != SteamVR_Input_Sources.Any ? currentUIHand : lastUsedUIHand;
-            Debug.LogError("triggering haptic on " + hand);
-            return;
+            // Debug.LogError("triggering haptic on " + hand);
+            // return;
             
             StandardizedVRInput.instance. TriggerHapticPulse( hand, 
                 // float duration, 
@@ -73,7 +73,10 @@ namespace VRPlayer{
         public static bool ActionIsOccupied (SteamVR_Action action, SteamVR_Input_Sources forHand) {
             return instance.gameObject.activeSelf && (
                 // (action == instance.submitButton && forHand == instance.submitHand) || (action == instance.cancelButton && forHand == instance.cancelHand)
-                (action == instance.submitButton && forHand == instance.currentUIHand) || (action == instance.cancelButton && forHand == instance.currentUIHand)
+                (action == instance.submitButton && forHand == instance.currentUIHand) 
+                || (action == instance.cancelButton && forHand == instance.currentUIHand)
+                || (action == StandardizedVRInput.instance.TrackpadAxis && forHand == instance.currentUIHand) 
+            
             );
         }
 

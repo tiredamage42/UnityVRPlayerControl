@@ -189,7 +189,7 @@ namespace InteractionSystem {
             }
         }
 
-        Vector4[] hoverCheckPositionsAndRadii;
+        Vector4[] hoverCheckPositionsAndRadii = new Vector4[0];
 
         public void SetHoverCheckPositionsAndRadii (Vector4[] checks) {
             this.hoverCheckPositionsAndRadii = checks;

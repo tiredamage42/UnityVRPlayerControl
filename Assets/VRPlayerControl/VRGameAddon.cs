@@ -68,10 +68,15 @@ namespace VRPlayer{
             DemoGameManager.onPauseRoutineEnd -= OnPauseRoutineEnd;
         }
 
+        public static event System.Action<bool> onGamePaused;
+
 
         void OnPauseRoutineStart (bool isPaused, float routineTime) {
             SteamVR_Fade.Start( Color.clear, 0 );
             SteamVR_Fade.Start( pauseFlashColor, routineTime );
+            if (onGamePaused != null) {
+                onGamePaused(isPaused);
+            }
         }
         void OnPauseRoutineEnd (bool isPaused, float routineTime) {
             hmdCamera = Player.instance.hmdTransform.GetComponent<Camera>();
