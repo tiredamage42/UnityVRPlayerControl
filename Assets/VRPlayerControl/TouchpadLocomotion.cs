@@ -732,7 +732,7 @@ public class TouchpadLocomotion : MonoBehaviour
             isRunning = false;
             return;
         }
-        currentMoveVector = moveAction.GetAxis(moveHand);
+        currentMoveVector = VRInputModuleAddon.ActionIsOccupied(moveAction, moveHand) ? Vector2.zero : moveAction.GetAxis(moveHand);
 
         if (currentMoveVector != Vector2.zero) {
 

@@ -650,6 +650,13 @@ namespace VRPlayer
         void OnItemUnequipped(Inventory inventory, Item item){
             if (item.equipType != Inventory.EquipType.Static) {
             
+                /*
+                
+                
+                
+                check for rigidbody here!!!
+                
+                 */
                 Vector3 velocity;
                 Vector3 angularVelocity;
 
@@ -1225,14 +1232,14 @@ pos.x, pos.y, pos.z,
             StandardizedVRInput.instance.ShowHint(this, useAction);
 
             //if its a ui element
-            InputModule.instance.HoverBegin( hoveringInteractable.gameObject );
+            // InputModule.instance.HoverBegin( hoveringInteractable.gameObject );
         }
 
         void OnInspectEnd (Interactor interactor, Interactable hoveringInteractable) {
              StandardizedVRInput.instance.HideHint(this, useAction);
 
             //if its a ui element
-            InputModule.instance.HoverEnd( hoveringInteractable.gameObject );
+            // InputModule.instance.HoverEnd( hoveringInteractable.gameObject );
 
         }
 
@@ -1753,7 +1760,7 @@ pos.x, pos.y, pos.z,
                 mainRenderModel.SetSkeletonRangeOfMotion(oldRM_rom);
 
             this.BroadcastMessage("SetInputSource", handType, SendMessageOptions.DontRequireReceiver); // let child objects know we've initialized
-            Debug.Log("Set Input source " + handType);
+            // Debug.Log("Set Input source " + handType);
             // Debug.Log("Set Input source " + mainRenderModel);
             
             

@@ -63,6 +63,8 @@ public class UIButtonClickWData : UnityEvent<GameObject[]>
 
 
     public System.Action onSelect;
+    public System.Action<SelectableElement> onSubmit;
+    
 
         
     //Do this when the selectable UI object is selected.
@@ -93,6 +95,10 @@ public class UIButtonClickWData : UnityEvent<GameObject[]>
         }
 
         OnSubmit();
+
+        if (onSubmit != null) {
+            onSubmit(this);
+        }
     }
     public void OnDeselect(BaseEventData data)
     {

@@ -136,14 +136,14 @@ namespace Valve.VR.InteractionSystem
         {
             inputSource = newInputSource;
             if (controllerRenderModel != null) {
-                Debug.LogError("hei set here " + newInputSource);
+                // Debug.LogError("hei set here " + newInputSource);
                 controllerRenderModel.SetInputSource(inputSource);
             }
         }
 
         public virtual void OnHandInitialized(int deviceIndex)
         {
-                            Debug.LogError("hand initialized ");
+                            // Debug.LogError("hand initialized ");
 
             controllerRenderModel.SetInputSource(inputSource);
             controllerRenderModel.SetDeviceIndex(deviceIndex);
