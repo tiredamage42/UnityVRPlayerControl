@@ -7,88 +7,92 @@ using UnityEngine.Events;
 
 namespace SimpleUI {
 
-
-
-[System.Serializable]
-public class UIButtonClickWData : UnityEvent<GameObject[]>
-{
-}
 [ExecuteInEditMode]
-public class UIButton : MonoBehaviour, ISelectHandler, IDeselectHandler
+public class UIButton : SelectableElement
 {
 
-    public UIPage pageDestination;
-    [HideInInspector] public Text text;
-    [HideInInspector] public RectTransform rectTransform, textRectTransform;
-    [HideInInspector] public UIPage parentPage;
-
-    public GameObject[] data;
-    
-    Button button;
-    Image buttonImage;
-
-
-    public UIButtonClickWData onClick;
-
-
-    public string buttonText = "newButton";
-    
-    public void SetButtonText(string text) {
-        buttonText = text;
-    }
-    
-    void OnButtonClick () {
-        if (pageDestination != null) {
-            pageDestination.gameObject.SetActive(true);
-            pageDestination.parentPage = parentPage;
-            parentPage.gameObject.SetActive(false);
-        }
-        else if (onClick != null) {
-            onClick.Invoke(data);
-        }
-        
-    }
-
-    void OnEnable () {
-        button = GetComponent<Button>();
-        text = GetComponentInChildren<Text>();
-        buttonImage = GetComponent<Image>();
-        rectTransform = GetComponent<RectTransform>();
-
-        textRectTransform = text.GetComponent<RectTransform>();
-        
-        text.color = UIManager.instance.mainLightColor;
-        buttonImage.color = Color.clear;// UIManager.instance.mainDarkColor;
         
 
-        if (Application.isPlaying) {
-            button.onClick.AddListener(OnButtonClick);
+
+        Image _mainImage;
+        Image buttonImage {
+            get {
+                if (_mainImage == null) {
+                    _mainImage = GetComponent<Image>();
+                }
+                return _mainImage;
+            }
         }
-    }
-    void OnDisable () {
-        if (Application.isPlaying) {
-            button.onClick.RemoveListener(OnButtonClick);
-        }
-    }
+        
 
 
-    // void Awake () {
+    // public UIPage pageDestination;
+    // [HideInInspector] public UIPage parentPage;
+    
+    // Image buttonImage;
+
+    // public string buttonText = "newButton";
+    
+    // public void SetButtonText(string text) {
+    //     buttonText = text;
+    // }
+    
+    // void OnButtonClick () {
+        
+        
     // }
 
-    
 
-     //Do this when the selectable UI object is selected.
-    public void OnSelect(BaseEventData eventData)
-    {
-        buttonImage.color = UIManager.instance.mainLightColor;
-        text.color = UIManager.instance.mainDarkColor;
-        Debug.Log(this.gameObject.name + " was selected");
+    protected override void UpdateElement () {
+        buttonImage.color = selected ? UIManager.instance.mainLightColor : UIManager.instance.mainDarkColor;
+        text.invert = selected;
+        text.UpdateColors();
     }
-    public void OnDeselect(BaseEventData data)
+
+    // void OnEnable () {
+        // buttonImage = GetComponent<Image>();
+        
+
+        // OnDeselect();
+        
+
+        // if (Application.isPlaying) {
+        //     Button button = GetComponent<Button>();
+        //     button.onClick.AddListener(OnButtonClick);
+        // }
+    // }
+    // void OnDisable () {
+        // if (Application.isPlaying) {
+        //     Button button = GetComponent<Button>();
+        //     button.onClick.RemoveListener(OnButtonClick);
+        // }
+    // }
+
+    protected override void OnSubmit () {
+        // if (pageDestination != null) {
+        //     pageDestination.gameObject.SetActive(true);
+        //     pageDestination.parentPage = parentPage;
+        //     parentPage.gameObject.SetActive(false);
+        // }
+    }
+
+    //Do this when the selectable UI object is selected.
+    protected override void OnSelect()
     {
-        text.color = UIManager.instance.mainLightColor;
-        buttonImage.color = Color.clear;// UIManager.instance.mainDarkColor;
-        // Debug.Log("Deselected");
+        // UpdateButton();
+
+        // buttonImage.color = UIManager.instance.mainLightColor;
+        // text.invert = true;
+        // text.UpdateColors();
+    }
+
+    protected override void OnDeselect()
+    {
+        // UpdateButton();
+        
+        // buttonImage.color = Color.clear;
+        // text.invert = false;
+        // text.UpdateColors();
     }
 
 }

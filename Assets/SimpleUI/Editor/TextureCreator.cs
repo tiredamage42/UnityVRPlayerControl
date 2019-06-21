@@ -45,22 +45,84 @@ public class TextureCreator : ScriptableWizard
             dirPath += "/";
         }
 
-        Debug.Log("creating textures at :: " + dirPath);
+        // Debug.Log("creating textures at :: " + dirPath);
 
-        SaveTexture (dirPath + "FillRect", CreateFillRectangle());
-        SaveTexture (dirPath + "FillRectSpace", CreateFillRectangleWithSpace());
-        SaveTexture (dirPath + "OutlineRect", CreateOutlineRect());
+        // SaveTexture (dirPath + "FillRect", CreateFillRectangle());
+        // SaveTexture (dirPath + "FillRectSpace", CreateFillRectangleWithSpace());
+        // SaveTexture (dirPath + "OutlineRect", CreateOutlineRect());
 
-        SaveTexture (dirPath + "TopBottomRect", CreateTopBottomRect());
-        SaveTexture (dirPath + "LeftRightRect", CreateLeftRightRect());
+        // SaveTexture (dirPath + "TopBottomRect", CreateTopBottomRect());
+        // SaveTexture (dirPath + "LeftRightRect", CreateLeftRightRect());
 
-        SaveTexture (dirPath + "TopBottomRectWCorner", CreateTopBottomRectWCorner());
-        SaveTexture (dirPath + "LeftRightRectWCorner", CreateLeftRightRectWCorner());
+        // SaveTexture (dirPath + "TopBottomRectWCorner", CreateTopBottomRectWCorner());
+        // SaveTexture (dirPath + "LeftRightRectWCorner", CreateLeftRightRectWCorner());
 
-        SaveTexture (dirPath + "Corners", CreateCorners());
+        // SaveTexture (dirPath + "Corners", CreateCorners());
+
+
+        SaveTexture(dirPath + "CircleFull", CreateCircle());
+        SaveTexture(dirPath + "CircleEmpty", CreateCircleEmpty());
+        
 
         AssetDatabase.Refresh();
     }
+
+ 
+ Color32[] CreateCircle () {
+     Color32[] colors = new Color32[width * height];
+
+     Vector2 maskCenter = new Vector2(width * 0.5f, height * 0.5f);
+        
+     for(int y = 0; y < height; ++y){
+         for(int x = 0; x < width; ++x){
+
+ 
+             float distFromCenter = Vector2.Distance(maskCenter, new Vector2(x, y));
+
+             float maskPixel = distFromCenter <= width * .5f ? 1 : 0;// (0.5f - (distFromCenter / width)) * maskThreshold;
+             colors[x + y * width] = new Color(maskPixel, maskPixel, maskPixel, maskPixel);
+             
+         }
+     }
+     return colors;
+ }
+
+
+Color32[] CreateCircleEmpty () {
+     Color32[] colors = new Color32[width * height];
+
+     Vector2 maskCenter = new Vector2(width * 0.5f, height * 0.5f);
+        
+     for(int y = 0; y < height; ++y){
+         for(int x = 0; x < width; ++x){
+
+ 
+             float distFromCenter = Vector2.Distance(maskCenter, new Vector2(x, y));
+            float edge = width * .5f;
+
+            float innerEdge = edge - borderWidth;
+
+             float maskPixel = distFromCenter <= edge && distFromCenter >= innerEdge ? 1 : 0;// (0.5f - (distFromCenter / width)) * maskThreshold;
+             colors[x + y * width] = new Color(maskPixel, maskPixel, maskPixel, maskPixel);
+             
+         }
+     }
+     return colors;
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     Color32[] CreateCorners () {
 
         Color32[] colors = new Color32[width * height];
