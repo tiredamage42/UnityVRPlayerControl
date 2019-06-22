@@ -45,6 +45,9 @@ namespace VRPlayer {
             VRManager.onGamePaused -= OnGamePaused;
             VRManager.onUISelection -= OnUISelection;
             VRManager.onShowGameMessage -= OnShowGameMessage;
+
+                        quickInventory.onBaseCancel -= CloseQuickInventory;
+
         }
 
 
@@ -114,10 +117,15 @@ namespace VRPlayer {
         }
         
         void OnUISelection (GameObject[] data, object[] customData) {
+            Debug.LogError(("triggerd pulse ui seelct"));
+            
             // float duration,  float frequency, float amplitude
+            
             StandardizedVRInput.instance.TriggerHapticPulse( VRUIInput.GetUIHand (), .1f, 1.0f, 1.0f );   
         }
         void OnShowGameMessage (string message, int key) {
+            Debug.LogError(("triggerd pulse message"));
+
             StandardizedVRInput.instance.TriggerHapticPulse( messagesHand, .1f, 1.0f, 1.0f );   
         }
 

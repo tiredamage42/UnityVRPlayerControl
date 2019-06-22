@@ -103,6 +103,7 @@ namespace VRPlayer{
         void OnShowGameMessage (string message, int key) {
             
             if (onShowGameMessage != null) {
+                Debug.LogError("callingbakc on show message");
                 onShowGameMessage (message, key);
             }
         }
@@ -116,6 +117,7 @@ namespace VRPlayer{
         public static event System.Action<GameObject[], object[]> onUISelection, onUISubmit;
         void OnUISelection (GameObject[] data, object[] customData) {
             if (onUISelection != null) {
+                Debug.LogError("callign back on ui selectin");
                 onUISelection (data, customData);
             }
         }
@@ -256,6 +258,7 @@ namespace VRPlayer{
 
         public void ShowTextHints ( GameObject[] data )
 		{
+            Debug.LogError("showing texxt hints");
 			StandardizedVRInput.instance.PlayDebugRoutine();
 		}
 		public void DisableHints ( GameObject[] data )
