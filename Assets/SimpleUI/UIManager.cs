@@ -90,8 +90,10 @@ namespace SimpleUI {
         }
 
         void OnPauseRoutineEnd(bool isPaused, float routineTime) {
-            if (isPaused)
+            if (isPaused) {
                 UIManager.ShowUI (mainMenuBasePage, true, true);
+
+            }
             else
                 UIManager.HideUI (mainMenuBasePage);
 
@@ -161,8 +163,11 @@ namespace SimpleUI {
         // public static event System.Action<UIElementHolder> onUIShow;
 
 
-        static IEnumerator _ShowUI (GameObject uiObject, bool needsInput, bool tryRepeat) {
-            
+        static IEnumerator _ShowUI (GameObject uiObject, UIElementHolder uiObjectC, bool needsInput, bool tryRepeat) {
+            if (needsInput) {
+                
+                inputModule.gameObject.SetActive(true);
+            }
             
             uiObject.SetActive(true);
 
@@ -183,34 +188,45 @@ namespace SimpleUI {
             if (needsInput) {
                 instance.shownUIsWithInput.Add(uiObject);
                 
-                inputModule.gameObject.SetActive(true);
+                // inputModule.gameObject.SetActive(true);
             }
 
             // else {
             //     instance.gameObject.SetActive(false);
             // }
 
+             Debug.LogError("adding callbacks");
+            foreach (var d in gameManager.GetUISelectInvocations()) {
+                uiObjectC.onSelectEvent += (System.Action<GameObject[], object[]>)d;
+            }
+            foreach (var d in gameManager.GetUISubmitInvocations()) {
+                uiObjectC.onSubmitEvent += (System.Action<GameObject[], object[]>)d;
+            }
+
+           
+
         }
-        static void ShowUI (GameObject uiObject, bool needsInput, bool tryRepeat) {
+        static void ShowUI (GameObject uiObject, UIElementHolder uiObjectC, bool needsInput, bool tryRepeat) {
             //set active so we can call coroutines on it
             // instance.gameObject.SetActive(true);
                 
-            instance.StartCoroutine(_ShowUI(uiObject, needsInput, tryRepeat));
+            instance.StartCoroutine(_ShowUI(uiObject, uiObjectC, needsInput, tryRepeat));
+            
         }
         static GameObject GetUIObj (UIElementHolder uiObject) {
             return uiObject.baseObject != null ? uiObject.baseObject : uiObject.gameObject;
         }
         
         public static void ShowUI(UIElementHolder uiObject, bool needsInput, bool tryRepeat) {
-            ShowUI(GetUIObj(uiObject), needsInput, tryRepeat);
+            ShowUI(GetUIObj(uiObject), uiObject, needsInput, tryRepeat);
             
-
-            foreach (var d in gameManager.GetUISelectInvocations()) {
-                uiObject.onSelectEvent += (System.Action<GameObject[], object[]>)d;
-            }
-            foreach (var d in gameManager.GetUISubmitInvocations()) {
-                uiObject.onSubmitEvent += (System.Action<GameObject[], object[]>)d;
-            }
+            // Debug.LogError("adding callbacks");
+            // foreach (var d in gameManager.GetUISelectInvocations()) {
+            //     uiObject.onSelectEvent += (System.Action<GameObject[], object[]>)d;
+            // }
+            // foreach (var d in gameManager.GetUISubmitInvocations()) {
+            //     uiObject.onSubmitEvent += (System.Action<GameObject[], object[]>)d;
+            // }
 
             // if (onUIShow != null) {
             //     onUIShow(uiObject);
@@ -218,8 +234,9 @@ namespace SimpleUI {
         }
 
         public static void HideUI (UIElementHolder uiObject) {
-            GameObject objToUse = GetUIObj(uiObject);
+            // GameObject objToUse = GetUIObj(uiObject);
             HideUI(GetUIObj(uiObject));
+            uiObject.RemoveAllEvents();
         }
 
         static void HideUI (GameObject uiObject) {

@@ -523,7 +523,11 @@ public class TouchpadLocomotion : MonoBehaviour
         void FixedUpdateLoop (float deltaTime) {
             HandleTurningUpdate(deltaTime);
             SetCharacterControllerHeight ();
-            moveScript.MoveCharacterController(deltaTime, transform);
+
+            if (VRManager.headsetIsOnPlayerHead) {
+
+                moveScript.MoveCharacterController(deltaTime, transform);
+            }
         }
     }
 

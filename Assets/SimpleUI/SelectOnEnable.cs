@@ -6,7 +6,16 @@ namespace SimpleUI {
     public class SelectOnEnable : MonoBehaviour
     {
         bool hasSelected;
-        EventSystem eventSystem;
+        
+        EventSystem _eventSystem;
+        EventSystem eventSystem {
+            get {
+                if (_eventSystem == null) {
+                    _eventSystem = GameObject.FindObjectOfType<EventSystem>();
+                }
+                return _eventSystem;
+            }
+        }
         public GameObject toSelect;
 
         void OnDisable () {
@@ -15,7 +24,8 @@ namespace SimpleUI {
         }
 
         void Awake () {
-            eventSystem = GameObject.FindObjectOfType<EventSystem>();
+            // eventSystem = GameObject.FindObjectOfType<EventSystem>();
+            // Debug.LogError("found eent syste " + eventSystem);
         }
         
         // Update is called once per frame

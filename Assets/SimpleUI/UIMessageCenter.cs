@@ -30,6 +30,7 @@ namespace SimpleUI {
             UIMessageElement newElement = Instantiate(UIManager.instance.messagePrefab);
             newElement.transform.SetParent(transform);
             newElement.transform.localRotation = Quaternion.identity;
+            newElement.transform.localScale = Vector3.one;
             newElement.DisableMessage();
             return newElement;
         }

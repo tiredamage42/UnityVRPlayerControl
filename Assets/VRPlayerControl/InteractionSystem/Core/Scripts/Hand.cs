@@ -482,7 +482,10 @@ namespace VRPlayer
             //     if (r != null)
             //         Destroy(r.gameObject);
             // }
-            Destroy(mainRenderModel.gameObject);
+            if (mainRenderModel != null) {
+
+                Destroy(mainRenderModel.gameObject);
+            }
 
 
             // renderModels.Clear();

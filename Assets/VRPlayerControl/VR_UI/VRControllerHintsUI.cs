@@ -23,8 +23,12 @@ namespace VRPlayer.UI {
         public float textScale = .00075f;
         public float hintScale = .75f;
 
-        void Awake () {
+
+        void Start () {
             AdjustHints();
+            HideAllHints();
+        }
+        void Awake () {
             instance = this;
 
 
@@ -44,15 +48,20 @@ namespace VRPlayer.UI {
 
         void AdjustHints () {
 
+            Vector3 textOffset = rightHand[0].textOffset;
+
             for (int i = 0; i < rightHand.Length; i++) {
-                rightHand[i].element.transform.localScale = Vector3.one * hintScale;
-                rightHand[i].element.text.transform.localScale = Vector3.one * textScale;
-                rightHand[i].element.text.transform.localPosition = rightHand[i].textOffset;
-                TransformBehavior.AdjustTransform(rightHand[i].element.transform, Player.instance.rightHand.transform, hintTransforms, i);
+                HintUIElement re = rightHand[i];
+                ControllerHintUIElement rElement = re.element;
+                rElement.transform.localScale = Vector3.one * hintScale;
+                
+                rElement.text.transform.localScale = Vector3.one * textScale;
+                rElement.text.transform.localPosition = textOffset;//rightHand[i].textOffset;
+                TransformBehavior.AdjustTransform(rElement.transform, Player.instance.rightHand.transform, hintTransforms, i);
 
                 leftHand[i].element.transform.localScale = Vector3.one * hintScale;
                 leftHand[i].element.text.transform.localScale = Vector3.one * textScale;
-                leftHand[i].element.text.transform.localPosition = leftHand[i].textOffset;
+                leftHand[i].element.text.transform.localPosition = textOffset;//leftHand[i].textOffset;
                 TransformBehavior.AdjustTransform(leftHand[i].element.transform, Player.instance.leftHand.transform, hintTransforms, i, new Vector3(-1,1,1));
             }
         }
@@ -65,14 +74,22 @@ namespace VRPlayer.UI {
 
         
         public static void ShowHint (StandardizedVRInput.InputType action, SteamVR_Input_Sources forHand, string text) {
+            
+            Debug.LogError("showing here");
             if (forHand == SteamVR_Input_Sources.Any) {
+            Debug.LogError("showing hand " + forHand);
+            
                 action2hintLeft[action].element.Show(text);
                 action2hintRight[action].element.Show(text);
             }
             else if (forHand == SteamVR_Input_Sources.LeftHand) {
+            Debug.LogError("showing hand " + forHand);
+            
                 action2hintLeft[action].element.Show(text);
             }
             else if (forHand == SteamVR_Input_Sources.RightHand) {
+            Debug.LogError("showing hand " + forHand);
+            
                 action2hintRight[action].element.Show(text);
             }
         }

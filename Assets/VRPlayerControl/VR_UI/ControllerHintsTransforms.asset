@@ -13,23 +13,23 @@ MonoBehaviour:
   m_Name: ControllerHintsTransforms
   m_EditorClassIdentifier: 
   transformSettings:
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
+  - position: {x: 0.075, y: 0.025, z: -0.02}
+    rotation: {x: 60, y: 0, z: 0}
+  - position: {x: 0.075, y: 0.025, z: -0.02}
+    rotation: {x: 60, y: 0, z: 0}
+  - position: {x: 0, y: 0.025, z: -0.02}
+    rotation: {x: 60, y: 0, z: 0}
+  - position: {x: 0, y: 0.025, z: -0.02}
+    rotation: {x: 60, y: 0, z: 0}
+  - position: {x: 0, y: 0.025, z: -0.02}
+    rotation: {x: 60, y: 0, z: 0}
+  - position: {x: 0, y: 0.025, z: -0.02}
+    rotation: {x: 60, y: 0, z: 0}
+  - position: {x: 0, y: 0.025, z: -0.02}
+    rotation: {x: 60, y: 0, z: 0}
+  - position: {x: 0, y: 0.025, z: -0.02}
+    rotation: {x: 60, y: 0, z: 0}
+  - position: {x: 0, y: 0.025, z: -0.02}
+    rotation: {x: 60, y: 0, z: 0}
+  - position: {x: -0.075, y: 0.025, z: -0.02}
+    rotation: {x: 60, y: 0, z: 0}
