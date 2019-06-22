@@ -121,12 +121,14 @@ public class Inventory : MonoBehaviour
 
 
     void GetLocalEquippedPositionTargets (Item item, out Vector3 localPosition, out Quaternion localRotation) {
-        localPosition = Vector3.zero;
-        localRotation = Quaternion.identity;
-        if (item.equipBehavior != null && item.equipBehavior.equipSettings.Length > 0) {
-            localPosition = item.equipBehavior.equipSettings[0].position;
-            localRotation = Quaternion.Euler(item.equipBehavior.equipSettings[0].rotation);
-        }
+        TransformBehavior.GetValues(item.equipBehavior, 0, out localPosition, out localRotation);
+        // localPosition = Vector3.zero;
+        // localRotation = Quaternion.identity;
+
+        // if (item.equipBehavior != null && item.equipBehavior.transformSettings.Length > 0) {
+        //     localPosition = item.equipBehavior.transformSettings[0].position;
+        //     localRotation = Quaternion.Euler(item.equipBehavior.transformSettings[0].rotation);
+        // }
     }
 
     public bool GetUpdatedEquippedVelocities(out Vector3 velocityTarget, out Vector3 angularTarget)

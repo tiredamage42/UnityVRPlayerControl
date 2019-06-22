@@ -37,5 +37,11 @@ MonoBehaviour:
   - hand: 2
     name: Interact
     inputType: 0
+  - hand: 1
+    name: Main Menu
+    inputType: 8
+  - hand: 2
+    name: Stash
+    inputType: 2
   timeBetweenButtons: 2
   timeBetweenRepeats: 3

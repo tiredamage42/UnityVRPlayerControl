@@ -8,6 +8,8 @@ using Valve.VR.InteractionSystem;
 using InteractionSystem;
 using InventorySystem;
 
+
+using VRPlayer.UI;
 namespace VRPlayer
 {
     public class Hand : MonoBehaviour
@@ -402,7 +404,7 @@ namespace VRPlayer
         
         }
         void OnInspectStart (Interactor interactor, Interactable hoveringInteractable) {
-            StandardizedVRInput.instance.ShowHint(this, useAction);
+            StandardizedVRInput.instance.ShowHint(this, useAction, "Use");
         }
         void OnInspectEnd (Interactor interactor, Interactable hoveringInteractable) {
              StandardizedVRInput.instance.HideHint(this, useAction);

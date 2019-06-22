@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 651118d94913b4ccaa693bae51d9b8b2, type: 3}
   m_Name: MessagesTransform
   m_EditorClassIdentifier: 
-  equipSettings:
-  - position: {x: 0.075, y: 0.04, z: -0.04}
-    rotation: {x: 90, y: 0, z: 0}
+  transformSettings:
+  - position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
