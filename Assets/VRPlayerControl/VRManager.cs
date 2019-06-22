@@ -252,6 +252,34 @@ namespace VRPlayer{
             }
         }
 
+
+
+        public void ShowTextHints ( GameObject[] data )
+		{
+			StandardizedVRInput.instance.PlayDebugRoutine();
+		}
+		public void DisableHints ( GameObject[] data )
+		{
+			StandardizedVRInput.instance.StopHintRoutine();
+		}
+        public void SetRenderModel(GameObject[] data)
+        {
+            if (data.Length < 2) {
+                return;
+            }
+            for (int handIndex = 0; handIndex < Player.instance.hands.Length; handIndex++)
+            {
+                Hand hand = Player.instance.hands[handIndex];
+                if (hand.handType == SteamVR_Input_Sources.RightHand)
+                    hand.SetRenderModel(data[0]);
+                if (hand.handType == SteamVR_Input_Sources.LeftHand)
+                    hand.SetRenderModel(data[1]);
+            }
+        }
+        public void RecalibrateRealLifeHeight (GameObject[] data) {
+            Player.instance.RecalibrateRealLifeHeight();
+        }
+
         
 
 
