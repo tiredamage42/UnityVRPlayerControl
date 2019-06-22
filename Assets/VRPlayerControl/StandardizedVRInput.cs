@@ -69,6 +69,7 @@ namespace VRPlayer {
                 Debug.LogError("Forgot to put in default debug routine");
                 return;
             }
+            Debug.LogError("playign routine in input");
             PlayControllerLayoutHintRoutine(debugRoutine);
         }
 
@@ -192,29 +193,38 @@ namespace VRPlayer {
         IEnumerator HintRoutine (ControllerLayoutHintRoutine routine) {
             Player player = Player.instance;
 
-            for (int i = 0; i < player.hands.Length; i++) {
-                ControllerButtonHints.HideAllTextHints( player.hands[i] );
-                ControllerButtonHints.HideAllButtonHints( player.hands[i] );
-            }
+            VRPlayer.UI.VRControllerHintsUI.HideAllHints();
+            // for (int i = 0; i < player.hands.Length; i++) {
+            //     ControllerButtonHints.HideAllTextHints( player.hands[i] );
+            //     ControllerButtonHints.HideAllButtonHints( player.hands[i] );
+            // }
 
 			while ( true )
             {
                 for (int i = 0; i < routine.routineNodes.Length; i++)
                 {
-                    ISteamVR_Action_In_Source action = GetAction(routine.routineNodes[i].inputType);
+                    // ISteamVR_Action_In_Source action = GetAction(routine.routineNodes[i].inputType);
 
-                    ControllerButtonHints.ShowTextHint(player.GetHand(routine.routineNodes[i].hand), action, routine.routineNodes[i].name);
+
+                    // ControllerButtonHints.ShowTextHint(player.GetHand(routine.routineNodes[i].hand), action, routine.routineNodes[i].name);
+                    VRPlayer.UI.VRControllerHintsUI.ShowHint(routine.routineNodes[i].inputType, routine.routineNodes[i].hand, routine.routineNodes[i].name);
                     yield return new WaitForSeconds(routine.timeBetweenButtons);
-                    ControllerButtonHints.HideTextHint(player.GetHand(routine.routineNodes[i].hand), action);
+
+                    // ControllerButtonHints.HideTextHint(player.GetHand(routine.routineNodes[i].hand), action);
+                    VRPlayer.UI.VRControllerHintsUI.HideHint(routine.routineNodes[i].inputType, routine.routineNodes[i].hand);
+
                     yield return new WaitForSeconds(0.5f);
 
                     yield return null;
                 }
 
-                for (int i = 0; i < player.hands.Length; i++) {
-                    ControllerButtonHints.HideAllTextHints( player.hands[i] );
-                    ControllerButtonHints.HideAllButtonHints( player.hands[i] );
-                }
+                VRPlayer.UI.VRControllerHintsUI.HideAllHints();
+            
+
+                // for (int i = 0; i < player.hands.Length; i++) {
+                //     ControllerButtonHints.HideAllTextHints( player.hands[i] );
+                //     ControllerButtonHints.HideAllButtonHints( player.hands[i] );
+                // }
 
                 yield return new WaitForSeconds(routine.timeBetweenRepeats);
 			}

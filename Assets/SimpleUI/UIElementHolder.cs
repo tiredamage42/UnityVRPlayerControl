@@ -187,7 +187,12 @@ namespace SimpleUI {
         }
 
         protected virtual void UpdateElementHolder () {
-
+            if (!backGround){
+                Debug.LogError("nobackground");
+            }
+            if (!UIManager.instance) {
+                Debug.LogError("no manager");
+            }
             backGround.color = UIManager.instance.mainDarkColor;
             backGroundOverlay.color = UIManager.instance.mainLightColor;
             transform.localScale = Vector3.one * scale;
@@ -217,8 +222,7 @@ namespace SimpleUI {
         }
         protected virtual void OnDisable () {
             allElements.Clear();
-
-            RemoveAllEvents();
+           
         }
         protected virtual void Update () {
             if (!Application.isPlaying) {

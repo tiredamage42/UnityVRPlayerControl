@@ -23,6 +23,7 @@ namespace VRPlayer {
 
         void UpdateInteractorReferenceTransform () {
             if (interactor.referenceTransform == null) {
+                Debug.LogError("rebuilding reference transform");
                 interactor.referenceTransform = new GameObject(name + " interactor helper transform").transform;
             }
             TransformBehavior.AdjustTransform(interactor.referenceTransform, transform, interactorReferenceBehavior, 0);

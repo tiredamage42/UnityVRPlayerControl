@@ -21,6 +21,7 @@ namespace InteractionSystem {
         
         [Header("The following are ignored when using a base interactor")]
         public float interactRayWidth = .1f;
+        public Material interactRayMaterial;
         public Color interactRayColor = Color.green, interactRayNullColor = new Color(.5f, .5f, .5f, .25f);
         public bool usePositionCheck = true;
         public float positionRadius = .1f;
@@ -31,6 +32,8 @@ namespace InteractionSystem {
         
         void BuildLineRenderer () {
             interactRay = gameObject.AddComponent<LineRenderer>();
+            interactRay.sharedMaterial = baseInteractor != null ? baseInteractor.interactRayMaterial : interactRayMaterial;
+           
         }
 
 
@@ -119,7 +122,7 @@ namespace InteractionSystem {
 
             }
             else {
-                Debug.LogError("no interactor reference transform supplied");
+                Debug.LogError("no interactor reference transform supplied for " + name);
             }
                 
             // Hover on this one
@@ -250,10 +253,13 @@ namespace InteractionSystem {
                 onUseUpdate (this, useIndex, hoveringInteractable);
             }
         }
-        
+        public bool findInteractables;
         void Update()
-        {            
-            FindInteractables();
+        {         
+            if (findInteractables) {
+
+                FindInteractables();
+            }   
          
             if (hoveringInteractable)
             {  

@@ -278,7 +278,7 @@ namespace VRPlayer
 			Vector3 pointerDir = pointerStartTransform.forward;
 			bool hitSomething = false;
 			
-			Vector3 playerFeetOffset = player.trackingOriginTransform.position - player.feetPositionGuess;
+			Vector3 playerFeetOffset = Player.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
 
 			Vector3 arcVelocity = pointerDir * arcDistance;
 
@@ -286,7 +286,7 @@ namespace VRPlayer
 
 			//Check pointer angle
 			float dotUp = Vector3.Dot( pointerDir, Vector3.up );
-			float dotForward = Vector3.Dot( pointerDir, player.hmdTransform.forward );
+			float dotForward = Vector3.Dot( pointerDir, Player.instance.hmdTransform.forward );
 			bool pointerAtBadAngle = false;
 			if ( ( dotForward > 0 && dotUp > 0.75f ) || ( dotForward < 0.0f && dotUp > 0.5f ) )
 			{
@@ -424,7 +424,7 @@ namespace VRPlayer
 			reticle.rotation = Quaternion.Slerp( reticle.rotation, targetRotation, 0.1f );
 
 			//Scale the invalid reticle based on the distance from the player
-			float distanceFromPlayer = Vector3.Distance( pointerEnd, player.hmdTransform.position );
+			float distanceFromPlayer = Vector3.Distance( pointerEnd, Player.instance.hmdTransform.position );
 			float invalidReticleCurrentScale = Util.RemapNumberClamped( distanceFromPlayer, invalidReticleMinScaleDistance, invalidReticleMaxScaleDistance, invalidReticleMinScale, invalidReticleMaxScale );
 			reticle.transform.localScale = Vector3.one * invalidReticleCurrentScale;
 
@@ -483,14 +483,14 @@ namespace VRPlayer
 
 				foreach ( TeleportPoint teleportMarker in teleportMarkers )
 				{
-					if ( teleportMarker.markerActive && teleportMarker.ShouldActivate( player.feetPositionGuess ) )
+					if ( teleportMarker.markerActive && teleportMarker.ShouldActivate( Player.instance.feetPositionGuess ) )
 					{
 						teleportMarker.gameObject.SetActive( true );
 						teleportMarker.Highlight( false );
 					}
 				}
 
-				startingFeetOffset = player.trackingOriginTransform.position - player.feetPositionGuess;
+				startingFeetOffset = Player.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
 				movedFeetFarEnough = false;
 
 
@@ -615,7 +615,7 @@ namespace VRPlayer
 
 				
 			}
-			Vector3 playerFeetOffset = player.trackingOriginTransform.position - player.feetPositionGuess;
+			Vector3 playerFeetOffset = Player.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
 			Vector3 targetPos = (teleportPosition + playerFeetOffset) + Vector3.up * trackingTransformOffset;
 
 
@@ -679,7 +679,7 @@ namespace VRPlayer
 
 
 
-			headAudioSource.transform.SetParent( player.hmdTransform );
+			headAudioSource.transform.SetParent( Player.instance.hmdTransform );
 			headAudioSource.transform.localPosition = Vector3.zero;
 			PlayAudioClip( headAudioSource, teleportSound );
 
@@ -714,8 +714,8 @@ namespace VRPlayer
 				}
 			}
 			
-			Vector3 playerFeetOffset = player.trackingOriginTransform.position - player.feetPositionGuess;
-			player.trackingOriginTransform.position = (teleportPosition + playerFeetOffset) + Vector3.up * trackingTransformOffset;
+			Vector3 playerFeetOffset = Player.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
+			Player.instance.trackingOriginTransform.position = (teleportPosition + playerFeetOffset) + Vector3.up * trackingTransformOffset;
 			
 			
 		}
