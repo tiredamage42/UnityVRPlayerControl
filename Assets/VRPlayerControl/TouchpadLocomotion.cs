@@ -272,7 +272,7 @@ public class TouchpadLocomotion : MonoBehaviour
 
     void CheckForJump (bool movementEnabled) {
         if (moveScript.isGrounded && movementEnabled) {
-            if (!VRUIInput.ActionIsOccupied(jumpAction, moveHand) && jumpAction.GetStateDown(moveHand)) {
+            if (!StandardizedVRInput.ActionOccupied(jumpAction, moveHand) && jumpAction.GetStateDown(moveHand)) {
                 moveScript.Jump();
             }
         }
@@ -285,7 +285,7 @@ public class TouchpadLocomotion : MonoBehaviour
             return;
         }
 
-        if (!VRManager.gamePaused && !VRUIInput.ActionIsOccupied(crouchAction, moveHand) && !Player.instance.handsTogether) {
+        if (!VRManager.gamePaused && !StandardizedVRInput.ActionOccupied(crouchAction, moveHand) && !Player.instance.handsTogether) {
 
             if (crouchAction.GetStateDown(moveHand)) {
                 isCrouched = !isCrouched;
@@ -452,7 +452,7 @@ public class TouchpadLocomotion : MonoBehaviour
             isRunning = false;
             return;
         }
-        currentMoveVector = VRUIInput.ActionIsOccupied(moveAction, moveHand) ? Vector2.zero : moveAction.GetAxis(moveHand);
+        currentMoveVector = StandardizedVRInput.ActionOccupied(moveAction, moveHand) ? Vector2.zero : moveAction.GetAxis(moveHand);
 
         if (currentMoveVector != Vector2.zero) {
 

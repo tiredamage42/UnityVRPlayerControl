@@ -178,7 +178,7 @@ namespace VRPlayer
 
 			if (!VRManager.gamePaused && teleportationAllowed) {
 
-				if (!VRUIInput.ActionIsOccupied(teleportAction, teleportHand) && teleportAction.GetStateDown(teleportHand) )
+				if (!StandardizedVRInput.ActionOccupied(teleportAction, teleportHand) && teleportAction.GetStateDown(teleportHand) )
 					
 				{
 					teleportNewlyPressed = true;
