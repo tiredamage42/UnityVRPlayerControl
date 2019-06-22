@@ -1,15 +1,10 @@
-﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
-//
-// Purpose: Drives a linear mapping based on position between 2 positions
-//
-//=============================================================================
-
+﻿
 using UnityEngine;
 using System.Collections;
 using UnityEngine.Events;
 using InteractionSystem;
 
-using VRPlayer;
+// using VRPlayer;
 namespace Valve.VR.InteractionSystem
 {
     //-------------------------------------------------------------------------
@@ -57,10 +52,9 @@ namespace Valve.VR.InteractionSystem
 
 		}
         public void OnUseStart(Interactor interactor, int useIndex){
-
             Debug.LogError("hover button use start");
-
 		}
+
         public void OnUseEnd(Interactor interactor, int useIndex){
 			
 		}
@@ -80,38 +74,21 @@ namespace Valve.VR.InteractionSystem
         public float disengageAtPercent = 0.9f;
 
 
-        
-
-
-        public HandEvent onButtonDown;
-        public HandEvent onButtonUp;
-        public HandEvent onButtonIsPressed;
-
         public bool engaged = false;
         public bool buttonDown = false;
         public bool buttonUp = false;
 
-        private Vector3 startPosition;
-        private Vector3 endPosition;
+        Vector3 startPosition;
+        Vector3 endPosition;
+        Vector3 handEnteredPosition;
 
-        private Vector3 handEnteredPosition;
-
-        private bool hovering;
-
-        // private Hand lastHoveredHand;
-
+        bool hovering;
         Interactor lastInspector;
 
         void Awake () {
             interactable = GetComponent<Interactable>();
-            
-
         }
 
-        // void OnEnable () {
-        //     interactable.onInspectUpdate += OnInspectUpdate;
-            
-        // }
         Interactable interactable;
 
 
@@ -125,40 +102,6 @@ namespace Valve.VR.InteractionSystem
             handEnteredPosition = endPosition;
         }
 
-        // private void HandHoverUpdate(Hand hand)
-        private void OnInspectUpdate(Object inspector)
-        
-        {
-            // hovering = true;
-            // // lastHoveredHand = hand;
-            // lastInspector = inspector;
-
-            // Vector3 inspectorPosition = ((Hand)inspector).transform.position;
-
-            // bool wasEngaged = engaged;
-
-            // float currentDistance = Vector3.Distance(movingPart.parent.InverseTransformPoint(inspectorPosition), endPosition);
-            // float enteredDistance = Vector3.Distance(handEnteredPosition, endPosition);
-
-            // if (currentDistance > enteredDistance)
-            // {
-            //     enteredDistance = currentDistance;
-            //     handEnteredPosition = movingPart.parent.InverseTransformPoint(inspectorPosition);
-            // }
-
-            // float distanceDifference = enteredDistance - currentDistance;
-
-            // float lerp = Mathf.InverseLerp(0, localMoveDistance.magnitude, distanceDifference);
-
-            // if (lerp > engageAtPercent)
-            //     engaged = true;
-            // else if (lerp < disengageAtPercent)
-            //     engaged = false;
-
-            // movingPart.localPosition = Vector3.Lerp(startPosition, endPosition, lerp);
-
-            // InvokeEvents(wasEngaged, engaged);
-        }
 
         private void LateUpdate()
         {
@@ -174,23 +117,17 @@ namespace Valve.VR.InteractionSystem
             hovering = false;
         }
         
-
         private void InvokeEvents(bool wasEngaged, bool isEngaged)
         {
             buttonDown = wasEngaged == false && isEngaged == true;
             buttonUp = wasEngaged == true && isEngaged == false;
 
-
-
-            if (buttonDown)// && onButtonDown != null)
+            if (buttonDown)
                 interactable.OnUseStart(lastInspector, useActionIndex);
-                // onButtonDown.Invoke(lastHoveredHand);
-            if (isEngaged)// && onButtonIsPressed != null)
+            if (isEngaged)
                 interactable.OnUseUpdate(lastInspector, useActionIndex);
-                // onButtonIsPressed.Invoke(lastHoveredHand);
-            if (buttonUp)// && onButtonUp != null)
+            if (buttonUp)
                 interactable.OnUseEnd(lastInspector, useActionIndex);
-                // onButtonUp.Invoke(lastHoveredHand);
         }
     }
 }

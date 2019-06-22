@@ -8,17 +8,16 @@ using UnityEngine.Events;
 
 namespace SimpleUI {
 
-[System.Serializable]
-public class UIButtonClickWData : UnityEvent<GameObject[]>
-{
-}
-
+    [System.Serializable]
+    public class UIButtonClickWData : UnityEvent<GameObject[]>
+    {
+    }
+    
     public abstract class SelectableElement : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmitHandler
     {
 
         public bool selected;
         public string elementText;
-    
 
         public UIElementHolder destination;
         [HideInInspector] public UIElementHolder parentHolder;
@@ -53,7 +52,15 @@ public class UIButtonClickWData : UnityEvent<GameObject[]>
         }
 
         public GameObject[] data;
+        public object[] customData;
         public UIButtonClickWData onClick;
+        
+
+        // public System.Action<object[]> onClickWCustomData;
+        // public System.Action<GameObject[], object[]> onSubmit, onSelect;
+    
+    // public System.Action onSelect;
+    // public System.Action<SelectableElement> onSubmit;
     
 
 
@@ -62,8 +69,6 @@ public class UIButtonClickWData : UnityEvent<GameObject[]>
     }
 
 
-    public System.Action onSelect;
-    public System.Action<SelectableElement> onSubmit;
     
 
         
@@ -75,30 +80,51 @@ public class UIButtonClickWData : UnityEvent<GameObject[]>
         OnSelect();
         _UpdateElement();
 
-        if (onSelect != null) {
-            onSelect();
+
+
+        if (parentHolder.onSelectToUse != null) {
+            parentHolder.onSelectToUse(data, customData);
         }
+
+
+        // if (onSelect != null) {
+        //     onSelect(data, customData);
+        // }
     }
 
     public void OnSubmit(BaseEventData eventData)
     {
-        Debug.Log("Submitted on " + name);
+        // Debug.Log("Submitted on " + name);
         
         if (onClick != null) {
             onClick.Invoke(data);
         }
 
+        if (parentHolder.onSubmitToUse != null) {
+            parentHolder.onSubmitToUse(data, customData);
+        }
+
+        // if (onSubmit != null) {
+        //     onSubmit(data, customData);
+        // }
+        // if (onClickWCustomData != null) {
+        //     onClickWCustomData(customData);
+        // }
+
         if (destination != null) {
             destination.gameObject.SetActive(true);
-            destination.parentHolder = parentHolder;
+
+            if (!destination.isBase) {
+                destination.parentHolder = parentHolder;
+            }
             parentHolder.gameObject.SetActive(false);
         }
 
         OnSubmit();
 
-        if (onSubmit != null) {
-            onSubmit(this);
-        }
+        // if (onSubmit != null) {
+        //     onSubmit(this);
+        // }
     }
     public void OnDeselect(BaseEventData data)
     {

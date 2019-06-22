@@ -31,7 +31,7 @@ namespace Valve.VR.InteractionSystem
 
 		private bool inFlight;
 		private bool released;
-		private bool hasSpreadFire = false;
+		// private bool hasSpreadFire = false;
 
 		private int travelledFrames = 0;
 
@@ -72,10 +72,10 @@ namespace Valve.VR.InteractionSystem
 				glintParticle.Play();
 			}
 
-			if ( gameObject.GetComponentInChildren<FireSource>().isBurning )
-			{
-				fireReleaseSound.Play();
-			}
+			// if ( gameObject.GetComponentInChildren<FireSource>().isBurning )
+			// {
+			// 	fireReleaseSound.Play();
+			// }
 
 			// Check if arrow is shot inside or too close to an object
 			RaycastHit[] hits = Physics.SphereCastAll( transform.position, 0.01f, transform.forward, 0.80f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore );
@@ -145,18 +145,18 @@ namespace Valve.VR.InteractionSystem
 					hitGroundSound.Play();
 				}
 
-				FireSource arrowFire = gameObject.GetComponentInChildren<FireSource>();
-				FireSource fireSourceOnTarget = collision.collider.GetComponentInParent<FireSource>();
+				// FireSource arrowFire = gameObject.GetComponentInChildren<FireSource>();
+				// FireSource fireSourceOnTarget = collision.collider.GetComponentInParent<FireSource>();
 
-				if ( arrowFire != null && arrowFire.isBurning && ( fireSourceOnTarget != null ) )
-				{
-					if ( !hasSpreadFire )
-					{
-						collision.collider.gameObject.SendMessageUpwards( "FireExposure", gameObject, SendMessageOptions.DontRequireReceiver );
-						hasSpreadFire = true;
-					}
-				}
-				else
+				// if ( arrowFire != null && arrowFire.isBurning && ( fireSourceOnTarget != null ) )
+				// {
+				// 	if ( !hasSpreadFire )
+				// 	{
+				// 		collision.collider.gameObject.SendMessageUpwards( "FireExposure", gameObject, SendMessageOptions.DontRequireReceiver );
+				// 		hasSpreadFire = true;
+				// 	}
+				// }
+				// else
 				{
 					// Only count collisions with good speed so that arrows on the ground can't deal damage
 					// always pop balloons
@@ -246,14 +246,14 @@ namespace Valve.VR.InteractionSystem
 			Transform parentTransform = collision.collider.transform;
 
 			// Don't do this for weebles because of how it has a fixed joint
-			ExplosionWobble wobble = collision.collider.gameObject.GetComponent<ExplosionWobble>();
-			if ( !wobble )
-			{
-				if ( parentTransform.parent )
-				{
-					parentTransform = parentTransform.parent;
-				}
-			}
+			// ExplosionWobble wobble = collision.collider.gameObject.GetComponent<ExplosionWobble>();
+			// if ( !wobble )
+			// {
+			// 	if ( parentTransform.parent )
+			// 	{
+			// 		parentTransform = parentTransform.parent;
+			// 	}
+			// }
 
 			scaleParentObject.transform.parent = parentTransform;
 

@@ -25,6 +25,7 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void Awake()
 		{
+			Debug.LogError(name + "  is using linear audio pitch");
 			if ( audioSource == null )
 			{
 				audioSource = GetComponent<AudioSource>();

@@ -14,6 +14,14 @@ using InventorySystem;
 using SimpleUI;
 namespace VRPlayer
 {
+
+    public enum ReleaseStyle
+    {
+        NoChange,
+        GetFromHand,
+        ShortEstimation,
+        AdvancedEstimation,
+    }
 	//-------------------------------------------------------------------------
 	// Singleton representing the local VR player/user, with methods for getting
 	// the player's hands, head, tracking origin, and guesses for various properties.
@@ -23,83 +31,72 @@ namespace VRPlayer
 		public UIRadial wristRadial;
 		public EquipBehavior radialEquipBehavior;
 
-		public bool wristRadialOpen {
-			get {
-				return wristRadial.gameObject.activeInHierarchy;
-			}
-		}
-		// ISteamVR_Action_In_Source occupiedAction = null;
-		// SteamVR_Input_Sources occupiedHand = SteamVR_Input_Sources.Any;
+		public bool wristRadialOpen { get { return wristRadial.gameObject.activeInHierarchy; } }
 		public SteamVR_Action_Boolean openEquipSelect;
 
 
 
 		void InitializeWristRadial () {
-			wristRadial.onBaseCancel += OnWristRadialBaseCancel;
-			wristRadial.onAnySubmit = OnAnyWristRadialSubmit;
+			wristRadial.onBaseCancel += CloseWristRadial;
+			// wristRadial.onAnySubmit = OnAnyWristRadialSubmit;
 		}
-		void OnAnyWristRadialSubmit (SelectableElement element) {
-			OnWristRadialBaseCancel();
+		void OnWristRadialSubmit (GameObject[] data, object[] customData) {
+			CloseWristRadial();
 		}
 
-		void OnWristRadialBaseCancel () {
+		void CloseWristRadial () {
 			UIManager.HideUI(wristRadial);
+			VRManager.onUISubmit -= OnWristRadialSubmit;
 		}
 
 		void OnGamePaused (bool isPaused) {
 			if (isPaused) {
-				OnWristRadialBaseCancel();
+				if (wristRadialOpen) {
+					CloseWristRadial();
+				}
 			}
 		}
 
+		void OpenWristRadial (SteamVR_Input_Sources hand) {
+			UIManager.ShowUI(wristRadial, true, false);
+			EquipBehavior.EquipSetting equipSettings = radialEquipBehavior.equipSettings[0];
+			wristRadial.baseObject.transform.SetParent(GetHand(hand).transform, equipSettings.position, equipSettings.rotation );
+			VRUIInput.SetUIHand(hand);
+
+			VRManager.onUISubmit += OnWristRadialSubmit;
+			
+
+		}
+
 		void OnEnable () {
-			VRGameAddon.onGamePaused += OnGamePaused;
+			VRManager.onGamePaused += OnGamePaused;
+			
 		} 
 		void OnDisable () {
-			VRGameAddon.onGamePaused -= OnGamePaused;
+			VRManager.onGamePaused -= OnGamePaused;
 		} 
+
+		bool CheckHandForWristRadialOpen (SteamVR_Input_Sources hand) {
+			if (openEquipSelect.GetStateDown(hand)) {
+				OpenWristRadial(hand);
+				return true;
+			}
+			return false;
+		}
 		
 
         void UpdateWristRadial () {
-			if (VRGameAddon.gamePaused) 
+			if (VRManager.gamePaused) 
 				return;
 
 			bool together = handsTogether;
 			if (!wristRadialOpen) {
-
 				if (together) {
-					if (openEquipSelect.GetStateDown(SteamVR_Input_Sources.LeftHand)) {
-						
-						UIManager.ShowUI(wristRadial, true, false);
-						wristRadial.GetComponentInParent<LooseTransform>().SetParent(
-							GetHand(SteamVR_Input_Sources.LeftHand).transform, 
-							radialEquipBehavior.equipSettings[0].position, 
-							radialEquipBehavior.equipSettings[0].rotation
-						);
-						VRInputModuleAddon.SetUIHand(SteamVR_Input_Sources.LeftHand);
-						
-					}
-					else if (openEquipSelect.GetStateDown(SteamVR_Input_Sources.RightHand)) {
-						UIManager.ShowUI(wristRadial, true, false);
-						wristRadial.GetComponentInParent<LooseTransform>().SetParent(
-							GetHand(SteamVR_Input_Sources.RightHand).transform, 
-							radialEquipBehavior.equipSettings[0].position, 
-							radialEquipBehavior.equipSettings[0].rotation
-						);
-						VRInputModuleAddon.SetUIHand(SteamVR_Input_Sources.RightHand);
+					if (!CheckHandForWristRadialOpen(SteamVR_Input_Sources.LeftHand)) {
+						CheckHandForWristRadialOpen(SteamVR_Input_Sources.RightHand);
 					}
 				}
 			}
-
-
-			/*
-				Assumes the open equip button is the side button
-				as well as teh teleport button
-			*/
-
-			// Teleport.instance.teleportEnabled = !together;
-
-		    
         } 
 
 
@@ -114,9 +111,6 @@ namespace VRPlayer
 			}
 		}
 
-
-
-
 		public ReleaseStyle releaseVelocityStyle = ReleaseStyle.GetFromHand;
 
         [Tooltip("The time offset used when releasing the object with the RawFromHand option")]
@@ -124,10 +118,7 @@ namespace VRPlayer
 
         public float scaleReleaseVelocity = 1.1f;
 
-
-
 		SimpleCharacterController moveScript;
-
 
 		[Tooltip("Resize the player in game to be defaultPlayerHeight height?")]
 		public bool resizePlayer;
@@ -170,17 +161,23 @@ namespace VRPlayer
 			transform.position = new Vector3(origPos.x, groundY + totalHeightOffset, origPos.z);
 		}
 
+
+		public void RecalibrateRealLifeHeight () {
+			if (_realLifeHeight == -1) {
+				KeepTransformFlushWithGround(moveScript.GetFloor().y);
+			}
+			if (VRManager.headsetIsOnPlayerHead) {
+				StartCoroutine( _RecalibrateRealLifeHeight() );
+			}
+		}
+
 		bool recalibrateHeight;
-		public IEnumerator RecalibrateRealLifeHeight () {
+		public IEnumerator _RecalibrateRealLifeHeight () {
 					
         	_realLifeHeight = hmdTransform.localPosition.y;
-
 			Debug.LogError("Recalibrating Player real life hieght " + _realLifeHeight);
-
 			if (totalHeightOffset != 0) {
-
 				yield return new WaitForFixedUpdate();
-				// yield return new WaitForFixedUpdate();
 				float floorY = moveScript.GetFloor().y;
 				KeepTransformFlushWithGround(floorY);
 			}
@@ -193,11 +190,6 @@ namespace VRPlayer
 				return extraHeightOffset + resizePlayerOffset;
 			}
 		}
-
-		
-    
-
-
 		
     void UpdateWorldScale () {
         transform.localScale = Vector3.one * (1.0f/worldScale);
@@ -207,109 +199,49 @@ namespace VRPlayer
 		void CheckForInitialScaling () {
 
 			if (_realLifeHeight == -1 || recalibrateHeight) {
-				if (_realLifeHeight == -1) {
-					KeepTransformFlushWithGround(moveScript.GetFloor().y);
-				}
-				if (VRManager.headsetIsOnPlayerHead) {
-					StartCoroutine(
-
-					RecalibrateRealLifeHeight()
-					)
-					;
-
-
-				}
-				else {
-					// Debug.Log("eeeee");
-				}
-
+				RecalibrateRealLifeHeight();
+				// if (_realLifeHeight == -1) {
+				// 	KeepTransformFlushWithGround(moveScript.GetFloor().y);
+				// }
+				// if (VRManager.headsetIsOnPlayerHead) {
+				// 	StartCoroutine( RecalibrateRealLifeHeight() );
+				// }
 			}
 			recalibrateHeight = false;
 		}
 
-		
-		// [Tooltip( "Virtual transform corresponding to the meatspace tracking origin. Devices are tracked relative to this." )]
 		public Transform trackingOriginTransform { get { return transform; } }
 		public Transform hmdTransform;
 
-		[Tooltip( "List of possible Hands" )]
+		[Tooltip( "List Hands *RIGHT FIRST*" )]
 		public Hand[] hands;
 
-		//-------------------------------------------------
-		// Singleton instance of the Player. Only one can exist at a time.
-		//-------------------------------------------------
-		private static Player _instance;
-		public static Player instance
-		{
-			get
-			{
+		static Player _instance;
+		public static Player instance {
+			get {
 				if ( _instance == null )
-				{
 					_instance = FindObjectOfType<Player>();
-				}
 				return _instance;
 			}
 		}
 
 		public Hand GetHand( SteamVR_Input_Sources sources )
 		{
-		
 			for ( int j = 0; j < hands.Length; j++ )
 			{
-				if ( !hands[j].gameObject.activeInHierarchy )
-				{
-					continue;
-				}
-
-				if ( hands[j].handType != sources)
-				{
-					continue;
-				}
-
-				return hands[j];
+				if ( hands[j].handType == sources)
+					return hands[j];
 			}
-
 			return null;
 		}
 
 
-		//-------------------------------------------------
-		public Hand leftHand
-		{
-			get
-			{
-				
-				return GetHand(SteamVR_Input_Sources.LeftHand);
-			}
-		}
+		public Hand leftHand { get { return GetHand(SteamVR_Input_Sources.LeftHand); } }
+		public Hand rightHand { get { return GetHand(SteamVR_Input_Sources.RightHand); } }
 
-
-		//-------------------------------------------------
-		public Hand rightHand
-		{
-			get
-			{
-				return GetHand(SteamVR_Input_Sources.RightHand);
-			}
-		}
-
-		//-------------------------------------------------
 		// Guess for the world-space position of the player's feet, directly beneath the HMD.
-		//-------------------------------------------------
-		public Vector3 feetPositionGuess
-		{
-			get
-			{
-				Transform hmd = hmdTransform;
-				if ( hmd )
-				{
-					return trackingOriginTransform.position + Vector3.ProjectOnPlane( hmd.position - trackingOriginTransform.position, trackingOriginTransform.up );
-				}
-				return trackingOriginTransform.position;
-			}
-		}
+		public Vector3 feetPositionGuess { get { return trackingOriginTransform.position + Vector3.ProjectOnPlane( hmdTransform.position - trackingOriginTransform.position, trackingOriginTransform.up ); } }
 
-		//-------------------------------------------------
 		private void Awake()
 		{
 			moveScript = GetComponent<SimpleCharacterController>();
@@ -337,9 +269,12 @@ namespace VRPlayer
             if (SteamVR.initializedState != SteamVR.InitializedStates.InitializeSuccess)
                 return;
 
-				Teleport.instance.SetCurrentTrackingTransformOffset(totalHeightOffset);
+			if (StandardizedVRInput.instance.MenuButton.GetStateDown(SteamVR_Input_Sources.LeftHand)) {
+                VRManager.ToggleGamePause();
+            }
 
 
+			Teleport.instance.SetCurrentTrackingTransformOffset(totalHeightOffset);
 		
 			CheckForInitialScaling();
 			UpdateWorldScale();
@@ -347,6 +282,7 @@ namespace VRPlayer
 
 			UpdateMessageCenters();
 			UpdateWristRadial();
+
         }
 
 		void InitializeMessageCenters () {

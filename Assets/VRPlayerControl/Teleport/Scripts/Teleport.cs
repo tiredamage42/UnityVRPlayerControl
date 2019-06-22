@@ -61,7 +61,6 @@ namespace VRPlayer
 		public AudioClip goodHighlightSound;
 		public AudioClip badHighlightSound;
 
-		
 		private LineRenderer pointerLineRenderer;
 		private GameObject teleportPointerObject;
 		private Transform pointerStartTransform;
@@ -129,7 +128,6 @@ namespace VRPlayer
 		void Awake()
         {
             _instance = this;
-
 			
 			pointerLineRenderer = GetComponentInChildren<LineRenderer>();
 			teleportPointerObject = pointerLineRenderer.gameObject;
@@ -141,7 +139,6 @@ namespace VRPlayer
 			teleportArc.traceLayerMask = traceLayerMask;
 
 			loopingAudioMaxVolume = loopingAudioSource.volume;
-
 
 			float invalidReticleStartingScale = invalidReticleTransform.localScale.x;
 			invalidReticleMinScale *= invalidReticleStartingScale;
@@ -155,16 +152,6 @@ namespace VRPlayer
             teleportMarkers = GameObject.FindObjectsOfType<TeleportPoint>();
 
 			HidePointer();
-
-			player = Player.instance;
-
-			if ( player == null )
-			{
-				Debug.LogError("<b>[SteamVR Interaction]</b> Teleport: No Player instance found in map.");
-				Destroy( this.gameObject );
-				return;
-			}
-
 		}
 
 		void OnDisable()
@@ -189,9 +176,9 @@ namespace VRPlayer
 				}
 			}
 
-			if (!VRGameAddon.gamePaused && teleportationAllowed) {
+			if (!VRManager.gamePaused && teleportationAllowed) {
 
-				if (!VRInputModuleAddon.ActionIsOccupied(teleportAction, teleportHand) && teleportAction.GetStateDown(teleportHand) )
+				if (!VRUIInput.ActionIsOccupied(teleportAction, teleportHand) && teleportAction.GetStateDown(teleportHand) )
 					
 				{
 					teleportNewlyPressed = true;

@@ -46,7 +46,7 @@ namespace Valve.VR.InteractionSystem.Sample
         Item item;
         
 
-        public FireSource fire;
+        // public FireSource fire;
 
 
         private void Start()
@@ -143,9 +143,9 @@ namespace Valve.VR.InteractionSystem.Sample
 
         private void UpdateAnimator(Vector3 move)
         {
-            animator.speed = fire.isBurning ? animationSpeed * 2 : animationSpeed;
+            // animator.speed = fire.isBurning ? animationSpeed * 2 : animationSpeed;
             // update the animator parameters
-            animator.SetFloat("Forward", fire.isBurning ? 2 : forwardAmount, 0.1f, Time.deltaTime);
+            animator.SetFloat("Forward", forwardAmount, 0.1f, Time.deltaTime);
             animator.SetFloat("Turn", turnAmount, 0.1f, Time.deltaTime);
             animator.SetBool("OnGround", isGrounded);
             animator.SetBool("Holding", held);

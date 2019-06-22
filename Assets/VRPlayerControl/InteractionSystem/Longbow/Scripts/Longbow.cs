@@ -64,6 +64,7 @@ namespace Valve.VR.InteractionSystem
 
 					drawTension = Util.RemapNumberClamped( nockDistanceTravelled, 0, maxPull, 0f, 1f );
 
+					// bowDrawValue = drawTension;
 					this.bowDrawLinearMapping.value = drawTension; // Send drawTension value to LinearMapping script, which drives the bow draw animation
 
 					if ( nockDistanceTravelled > minPull )
@@ -104,6 +105,7 @@ namespace Valve.VR.InteractionSystem
 				{
 					nockTransform.localPosition = new Vector3( 0f, 0f, 0f );
 
+					// bowDrawValue = 0;
 					this.bowDrawLinearMapping.value = 0f;
 				}
 			}
@@ -206,130 +208,6 @@ namespace Valve.VR.InteractionSystem
 
 		SteamVR_Events.Action newPosesAppliedAction;
 
-		// Interactable interactable;
-		void Awake () {
-			// interactable = GetComponent<Interactable>();
-			// GetComponent<Item>().attachmentFlags = Inventory.defaultAttachmentFlags;
-		}
-
-		void OnEnable () {
-			// interactable.onEquipped += OnEquipped;
-			// interactable.onUnequipped += OnUnequipped;
-		}
-		void OnDisable () {
-			// interactable.onEquipped -= OnEquipped;
-			// interactable.onUnequipped -= OnUnequipped;
-		}
-
-
-
-		//-------------------------------------------------
-		// private void OnEquipped( Object attachedHand )
-		// {
-		// 	hand = (Hand)attachedHand;
-		// }
-
-
-		//-------------------------------------------------
-		// private void HandAttachedUpdate( Hand hand )
-		// {
-		// 	// Reset transform since we cheated it right after getting poses on previous frame
-		// 	//transform.localPosition = Vector3.zero;
-		// 	//transform.localRotation = Quaternion.identity;
-
-		// 	// Update handedness guess
-		// 	EvaluateHandedness();
-
-		// 	if ( nocked )
-		// 	{
-		// 		Vector3 nockToarrowHand = ( arrowHand.arrowNockTransform.parent.position - nockRestTransform.position ); // Vector from bow nock transform to arrowhand nock transform - used to align bow when drawing
-
-		// 		// Align bow
-		// 		// Time lerp value used for ramping into drawn bow orientation
-		// 		float lerp = Util.RemapNumberClamped( Time.time, nockLerpStartTime, ( nockLerpStartTime + lerpDuration ), 0f, 1f );
-
-		// 		float pullLerp = Util.RemapNumberClamped( nockToarrowHand.magnitude, minPull, maxPull, 0f, 1f ); // Normalized current state of bow draw 0 - 1
-
-		// 		Vector3 arrowNockTransformToHeadset = ( ( Player.instance.hmdTransform.position + ( Vector3.down * 0.05f ) ) - arrowHand.arrowNockTransform.parent.position ).normalized;
-		// 		Vector3 arrowHandPosition = ( arrowHand.arrowNockTransform.parent.position + ( ( arrowNockTransformToHeadset * drawOffset ) * pullLerp ) ); // Use this line to lerp arrowHand nock position
-		// 		//Vector3 arrowHandPosition = arrowHand.arrowNockTransform.position; // Use this line if we don't want to lerp arrowHand nock position
-
-		// 		Vector3 pivotToString = ( arrowHandPosition - pivotTransform.position ).normalized;
-		// 		Vector3 pivotToLowerHandle = ( handleTransform.position - pivotTransform.position ).normalized;
-		// 		bowLeftVector = -Vector3.Cross( pivotToLowerHandle, pivotToString );
-		// 		pivotTransform.rotation = Quaternion.Lerp( nockLerpStartRotation, Quaternion.LookRotation( pivotToString, bowLeftVector ), lerp );
-
-		// 		// Move nock position
-		// 		if ( Vector3.Dot( nockToarrowHand, -nockTransform.forward ) > 0 )
-		// 		{
-		// 			float distanceToarrowHand = nockToarrowHand.magnitude * lerp;
-
-		// 			nockTransform.localPosition = new Vector3( 0f, 0f, Mathf.Clamp( -distanceToarrowHand, -maxPull, 0f ) );
-
-		// 			nockDistanceTravelled = -nockTransform.localPosition.z;
-
-		// 			arrowVelocity = Util.RemapNumber( nockDistanceTravelled, minPull, maxPull, arrowMinVelocity, arrowMaxVelocity );
-
-		// 			drawTension = Util.RemapNumberClamped( nockDistanceTravelled, 0, maxPull, 0f, 1f );
-
-		// 			this.bowDrawLinearMapping.value = drawTension; // Send drawTension value to LinearMapping script, which drives the bow draw animation
-
-		// 			if ( nockDistanceTravelled > minPull )
-		// 			{
-		// 				pulled = true;
-		// 			}
-		// 			else
-		// 			{
-		// 				pulled = false;
-		// 			}
-
-		// 			if ( ( nockDistanceTravelled > ( lastTickDistance + hapticDistanceThreshold ) ) || nockDistanceTravelled < ( lastTickDistance - hapticDistanceThreshold ) )
-		// 			{
-		// 				ushort hapticStrength = (ushort)Util.RemapNumber( nockDistanceTravelled, 0, maxPull, bowPullPulseStrengthLow, bowPullPulseStrengthHigh );
-		// 				hand.TriggerHapticPulse( hapticStrength );
-		// 				hand.otherHand.TriggerHapticPulse( hapticStrength );
-
-		// 				drawSound.PlayBowTensionClicks( drawTension );
-
-		// 				lastTickDistance = nockDistanceTravelled;
-		// 			}
-
-		// 			if ( nockDistanceTravelled >= maxPull )
-		// 			{
-		// 				if ( Time.time > nextStrainTick )
-		// 				{
-		// 					hand.TriggerHapticPulse( 400 );
-		// 					hand.otherHand.TriggerHapticPulse( 400 );
-
-		// 					drawSound.PlayBowTensionClicks( drawTension );
-
-		// 					nextStrainTick = Time.time + Random.Range( minStrainTickTime, maxStrainTickTime );
-		// 				}
-		// 			}
-		// 		}
-		// 		else
-		// 		{
-		// 			nockTransform.localPosition = new Vector3( 0f, 0f, 0f );
-
-		// 			this.bowDrawLinearMapping.value = 0f;
-		// 		}
-		// 	}
-		// 	else
-		// 	{
-		// 		if ( lerpBackToZeroRotation )
-		// 		{
-		// 			float lerp = Util.RemapNumber( Time.time, lerpStartTime, lerpStartTime + lerpDuration, 0, 1 );
-
-		// 			pivotTransform.localRotation = Quaternion.Lerp( lerpStartRotation, Quaternion.identity, lerp );
-
-		// 			if ( lerp >= 1 )
-		// 			{
-		// 				lerpBackToZeroRotation = false;
-		// 			}
-		// 		}
-		// 	}
-		// }
-
 
 		//-------------------------------------------------
 		public void ArrowReleased()
@@ -347,6 +225,7 @@ namespace Valve.VR.InteractionSystem
 		}
 
 
+
 		//-------------------------------------------------
 		private IEnumerator ResetDrawAnim()
 		{
@@ -357,6 +236,7 @@ namespace Valve.VR.InteractionSystem
 			{
 				float lerp = Util.RemapNumberClamped( Time.time, startTime, startTime + 0.02f, startLerp, 0f );
 				this.bowDrawLinearMapping.value = lerp;
+				
 				yield return null;
 			}
 
@@ -499,9 +379,7 @@ namespace Valve.VR.InteractionSystem
 		private void ShutDown()
 		{
 
-			// if ( hand != null && hand.otherHand.currentAttachedObject != null )
-			// if ( hand != null && hand.otherHand.currentAttached != null)// hand.otherHand.hasCurrentAttached)
-			if ( parentInventory != null && parentInventory.otherInventory.equippedItem != null)// hand.otherHand.hasCurrentAttached)
+			if ( parentInventory != null && parentInventory.otherInventory.equippedItem != null)
 			
 			{
 				GameObject otherHandCurrentAttached = parentInventory.otherInventory.equippedItem.item.gameObject;
@@ -514,25 +392,6 @@ namespace Valve.VR.InteractionSystem
 				}
 			}
 		}
-
-
-		//-------------------------------------------------
-		// private void OnHandFocusLost( Hand hand )
-		// {
-		// 	Debug.LogError("ON HAND FOCUS Lost " + name);
-			
-		// 	gameObject.SetActive( false );
-		// }
-
-
-		// //-------------------------------------------------
-		// private void OnHandFocusAcquired( Hand hand )
-		// {
-		// 	Debug.LogError("ON HAND FOCUS ACQUIRED " + name);
-			
-		// 	gameObject.SetActive( true );
-		// 	OnEquipped( hand );
-		// }
 
 
 		//-------------------------------------------------

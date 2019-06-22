@@ -1,17 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿using UnityEngine;
 using UnityEngine.UI;
 namespace SimpleUI {
-
 
      [ExecuteInEditMode]
     public class UIRadialElement : SelectableElement {
 
-
         Image[] _images;
-        Image[] images {
+        public Image[] images {
             get {
                 if (_images == null) {
                     _images = GetComponentsInChildren<Image>();
@@ -19,7 +14,6 @@ namespace SimpleUI {
                 return _images;
             }
         }
-
         Image _mainImage;
         Image mainImage {
             get {
@@ -52,7 +46,6 @@ namespace SimpleUI {
 
         protected override void UpdateElement () {
             mainImage.color = selected ? UIManager.instance.mainLightColor : new Color32(0,0,0,0);
-            
             int l = images.Length; // get the images in case e havent yet
             selectFlairTransform.gameObject.SetActive(selected);
         }
@@ -62,44 +55,31 @@ namespace SimpleUI {
             //only need to set these once
             selectFlairTransform.GetComponent<Image>().color = UIManager.instance.mainDarkColor;
             selectFlairTransform.GetChild(0).GetComponent<Image>().color = UIManager.instance.mainLightColor;
-
-
         }
         
-        // void OnEnable () {
-            
-        //     OnDeselect();
-        // }
         protected override void OnSubmit () {
             
         }
         protected override void OnSelect () {
-            // mainImage.color = UIManager.instance.mainLightColor;
-            // selectFlairTransform.gameObject.SetActive(true);
+            
         }
         protected override void OnDeselect () {
-            // mainImage.color = Color.clear;//UIManager.instance.mainDarkColor;
-            // selectFlairTransform.gameObject.SetActive(false);
+            
         }
 
         public void UpdateLayout(float radialAmount, float radialAngle, float elementAngle) {
 
-            for (int i =0 ; i< images.Length; i++) {
-                images[i].fillAmount = radialAmount;
-            }
+            // for (int i =0 ; i< images.Length; i++) {
+            //     images[i].fillAmount = radialAmount;
+            // }
 
-            Quaternion localRotation = Quaternion.Euler(0,0, radialAngle*.5f);
-            mainImageTransform.localRotation = localRotation;
-            selectFlairTransform.localRotation = localRotation;
+            // Quaternion localRotation = Quaternion.Euler(0,0, radialAngle*.5f);
+            // mainImageTransform.localRotation = localRotation;
+            // selectFlairTransform.localRotation = localRotation;
 
-            text.transform.localRotation = Quaternion.Euler (0,0, -elementAngle);
+            // text.transform.localRotation = Quaternion.Euler (0,0, -elementAngle);
 
-            if (elementAngle < -180f) {
-                text.SetAnchor(TextAnchor.MiddleRight);
-            }
-            else {
-                text.SetAnchor(TextAnchor.MiddleLeft);
-            }
+            // text.SetAnchor(elementAngle < -180f ? TextAnchor.MiddleRight : TextAnchor.MiddleLeft);
         }
     }
 }
