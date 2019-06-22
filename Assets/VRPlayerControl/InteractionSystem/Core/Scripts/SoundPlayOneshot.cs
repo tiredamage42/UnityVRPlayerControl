@@ -27,6 +27,7 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void Awake()
 		{
+			Debug.LogError(name + "  is using sound play one shot");
 			thisAudioSource = GetComponent<AudioSource>();
 
 			if ( playOnAwake )

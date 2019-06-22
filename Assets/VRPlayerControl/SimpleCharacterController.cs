@@ -6,103 +6,88 @@ public class SimpleCharacterController : MonoBehaviour
 {
     
 
-    CharacterController characterController;
     
-
     public float jumpSpeed = 5.0f;
     public float gravityModifier = 1.0f;
     public float maxGravityVelocity = 2;
-
-    public Vector3 currentMoveVector;
-
+    public float moemntumDecaySpeed = 1;
+    public LayerMask groundMask;
+    public float ungroundedSpeedMultiplier = .25f;
+    [HideInInspector] public bool useRawMovement;
+    [HideInInspector] public bool isGrounded;
+    [HideInInspector] public float floorY = 0;
     public bool isMoving {
         get {
-            return currentMoveVector != Vector3.zero;
+            return inputMoveVector != Vector3.zero;
         }
     }
-
-    public Vector3 GetFloor() {
-
-        //make sure we're checking from the actual capsule position (could be offset due to height or movement)        
-        Vector3 rayCheck = transform.position + (transform.rotation *characterController.center);
-        rayCheck.y -= ((characterController.height * .5f) + characterController.skinWidth) - buffer;// myPos.y + buffer;
-        Ray ray = new Ray (rayCheck, Vector3.down);
-        
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 1, groundMask)) {
-            return hit.point;
-        }
-        return rayCheck;
-
-    }
-
-    public void SetMoveVector(Vector3 currentMoveVector) {
-        this.currentMoveVector = currentMoveVector;
-        
-    }
-    public LayerMask groundMask;
-
-    public float ungroundedSpeedMultiplier = .25f;
-
-
-    public bool isGrounded;
-
+    Vector3 momentum;
     const float buffer = .1f;
-    public float floorY = 0;
+    Vector3 inputMoveVector;
+    CharacterController characterController;
+    
+
+    public void SetInputMoveVector(Vector3 inputMoveVector) {
+        this.inputMoveVector = inputMoveVector;
+        
+    }
+    
+
     void Awake ( ) {
         characterController = GetComponent<CharacterController>();
     }
 
+    Ray GetGroundCheckRay () {
+        //make sure we're checking from the actual capsule position (could be offset due to height or movement)        
+        
+        Vector3 rayCheckPos = transform.position + (transform.rotation * characterController.center);
+        rayCheckPos.y -= ((characterController.height * .5f) + characterController.skinWidth) - buffer;
+        return new Ray( rayCheckPos, Vector3.down );
+    }
+
     void CheckGrounded () {
 
-        //make sure we're checking from the actual capsule position (could be offset due to height or movement)        
-        // Vector3 charControllerOffset = characterController.center;
-        Vector3 rayCheck = transform.position + (transform.rotation *characterController.center);
-        rayCheck.y -= ((characterController.height * .5f) + characterController.skinWidth) - buffer;// myPos.y + buffer;
-        Ray ray = new Ray (rayCheck, Vector3.down);
-        Debug.DrawRay(ray.origin, ray.direction, Color.cyan, 1);
-
+        Ray ray = GetGroundCheckRay();
+        
         bool wasGrounded = isGrounded;
         isGrounded = false;
         RaycastHit hit;
         if (momentum.y <= 0 && Physics.Raycast(ray, out hit, buffer + (wasGrounded && (momentum.y <= 0) ? .25f : .05f), groundMask)) {
             isGrounded = true;
-            
-            // momentum = new Vector3(0, momentum.y, 0);
             momentum = Vector3.zero;
-            
             floorY = hit.point.y;
         }
     }
 
+    public Vector3 GetFloor() {
 
-    public float moemntumDecaySpeed = 1;
+        Ray ray = GetGroundCheckRay();
+          
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 1, groundMask)) {
+            return hit.point;
+        }
+        return ray.origin;
 
-    public Vector3 momentum;
+    }
 
+
+    
 
     public void SetMomentum (Vector3 velocity) {
         momentum = velocity;
     }
-
-    // float yVelocity;
     public void Jump () {
         momentum.y = jumpSpeed;
-
         Vector3 localVelocity = transform.InverseTransformDirection(characterController.velocity);
         momentum.x = localVelocity.x;
         momentum.z = localVelocity.z;
-        
-        
-        // yVelocity = jumpSpeed;
     }
-
 
     void FixedUpdate () {
         CheckGrounded();
         UpdateGravity(Time.fixedDeltaTime);
     }
-
 
     void UpdateGravity (float deltaTime) {
         momentum.x = Mathf.Lerp(momentum.x, 0, deltaTime * moemntumDecaySpeed);
@@ -113,32 +98,28 @@ public class SimpleCharacterController : MonoBehaviour
             momentum.y = -maxGravityVelocity;
         }
     }
-    public bool useRawMovement;
-
 
     public void MoveCharacterController (float deltaTime, Transform relativeTransform=null) {
 
-        if (relativeTransform == null) {
-            relativeTransform = transform;
-        }
 
-        Vector3 moveVector = currentMoveVector;
+        Vector3 moveVector = inputMoveVector;
 
         if (!useRawMovement) {
 
             if (!isGrounded) {
                 moveVector *= ungroundedSpeedMultiplier;
             }
+
+            moveVector += momentum;
+            moveVector *= deltaTime;
         }
 
-        characterController.Move( relativeTransform.TransformDirection( 
-                useRawMovement ? moveVector : (new Vector3( 
-                    moveVector.x + momentum.x, 
-                    moveVector.y + momentum.y, 
-                    moveVector.z + momentum.z
-                ) * (useRawMovement ? 1 : deltaTime)) 
-            ) 
-        );
+        if (relativeTransform == null) {
+            relativeTransform = transform;
+        }
+
+        characterController.Move( relativeTransform.TransformDirection( moveVector ) );
+    
     }
 
 

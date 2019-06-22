@@ -21,6 +21,7 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void Awake()
 		{
+			Debug.LogError(name + "  is using linear blendshape");
 			if ( skinnedMesh == null )
 			{
 				skinnedMesh = GetComponent<SkinnedMeshRenderer>();

@@ -20,6 +20,7 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void Start()
 		{
+			Debug.LogError(name + "  is using linear displacesment");
 			initialPosition = transform.localPosition;
 
 			if ( linearMapping == null )

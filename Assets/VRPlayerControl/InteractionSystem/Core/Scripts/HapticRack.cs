@@ -80,6 +80,7 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void Awake()
 		{
+			Debug.LogError(name + "  is using haptic rack");
 			if ( linearMapping == null )
 			{
 				linearMapping = GetComponent<LinearMapping>();
