@@ -18,8 +18,9 @@ namespace SimpleUI {
 
         protected override void UpdateElement () {
             buttonImage.color = selected ? UIManager.instance.mainLightColor : UIManager.instance.mainDarkColor;
-            text.invert = selected;
-            text.UpdateColors();
+            
+            uiText.invert = selected;
+            uiText.UpdateColors();
         }
 
 

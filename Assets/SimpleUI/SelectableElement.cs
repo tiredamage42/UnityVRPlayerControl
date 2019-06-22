@@ -23,11 +23,16 @@ namespace SimpleUI {
         [HideInInspector] public UIElementHolder parentHolder;
 
 
+        [HideInInspector] public bool hasText = true;
+
         UIText _text;
-        public UIText text {
+        public UIText uiText {
             get {
-                if (_text == null) {
+                if (_text == null && hasText) {
                     _text = GetComponentInChildren<UIText>();
+                    if (_text == null) {
+                        hasText = false;
+                    }
                 }
                 return _text;
             }
@@ -42,10 +47,15 @@ namespace SimpleUI {
             }
         }
         RectTransform _textRect;
-        public RectTransform textRectTransform {
+        public RectTransform UITextRectTransform {
             get {
-                if (_textRect == null) {
-                    _textRect = text.GetComponent<RectTransform>();
+                if (_textRect == null && hasText) {
+                    UIText t = uiText;
+
+                    if (hasText) {
+
+                        _textRect = uiText.GetComponent<RectTransform>();
+                    }
                 }
                 return _textRect;
             }
@@ -135,7 +145,9 @@ namespace SimpleUI {
 
 
     public void _UpdateElement () {
-        text.SetText(elementText);
+        if (hasText) {
+            uiText.SetText(elementText);
+        }
         UpdateElement();
     }
     

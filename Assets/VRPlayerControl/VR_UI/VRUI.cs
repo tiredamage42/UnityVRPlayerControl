@@ -60,7 +60,7 @@ namespace VRPlayer {
 		void OpenQuickInventory (SteamVR_Input_Sources hand) {
 			UIManager.ShowUI(quickInventory, true, false);
 
-            EquipBehavior.AdjustTransform(quickInventory.baseObject.transform, Player.instance.GetHand(hand).transform, quickInventoryEquip, 0);
+            TransformBehavior.AdjustTransform(quickInventory.baseObject.transform, Player.instance.GetHand(hand).transform, quickInventoryEquip, 0);
 
 			VRUIInput.SetUIHand(hand);
 
@@ -95,7 +95,7 @@ namespace VRPlayer {
 
         public SteamVR_Input_Sources messagesHand = SteamVR_Input_Sources.LeftHand;
 
-        public EquipBehavior messagesEquip, quickInventoryEquip;
+        public TransformBehavior messagesEquip, quickInventoryEquip;
 
         public UIElementHolder quickInventory;
         public UIMessageCenter messageCenter;
@@ -109,7 +109,7 @@ namespace VRPlayer {
         void SetUpMessageCenter () {
             Transform handTransform = Player.instance.GetHand(messagesHand).transform;
 
-            EquipBehavior.AdjustTransform(messageCenter.transform, handTransform, messagesEquip, 0);
+            TransformBehavior.AdjustTransform(messageCenter.transform, handTransform, messagesEquip, 0);
 
         }
         

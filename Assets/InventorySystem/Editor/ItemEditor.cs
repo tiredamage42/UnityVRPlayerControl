@@ -15,12 +15,9 @@ namespace InventorySystem {
         }
 
         void SaveLocalPositionAndRotation () {
-
-            if (setIndex < item.equipBehavior.equipSettings.Length && setIndex >= 0) {
-                item.equipBehavior.equipSettings[setIndex].position = item.transform.localPosition;
-                item.equipBehavior.equipSettings[setIndex].rotation = item.transform.localRotation.eulerAngles;
-            }
+            TransformBehavior.SetValues(item.equipBehavior, setIndex, item.transform);
         }
+
 
         static int setIndex;
         public override void OnInspectorGUI() {
