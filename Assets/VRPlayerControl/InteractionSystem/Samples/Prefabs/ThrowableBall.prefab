@@ -102,7 +102,6 @@ GameObject:
   - component: {fileID: 4000010733554458}
   - component: {fileID: 54000013480734818}
   - component: {fileID: 114000012872173436}
-  - component: {fileID: 114000012133941026}
   - component: {fileID: 3446162272499057429}
   - component: {fileID: 114000012554025852}
   - component: {fileID: 4637408118698484423}
@@ -156,9 +155,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b93b6a877adcbf94c89a9d6e0c0e844d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAvailable: 1
   useType: 0
-  handAnimationOnPickup: 0
-  setRangeOfMotionOnPickup: -1
   highlightOnHover: 1
   hideHighlight: []
   onUseStart:
@@ -191,18 +189,6 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &114000012133941026
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000012660339372}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ffefbea063cab884ca33e5a449e5c22c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3446162272499057429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -218,6 +204,7 @@ MonoBehaviour:
   equipType: 1
   equipBehavior: {fileID: 11400000, guid: 2d8857777a5c148078cf82f92130b479, type: 2}
   hoverLockOnEquip: 1
+  rigidbody: {fileID: 0}
   useActionForEquip: 0
   useActionForStash: 1
   unequipOnUseEnd: 1

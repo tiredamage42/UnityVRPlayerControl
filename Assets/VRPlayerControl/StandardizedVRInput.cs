@@ -37,6 +37,31 @@ namespace VRPlayer {
                 headsetIsOnPlayerHead = false;
             }
         }
+
+
+        static Dictionary<SteamVR_Action, SteamVR_Input_Sources> occupiedActions = new Dictionary<SteamVR_Action, SteamVR_Input_Sources>();
+
+        public static void MarkActionOccupied(SteamVR_Action action, SteamVR_Input_Sources forHand) {
+            occupiedActions[action] = forHand;
+        }
+        public static void MarkActionUnoccupied(SteamVR_Action action) {
+            occupiedActions[action] = SteamVR_Input_Sources.Keyboard;
+        }
+        public static bool ActionOccupied (SteamVR_Action action, SteamVR_Input_Sources forHand) {
+            if (VRUIInput.ActionOccupied(action, forHand)) {
+                return true;
+            }
+            
+            SteamVR_Input_Sources handValue;
+            if (occupiedActions.TryGetValue(action, out handValue)) {
+                return handValue != SteamVR_Input_Sources.Keyboard && forHand == handValue;
+            }
+            else {
+                return false;
+            }
+
+        }
+
         
         public ControllerLayoutHintRoutine debugRoutine;
         public void PlayDebugRoutine () {

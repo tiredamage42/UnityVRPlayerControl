@@ -6,12 +6,12 @@
 
 using UnityEngine;
 using System.Collections;
-using UIMessaging;
+// using UIMessaging;
 using Valve.VR;
-using Valve.VR.InteractionSystem;
+// using Valve.VR.InteractionSystem;
 
-using InventorySystem;
-using SimpleUI;
+// using InventorySystem;
+// using SimpleUI;
 namespace VRPlayer
 {
 
@@ -28,76 +28,79 @@ namespace VRPlayer
 	//-------------------------------------------------------------------------
 	public class Player : MonoBehaviour
 	{
-		public UIRadial wristRadial;
-		public EquipBehavior radialEquipBehavior;
+		// public UIRadial wristRadial;
+		// public EquipBehavior radialEquipBehavior;
 
-		public bool wristRadialOpen { get { return wristRadial.gameObject.activeInHierarchy; } }
-		public SteamVR_Action_Boolean openEquipSelect;
+		// public bool wristRadialOpen { get { return wristRadial.gameObject.activeInHierarchy; } }
+		// public SteamVR_Action_Boolean openEquipSelect;
 
 
 
-		void InitializeWristRadial () {
-			wristRadial.onBaseCancel += CloseWristRadial;
-			// wristRadial.onAnySubmit = OnAnyWristRadialSubmit;
-		}
-		void OnWristRadialSubmit (GameObject[] data, object[] customData) {
-			CloseWristRadial();
-		}
+		// void InitializeWristRadial () {
+		// 	wristRadial.onBaseCancel += CloseWristRadial;
+			
+			
+			
+		// 	// wristRadial.onAnySubmit = OnAnyWristRadialSubmit;
+		// }
+		// void OnWristRadialSubmit (GameObject[] data, object[] customData) {
+		// 	CloseWristRadial();
+		// }
 
-		void CloseWristRadial () {
-			UIManager.HideUI(wristRadial);
-			VRManager.onUISubmit -= OnWristRadialSubmit;
-		}
+		// void CloseWristRadial () {
+		// 	UIManager.HideUI(wristRadial);
+		// 	VRManager.onUISubmit -= OnWristRadialSubmit;
+		// }
 
-		void OnGamePaused (bool isPaused) {
-			if (isPaused) {
-				if (wristRadialOpen) {
-					CloseWristRadial();
-				}
-			}
-		}
+		// void OnGamePaused (bool isPaused) {
+		// 	if (isPaused) {
+		// 		if (wristRadialOpen) {
+		// 			CloseWristRadial();
+		// 		}
+		// 	}
+		// }
 
-		void OpenWristRadial (SteamVR_Input_Sources hand) {
-			UIManager.ShowUI(wristRadial, true, false);
-			EquipBehavior.EquipSetting equipSettings = radialEquipBehavior.equipSettings[0];
-			wristRadial.baseObject.transform.SetParent(GetHand(hand).transform, equipSettings.position, equipSettings.rotation );
-			VRUIInput.SetUIHand(hand);
+		// void OpenWristRadial (SteamVR_Input_Sources hand) {
+		// 	UIManager.ShowUI(wristRadial, true, false);
+		// 	EquipBehavior.EquipSetting equipSettings = radialEquipBehavior.equipSettings[0];
+		// 	wristRadial.baseObject.transform.SetParent(GetHand(hand).transform, equipSettings.position, equipSettings.rotation );
+		// 	VRUIInput.SetUIHand(hand);
 
-			VRManager.onUISubmit += OnWristRadialSubmit;
+		// 	VRManager.onUISubmit += OnWristRadialSubmit;
 			
 
-		}
+		// }
 
-		void OnEnable () {
-			VRManager.onGamePaused += OnGamePaused;
+		// void OnEnable () {
+		// 	VRManager.onGamePaused += OnGamePaused;
 			
-		} 
-		void OnDisable () {
-			VRManager.onGamePaused -= OnGamePaused;
-		} 
+		// } 
+		// void OnDisable () {
+		// 	VRManager.onGamePaused -= OnGamePaused;
+		// } 
 
-		bool CheckHandForWristRadialOpen (SteamVR_Input_Sources hand) {
-			if (openEquipSelect.GetStateDown(hand)) {
-				OpenWristRadial(hand);
-				return true;
-			}
-			return false;
-		}
+		// bool CheckHandForWristRadialOpen (SteamVR_Input_Sources hand) {
+		// 	if (openEquipSelect.GetStateDown(hand)) {
+		// 		OpenWristRadial(hand);
+		// 		return true;
+		// 	}
+		// 	return false;
+		// }
 		
 
-        void UpdateWristRadial () {
-			if (VRManager.gamePaused) 
-				return;
+        // void UpdateWristRadial () {
+		// 	if (VRManager.gamePaused) 
+		// 		return;
 
-			bool together = handsTogether;
-			if (!wristRadialOpen) {
-				if (together) {
-					if (!CheckHandForWristRadialOpen(SteamVR_Input_Sources.LeftHand)) {
-						CheckHandForWristRadialOpen(SteamVR_Input_Sources.RightHand);
-					}
-				}
-			}
-        } 
+		// 	bool together = handsTogether;
+		// 	if (!wristRadialOpen) {
+		// 		if (together) {
+		// 			if (!CheckHandForWristRadialOpen(SteamVR_Input_Sources.LeftHand)) {
+		// 				CheckHandForWristRadialOpen(SteamVR_Input_Sources.RightHand);
+		// 			}
+		// 		}
+		// 	}
+        // } 
 
 
 
@@ -245,8 +248,8 @@ namespace VRPlayer
 		private void Awake()
 		{
 			moveScript = GetComponent<SimpleCharacterController>();
-			InitializeMessageCenters();
-			InitializeWristRadial();
+			// InitializeMessageCenters();
+			// InitializeWristRadial();
 		}
 
 
@@ -281,27 +284,27 @@ namespace VRPlayer
         
 
 			UpdateMessageCenters();
-			UpdateWristRadial();
+			// UpdateWristRadial();
 
         }
 
-		void InitializeMessageCenters () {
-			MessageCenter r = GetHand(SteamVR_Input_Sources.RightHand).GetComponentInChildren<MessageCenter>();
-			r.transform.localRotation = Quaternion.Euler(90.0f, 0.0f, 0.0f);
-			r.transform.localPosition = new Vector3(-0.05f, 0.0f, 0.0f);
-			r.textAlignment = TextAlignment.Right;
-			r.textAnchor = TextAnchor.UpperRight;
+		// void InitializeMessageCenters () {
+		// 	MessageCenter r = GetHand(SteamVR_Input_Sources.RightHand).GetComponentInChildren<MessageCenter>();
+		// 	r.transform.localRotation = Quaternion.Euler(90.0f, 0.0f, 0.0f);
+		// 	r.transform.localPosition = new Vector3(-0.05f, 0.0f, 0.0f);
+		// 	r.textAlignment = TextAlignment.Right;
+		// 	r.textAnchor = TextAnchor.UpperRight;
 
-			MessageCenter l = GetHand(SteamVR_Input_Sources.LeftHand).GetComponentInChildren<MessageCenter>();
-			l.transform.localRotation = Quaternion.Euler(90.0f, 0.0f, 0.0f);
-			l.transform.localPosition = new Vector3(0.05f, 0.0f, 0.0f);
-			l.textAlignment = TextAlignment.Left;
-			l.textAnchor = TextAnchor.UpperLeft;
+		// 	MessageCenter l = GetHand(SteamVR_Input_Sources.LeftHand).GetComponentInChildren<MessageCenter>();
+		// 	l.transform.localRotation = Quaternion.Euler(90.0f, 0.0f, 0.0f);
+		// 	l.transform.localPosition = new Vector3(0.05f, 0.0f, 0.0f);
+		// 	l.textAlignment = TextAlignment.Left;
+		// 	l.textAnchor = TextAnchor.UpperLeft;
 
 
-			MessageCenter.AddInstance(r);
-			MessageCenter.AddInstance(l);			
-		}
+		// 	MessageCenter.AddInstance(r);
+		// 	MessageCenter.AddInstance(l);			
+		// }
 
 		//TODO: make the main one whichever is in front of the camera
 

@@ -33,40 +33,45 @@ namespace VRPlayer{
             }
         }
         
-        protected override void OnEnable () {
-            base.OnEnable();
+        // protected override void OnEnable () {
+        //     base.OnEnable();
 
-            VRManager.onUISelection += OnUISelection;
+        //     VRManager.onUISelection += OnUISelection;
 
-            VRManager.onGamePaused += OnGamePaused;
-            // UIManager.onUIShow += OnUIShow;
+        //     VRManager.onGamePaused += OnGamePaused;
+        //     // UIManager.onUIShow += OnUIShow;
             
-        }
-        protected override void OnDisable () {
-            base.OnDisable();
-            // UIManager.onUIShow -= OnUIShow;
-            VRManager.onGamePaused -= OnGamePaused;
-            VRManager.onUISelection -= OnUISelection;
-        }
+        // }
+        // protected override void OnDisable () {
+        //     base.OnDisable();
+        //     // UIManager.onUIShow -= OnUIShow;
+        //     VRManager.onGamePaused -= OnGamePaused;
+        //     VRManager.onUISelection -= OnUISelection;
+        // }
         
         // void OnUIShow (UIElementHolder uiObject) {
         //     uiObject.onAnySelection = OnAnyUISelection;
         // }
 
-        void OnUISelection (GameObject[] data, object[] customData) {
+        // void OnUISelection (GameObject[] data, object[] customData) {
 
-            SteamVR_Input_Sources hand = currentUIHand != SteamVR_Input_Sources.Any ? currentUIHand : lastUsedUIHand;
-            // float duration,  float frequency, float amplitude
-            StandardizedVRInput.instance. TriggerHapticPulse( hand, .1f, 1.0f, 1.0f );   
-        }
+        //     SteamVR_Input_Sources hand = currentUIHand != SteamVR_Input_Sources.Any ? currentUIHand : lastUsedUIHand;
+        //     // float duration,  float frequency, float amplitude
+        //     StandardizedVRInput.instance. TriggerHapticPulse( hand, .1f, 1.0f, 1.0f );   
+        // }
 
         
-        void OnGamePaused(bool isPaused) {
-            if (isPaused) {
-                SetUIHand(SteamVR_Input_Sources.Any);
-            }
-        }
+        // void OnGamePaused(bool isPaused) {
+        //     if (isPaused) {
+        //         SetUIHand(SteamVR_Input_Sources.Any);
+        //     }
+        // }
 
+public static SteamVR_Input_Sources GetUIHand () {
+    return currentUIHand != SteamVR_Input_Sources.Any ? currentUIHand : lastUsedUIHand;
+
+}
+        //     
         static VRUIInput _instance;
 		static VRUIInput instance
 		{
@@ -97,7 +102,7 @@ namespace VRPlayer{
         static SteamVR_Input_Sources lastUsedUIHand = SteamVR_Input_Sources.Any;
         static SteamVR_Input_Sources currentUIHand = SteamVR_Input_Sources.Any;
 
-        public static bool ActionIsOccupied (SteamVR_Action action, SteamVR_Input_Sources forHand) {
+        public static bool ActionOccupied (SteamVR_Action action, SteamVR_Input_Sources forHand) {
             return uiInputActive && forHand == currentUIHand && (
                 (action == instance.submitButton) || (action == instance.cancelButton) || (action == selectionAxis) 
             );
