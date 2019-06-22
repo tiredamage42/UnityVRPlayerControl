@@ -85,10 +85,10 @@ namespace VRPlayer {
         }
 
         public enum InputType {
-            TriggerButton, TriggerAxis,
-            TrackpadButton, TrackpadAxis,
-            DpadUp, DpadDown, DpadLeft, DpadRight,
-            MenuButton, SideButton
+            TriggerButton=0, TriggerAxis=1,
+            TrackpadButton=2, TrackpadAxis=3,
+            DpadUp=4, DpadDown=5, DpadLeft=6, DpadRight=7,
+            MenuButton=8, SideButton=9
         };
 
         public ISteamVR_Action_In_Source GetAction(InputType inputType) {
@@ -120,6 +120,33 @@ namespace VRPlayer {
             }
             return null;
         }
+        public InputType Action2InputType(SteamVR_Action action) {
+                    if (action ==  TriggerButton)
+                return InputType.TriggerButton;
+                    if (action ==   TriggerAxis)
+                return InputType.TriggerAxis;
+                
+                    if (action ==   TrackpadButton)
+                return InputType.TrackpadButton;
+                    if (action ==   TrackpadAxis)
+                return InputType.TrackpadAxis;
+                
+                    if (action ==   DpadUp)
+                return InputType.DpadUp;
+                    if (action == DpadDown)
+                return InputType.DpadDown;
+                    if (action ==   DpadLeft)
+                return InputType.DpadLeft;
+                    if (action ==   DpadRight)
+                return InputType.DpadRight;
+                
+                    if (action ==   MenuButton)
+                return InputType.MenuButton;
+                    if (action ==   SideButton)
+                return InputType.SideButton;
+             
+            return InputType.TriggerButton;
+        }
 
         public SteamVR_Action_Boolean TriggerButton, TrackpadButton, MenuButton, SideButton;
         public SteamVR_Action_Single TriggerAxis;
@@ -141,19 +168,23 @@ namespace VRPlayer {
             hapticAction.Execute(0, duration, frequency, amplitude, hand);
         }
 
-        public void ShowHint(Hand hand, ISteamVR_Action_In_Source action)
+        // public void ShowHint(Hand hand, ISteamVR_Action_In_Source action)
+        // {
+        //     ControllerButtonHints.ShowButtonHint(hand, action); //todo: assess
+        // }
+
+        public void HideHint(Hand hand, SteamVR_Action action)
         {
-            ControllerButtonHints.ShowButtonHint(hand, action); //todo: assess
+            VRPlayer.UI.VRControllerHintsUI.HideHint(Action2InputType(action), hand.handType);
+
+            // ControllerButtonHints.HideButtonHint(hand, action); //todo: assess
         }
 
-        public void HideHint(Hand hand, ISteamVR_Action_In_Source action)
+        public void ShowHint(Hand hand, SteamVR_Action action, string text)
         {
-            ControllerButtonHints.HideButtonHint(hand, action); //todo: assess
-        }
+            VRPlayer.UI.VRControllerHintsUI.ShowHint(Action2InputType(action), hand.handType, text);
 
-        public void ShowHint(Hand hand, ISteamVR_Action_In_Source action, string text)
-        {
-            ControllerButtonHints.ShowTextHint(hand, action, text);
+            // ControllerButtonHints.ShowTextHint(hand, action, text);
         }
 
 

@@ -67,24 +67,28 @@ namespace SimpleUI {
             for (int i = 0; i < allElements.Count; i++) {
                 allElements[i].rectTransform.sizeDelta = new Vector2(width, lineHeight);
                 
-                UIText textC = allElements[i].text;
-                textC.SetAnchor( textAlignment );
 
-                RectTransform textRect = allElements[i].textRectTransform;
-                if (textAlignment == TextAnchor.MiddleCenter || textAlignment == TextAnchor.LowerCenter || textAlignment == TextAnchor.UpperCenter ) {
-                    textRect.anchorMin = new Vector2(.5f, .5f);
-                    textRect.anchorMax = new Vector2(.5f, .5f);
-                    textRect.pivot = new Vector2(0.5f, 0.5f);
-                }
-                else if (textAlignment == TextAnchor.MiddleRight || textAlignment == TextAnchor.LowerRight || textAlignment == TextAnchor.UpperRight  ) {
-                    textRect.anchorMin = new Vector2(1, 0.5f);
-                    textRect.anchorMax = new Vector2(1, 0.5f);
-                    textRect.pivot = new Vector2(1, 0.5f);
-                }
-                else if (textAlignment == TextAnchor.MiddleLeft || textAlignment == TextAnchor.LowerLeft || textAlignment == TextAnchor.UpperLeft  ) {
-                    textRect.anchorMin = new Vector2(0, 0.5f);
-                    textRect.anchorMax = new Vector2(0, 0.5f);
-                    textRect.pivot = new Vector2(0, 0.5f);
+                UIText textC = allElements[i].uiText;
+                if (allElements[i].hasText) {
+
+                    textC.SetAnchor( textAlignment );
+
+                    RectTransform textRect = allElements[i].UITextRectTransform;
+                    if (textAlignment == TextAnchor.MiddleCenter || textAlignment == TextAnchor.LowerCenter || textAlignment == TextAnchor.UpperCenter ) {
+                        textRect.anchorMin = new Vector2(.5f, .5f);
+                        textRect.anchorMax = new Vector2(.5f, .5f);
+                        textRect.pivot = new Vector2(0.5f, 0.5f);
+                    }
+                    else if (textAlignment == TextAnchor.MiddleRight || textAlignment == TextAnchor.LowerRight || textAlignment == TextAnchor.UpperRight  ) {
+                        textRect.anchorMin = new Vector2(1, 0.5f);
+                        textRect.anchorMax = new Vector2(1, 0.5f);
+                        textRect.pivot = new Vector2(1, 0.5f);
+                    }
+                    else if (textAlignment == TextAnchor.MiddleLeft || textAlignment == TextAnchor.LowerLeft || textAlignment == TextAnchor.UpperLeft  ) {
+                        textRect.anchorMin = new Vector2(0, 0.5f);
+                        textRect.anchorMax = new Vector2(0, 0.5f);
+                        textRect.pivot = new Vector2(0, 0.5f);
+                    }
                 }
                 
             }

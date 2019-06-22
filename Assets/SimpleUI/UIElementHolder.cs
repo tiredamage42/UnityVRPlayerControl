@@ -193,7 +193,11 @@ namespace SimpleUI {
             transform.localScale = Vector3.one * scale;
 
             for (int i = 0; i < allElements.Count; i++) {
-                allElements[i].text.transform.localScale = Vector3.one * textScale;  
+                UIText t = allElements[i].uiText;
+                if (allElements[i].hasText) {
+
+                    t.transform.localScale = Vector3.one * textScale;  
+                }
                 allElements[i]._UpdateElement();  
             }
 
@@ -249,7 +253,7 @@ namespace SimpleUI {
             newElement.transform.localRotation = Quaternion.identity;
             
             allElements.Add(newElement);
-            newElement.text.SetText( elementText );
+            newElement.uiText.SetText( elementText );
             UpdateElementHolder();
             return newElement;
         }

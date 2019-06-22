@@ -61,14 +61,18 @@ namespace SimpleUI{
                 element.mainImageTransform.localRotation = elementInsidesLocalRotation;
                 element.selectFlairTransform.localRotation = elementInsidesLocalRotation;
 
-                element.text.transform.localRotation = Quaternion.Euler(0,0,-elementAngle);
-                element.text.SetAnchor(elementAngle < -180f ? TextAnchor.MiddleRight : TextAnchor.MiddleLeft);
                 // element.UpdateLayout(1f/allElements.Count, sliceAngle, -i * sliceAngle);
 
                 element.selectFlairTransform.localScale = flairSize;
                 element.mainImageTransform.localScale = insideSize;
 
-                element.text.transform.localPosition = textLocalPos;
+
+                UIText t = element.uiText;
+                if (element.hasText) {
+                    element.uiText.transform.localRotation = Quaternion.Euler(0,0,-elementAngle);
+                    element.uiText.SetAnchor(elementAngle < -180f ? TextAnchor.MiddleRight : TextAnchor.MiddleLeft);
+                    element.uiText.transform.localPosition = textLocalPos;
+                }
             }
         }
         

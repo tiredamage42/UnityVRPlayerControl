@@ -8,6 +8,57 @@ using System.IO;
 namespace SimpleUI
 {
 
+
+    
+public class TextureInverter : ScriptableWizard
+{
+
+    void SaveTexture (string path, int width, int height, Color[] colors) {
+        Texture2D tex = new Texture2D(width, height);
+        tex.SetPixels(colors);        
+        tex.Apply(false); 
+        File.WriteAllBytes(path + ".png", tex.EncodeToPNG()); 
+    }
+
+    public string dirPath = "Assets/SimpleUI/Icons/";
+    public bool invertAlpha;
+    public Texture2D[] textures;
+    
+    [MenuItem("GameObject/SimpleUI/Texture Invert")]
+    static void CreateWizard()
+    {
+        ScriptableWizard.DisplayWizard<TextureInverter>("Invert Texture");
+    }
+
+    void InvertTexture (Texture2D texture) {
+        if (!dirPath.EndsWith("/")) {
+            dirPath += "/";
+        }
+
+        Color[] colors = texture.GetPixels(0);
+
+        for (int i = 0; i< colors.Length; i++) {
+            Color c = colors[i];
+            float m = 1.0f;
+            colors[i] = new Color(m - c.r, m-c.g, m-c.b, invertAlpha ?  m-c.a : c.a);
+        }
+        SaveTexture(dirPath + texture.name + "_inverted", texture.width, texture.height, colors);
+    }
+
+
+
+    void OnWizardCreate () {
+        
+        for (int i =0 ; i < textures.Length; i++) {
+            InvertTexture(textures[i]);
+        }
+    
+        AssetDatabase.Refresh();
+    }
+
+
+}
+
 public class TextureCreator : ScriptableWizard
 {
 

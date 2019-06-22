@@ -9,7 +9,7 @@ namespace InventorySystem {
     public class Item : MonoBehaviour, IInteractable
     {
         public Inventory.EquipType equipType = Inventory.EquipType.Normal;
-        public EquipBehavior equipBehavior;
+        public TransformBehavior equipBehavior;
         public bool hoverLockOnEquip = true;
 
         Interactable interactable;
