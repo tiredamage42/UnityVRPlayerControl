@@ -92,13 +92,17 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void Update()
 		{
+
 			if ( Application.isPlaying )
 			{
-				lookAtPosition.x = player.hmdTransform.position.x;
-				lookAtPosition.y = lookAtJointTransform.position.y;
-				lookAtPosition.z = player.hmdTransform.position.z;
+				if (Player.instance != null) {
 
-				lookAtJointTransform.LookAt( lookAtPosition );
+					lookAtPosition.x = player.hmdTransform.position.x;
+					lookAtPosition.y = lookAtJointTransform.position.y;
+					lookAtPosition.z = player.hmdTransform.position.z;
+
+					lookAtJointTransform.LookAt( lookAtPosition );
+				}
 			}
 		}
 
@@ -158,6 +162,9 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 		{
 			if ( !gotReleventComponents )
 			{
+				return;
+			}
+			if (Teleport.instance == null) {
 				return;
 			}
 

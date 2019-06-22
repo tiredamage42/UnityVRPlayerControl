@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-
 
 namespace SimpleUI {
 
@@ -40,7 +37,6 @@ namespace SimpleUI {
         
         public bool invert;
         void OnEnable () {
-            
             UpdateColors();
         }
 
@@ -50,8 +46,15 @@ namespace SimpleUI {
         public void SetAnchor(TextAnchor textAnchor) {
             text.alignment = textAnchor;
         }
+        public void SetAlpha (float alpha) {
+            Color c = text.color;
+            c.a = alpha;
+            text.color = c;
 
-
+            c = outline.effectColor;
+            c.a = alpha;
+            outline.effectColor = c;
+        }
 
         public void UpdateColors () {
             text.color = invert ? UIManager.instance.mainDarkColor : UIManager.instance.mainLightColor;

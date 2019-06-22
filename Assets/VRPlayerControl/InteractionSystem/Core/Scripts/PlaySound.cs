@@ -76,6 +76,9 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void Awake()
 		{
+
+			Debug.LogError(name + "  is using sound Sound");
+			
 			audioSource = GetComponent<AudioSource>();
 			clip = audioSource.clip;
 

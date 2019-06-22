@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 using InteractionSystem;
-using VRPlayer;
-using Valve.VR;
+
 namespace InventorySystem {
 
     public class Item : MonoBehaviour, IInteractable
@@ -12,7 +12,13 @@ namespace InventorySystem {
         public EquipBehavior equipBehavior;
         public bool hoverLockOnEquip = true;
 
+        Interactable interactable;
+        new public Rigidbody rigidbody;
+
         void Awake () {
+            interactable = GetComponent<Interactable>();
+            rigidbody = GetComponent<Rigidbody>();
+
             InitializeInteractableComponents();
         }
 
@@ -29,10 +35,10 @@ namespace InventorySystem {
                 Inventory inventory = interactor.GetComponent<Inventory>();
                 if (inventory != null) {
                     if (hoverLockOnEquip)
-                        interactor.HoverLock( GetComponent<Interactable>() );
-            
-                    inventory.EquipItem(this);//, attachmentFlags);
-                    // this.parentInventory = inventory;
+                        interactor.HoverLock( interactable );
+
+                    
+                    inventory.EquipItem(this);
                 }
             }
             else if (useIndex == useActionForStash) {
@@ -47,18 +53,17 @@ namespace InventorySystem {
         public void OnUseEnd(Interactor interactor, int useIndex) {
             if (!unequipOnUseEnd)
                 return;
-            // Debug.LogError("use end");
                 
             if (useIndex == useActionForEquip) {
                 // Debug.LogError("should beeee");
                 Inventory inventory = interactor.GetComponent<Inventory>();
                 if (inventory != null) {
-                    // Debug.LogError("inventory not null");
                     if (inventory == parentInventory) {
-                        // Debug.LogError("same as parent");
-
+                    
                         if (hoverLockOnEquip)
-                            interactor.HoverUnlock(GetComponent<Interactable>());
+                            interactor.HoverUnlock( interactable );
+
+
                         inventory.UnequipItem(this);
                         
 
@@ -86,123 +91,18 @@ namespace InventorySystem {
 
         }
 
+
+
+
+
+
+
+
         protected virtual IEnumerator LateDetach( Inventory inventory )
 		{
 			yield return new WaitForEndOfFrame();
             inventory.UnequipItem(this);
 		}
-
-        // public SteamVR_ActionSet activateActionSetOnAttach
-        // {
-        //     get 
-        //     {
-        //         return GetComponent<Interactable>().activateActionSetOnAttach;
-        //     }
-        // }
-
-        // public bool hideHandOnAttach
-        // {
-        //     get 
-        //     {
-        //         return GetComponent<Interactable>().hideHandOnAttach;
-        //     }
-        // }
-
-
-        // public bool hideSkeletonOnAttach
-        // {
-        //     get 
-        //     {
-        //         return GetComponent<Interactable>().hideSkeletonOnAttach;
-        //     }
-        // }
-
-        // public bool hideControllerOnAttach 
-        // {
-        //     get 
-        //     {
-        //         return GetComponent<Interactable>().hideControllerOnAttach;
-        //     }
-        // }
-
-        // public int handAnimationOnPickup 
-        // {
-        //     get 
-        //     {
-        //         return GetComponent<Interactable>().handAnimationOnPickup;
-        //     }
-        // }
-
-        // public SkeletalMotionRangeChange setRangeOfMotionOnPickup 
-        // {
-        //     get 
-        //     {
-        //         return GetComponent<Interactable>().setRangeOfMotionOnPickup;
-        //     }
-        // }
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // [Tooltip("Specify whether you want to snap to the inventory's object attachment point, or just the raw inventory transform")]
-        // public bool useAlternateAttachementPoint {
-        //     get {
-        //         return GetComponent<Interactable>().useHandObjectAttachmentPoint;
-        //     }
-        // }
-        // public bool attachEaseIn{// = false;
-        // get {
-        //         return GetComponent<Interactable>().attachEaseIn;
-        //     }
-        // }
-        // [HideInInspector] public AnimationCurve snapAttachEaseInCurve = AnimationCurve.EaseInOut(0.0f, 0.0f, 1.0f, 1.0f);
-        // public float snapAttachEaseInTime{// = 0.15f;
-        // get {
-        //         return GetComponent<Interactable>().snapAttachEaseInTime;
-        //     }
-        // }
-        // public Hand.AttachmentFlags attachmentFlags; 
-        // {
-        //     get {
-        //         return GetComponent<Interactable>().attachmentFlags;
-        //     }
-        // }
-        // public bool snapAttachEaseInCompleted {// = false;
-        // get {
-        //         return GetComponent<Interactable>().snapAttachEaseInCompleted;
-        //     }
-        // }
-        // public SteamVR_Skeleton_Poser skeletonPoser {// = false;
-        // get {
-        //         return GetComponent<Interactable>().skeletonPoser;
-        //     }
-        // }
-
-        // public bool handFollowTransform {// = false;
-        // get {
-        //         return GetComponent<Interactable>().handFollowTransform;
-        //     }
-        // }
-
-
-
-
-
-
-
 
 
 
@@ -214,6 +114,8 @@ namespace InventorySystem {
 
         public void OnEquipped (Inventory inventory) {
             this.parentInventory = inventory;
+            interactable.isAvailable = false;
+                        
             
             for (int i = 0; i < itemComponents.Count; i++) {
                 itemComponents[i].OnEquipped(inventory);
@@ -221,6 +123,8 @@ namespace InventorySystem {
         }
         public void OnUnequipped (Inventory inventory) {
             this.parentInventory = null;
+            interactable.isAvailable = true;
+                        
             
             for (int i = 0; i < itemComponents.Count; i++) {
                 itemComponents[i].OnUnequipped(inventory);
@@ -260,10 +164,7 @@ namespace InventorySystem {
 
         List<IInventoryItem> itemComponents = new List<IInventoryItem>();
         void InitializeInteractableComponents() {
-            // itemComponents = GetComponents<IInventoryItem>().ToList();
-
             IInventoryItem[] itemComponents = GetComponents<IInventoryItem>();
-
             for (int i = 0; i< itemComponents.Length; i++) {
                 this.itemComponents.Add(itemComponents[i]);
             }
@@ -274,19 +175,10 @@ namespace InventorySystem {
 
         void OnDestroy()
         {
-            // isDestroying = true;
-
             if (parentInventory != null)
             {
-                parentInventory.UnequipItem(this, false);//this.gameObject, false);
-                // parentInventory.skeleton.BlendToSkeleton(0.1f);
+                parentInventory.UnequipItem(this, false);
             }
-
-            
         }
-
-
-
-
     }
 }

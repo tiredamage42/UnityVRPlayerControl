@@ -22,6 +22,7 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void Awake()
 		{
+			Debug.LogError(name + "  is using linear animator");
 			if ( animator == null )
 			{
 				animator = GetComponent<Animator>();
