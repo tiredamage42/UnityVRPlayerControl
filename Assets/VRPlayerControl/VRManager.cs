@@ -103,14 +103,14 @@ namespace VRPlayer{
         void OnShowGameMessage (string message, int key) {
             
             if (onShowGameMessage != null) {
-                Debug.LogError("callingbakc on show message");
+                // Debug.LogError("callingbakc on show message");
                 onShowGameMessage (message, key);
             }
         }
         
 
         public static void ShowGameMessage (string message, int key) {
-
+            gameManager.ShowGameMessage(message, key);
         }
 
 
