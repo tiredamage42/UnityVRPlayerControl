@@ -9,11 +9,28 @@ using Valve.VR;
 
 using System;
 
+using InteractionSystem;
+
 
 namespace InventorySystem {
 
 public class Inventory : MonoBehaviour
 {
+
+
+    public const int UI_USE_ACTION = 0;
+    public const int UI_TRADE_ACTION = 1;
+    public const int UI_DROP_ACTION = 2;
+    public const int UI_FAVORITE_ACTION = 3;
+
+    public const int GRAB_ACTION = 0;
+    public const int STASH_ACTION = 1;
+    public const int DROP_ACTION = 2;
+
+    
+
+
+
     // [Flags]
     //     public enum AttachmentFlags
     //     {
@@ -72,20 +89,27 @@ if (equipSlot < 0 || equipSlot >= equippedSlots.Length) {
         }
         SetMainEquipPointIndex(equipSlot);
         
-
-        if (equippedSlots[equipSlot] != null) {
+        InventorySlot slot = equippedSlots[equipSlot];
+        if (slot != null) {
 
 
             bool isQuickEquipped = false;
-            if (equippedSlots[equipSlot].isQuickEquipped) {
-                if (equippedSlots[equipSlot].item.equipActions.Contains(useIndex)) {
+            if (slot.isQuickEquipped) {
+                if (slot.item.equipActions.Contains(useIndex)) {
                     UnequipItem(equipSlot);
                     isQuickEquipped = true;
                 }
             }
             if (!isQuickEquipped) {
 
-                equippedSlots[equipSlot].sceneItem.OnEquippedUseEnd(this, useIndex);
+                slot.sceneItem.OnEquippedUseEnd(this, useIndex);
+                
+                if (useIndex == DROP_ACTION) {
+                    
+                    UnequipItem(equipSlot);
+                    DropItem(slot.item, 1, true);
+                }
+
             }
                     
             
@@ -406,7 +430,7 @@ public enum EquipType {
 
 
 [HideInInspector] [System.NonSerialized] public InventorySlot[] equippedSlots = new InventorySlot[2];
-// public int favoritesCount = 8;
+public int favoritesCount = 8;
 public List<InventorySlot> allInventory = new List<InventorySlot>();
 
 
@@ -609,7 +633,7 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
 
                 if (getScene) {
 
-                    Item sceneItem = Item.GetSceneItem(itemBehavior.scenePrefab);
+                    Item sceneItem = Item.GetSceneItem(itemBehavior);
                     sceneItem.transform.position = transform.TransformPoint(dropLocalPoint);
                     sceneItem.transform.rotation = Quaternion.Euler(UnityEngine.Random.Range(0,360), UnityEngine.Random.Range(0,360), UnityEngine.Random.Range(0,360));
                     sceneItem.gameObject.SetActive(true);
@@ -685,6 +709,8 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
                     equippedSlots[oldIndex] = null;
                 }
 
+                equipPoints[equipSlot].GetComponent<Interactor>().HoverLock(null);
+
             }
             else {
                 //equipping , we need to get an available scene item
@@ -704,7 +730,7 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
                 }
 
                 if (equippedInventorySlot == null) {
-                    equippedInventorySlot = BuildEquippedInventorySlot (Item.GetSceneItem(itemBehavior.scenePrefab), false);
+                    equippedInventorySlot = BuildEquippedInventorySlot (Item.GetSceneItem(itemBehavior), false);
                 }
                 else {
                     equippedSlots[oldIndex] = null;
@@ -1148,6 +1174,8 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
             if (onUnequip != null) {
                 onUnequip(this, slot.sceneItem, slotIndex, slot.isQuickEquipped);
             }
+
+            equipPoints[slotIndex].GetComponent<Interactor>().HoverUnlock(null);
 
             // equip buffs
             if (slot.item.onEquipBuffs != null) {

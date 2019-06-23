@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2b52ef604cb54a54ae56556da48a30e, type: 3}
+  m_Name: ItemBase
+  m_EditorClassIdentifier: 
+  equipSlot: -1
+  stackable: 0
+  allowMultipleStashed: 1
+  itemName: 
+  scenePrefab: {fileID: 0}
+  permanentStash: 0
+  stashActions: 01000000
+  equipActions: 00000000
+  equipType: 1
+  hoverLockOnEquip: 1
+  onStashBuffs: {fileID: 0}
+  stashUseBehavior: {fileID: 11400000, guid: 11f12a8d2cb294126a519580ba24f367, type: 2}
+  onEquipBuffs: {fileID: 0}
+  equipTransform: {fileID: 11400000, guid: 4d2afb7f8e365402f94727fafb2ef7d6, type: 2}

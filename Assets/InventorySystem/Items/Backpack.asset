@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2b52ef604cb54a54ae56556da48a30e, type: 3}
+  m_Name: Backpack
+  m_EditorClassIdentifier: 
+  equipSlot: 2
+  stackable: 0
+  allowMultipleStashed: 1
+  itemName: Backpack
+  scenePrefabVariations:
+  - {fileID: 4059460929881129149, guid: 85cabae2abba14828b2348dee7d1b443, type: 3}
+  - {fileID: 4417822710243179157, guid: 7c1924ae5b12d451085cecfda3c2340a, type: 3}
+  - {fileID: 3782446068247926477, guid: 0f3ca9896e0c74710941083d65ce21cf, type: 3}
+  - {fileID: 8001040304083995294, guid: 20625ce9e4cfe4ac7873422af14d224a, type: 3}
+  - {fileID: 7675389908402188198, guid: cc875eef3a5c842449557f1997d95aa9, type: 3}
+  permanentStash: 0
+  stashActions: 01000000
+  equipActions: 00000000
+  equipType: 1
+  hoverLockOnEquip: 1
+  onStashBuffs: {fileID: 0}
+  stashUseBehavior: {fileID: 11400000, guid: 11f12a8d2cb294126a519580ba24f367, type: 2}
+  onEquipBuffs: {fileID: 0}
+  equipTransform: {fileID: 11400000, guid: 4d2afb7f8e365402f94727fafb2ef7d6, type: 2}

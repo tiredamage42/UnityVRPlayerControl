@@ -15,7 +15,7 @@ namespace InventorySystem {
         public bool stackable;
         public bool allowMultipleStashed = true;
         public string itemName;
-        public Item scenePrefab;
+        public Item[] scenePrefabVariations;
 
 
         // cant be dropped from inventory accidentally
@@ -51,15 +51,23 @@ namespace InventorySystem {
 
 
     public abstract class StashUseBehavior : ScriptableObject {
-        public abstract void OnStashedUse (Inventory inventory, Inventory.InventorySlot slot, int useAction);
+        public void OnStashedUse (Inventory inventory, ItemBehavior item, int useAction, int slotIndex, int affectingCount, Inventory secondaryInventory) {
+            if (useAction == Inventory.UI_DROP_ACTION) {
+                inventory.DropItem(item, affectingCount, true);
+            }
+            else if (useAction == Inventory.UI_TRADE_ACTION) {
+                inventory.DropItem(item, affectingCount, false);
+                secondaryInventory.StashItem(item, affectingCount);
+            }
+            else {
+                _OnStashedUse ( inventory, item, useAction, slotIndex, affectingCount, secondaryInventory);
+            }
+
+        }
+        protected abstract void _OnStashedUse (Inventory inventory, ItemBehavior item, int useAction, int slotIndex, int affectingCount, Inventory secondaryInventory);
     }
-// [CreateAssetMenu()]
-    
-    // public class EquippableStashUseBehavior : StashUseBehavior {
-    //     public override void OnStashedUse (Inventory inventory, Inventory.InventorySlot slot, int useAction) {
-    //         inventory.EquipItem(slot.item);
-    //     }
-    // }
+        
+        
 // [CreateAssetMenu()]
     
     // public class ConsumableStashUseBehavior : StashUseBehavior {

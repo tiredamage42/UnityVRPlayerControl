@@ -84,8 +84,32 @@ namespace VRPlayer {
 
 
         void OnQuickInventorySubmit (GameObject[] data, object[] customData) {
-			CloseQuickInventory();
+			
+            SteamVR_Input_Sources hand = VRUIInput.GetUIHand();
+			int slot = Player.instance.GetHand(hand).GetComponent<EquipPoint>().equipSlotOnBase;
+            ItemBehavior item = (ItemBehavior)customData[0];
+
+            Inventory inventory = Player.instance.GetComponent<Inventory>();
+
+            item.stashUseBehavior.OnStashedUse (inventory, item, Inventory.UI_USE_ACTION, slot, 1, null);
+            
+            // inventory.EquipItem(item, slot, null);
+
+            // CloseQuickInventory();
+            
 		}
+
+
+        void BuildQuickInventory () {
+            Inventory inventory = Player.instance.GetComponent<Inventory>();
+            SelectableElement[] allElements = quickInventory.GetAllElements(inventory.favoritesCount);
+
+            for (int i =0 ; i< allElements.Length; i++) {
+                allElements[i].uiText.SetText(inventory.allInventory[i].item.itemName);
+                allElements[i].customData = new object[] { inventory.allInventory[i].item };
+            }
+
+        }
 
 		void CloseQuickInventory () {
 			UIManager.HideUI(quickInventory);
@@ -93,13 +117,15 @@ namespace VRPlayer {
 		}
 
 		void OpenQuickInventory (SteamVR_Input_Sources hand) {
+
+            BuildQuickInventory();
+            
 			UIManager.ShowUI(quickInventory, true, false);
 
             TransformBehavior.AdjustTransform(quickInventory.baseObject.transform, Player.instance.GetHand(hand).transform, quickInventoryEquip, 0);
-
 			VRUIInput.SetUIHand(hand);
-
 			VRManager.onUISubmit += OnQuickInventorySubmit;
+
 		}
 
         bool CheckHandForWristRadialOpen (SteamVR_Input_Sources hand) {

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2b52ef604cb54a54ae56556da48a30e, type: 3}
+  m_Name: PistolAmmo
+  m_EditorClassIdentifier: 
+  equipSlot: -1
+  stackable: 1
+  allowMultipleStashed: 1
+  itemName: Pistol Ammo
+  scenePrefabVariations:
+  - {fileID: 3638654737075736590, guid: 4799cd8cc270348a7a3f457936ea045e, type: 3}
+  permanentStash: 0
+  stashActions: 01000000
+  equipActions: 00000000
+  equipType: 1
+  hoverLockOnEquip: 1
+  onStashBuffs: {fileID: 0}
+  stashUseBehavior: {fileID: 0}
+  onEquipBuffs: {fileID: 0}
+  equipTransform: {fileID: 11400000, guid: 4d2afb7f8e365402f94727fafb2ef7d6, type: 2}
