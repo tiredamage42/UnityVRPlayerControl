@@ -166,7 +166,7 @@ gameMessage
         public void OnInspectUpdate(Interactor interactor) {}
         public void OnUseStart(Interactor interactor, int useIndex) {
             bool wasStashed = false;
-            Inventory inventory = interactor.GetComponent<Inventory>();
+            Inventory inventory = interactor.GetComponentInParent<Inventory>();
 
             if (itemBehavior.stashActions.Contains(useIndex)) {
                 if (inventory.StashItem(this)) {

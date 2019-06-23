@@ -26,7 +26,7 @@ namespace Valve.VR.InteractionSystem
 		
 		public void OnInspectStart(Interactor interactor) {
 
-			Inventory inventory = interactor.GetComponent<Inventory>();
+			Inventory inventory = interactor.GetComponentInParent<Inventory>();
 			ItemPackage currentAttachedItemPackage = GetAttachedItemPackage( inventory );
 
 			if ( currentAttachedItemPackage == itemPackage ) // the item at the top of the hand's stack has an associated ItemPackage
@@ -83,7 +83,7 @@ namespace Valve.VR.InteractionSystem
 				// if (startingGrab != GrabTypes.None)
 				// if (hand.GetGrabDown())
 				// {
-					SpawnAndAttachObject( interactor.GetComponent<Inventory>() );//, GrabTypes.Scripted);
+					SpawnAndAttachObject( interactor.GetComponentInParent<Inventory>() );//, GrabTypes.Scripted);
 				// }
 			}
 
@@ -91,7 +91,7 @@ namespace Valve.VR.InteractionSystem
         public void OnUseEnd(Interactor interactor, int useIndex){
 			if ( takeBackItem && requireReleaseActionToReturn )
 			{
-					Inventory inventory = interactor.GetComponent<Inventory>();
+					Inventory inventory = interactor.GetComponentInParent<Inventory>();
                 	ItemPackage currentAttachedItemPackage = GetAttachedItemPackage( inventory );
                     if (currentAttachedItemPackage == itemPackage)
 					{
@@ -587,7 +587,7 @@ namespace Valve.VR.InteractionSystem
 
 			//dont quick equip
 			Item sceneItem = spawnedItem.GetComponent<Item>();
-			inventory.EquipItem(sceneItem.itemBehavior, sceneItem.itemBehavior.equipSlot, null);
+			inventory.EquipItem(sceneItem.itemBehavior, -1, null);// sceneItem.itemBehavior.equipSlot, null);
 			inventory.SwitchMainUsedEquipPoint();
 
 
@@ -607,7 +607,7 @@ namespace Valve.VR.InteractionSystem
 				sceneItem = otherHandObjectToAttach.GetComponent<Item>();
 				//dont quick equip
 				// otherInventory.
-				inventory.EquipItem(sceneItem.itemBehavior, sceneItem.itemBehavior.equipSlot, null);
+				inventory.EquipItem(sceneItem.itemBehavior, -1, null);//sceneItem.itemBehavior.equipSlot, null);
 
 
 			}

@@ -73,9 +73,12 @@ namespace VRPlayer {
         }
 
         void OnEquip (Inventory inventory, Item item, int slot, bool quickEquip) {
+            Debug.LogError("should show message");
             VRManager.ShowGameMessage("Equipped " + item.itemBehavior.itemName + " to slot " + slot + (quickEquip ? "*quick*" : ""), 0);
         }
         void OnUnequip (Inventory inventory, Item item, int slot, bool quickEquip) {
+            Debug.LogError("should show message");
+            
             VRManager.ShowGameMessage("Unequipped " + item.itemBehavior.itemName + " from slot " + slot + (quickEquip ? "*quick*" : ""), 0);
         }
 

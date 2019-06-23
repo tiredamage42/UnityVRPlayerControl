@@ -405,7 +405,7 @@ public enum EquipType {
 // }
 
 
-[HideInInspector] public InventorySlot[] equippedSlots = new InventorySlot[2];
+[HideInInspector] [System.NonSerialized] public InventorySlot[] equippedSlots = new InventorySlot[2];
 // public int favoritesCount = 8;
 public List<InventorySlot> allInventory = new List<InventorySlot>();
 
