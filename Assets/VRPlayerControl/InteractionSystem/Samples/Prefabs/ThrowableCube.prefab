@@ -155,6 +155,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b93b6a877adcbf94c89a9d6e0c0e844d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actionNames:
+  - Use
+  onlyProximityHover: 0
   isAvailable: 1
   useType: 0
   highlightOnHover: 1
@@ -201,14 +204,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d380dbc77ea04bfc838ef2e8aff40c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  equipType: 1
-  equipBehavior: {fileID: 11400000, guid: 6017f3cf080e6434691bb73d8870af1e, type: 2}
-  hoverLockOnEquip: 1
+  itemCount: 1
+  itemBehavior: {fileID: 11400000, guid: 07d392f7e43f44cbaad3671dbc398df5, type: 2}
   rigidbody: {fileID: 0}
-  useActionForEquip: 0
-  useActionForStash: 1
-  unequipOnUseEnd: 1
-  parentInventory: {fileID: 0}
+  linkedInventory: {fileID: 0}
+  myEquipPoint: {fileID: 0}
 --- !u!114 &114000010658121184
 MonoBehaviour:
   m_ObjectHideFlags: 0

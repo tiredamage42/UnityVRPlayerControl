@@ -249,10 +249,10 @@ namespace Valve.VR.InteractionSystem
 			// ExplosionWobble wobble = collision.collider.gameObject.GetComponent<ExplosionWobble>();
 			// if ( !wobble )
 			// {
-			// 	if ( parentTransform.parent )
-			// 	{
-			// 		parentTransform = parentTransform.parent;
-			// 	}
+				if ( parentTransform.parent )
+				{
+					parentTransform = parentTransform.parent;
+				}
 			// }
 
 			scaleParentObject.transform.parent = parentTransform;

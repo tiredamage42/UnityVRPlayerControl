@@ -36,13 +36,24 @@ namespace VRPlayer
         public SteamVR_Action_Boolean useAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("GrabPinch");
         
         public GameObject renderModelPrefab;
-        // protected List<RenderModel> renderModels = new List<RenderModel>();
         protected RenderModel mainRenderModel;
         
         
         private TextMesh debugText;
         public bool isActive { get { return trackedObject.isActive; } }
         public bool isPoseValid { get { return trackedObject.isValid; } }
+
+
+        int myEquipIndex {
+            get {
+                return GetComponent<EquipPoint>().equipSlotOnBase;
+            }
+        }
+        int otherHandEquipIndex {
+            get {
+                return 1-myEquipIndex;
+            }
+        }
 
         public SteamVR_Behaviour_Skeleton skeleton
         {
@@ -102,49 +113,26 @@ namespace VRPlayer
         public void SetSkeletonRangeOfMotion(EVRSkeletalMotionRange newRangeOfMotion, float blendOverSeconds = 0.1f)
         {
             mainRenderModel.SetSkeletonRangeOfMotion(newRangeOfMotion, blendOverSeconds);
-            // for (int renderModelIndex = 0; renderModelIndex < renderModels.Count; renderModelIndex++)
-            // {
-            //     renderModels[renderModelIndex].SetSkeletonRangeOfMotion(newRangeOfMotion, blendOverSeconds);
-            // }
         }
 
         public void SetTemporarySkeletonRangeOfMotion(SkeletalMotionRangeChange temporaryRangeOfMotionChange, float blendOverSeconds = 0.1f)
         {
             mainRenderModel.SetTemporarySkeletonRangeOfMotion(temporaryRangeOfMotionChange, blendOverSeconds);
-            
-            // for (int renderModelIndex = 0; renderModelIndex < renderModels.Count; renderModelIndex++)
-            // {
-            //     renderModels[renderModelIndex].SetTemporarySkeletonRangeOfMotion(temporaryRangeOfMotionChange, blendOverSeconds);
-            // }
         }
 
         public void ResetTemporarySkeletonRangeOfMotion(float blendOverSeconds = 0.1f)
         {
             mainRenderModel.ResetTemporarySkeletonRangeOfMotion(blendOverSeconds);
-            // for (int renderModelIndex = 0; renderModelIndex < renderModels.Count; renderModelIndex++)
-            // {
-            //     renderModels[renderModelIndex].ResetTemporarySkeletonRangeOfMotion(blendOverSeconds);
-            // }
         }
 
         public void SetAnimationState(int stateValue)
         {
-                            mainRenderModel.SetAnimationState(stateValue);
-
-            // for (int renderModelIndex = 0; renderModelIndex < renderModels.Count; renderModelIndex++)
-            // {
-            //     renderModels[renderModelIndex].SetAnimationState(stateValue);
-            // }
+            mainRenderModel.SetAnimationState(stateValue);
         }
 
         public void StopAnimation()
         {
-                            mainRenderModel.StopAnimation();
-
-            // for (int renderModelIndex = 0; renderModelIndex < renderModels.Count; renderModelIndex++)
-            // {
-            //     renderModels[renderModelIndex].StopAnimation();
-            // }
+            mainRenderModel.StopAnimation();
         }
 
         protected float blendToPoseTime = 0.1f;
@@ -152,9 +140,16 @@ namespace VRPlayer
 
 
 
-        void OnItemEquipped (Inventory inventory, Item item){
-            if (item.equipType != Inventory.EquipType.Static && item.rigidbody != null) {
-                GetComponent<VelocityEstimator>().BeginEstimatingVelocity();
+        void OnItemEquipped (Inventory inventory, Item item, int equipSlot, bool quickEquipped){
+            if (equipSlot != myEquipIndex) {
+                return;
+            }
+
+            if (quickEquipped) {
+
+                if (item.itemBehavior.equipType != Inventory.EquipType.Static && item.rigidbody != null) {
+                    GetComponent<VelocityEstimator>().BeginEstimatingVelocity();
+                }
             }
                         
             VRItemAddon vr_item = item.GetComponent<VRItemAddon>();
@@ -207,18 +202,25 @@ namespace VRPlayer
                 velocity *= player.scaleReleaseVelocity;
         }
 
-        void OnItemUnequipped(Inventory inventory, Item item){
-            if (item.equipType != Inventory.EquipType.Static) {
-                Rigidbody rigidbody = item.rigidbody;
-                if (rigidbody != null) {
+        void OnItemUnequipped(Inventory inventory, Item item, int slotIndex, bool quickEquipped){
+            if (slotIndex != myEquipIndex) {
+                return;
+            }
 
-                    Vector3 velocity;
-                    Vector3 angularVelocity;
+            if (quickEquipped) {
 
-                    GetReleaseVelocities(rigidbody, out velocity, out angularVelocity);
+                if (item.itemBehavior.equipType != Inventory.EquipType.Static) {
+                    Rigidbody rigidbody = item.rigidbody;
+                    if (rigidbody != null) {
 
-                    rigidbody.velocity = velocity;
-                    rigidbody.angularVelocity = angularVelocity;
+                        Vector3 velocity;
+                        Vector3 angularVelocity;
+
+                        GetReleaseVelocities(rigidbody, out velocity, out angularVelocity);
+
+                        rigidbody.velocity = velocity;
+                        rigidbody.angularVelocity = angularVelocity;
+                    }
                 }
             }
 
@@ -242,7 +244,10 @@ namespace VRPlayer
             
             if (vr_item.activateActionSetOnAttach != null)
             {
-                if (inventory.otherInventory.equippedItem == null || inventory.otherInventory.equippedItem.item.GetComponent<VRItemAddon>().activateActionSetOnAttach != vr_item.activateActionSetOnAttach)
+                int otherHandEquipIndex = 1-GetComponent<EquipPoint>().equipSlotOnBase;
+                // if (inventory.otherInventory.equippedItem == null || inventory.otherInventory.equippedItem.item.GetComponent<VRItemAddon>().activateActionSetOnAttach != vr_item.activateActionSetOnAttach)
+                if (inventory.equippedSlots[otherHandEquipIndex] == null || inventory.equippedSlots[otherHandEquipIndex].sceneItem.GetComponent<VRItemAddon>().activateActionSetOnAttach != vr_item.activateActionSetOnAttach)
+                
                 {
                     vr_item.activateActionSetOnAttach.Deactivate(handType);
                 }
@@ -305,8 +310,8 @@ namespace VRPlayer
             
             trackedObject = GetComponent<SteamVR_Behaviour_Pose>();
             
-            inventory = GetComponent<Inventory>();
             interactor = GetComponent<Interactor>();
+            inventory = Player.instance.GetComponent<Inventory>();
         }
 
         Inventory inventory;
@@ -360,7 +365,9 @@ namespace VRPlayer
                     "Type: {3}\n",
                     (interactor.hoveringInteractable ? interactor.hoveringInteractable.gameObject.name : "null"),
                     interactor.hoverLocked,
-                    (inventory.equippedItem != null ? inventory.equippedItem.item.name : "null"),
+
+                    // (inventory.equippedItem != null ? inventory.equippedItem.item.name : "null"),
+                    (inventory.equippedSlots[myEquipIndex] != null ? inventory.equippedSlots[myEquipIndex].item.itemName : "null"),
                     
                     handType.ToString());
            
@@ -370,7 +377,7 @@ namespace VRPlayer
         protected virtual void OnEnable()
         {
          
-            Inventory inventory = GetComponent<Inventory>();
+            Inventory inventory = Player.instance.GetComponent<Inventory>();
             inventory.onEquip += OnItemEquipped;
             inventory.onUnequip += OnItemUnequipped;
             inventory.onEquipUpdate += OnEquippedUpdate;
@@ -387,7 +394,7 @@ namespace VRPlayer
             CancelInvoke();
 
             
-            Inventory inventory = GetComponent<Inventory>();
+            Inventory inventory = Player.instance.GetComponent<Inventory>();
             inventory.onEquip -= OnItemEquipped;
             inventory.onUnequip -= OnItemUnequipped;
             inventory.onEquipUpdate -= OnEquippedUpdate;
@@ -404,10 +411,10 @@ namespace VRPlayer
         
         }
         void OnInspectStart (Interactor interactor, Interactable hoveringInteractable) {
-            StandardizedVRInput.instance.ShowHint(this, useAction, "Use");
+            StandardizedVRInput.instance.ShowHint(handType, useAction, "Use");
         }
         void OnInspectEnd (Interactor interactor, Interactable hoveringInteractable) {
-             StandardizedVRInput.instance.HideHint(this, useAction);
+             StandardizedVRInput.instance.HideHint(handType, useAction);
         }
 
 
@@ -420,22 +427,34 @@ namespace VRPlayer
             bool useHeld = useAction.GetState(handType);
                 
             if (useDown) {
-                StandardizedVRInput.instance.HideHint(this, useAction);
+                StandardizedVRInput.instance.HideHint(handType, useAction);
+
+                
+                inventory.SetMainEquipPointIndex(myEquipIndex);
                 interactor.OnUseStart(0);
-                inventory.OnUseStart(0);
+                inventory.OnUseStart(myEquipIndex, 0);
             }
             if (useUp) {
+                inventory.SetMainEquipPointIndex(myEquipIndex);
+                
                 interactor.OnUseEnd(0);
-                inventory.OnUseEnd(0);
+                inventory.OnUseEnd(myEquipIndex, 0);
             }
             if (useHeld) {
+                inventory.SetMainEquipPointIndex(myEquipIndex);
+
                 interactor.OnUseUpdate(0);
-                inventory.OnUseUpdate(0);
+                inventory.OnUseUpdate(myEquipIndex, 0);
             }           
         }
 
-        protected virtual void OnEquippedUpdate( Inventory inventory, Item item )
+        protected virtual void OnEquippedUpdate( Inventory inventory, Item item, int slotIndex, bool quickEquipped )
         {
+            if (slotIndex != myEquipIndex) {
+                return;
+            }
+            
+            
             if (mainRenderModel != null) 
             {
                 VRItemAddon vr_item = item.GetComponent<VRItemAddon>();
@@ -476,19 +495,9 @@ namespace VRPlayer
             if(hadOldRendermodel)
                 oldRM_rom = mainRenderModel.GetSkeletonRangeOfMotion;
 
-
-            // foreach (RenderModel r in renderModels)
-            // {
-            //     if (r != null)
-            //         Destroy(r.gameObject);
-            // }
             if (mainRenderModel != null) {
-
                 Destroy(mainRenderModel.gameObject);
             }
-
-
-            // renderModels.Clear();
 
             GameObject renderModelInstance = GameObject.Instantiate(renderModelPrefab);
             renderModelInstance.layer = gameObject.layer;
@@ -503,7 +512,6 @@ namespace VRPlayer
             int deviceIndex = trackedObject.GetDeviceIndex();
 
             mainRenderModel = renderModelInstance.GetComponent<RenderModel>();
-            // renderModels.Add(mainRenderModel);
 
             if (hadOldRendermodel)
                 mainRenderModel.SetSkeletonRangeOfMotion(oldRM_rom);

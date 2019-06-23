@@ -15,7 +15,7 @@ namespace InventorySystem {
         }
 
         void SaveLocalPositionAndRotation () {
-            TransformBehavior.SetValues(item.equipBehavior, setIndex, item.transform);
+            TransformBehavior.SetValues(item.itemBehavior.equipTransform, setIndex, item.transform);
         }
 
 
@@ -32,7 +32,7 @@ namespace InventorySystem {
 
                 if (GUILayout.Button("Save Local Position And Rotation")) {
                     SaveLocalPositionAndRotation();
-                    EditorUtility.SetDirty(item.equipBehavior);
+                    EditorUtility.SetDirty(item.itemBehavior.equipTransform);
                 }
             }
 
