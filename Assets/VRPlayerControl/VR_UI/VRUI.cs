@@ -78,24 +78,27 @@ namespace VRPlayer {
         }
         void OnUnequip (Inventory inventory, Item item, int slot, bool quickEquip) {
             Debug.LogError("should show message");
-            
             VRManager.ShowGameMessage("Unequipped " + item.itemBehavior.itemName + " from slot " + slot + (quickEquip ? "*quick*" : ""), 0);
         }
 
 
         void OnQuickInventorySubmit (GameObject[] data, object[] customData) {
-			
-            SteamVR_Input_Sources hand = VRUIInput.GetUIHand();
-			int slot = Player.instance.GetHand(hand).GetComponent<EquipPoint>().equipSlotOnBase;
-            ItemBehavior item = (ItemBehavior)customData[0];
+			if (customData != null) {
 
-            Inventory inventory = Player.instance.GetComponent<Inventory>();
+                SteamVR_Input_Sources hand = VRUIInput.GetUIHand();
+                int slot = Player.instance.GetHand(hand).GetComponent<EquipPoint>().equipSlotOnBase;
+                ItemBehavior item = (ItemBehavior)customData[0];
 
-            item.stashUseBehavior.OnStashedUse (inventory, item, Inventory.UI_USE_ACTION, slot, 1, null);
-            
-            // inventory.EquipItem(item, slot, null);
+                Inventory inventory = Player.instance.GetComponent<Inventory>();
 
-            // CloseQuickInventory();
+                if (item.stashUseBehavior != null) {
+                    item.stashUseBehavior.OnStashedUse (inventory, item, Inventory.UI_USE_ACTION, slot, 1, null);
+                }
+                
+                // inventory.EquipItem(item, slot, null);
+
+                // CloseQuickInventory();
+            }
             
 		}
 
@@ -105,8 +108,16 @@ namespace VRPlayer {
             SelectableElement[] allElements = quickInventory.GetAllElements(inventory.favoritesCount);
 
             for (int i =0 ; i< allElements.Length; i++) {
-                allElements[i].uiText.SetText(inventory.allInventory[i].item.itemName);
-                allElements[i].customData = new object[] { inventory.allInventory[i].item };
+                if (i < inventory.allInventory.Count) {
+
+                    allElements[i].uiText.SetText(inventory.allInventory[i].item.itemName + " ("+inventory.allInventory[i].count+")");
+                    allElements[i].customData = new object[] { inventory.allInventory[i].item };
+                }
+                else {
+                    allElements[i].uiText.SetText("EMPTY");
+                    
+                    allElements[i].customData = null;
+                }
             }
 
         }
