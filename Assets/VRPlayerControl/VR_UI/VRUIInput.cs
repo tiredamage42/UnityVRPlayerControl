@@ -6,6 +6,9 @@ using Valve.VR;
 // using SimpleUI;
 
 
+using StandaloneInputModule = SimpleUI.StandaloneInputModule;
+
+
 namespace VRPlayer{
 
     /*
@@ -16,15 +19,24 @@ namespace VRPlayer{
     public class VRUIInput : BaseInput
     {
 
-        SimpleUI.StandaloneInputModule inputModule;
+        static StandaloneInputModule inputModule;
+
+        //assumes input module turns on and off with ui
         public static bool uiInputActive {
             get {
-                return SimpleUI.UIManager.uiInputActive;
+                return inputModule.gameObject.activeInHierarchy;//.UIManager.uiInputActive;
             }
         }
+        public static bool ActionOccupied (SteamVR_Action action, SteamVR_Input_Sources forHand) {
+            return uiInputActive && forHand == currentUIHand && (
+                (action == instance.submitButton) || (action == instance.cancelButton) || (action == selectionAxis) 
+            );
+        }
+        
+
         protected override void Awake() {
             base.Awake();
-            inputModule = GameObject.FindObjectOfType<SimpleUI.StandaloneInputModule>();
+            inputModule = GameObject.FindObjectOfType<StandaloneInputModule>();
             if (inputModule) {
                 inputModule.inputOverride = this;
             }
@@ -32,46 +44,12 @@ namespace VRPlayer{
                 Debug.LogError(" vr ui input couldnt find a standalone input module in the scene ");
             }
         }
-        
-        // protected override void OnEnable () {
-        //     base.OnEnable();
+      
 
-        //     VRManager.onUISelection += OnUISelection;
+        public static SteamVR_Input_Sources GetUIHand () {
+            return currentUIHand != SteamVR_Input_Sources.Any ? currentUIHand : lastUsedUIHand;
+        }
 
-        //     VRManager.onGamePaused += OnGamePaused;
-        //     // UIManager.onUIShow += OnUIShow;
-            
-        // }
-        // protected override void OnDisable () {
-        //     base.OnDisable();
-        //     // UIManager.onUIShow -= OnUIShow;
-        //     VRManager.onGamePaused -= OnGamePaused;
-        //     VRManager.onUISelection -= OnUISelection;
-        // }
-        
-        // void OnUIShow (UIElementHolder uiObject) {
-        //     uiObject.onAnySelection = OnAnyUISelection;
-        // }
-
-        // void OnUISelection (GameObject[] data, object[] customData) {
-
-        //     SteamVR_Input_Sources hand = currentUIHand != SteamVR_Input_Sources.Any ? currentUIHand : lastUsedUIHand;
-        //     // float duration,  float frequency, float amplitude
-        //     StandardizedVRInput.instance. TriggerHapticPulse( hand, .1f, 1.0f, 1.0f );   
-        // }
-
-        
-        // void OnGamePaused(bool isPaused) {
-        //     if (isPaused) {
-        //         SetUIHand(SteamVR_Input_Sources.Any);
-        //     }
-        // }
-
-public static SteamVR_Input_Sources GetUIHand () {
-    return currentUIHand != SteamVR_Input_Sources.Any ? currentUIHand : lastUsedUIHand;
-
-}
-        //     
         static VRUIInput _instance;
 		static VRUIInput instance
 		{
@@ -91,7 +69,8 @@ public static SteamVR_Input_Sources GetUIHand () {
 
 
         public SteamVR_Action_Boolean submitButton;
-        public SteamVR_Action_Boolean cancelButton;        
+        public SteamVR_Action_Boolean cancelButton;      
+        [Header(".15f is a good setting when\nstandalone input module has 60 actions per second")]  
         public float deltaThresholdForScroll = .15f;
         
         static SteamVR_Action_Vector2 selectionAxis {
@@ -102,11 +81,6 @@ public static SteamVR_Input_Sources GetUIHand () {
         static SteamVR_Input_Sources lastUsedUIHand = SteamVR_Input_Sources.Any;
         static SteamVR_Input_Sources currentUIHand = SteamVR_Input_Sources.Any;
 
-        public static bool ActionOccupied (SteamVR_Action action, SteamVR_Input_Sources forHand) {
-            return uiInputActive && forHand == currentUIHand && (
-                (action == instance.submitButton) || (action == instance.cancelButton) || (action == selectionAxis) 
-            );
-        }
         
 
         public override Vector2 mousePosition { get { return selectionAxis.GetAxis( currentUIHand ); } }

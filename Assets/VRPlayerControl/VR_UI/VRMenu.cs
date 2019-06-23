@@ -12,9 +12,6 @@ namespace VRPlayer {
         public Vector3 offset = new Vector3(0,0.5f,1);
         Transform baseTransform, hmdTransform;
 
-
-
-
         void FollowCameraPosition (float deltaTime) {
             transform.localPosition = offset;
             

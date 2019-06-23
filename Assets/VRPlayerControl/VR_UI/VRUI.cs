@@ -36,9 +36,15 @@ namespace VRPlayer {
             VRManager.onGamePaused += OnGamePaused;
             VRManager.onShowGameMessage += OnShowGameMessage;
 
-
             quickInventory.onBaseCancel += CloseQuickInventory;
-			
+
+
+            Player.instance.GetComponent<Inventory>().onStash += OnStash;
+            Player.instance.GetComponent<Inventory>().onDrop += OnDrop;
+            
+			Player.instance.GetComponent<Inventory>().onEquip += OnEquip;
+            Player.instance.GetComponent<Inventory>().onUnequip += OnUnequip;
+            
             
         }
         void OnDisable () {
@@ -48,6 +54,29 @@ namespace VRPlayer {
 
                         quickInventory.onBaseCancel -= CloseQuickInventory;
 
+
+            
+            Player.instance.GetComponent<Inventory>().onStash -= OnStash;
+            Player.instance.GetComponent<Inventory>().onDrop -= OnDrop;
+            
+			Player.instance.GetComponent<Inventory>().onEquip -= OnEquip;
+            Player.instance.GetComponent<Inventory>().onUnequip -= OnUnequip;
+
+        }
+
+
+        void OnStash (Inventory inventory, ItemBehavior item, int count) {
+            VRManager.ShowGameMessage("Stashed " + item.itemName + " (x" + count+")", 0);
+        }
+        void OnDrop (Inventory inventory, ItemBehavior item, int count) {
+            VRManager.ShowGameMessage("Dropped " + item.itemName + " (x" + count+")", 0);
+        }
+
+        void OnEquip (Inventory inventory, Item item, int slot, bool quickEquip) {
+            VRManager.ShowGameMessage("Equipped " + item.itemBehavior.itemName + " to slot " + slot + (quickEquip ? "*quick*" : ""), 0);
+        }
+        void OnUnequip (Inventory inventory, Item item, int slot, bool quickEquip) {
+            VRManager.ShowGameMessage("Unequipped " + item.itemBehavior.itemName + " from slot " + slot + (quickEquip ? "*quick*" : ""), 0);
         }
 
 
@@ -117,15 +146,12 @@ namespace VRPlayer {
         }
         
         void OnUISelection (GameObject[] data, object[] customData) {
-            Debug.LogError(("triggerd pulse ui seelct"));
-            
             // float duration,  float frequency, float amplitude
             
             StandardizedVRInput.instance.TriggerHapticPulse( VRUIInput.GetUIHand (), .1f, 1.0f, 1.0f );   
         }
         void OnShowGameMessage (string message, int key) {
-            Debug.LogError(("triggerd pulse message"));
-
+            
             StandardizedVRInput.instance.TriggerHapticPulse( messagesHand, .1f, 1.0f, 1.0f );   
         }
 

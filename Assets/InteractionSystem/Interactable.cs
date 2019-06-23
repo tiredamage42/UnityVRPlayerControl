@@ -13,6 +13,10 @@ namespace InteractionSystem
 
     public class Interactable : MonoBehaviour
     {
+        public string[] actionNames = new string [] {
+            "Use"
+        };
+        public bool onlyProximityHover;
         public bool isAvailable = true;
         public enum UseType { Normal, Scripted };
         public UseType useType;

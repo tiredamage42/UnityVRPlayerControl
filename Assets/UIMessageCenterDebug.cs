@@ -11,7 +11,7 @@ public class UIMessageCenterDebug : MonoBehaviour
     void Start()
     {
         center = GetComponent<UIMessageCenter>();
-        StartCoroutine(MessageRoutine());
+        // StartCoroutine(MessageRoutine());
     }
 
     IEnumerator MessageRoutine () {

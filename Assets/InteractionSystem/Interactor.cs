@@ -2,6 +2,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/*
+
+
+can only perform action 0 when unequipped
+for gun:
+
+    stash action = 0 or 1 (either action will put it in the inventory)
+    equip action = 0 (if we're unarmed automatically equip it)
+
+
+for environment block:
+
+    stash action = 1
+    equip action = 0 
+
+    can only equip with unarmed hand, can still stash though
+    
+
+
+
+
+
+
+ */
+
 namespace InteractionSystem {
 
     public class Interactor : MonoBehaviour
@@ -144,8 +170,22 @@ namespace InteractionSystem {
                 if (contacting == null || !contacting.isAvailable)
                     return;
 
-            
+                if (contacting.onlyProximityHover && !getGodModeInteractor)
+                    return;
+                
                 closestInteractable = contacting;
+            }
+        }
+        public bool godModeInteractor;
+
+        bool getGodModeInteractor {
+            get {
+                if (baseInteractor != null) {
+                    return baseInteractor.godModeInteractor;
+                }
+                else {
+                    return godModeInteractor;
+                }
             }
         }
 
@@ -233,8 +273,7 @@ namespace InteractionSystem {
             if (hoveringInteractable != null) {
                 bool isUseable = hoveringInteractable.useType != Interactable.UseType.Scripted;
                 if (isUseable) {
-                
-                hoveringInteractable.OnUseEnd(this, useIndex);
+                    hoveringInteractable.OnUseEnd(this, useIndex);
                 }
             }
             if (onUseEnd != null) {
