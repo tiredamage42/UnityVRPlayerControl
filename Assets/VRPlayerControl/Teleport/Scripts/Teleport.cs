@@ -69,7 +69,7 @@ namespace VRPlayer
 		bool isPointing;
 		
 		
-		private Player player = null;
+		// private Player player = null;
 		private TeleportArc teleportArc = null;
 
 		private bool visible = false;

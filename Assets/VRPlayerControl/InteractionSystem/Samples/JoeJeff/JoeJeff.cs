@@ -61,7 +61,7 @@ namespace Valve.VR.InteractionSystem.Sample
 
         private void Update()
         {
-            held = item.parentInventory != null;
+            held = item.linkedInventory != null;//.parentInventory != null;
             // held = interactable.attachedToHand != null;
 
             jumpTimer -= Time.deltaTime;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using SimpleUI;
-
 namespace VRPlayer.UI {
     public class ControllerHintUIElement : MonoBehaviour
     {

@@ -75,20 +75,16 @@ namespace VRPlayer.UI {
         
         public static void ShowHint (StandardizedVRInput.InputType action, SteamVR_Input_Sources forHand, string text) {
             
-            Debug.LogError("showing here");
             if (forHand == SteamVR_Input_Sources.Any) {
-            Debug.LogError("showing hand " + forHand);
             
                 action2hintLeft[action].element.Show(text);
                 action2hintRight[action].element.Show(text);
             }
             else if (forHand == SteamVR_Input_Sources.LeftHand) {
-            Debug.LogError("showing hand " + forHand);
             
                 action2hintLeft[action].element.Show(text);
             }
             else if (forHand == SteamVR_Input_Sources.RightHand) {
-            Debug.LogError("showing hand " + forHand);
             
                 action2hintRight[action].element.Show(text);
             }

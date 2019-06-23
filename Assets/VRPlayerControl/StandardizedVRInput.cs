@@ -69,7 +69,7 @@ namespace VRPlayer {
                 Debug.LogError("Forgot to put in default debug routine");
                 return;
             }
-            Debug.LogError("playign routine in input");
+            // Debug.LogError("playign routine in input");
             PlayControllerLayoutHintRoutine(debugRoutine);
         }
 
@@ -92,35 +92,35 @@ namespace VRPlayer {
             MenuButton=8, SideButton=9
         };
 
-        public ISteamVR_Action_In_Source GetAction(InputType inputType) {
-            switch(inputType) {
-                case InputType.TriggerButton:
-                    return TriggerButton;
-                case InputType.TriggerAxis:
-                    return TriggerAxis;
+        // public ISteamVR_Action_In_Source GetAction(InputType inputType) {
+        //     switch(inputType) {
+        //         case InputType.TriggerButton:
+        //             return TriggerButton;
+        //         case InputType.TriggerAxis:
+        //             return TriggerAxis;
                 
-                case InputType.TrackpadButton:
-                    return TrackpadButton;
-                case InputType.TrackpadAxis:
-                    return TrackpadAxis;
+        //         case InputType.TrackpadButton:
+        //             return TrackpadButton;
+        //         case InputType.TrackpadAxis:
+        //             return TrackpadAxis;
                 
-                case InputType.DpadUp:
-                    return DpadUp;
-                case InputType.DpadDown:
-                    return DpadDown;
-                case InputType.DpadLeft:
-                    return DpadLeft;
-                case InputType.DpadRight:
-                    return DpadRight;
+        //         case InputType.DpadUp:
+        //             return DpadUp;
+        //         case InputType.DpadDown:
+        //             return DpadDown;
+        //         case InputType.DpadLeft:
+        //             return DpadLeft;
+        //         case InputType.DpadRight:
+        //             return DpadRight;
                 
-                case InputType.MenuButton:
-                    return MenuButton;
-                case InputType.SideButton:
-                    return SideButton;
+        //         case InputType.MenuButton:
+        //             return MenuButton;
+        //         case InputType.SideButton:
+        //             return SideButton;
                 
-            }
-            return null;
-        }
+        //     }
+        //     return null;
+        // }
         public InputType Action2InputType(SteamVR_Action action) {
                     if (action ==  TriggerButton)
                 return InputType.TriggerButton;
@@ -169,23 +169,15 @@ namespace VRPlayer {
             hapticAction.Execute(0, duration, frequency, amplitude, hand);
         }
 
-        // public void ShowHint(Hand hand, ISteamVR_Action_In_Source action)
-        // {
-        //     ControllerButtonHints.ShowButtonHint(hand, action); //todo: assess
-        // }
 
-        public void HideHint(Hand hand, SteamVR_Action action)
+        public void HideHint(SteamVR_Input_Sources hand, SteamVR_Action action)
         {
-            VRPlayer.UI.VRControllerHintsUI.HideHint(Action2InputType(action), hand.handType);
-
-            // ControllerButtonHints.HideButtonHint(hand, action); //todo: assess
+            VRPlayer.UI.VRControllerHintsUI.HideHint(Action2InputType(action), hand);
         }
 
-        public void ShowHint(Hand hand, SteamVR_Action action, string text)
+        public void ShowHint(SteamVR_Input_Sources hand, SteamVR_Action action, string text)
         {
-            VRPlayer.UI.VRControllerHintsUI.ShowHint(Action2InputType(action), hand.handType, text);
-
-            // ControllerButtonHints.ShowTextHint(hand, action, text);
+            VRPlayer.UI.VRControllerHintsUI.ShowHint(Action2InputType(action), hand, text);
         }
 
 
@@ -194,42 +186,20 @@ namespace VRPlayer {
             Player player = Player.instance;
 
             VRPlayer.UI.VRControllerHintsUI.HideAllHints();
-            // for (int i = 0; i < player.hands.Length; i++) {
-            //     ControllerButtonHints.HideAllTextHints( player.hands[i] );
-            //     ControllerButtonHints.HideAllButtonHints( player.hands[i] );
-            // }
-
-			while ( true )
+            
+            while ( true )
             {
                 for (int i = 0; i < routine.routineNodes.Length; i++)
                 {
-                    // ISteamVR_Action_In_Source action = GetAction(routine.routineNodes[i].inputType);
-
-
-                    // ControllerButtonHints.ShowTextHint(player.GetHand(routine.routineNodes[i].hand), action, routine.routineNodes[i].name);
                     VRPlayer.UI.VRControllerHintsUI.ShowHint(routine.routineNodes[i].inputType, routine.routineNodes[i].hand, routine.routineNodes[i].name);
                     yield return new WaitForSeconds(routine.timeBetweenButtons);
-
-                    // ControllerButtonHints.HideTextHint(player.GetHand(routine.routineNodes[i].hand), action);
                     VRPlayer.UI.VRControllerHintsUI.HideHint(routine.routineNodes[i].inputType, routine.routineNodes[i].hand);
-
                     yield return new WaitForSeconds(0.5f);
-
                     yield return null;
                 }
-
                 VRPlayer.UI.VRControllerHintsUI.HideAllHints();
-            
-
-                // for (int i = 0; i < player.hands.Length; i++) {
-                //     ControllerButtonHints.HideAllTextHints( player.hands[i] );
-                //     ControllerButtonHints.HideAllButtonHints( player.hands[i] );
-                // }
-
                 yield return new WaitForSeconds(routine.timeBetweenRepeats);
 			}
-	
-
         }
         Coroutine currentHintRoutine;
 
@@ -239,13 +209,7 @@ namespace VRPlayer {
                 StopCoroutine(currentHintRoutine);
                 currentHintRoutine = null;
             }
-
-            Player player = Player.instance;
-
-            for (int i = 0; i < player.hands.Length; i++) {
-                ControllerButtonHints.HideAllTextHints( player.hands[i] );
-                ControllerButtonHints.HideAllButtonHints( player.hands[i] );
-            }
+            VRPlayer.UI.VRControllerHintsUI.HideAllHints();
         }
 
         public void PlayControllerLayoutHintRoutine (ControllerLayoutHintRoutine routine) {
