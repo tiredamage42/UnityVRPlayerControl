@@ -248,6 +248,16 @@ namespace SimpleUI {
             }
         }
 
+        public SelectableElement[] GetAllElements (int targetCount) {
+            if (allElements.Count < targetCount) {
+                for (int i =0 ; i < targetCount - allElements.Count; i++) {
+                    AddNewElement("Adding new");
+                }
+            }
+
+            return allElements.ToArray();
+        }
+
         public SelectableElement AddNewElement (string elementText) {
             SelectableElement newElement = Instantiate(ElementPrefab());
             newElement.parentHolder = this;

@@ -34,6 +34,8 @@ namespace VRPlayer
         public SteamVR_Input_Sources handType;
         SteamVR_Behaviour_Pose trackedObject;
         public SteamVR_Action_Boolean useAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("GrabPinch");
+        public SteamVR_Action_Boolean stashAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("GrabPinch");
+        public SteamVR_Action_Boolean dropAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("GrabPinch");
         
         public GameObject renderModelPrefab;
         protected RenderModel mainRenderModel;
@@ -411,11 +413,39 @@ namespace VRPlayer
         
         }
         void OnInspectStart (Interactor interactor, Interactable hoveringInteractable) {
-            StandardizedVRInput.instance.ShowHint(handType, useAction, "Use");
+            
+            if (canQuickEquip) {
+                StandardizedVRInput.instance.ShowHint(handType, useAction, hoveringInteractable.actionNames[Inventory.GRAB_ACTION]);
+            }
+            else {
+
+                // if (!inventory.equippedSlots[myEquipIndex].isQuickEquipped) {
+
+                //     StandardizedVRInput.instance.ShowHint(handType, dropAction, hoveringInteractable.actionNames[Inventory.DROP_ACTION]);
+                // }
+            }
+            
+
+            if (hoveringInteractable.actionNames.Length > Inventory.STASH_ACTION) {
+                StandardizedVRInput.instance.ShowHint(handType, stashAction, hoveringInteractable.actionNames[Inventory.STASH_ACTION]);
+            }
+            // StandardizedVRInput.instance.ShowHint(handType, useAction, "Use");
         }
+
+
+
         void OnInspectEnd (Interactor interactor, Interactable hoveringInteractable) {
-             StandardizedVRInput.instance.HideHint(handType, useAction);
+            StandardizedVRInput.instance.HideHint(handType, useAction);
+            StandardizedVRInput.instance.HideHint(handType, stashAction);
         }
+
+        bool canQuickEquip {
+            get {
+                return inventory.equippedSlots[myEquipIndex] == null;
+            }
+        }
+
+            
 
 
         protected virtual void Update()
@@ -428,23 +458,89 @@ namespace VRPlayer
                 
             if (useDown) {
                 StandardizedVRInput.instance.HideHint(handType, useAction);
-
-                
                 inventory.SetMainEquipPointIndex(myEquipIndex);
-                interactor.OnUseStart(0);
-                inventory.OnUseStart(myEquipIndex, 0);
+
+                if (canQuickEquip) {
+                    interactor.OnUseStart(Inventory.GRAB_ACTION);
+                }
+
+                inventory.OnUseStart(myEquipIndex, Inventory.GRAB_ACTION);
+                inventory.SetMainEquipPointIndex(-1);
             }
             if (useUp) {
                 inventory.SetMainEquipPointIndex(myEquipIndex);
+
+                if (canQuickEquip) {
+                    interactor.OnUseEnd(Inventory.GRAB_ACTION);
+                }
                 
-                interactor.OnUseEnd(0);
-                inventory.OnUseEnd(myEquipIndex, 0);
+                
+                inventory.OnUseEnd(myEquipIndex, Inventory.GRAB_ACTION);
+                inventory.SetMainEquipPointIndex(-1);
             }
             if (useHeld) {
                 inventory.SetMainEquipPointIndex(myEquipIndex);
+                
+                if (canQuickEquip) {
+                    interactor.OnUseUpdate(Inventory.GRAB_ACTION);
+                }
 
-                interactor.OnUseUpdate(0);
-                inventory.OnUseUpdate(myEquipIndex, 0);
+                inventory.OnUseUpdate(myEquipIndex, Inventory.GRAB_ACTION);
+                inventory.SetMainEquipPointIndex(-1);
+            }         
+
+
+
+            useDown = stashAction.GetStateDown(handType);
+            useUp = stashAction.GetStateUp(handType);
+            useHeld = stashAction.GetState(handType);
+                
+            if (useDown) {
+                StandardizedVRInput.instance.HideHint(handType, stashAction);
+                inventory.SetMainEquipPointIndex(myEquipIndex);
+                interactor.OnUseStart(Inventory.STASH_ACTION);
+                inventory.OnUseStart(myEquipIndex, Inventory.STASH_ACTION);
+                inventory.SetMainEquipPointIndex(-1);
+            }
+            if (useUp) {
+                inventory.SetMainEquipPointIndex(myEquipIndex);
+                interactor.OnUseEnd(Inventory.STASH_ACTION);
+                inventory.OnUseEnd(myEquipIndex, Inventory.STASH_ACTION);
+                inventory.SetMainEquipPointIndex(-1);
+            }
+            if (useHeld) {
+                inventory.SetMainEquipPointIndex(myEquipIndex);
+                interactor.OnUseUpdate(Inventory.STASH_ACTION);
+                inventory.OnUseUpdate(myEquipIndex, Inventory.STASH_ACTION);
+                inventory.SetMainEquipPointIndex(-1);
+            }
+
+
+
+            
+
+            useDown = dropAction.GetStateDown(handType);
+            useUp = dropAction.GetStateUp(handType);
+            useHeld = dropAction.GetState(handType);
+                
+            if (useDown) {
+                StandardizedVRInput.instance.HideHint(handType, dropAction);
+                inventory.SetMainEquipPointIndex(myEquipIndex);
+                interactor.OnUseStart(Inventory.DROP_ACTION);
+                inventory.OnUseStart(myEquipIndex, Inventory.DROP_ACTION);
+                inventory.SetMainEquipPointIndex(-1);
+            }
+            if (useUp) {
+                inventory.SetMainEquipPointIndex(myEquipIndex);
+                interactor.OnUseEnd(Inventory.DROP_ACTION);
+                inventory.OnUseEnd(myEquipIndex, Inventory.DROP_ACTION);
+                inventory.SetMainEquipPointIndex(-1);
+            }
+            if (useHeld) {
+                inventory.SetMainEquipPointIndex(myEquipIndex);
+                interactor.OnUseUpdate(Inventory.DROP_ACTION);
+                inventory.OnUseUpdate(myEquipIndex, Inventory.DROP_ACTION);
+                inventory.SetMainEquipPointIndex(-1);
             }           
         }
 

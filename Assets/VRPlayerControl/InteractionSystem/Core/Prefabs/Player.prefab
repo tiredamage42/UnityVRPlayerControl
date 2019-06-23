@@ -256,15 +256,7 @@ MonoBehaviour:
   equipPoints:
   - {fileID: 0}
   - {fileID: 0}
-  equippedSlots:
-  - item: {fileID: 0}
-    count: 0
-    sceneItem: {fileID: 0}
-    isQuickEquipped: 0
-  - item: {fileID: 0}
-    count: 0
-    sceneItem: {fileID: 0}
-    isQuickEquipped: 0
+  favoritesCount: 8
   allInventory: []
   dropLocalPoint: {x: 0, y: 1, z: 1}
 --- !u!1 &125964
@@ -468,7 +460,13 @@ MonoBehaviour:
   velocityEstimator: {fileID: 0}
   handType: 1
   useAction:
-    actionPath: /actions/default/in/GrabPinch
+    actionPath: /actions/VRControlActionSet/in/TriggerButton
+    needsReinit: 0
+  stashAction:
+    actionPath: /actions/VRControlActionSet/in/TrackpadDPadDown
+    needsReinit: 0
+  dropAction:
+    actionPath: /actions/VRControlActionSet/in/TrackpadDPadUp
     needsReinit: 0
   renderModelPrefab: {fileID: 1000011547835092, guid: d5082f7d9f947374197e0a97786f4e40,
     type: 3}
@@ -638,7 +636,13 @@ MonoBehaviour:
   velocityEstimator: {fileID: 0}
   handType: 2
   useAction:
-    actionPath: /actions/default/in/GrabPinch
+    actionPath: /actions/VRControlActionSet/in/TriggerButton
+    needsReinit: 0
+  stashAction:
+    actionPath: /actions/VRControlActionSet/in/TrackpadDPadDown
+    needsReinit: 0
+  dropAction:
+    actionPath: /actions/VRControlActionSet/in/TrackpadDPadUp
     needsReinit: 0
   renderModelPrefab: {fileID: 1000012617731570, guid: 837f93beb9a614743ae3a2c0ada7c388,
     type: 3}

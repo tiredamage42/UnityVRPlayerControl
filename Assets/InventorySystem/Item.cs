@@ -86,8 +86,9 @@ gameMessage
 
         static Dictionary<int, HashSet<Item>> itemPoolsPerPrefab = new Dictionary<int, HashSet<Item>>();
         
-        public static Item GetSceneItem (Item prefab) {// Inventory quickEquipInventory){// bool dropOnUseEnd) {
-
+        public static Item GetSceneItem (ItemBehavior itemBehavior){// prefab) {// Inventory quickEquipInventory){// bool dropOnUseEnd) {
+            Item prefab = itemBehavior.scenePrefabVariations[Random.Range(0, itemBehavior.scenePrefabVariations.Length)];
+            
             int instanceID = prefab.GetInstanceID();
             
             Item sceneItem = null;
