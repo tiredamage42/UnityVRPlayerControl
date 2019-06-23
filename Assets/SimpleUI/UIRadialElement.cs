@@ -46,6 +46,8 @@ namespace SimpleUI {
 
         protected override void UpdateElement () {
             mainImage.color = selected ? UIManager.instance.mainLightColor : new Color32(0,0,0,0);
+
+            selectFlairTransform.gameObject.SetActive(true);
             int l = images.Length; // get the images in case e havent yet
             selectFlairTransform.gameObject.SetActive(selected);
         }
