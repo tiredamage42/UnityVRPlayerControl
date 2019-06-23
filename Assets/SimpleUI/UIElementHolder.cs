@@ -186,7 +186,7 @@ namespace SimpleUI {
             }
         }
 
-        protected virtual void UpdateElementHolder () {
+        public virtual void UpdateElementHolder () {
             if (!backGround){
                 Debug.LogError("nobackground");
             }
@@ -217,8 +217,10 @@ namespace SimpleUI {
         }
 
         protected virtual void OnEnable () {
+            Debug.LogError("getting element references");
             GetElementReferences();
             UpdateElementHolder();    
+            Debug.LogError("updateed holder");
         }
         protected virtual void OnDisable () {
             allElements.Clear();
@@ -250,7 +252,9 @@ namespace SimpleUI {
 
         public SelectableElement[] GetAllElements (int targetCount) {
             if (allElements.Count < targetCount) {
-                for (int i =0 ; i < targetCount - allElements.Count; i++) {
+                int c = allElements.Count;
+                Debug.LogError("adding new " + (targetCount - c));
+                for (int i = 0 ; i < targetCount - c; i++) {
                     AddNewElement("Adding new");
                 }
             }

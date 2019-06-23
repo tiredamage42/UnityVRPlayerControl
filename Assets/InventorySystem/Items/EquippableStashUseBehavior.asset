@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 85d6f3b3f61fe46569eb3ac87893c7cd, type: 3}
   m_Name: EquippableStashUseBehavior
   m_EditorClassIdentifier: Assembly-CSharp:InventorySystem:EquippableStashUseBehavior

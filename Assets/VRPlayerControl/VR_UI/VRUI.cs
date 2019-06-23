@@ -83,7 +83,10 @@ namespace VRPlayer {
 
 
         void OnQuickInventorySubmit (GameObject[] data, object[] customData) {
-			if (customData != null) {
+			Debug.LogError("on submit");
+            if (customData != null) {
+
+                Debug.LogError("as cistom data");
 
                 SteamVR_Input_Sources hand = VRUIInput.GetUIHand();
                 int slot = Player.instance.GetHand(hand).GetComponent<EquipPoint>().equipSlotOnBase;
@@ -92,12 +95,13 @@ namespace VRPlayer {
                 Inventory inventory = Player.instance.GetComponent<Inventory>();
 
                 if (item.stashUseBehavior != null) {
+                    Debug.LogError("stash use!");
                     item.stashUseBehavior.OnStashedUse (inventory, item, Inventory.UI_USE_ACTION, slot, 1, null);
                 }
                 
                 // inventory.EquipItem(item, slot, null);
 
-                // CloseQuickInventory();
+                CloseQuickInventory();
             }
             
 		}
@@ -109,11 +113,12 @@ namespace VRPlayer {
 
             for (int i =0 ; i< allElements.Length; i++) {
                 if (i < inventory.allInventory.Count) {
-
+                    allElements[i].elementText = inventory.allInventory[i].item.itemName + " ("+inventory.allInventory[i].count+")";
                     allElements[i].uiText.SetText(inventory.allInventory[i].item.itemName + " ("+inventory.allInventory[i].count+")");
                     allElements[i].customData = new object[] { inventory.allInventory[i].item };
                 }
                 else {
+                    allElements[i].elementText = "Empty";
                     allElements[i].uiText.SetText("EMPTY");
                     
                     allElements[i].customData = null;
@@ -129,7 +134,6 @@ namespace VRPlayer {
 
 		void OpenQuickInventory (SteamVR_Input_Sources hand) {
 
-            BuildQuickInventory();
             
 			UIManager.ShowUI(quickInventory, true, false);
 
@@ -137,6 +141,7 @@ namespace VRPlayer {
 			VRUIInput.SetUIHand(hand);
 			VRManager.onUISubmit += OnQuickInventorySubmit;
 
+            BuildQuickInventory();
 		}
 
         bool CheckHandForWristRadialOpen (SteamVR_Input_Sources hand) {

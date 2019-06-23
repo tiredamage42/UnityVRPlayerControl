@@ -32,7 +32,7 @@ namespace SimpleUI{
         }
         
 
-        protected override void UpdateElementHolder () {
+        public override void UpdateElementHolder () {
             base.UpdateElementHolder();
             backGroundRect.sizeDelta = new Vector2(backgroundSize, backgroundSize);
             backGroundOverlayRect.sizeDelta = new Vector2(backgroundSize, backgroundSize);
