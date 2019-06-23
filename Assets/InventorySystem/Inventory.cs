@@ -107,7 +107,7 @@ if (equipSlot < 0 || equipSlot >= equippedSlots.Length) {
                 if (useIndex == DROP_ACTION) {
                     
                     UnequipItem(equipSlot);
-                    DropItem(slot.item, 1, true);
+                    DropItem(slot.item, 1, false);// true);
                 }
 
             }

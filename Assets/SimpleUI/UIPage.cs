@@ -55,7 +55,7 @@ namespace SimpleUI {
             UpdateElementHolder();
         }
 
-        protected override void UpdateElementHolder () {
+        public override void UpdateElementHolder () {
 
             base.UpdateElementHolder();
 
