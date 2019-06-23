@@ -7,6 +7,8 @@ using UnityEditor;
 namespace InventorySystem {
 
     [CustomEditor(typeof(Item))]
+    
+    [CanEditMultipleObjects]
     public class ItemEditor : Editor
     {   
         Item item;
