@@ -96,7 +96,7 @@ if (equipSlot < 0 || equipSlot >= equippedSlots.Length) {
             bool isQuickEquipped = false;
             if (slot.isQuickEquipped) {
                 if (slot.item.equipActions.Contains(useIndex)) {
-                    UnequipItem(equipSlot);
+                    UnequipItem(equipSlot, true);
                     isQuickEquipped = true;
                 }
             }
@@ -106,7 +106,7 @@ if (equipSlot < 0 || equipSlot >= equippedSlots.Length) {
                 
                 if (useIndex == DROP_ACTION) {
                     
-                    UnequipItem(equipSlot);
+                    UnequipItem(equipSlot, true);
                     DropItem(slot.item, 1, false);// true);
                 }
 
@@ -742,7 +742,7 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
 
             //unequip our current equip slot
             if (equippedSlots[equipSlot] != null) {
-                UnequipItem(equipSlot);
+                UnequipItem(equipSlot, equippedSlots[equipSlot].isQuickEquipped);
             }
             
             equippedSlots[equipSlot] = equippedInventorySlot;
@@ -1136,19 +1136,19 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
 
 
 
-        public void UnequipItem(Item item) {
+        public void UnequipItem(Item item, bool showScene) {
             for (int i =0 ; i < equippedSlots.Length; i++) {
                 if (equippedSlots[i] != null) {
                     if (equippedSlots[i].sceneItem == item) {
                         
-                        UnequipItem(i);
+                        UnequipItem(i, showScene);
                         return;
                     }
                 }
             }
         }
 
-        public void UnequipItem(int slotIndex)
+        public void UnequipItem(int slotIndex, bool showScene)
         {
 
             if (slotIndex < 0 || slotIndex >= equippedSlots.Length) {
@@ -1160,22 +1160,24 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
             }
             
             InventorySlot slot = equippedSlots[slotIndex];
+            equippedSlots[slotIndex] = null;
+            equipPoints[slotIndex].GetComponent<Interactor>().HoverUnlock(null);
 
+            
+    
+            
+                
             slot.sceneItem.linkedInventory = null;
             slot.sceneItem.myEquipPoint = null;
             
-            slot.equipInfo.ReturnItemToOriginalStateBeforeEquip(slot.sceneItem);
-    
-            equippedSlots[slotIndex] = null;
-            
-                
             slot.sceneItem.OnUnequipped (this);
-            
             if (onUnequip != null) {
                 onUnequip(this, slot.sceneItem, slotIndex, slot.isQuickEquipped);
             }
 
-            equipPoints[slotIndex].GetComponent<Interactor>().HoverUnlock(null);
+            slot.equipInfo.ReturnItemToOriginalStateBeforeEquip(slot.sceneItem);
+            slot.sceneItem.gameObject.SetActive(showScene);
+
 
             // equip buffs
             if (slot.item.onEquipBuffs != null) {

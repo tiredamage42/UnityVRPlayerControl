@@ -9,7 +9,7 @@ namespace InventorySystem{
             Debug.LogError("equipable stash use ation");
             if (useAction == Inventory.UI_USE_ACTION) {
                 if (inventory.ItemIsEquipped(slotIndex, item)) {
-                    inventory.UnequipItem(slotIndex);
+                    inventory.UnequipItem(slotIndex, false);
                 }
                 else {
                     inventory.EquipItem(item, slotIndex, null);

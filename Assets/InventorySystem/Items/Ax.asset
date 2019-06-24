@@ -17,7 +17,7 @@ MonoBehaviour:
   allowMultipleStashed: 1
   itemName: Axe
   scenePrefabVariations:
-  - {fileID: 1613036535, guid: 297ef76955dcb476dba32acf930d2b47, type: 3}
+  - {fileID: 1260625258110790143, guid: 297ef76955dcb476dba32acf930d2b47, type: 3}
   permanentStash: 0
   stashActions: 01000000
   equipActions: 00000000
