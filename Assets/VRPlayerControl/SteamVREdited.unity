@@ -5517,7 +5517,7 @@ MonoBehaviour:
   scale: 0.1
   parentHolder: {fileID: 0}
   isBase: 0
-  manualSelection: 0
+  needsInput: 0
   textOffset: 0.67
   backgroundSize: 1
   insideSize: 0.9
@@ -12354,6 +12354,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 4049404972a9c4ef0a1d262821830810, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 4049404972a9c4ef0a1d262821830810, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 4049404972a9c4ef0a1d262821830810, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4049404972a9c4ef0a1d262821830810, type: 3}
 --- !u!1 &571532884
@@ -13832,7 +13844,7 @@ MonoBehaviour:
   scale: 0.1
   parentHolder: {fileID: 0}
   isBase: 0
-  manualSelection: 0
+  needsInput: 0
   textOffset: 0.67
   backgroundSize: 1
   insideSize: 0.9
@@ -17341,7 +17353,7 @@ MonoBehaviour:
   scale: 0.1
   parentHolder: {fileID: 0}
   isBase: 0
-  manualSelection: 0
+  needsInput: 0
   textOffset: 0.67
   backgroundSize: 1
   insideSize: 0.9
@@ -32800,7 +32812,7 @@ MonoBehaviour:
   scale: 0.1
   parentHolder: {fileID: 0}
   isBase: 0
-  manualSelection: 0
+  needsInput: 0
   textOffset: 0.67
   backgroundSize: 1
   insideSize: 0.9
@@ -34652,7 +34664,7 @@ MonoBehaviour:
   scale: 0.1
   parentHolder: {fileID: 0}
   isBase: 0
-  manualSelection: 0
+  needsInput: 0
   textOffset: 0.67
   backgroundSize: 1
   insideSize: 0.9
@@ -34957,7 +34969,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1745643974}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.1037, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 230535458}
@@ -37291,7 +37303,7 @@ MonoBehaviour:
   scale: 0.1
   parentHolder: {fileID: 0}
   isBase: 0
-  manualSelection: 0
+  needsInput: 0
   textOffset: 0.67
   backgroundSize: 1
   insideSize: 0.9
@@ -39515,7 +39527,7 @@ MonoBehaviour:
   scale: 0.1
   parentHolder: {fileID: 0}
   isBase: 0
-  manualSelection: 0
+  needsInput: 0
   textOffset: 0.67
   backgroundSize: 1
   insideSize: 0.9
@@ -39818,7 +39830,7 @@ MonoBehaviour:
   scale: 0.1
   parentHolder: {fileID: 0}
   isBase: 0
-  manualSelection: 0
+  needsInput: 0
   textOffset: 0.67
   backgroundSize: 1
   insideSize: 0.9
@@ -44360,6 +44372,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8741439175150908138, guid: 297ef76955dcb476dba32acf930d2b47,
+        type: 3}
+      propertyPath: setRangeOfMotionOnPickup
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 297ef76955dcb476dba32acf930d2b47, type: 3}
 --- !u!1001 &1307753911778753194
@@ -45722,6 +45739,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameMessages
       objectReference: {fileID: 0}
+    - target: {fileID: 6704095862675926450, guid: 2be6c986f3c9042dc820b6d2c66cec1c,
+        type: 3}
+      propertyPath: scale
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6704095862675926450, guid: 2be6c986f3c9042dc820b6d2c66cec1c,
+        type: 3}
+      propertyPath: width
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6704095862675926454, guid: 2be6c986f3c9042dc820b6d2c66cec1c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -45826,16 +45853,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6704095862675926450, guid: 2be6c986f3c9042dc820b6d2c66cec1c,
-        type: 3}
-      propertyPath: scale
-      value: 0.15
-      objectReference: {fileID: 0}
-    - target: {fileID: 6704095862675926450, guid: 2be6c986f3c9042dc820b6d2c66cec1c,
-        type: 3}
-      propertyPath: width
-      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2be6c986f3c9042dc820b6d2c66cec1c, type: 3}

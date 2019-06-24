@@ -173,6 +173,11 @@ namespace SimpleUI {
 
             // for some reason, layout groups need to be enabled and disabled a few times
             // to show correctly
+            if (needsInput) {
+                instance.shownUIsWithInput.Add(uiObject);
+                
+                // inputModule.gameObject.SetActive(true);
+            }
 
             if (tryRepeat) {
                 yield return null;
@@ -185,17 +190,12 @@ namespace SimpleUI {
                 uiObject.SetActive(true);
             }
                             
-            if (needsInput) {
-                instance.shownUIsWithInput.Add(uiObject);
-                
-                // inputModule.gameObject.SetActive(true);
-            }
 
             // else {
             //     instance.gameObject.SetActive(false);
             // }
 
-             Debug.LogError("adding callbacks");
+            //  Debug.LogError("adding callbacks");
             foreach (var d in gameManager.GetUISelectInvocations()) {
                 uiObjectC.onSelectEvent += (System.Action<GameObject[], object[]>)d;
             }

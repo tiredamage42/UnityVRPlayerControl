@@ -393,8 +393,8 @@ namespace Valve.VR.InteractionSystem
         {
             if (handSkeleton != null)
             {
-                if (handSkeleton.isBlending == false)
-                    handSkeleton.BlendToAnimation();
+                // if (handSkeleton.isBlending == false)
+                //     handSkeleton.BlendToAnimation();
 
                 if (CheckAnimatorInit())
                     handAnimator.SetInteger(handAnimatorStateId, stateValue);
@@ -405,8 +405,8 @@ namespace Valve.VR.InteractionSystem
         {
             if (handSkeleton != null)
             {
-                if (handSkeleton.isBlending == false)
-                    handSkeleton.BlendToSkeleton();
+                // if (handSkeleton.isBlending == false)
+                //     handSkeleton.BlendToSkeleton();
 
                 if (CheckAnimatorInit())
                     handAnimator.SetInteger(handAnimatorStateId, 0);

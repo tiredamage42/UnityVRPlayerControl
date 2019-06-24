@@ -117,7 +117,7 @@ namespace VRPlayer{
         public static event System.Action<GameObject[], object[]> onUISelection, onUISubmit;
         void OnUISelection (GameObject[] data, object[] customData) {
             if (onUISelection != null) {
-                Debug.LogError("callign back on ui selectin");
+                // Debug.LogError("callign back on ui selectin");
                 onUISelection (data, customData);
             }
         }
