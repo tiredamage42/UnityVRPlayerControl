@@ -227,7 +227,8 @@ namespace VRPlayer
               
             if (mainRenderModel != null) {
                 // Debug.LogError("render mdel");
-                mainRenderModel.MatchHandToTransform(mainRenderModel.transform);
+                mainRenderModel.ReturnHandToOrigin();
+                // mainRenderModel.MatchHandToTransform(mainRenderModel.transform);
             }
             //move to vr interacable
             if (vr_item.skeletonPoser != null)
@@ -627,8 +628,12 @@ namespace VRPlayer
 
             mainRenderModel = renderModelInstance.GetComponent<RenderModel>();
 
-            if (hadOldRendermodel)
+            mainRenderModel.SetPoser(GetComponent<SteamVR_Skeleton_PoserCustom>());
+
+            if (hadOldRendermodel) {
+                Debug.Log("setting skeletal range of motion");
                 mainRenderModel.SetSkeletonRangeOfMotion(oldRM_rom);
+            }
 
             this.BroadcastMessage("SetInputSource", handType, SendMessageOptions.DontRequireReceiver); // let child objects know we've initialized
             this.BroadcastMessage("OnHandInitialized", deviceIndex, SendMessageOptions.DontRequireReceiver); // let child objects know we've initialized

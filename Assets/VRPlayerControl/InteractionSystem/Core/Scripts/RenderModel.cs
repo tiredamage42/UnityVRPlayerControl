@@ -44,6 +44,10 @@ namespace Valve.VR.InteractionSystem
             InitializeController();
         }
 
+        public void SetPoser (SteamVR_Skeleton_PoserCustom poser) {
+            handSkeleton.SetPoser (poser, );
+        }
+
         protected void InitializeHand()
         {
             if (handPrefab != null)
@@ -54,6 +58,7 @@ namespace Valve.VR.InteractionSystem
                 handInstance.transform.localRotation = Quaternion.identity;
                 handInstance.transform.localScale = handPrefab.transform.localScale;
                 handSkeleton = handInstance.GetComponent<SteamVR_Behaviour_Skeleton>();
+
                 handSkeleton.origin = Player.instance.trackingOriginTransform;
                 handSkeleton.updatePose = false;
                 handSkeleton.skeletonAction.onActiveChange += OnSkeletonActiveChange;
@@ -147,6 +152,14 @@ namespace Valve.VR.InteractionSystem
 
             controllerRenderModel.SetInputSource(inputSource);
             controllerRenderModel.SetDeviceIndex(deviceIndex);
+        }
+
+        public void ReturnHandToOrigin () {
+            if (handInstance != null)
+            {
+                handInstance.transform.position = transform.position;
+                handInstance.transform.rotation = transform.rotation;
+            }
         }
 
         public void MatchHandToTransform(Transform match)
@@ -393,8 +406,8 @@ namespace Valve.VR.InteractionSystem
         {
             if (handSkeleton != null)
             {
-                // if (handSkeleton.isBlending == false)
-                //     handSkeleton.BlendToAnimation();
+                if (handSkeleton.isBlending == false)
+                    handSkeleton.BlendToAnimation();
 
                 if (CheckAnimatorInit())
                     handAnimator.SetInteger(handAnimatorStateId, stateValue);
@@ -405,8 +418,8 @@ namespace Valve.VR.InteractionSystem
         {
             if (handSkeleton != null)
             {
-                // if (handSkeleton.isBlending == false)
-                //     handSkeleton.BlendToSkeleton();
+                if (handSkeleton.isBlending == false)
+                    handSkeleton.BlendToSkeleton();
 
                 if (CheckAnimatorInit())
                     handAnimator.SetInteger(handAnimatorStateId, 0);

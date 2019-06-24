@@ -814,18 +814,20 @@ namespace Valve.VR
 
                     SerializedProperty blender = blendingBehaviourArray.GetArrayElementAtIndex(i);
                     SerializedProperty blenderName = blender.FindPropertyRelative("name");
-                    SerializedProperty blenderEnabled = blender.FindPropertyRelative("enabled");
+                    // SerializedProperty blenderEnabled = blender.FindPropertyRelative("enabled");
                     SerializedProperty blenderInfluence = blender.FindPropertyRelative("influence");
                     SerializedProperty blenderPose = blender.FindPropertyRelative("pose");
                     SerializedProperty blenderType = blender.FindPropertyRelative("type");
                     SerializedProperty blenderUseMask = blender.FindPropertyRelative("useMask");
-                    SerializedProperty blenderValue = blender.FindPropertyRelative("value");
+                    // SerializedProperty blenderValue = blender.FindPropertyRelative("value");
                     SerializedProperty blenderMask = blender.FindPropertyRelative("mask").FindPropertyRelative("values");
 
                     SerializedProperty blenderPreview = blender.FindPropertyRelative("previewEnabled");
 
                     GUILayout.Space(10);
-                    float bright = blenderEnabled.boolValue ? 0.6f : 0.9f; // grey out box when disabled
+                    
+                    // float bright = blenderEnabled.boolValue ? 0.6f : 0.9f; // grey out box when disabled
+                    float bright = 0.6f;
                     if (EditorGUIUtility.isProSkin) bright = 1;
                     GUI.color = new Color(bright, bright, bright);
                     GUILayout.BeginVertical("box");
@@ -839,7 +841,7 @@ namespace Valve.VR
 
                     EditorGUILayout.BeginHorizontal();
                     DrawBlenderLogo(blenderType);
-                    EditorGUILayout.PropertyField(blenderEnabled);
+                    // EditorGUILayout.PropertyField(blenderEnabled);
                     GUILayout.FlexibleSpace();
 
                     EditorGUI.BeginDisabledGroup(i == 0);
@@ -892,15 +894,15 @@ namespace Valve.VR
 
                         EditorGUILayout.PropertyField(blenderType);
 
-                        if (Application.isPlaying)
-                        {
-                            GUILayout.Space(10);
-                            GUI.color = new Color(0, 0, 0, 0.3f);
-                            EditorGUILayout.LabelField("", GUI.skin.box, GUILayout.Height(20), GUILayout.ExpandWidth(true));
-                            GUI.color = Color.white;
-                            Rect fillRect = GUILayoutUtility.GetLastRect();
-                            EditorGUI.DrawRect(fillRectHorizontal(fillRect, blenderValue.floatValue), Color.green);
-                        }
+                        // if (Application.isPlaying)
+                        // {
+                            // GUILayout.Space(10);
+                            // GUI.color = new Color(0, 0, 0, 0.3f);
+                            // EditorGUILayout.LabelField("", GUI.skin.box, GUILayout.Height(20), GUILayout.ExpandWidth(true));
+                            // GUI.color = Color.white;
+                            // Rect fillRect = GUILayoutUtility.GetLastRect();
+                            // EditorGUI.DrawRect(fillRectHorizontal(fillRect, blenderValue.floatValue), Color.green);
+                        // }
 
                         EditorGUILayout.EndVertical();
 
@@ -927,10 +929,11 @@ namespace Valve.VR
                         EditorGUIUtility.labelWidth = 0;
 
 
-                        if (blenderType.intValue == (int)SteamVR_Skeleton_Poser.PoseBlendingBehaviour.BlenderTypes.Manual)
-                        {
-                            EditorGUILayout.Slider(blenderValue, 0, 1);
-                        }
+                        // if (blenderType.intValue == (int)SteamVR_Skeleton_Poser.PoseBlendingBehaviour.BlenderTypes.Manual)
+                        // {
+                        //     EditorGUILayout.Slider(blenderValue, 0, 1);
+                        // }
+
                         if (blenderType.intValue == (int)SteamVR_Skeleton_Poser.PoseBlendingBehaviour.BlenderTypes.AnalogAction)
                         {
                             SerializedProperty blenderAction = blender.FindPropertyRelative("action_single");
