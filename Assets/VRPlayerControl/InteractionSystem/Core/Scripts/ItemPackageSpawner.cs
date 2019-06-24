@@ -449,7 +449,7 @@ namespace Valve.VR.InteractionSystem
 						ItemPackage attachedObjectItemPackage = packageReference.itemPackage;
 						if ( ( attachedObjectItemPackage != null ) && ( attachedObjectItemPackage == package ) )
 						{
-							inventory.UnequipItem(i);
+							inventory.UnequipItem(i, false);
 						}
 					}
 				}
@@ -497,7 +497,7 @@ namespace Valve.VR.InteractionSystem
 					{
 						if ( packageReference.itemPackage.packageType == packageType )
 						{
-							inventory.UnequipItem(i);
+							inventory.UnequipItem(i, false);
 						}
 					}
 				}

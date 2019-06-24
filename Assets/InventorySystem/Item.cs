@@ -399,7 +399,7 @@ gameMessage
         {
             if (linkedInventory != null)
             {
-                linkedInventory.UnequipItem(this);//, false);
+                linkedInventory.UnequipItem(this, false);//, false);
             }
         }
     }

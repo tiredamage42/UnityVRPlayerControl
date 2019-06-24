@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 9042678113247282808}
   - component: {fileID: 5613087272471880863}
   - component: {fileID: 422906220894494258}
-  - component: {fileID: 9022047087326659619}
+  - component: {fileID: 746803840230797952}
   m_Layer: 0
   m_Name: Knife_04
   m_TagString: Untagged
@@ -198,7 +198,7 @@ MonoBehaviour:
   rigidbody: {fileID: 0}
   linkedInventory: {fileID: 0}
   myEquipPoint: {fileID: 0}
---- !u!114 &9022047087326659619
+--- !u!114 &746803840230797952
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -207,23 +207,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7418c7dd8f977d4e969202d3fa7e926, type: 3}
+  m_Script: {fileID: 11500000, guid: 66ce194eff6c54f4c98d9c29a9db930a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  poseEditorExpanded: 1
-  blendEditorExpanded: 1
-  poseNames:
-  - CubePose (MAIN)
-  previewLeftHandPrefab: {fileID: 1000013348574242, guid: 638779290bce1af49b356f33dcc6fccf,
-    type: 3}
-  previewRightHandPrefab: {fileID: 1000010304998954, guid: 6def53d002137b747aec0b29551e0e25,
-    type: 3}
-  skeletonMainPose: {fileID: 11400000, guid: 7698ce6c9a8924f4c810d69991a6789c, type: 2}
-  skeletonAdditionalPoses: []
-  showLeftPreview: 0
-  showRightPreview: 0
-  previewLeftInstance: {fileID: 0}
-  previewRightInstance: {fileID: 0}
-  previewPoseSelection: 0
-  blendingBehaviours: []
-  scale: 1
+  activateActionSetOnAttach:
+    actionSetPath: 
+  hideHandOnAttach: 0
+  handAnimationOnPickup: 3
+  setRangeOfMotionOnPickup: -1
+  skeletonPoser: {fileID: 0}
+  handFollowTransform: 0

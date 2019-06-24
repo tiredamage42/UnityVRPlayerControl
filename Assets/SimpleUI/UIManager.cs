@@ -239,13 +239,26 @@ namespace SimpleUI {
             uiObject.RemoveAllEvents();
         }
 
+        void LateUpdate () {
+            if (inputModule.gameObject.activeSelf) {
+
+                if (instance.shownUIsWithInput.Count == 0) {
+
+
+                    inputModule.gameObject.SetActive(false);
+                    // instance.gameObject.SetActive(false);
+                }
+            }
+
+        }
+
         static void HideUI (GameObject uiObject) {
             if (instance.shownUIsWithInput.Contains(uiObject)) {
                 instance.shownUIsWithInput.Remove(uiObject);
                 if (instance.shownUIsWithInput.Count == 0) {
 
 
-                    inputModule.gameObject.SetActive(false);
+                    // inputModule.gameObject.SetActive(false);
                     // instance.gameObject.SetActive(false);
                 }
             }

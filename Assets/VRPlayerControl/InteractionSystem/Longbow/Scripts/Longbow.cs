@@ -630,7 +630,7 @@ namespace Valve.VR.InteractionSystem
 						{
 							if ( otherHandCurrentAttached.GetComponent<ItemPackageReference>().itemPackage == arrowHandItemPackage )
 							{
-								parentInventory.UnequipItem(i);
+								parentInventory.UnequipItem(i, false);
 								// parentInventory.otherInventory.UnequipItem( otherHandCurrentAttached.GetComponent<Item>() );
 							}
 						}
