@@ -56,6 +56,38 @@ namespace SimpleUI {
         // }
 
 
+        List<System.Func<int>> getAlternativeSubmitDelegates = new List<System.Func<int>>();
+        event System.Func<int> getAlternativeSubmit;
+        public System.Func<int> getAlternativeSubmitToUse {
+            get {
+                if (parentHolder != null) {
+                    return parentHolder.getAlternativeSubmitToUse;
+                }
+                return getAlternativeSubmit;
+            }
+        }
+        
+        public event System.Func<int> alternativeSubmit {
+            add {
+                getAlternativeSubmit += value;
+                getAlternativeSubmitDelegates.Add(value);
+            }
+            remove{
+                getAlternativeSubmit -= value;
+                getAlternativeSubmitDelegates.Remove(value);
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
         
 
         List<System.Action<GameObject[], object[]>> onSelectdelegates = new List<System.Action<GameObject[], object[]>>();
@@ -116,6 +148,13 @@ namespace SimpleUI {
                 onSubmit -= eh;
             }
             onSubmitdelegates.Clear();
+
+
+            foreach(System.Func<int> eh in getAlternativeSubmitDelegates)
+            {
+                getAlternativeSubmit -= eh;
+            }
+            getAlternativeSubmitDelegates.Clear();
         }
 
 
