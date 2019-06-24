@@ -150,8 +150,14 @@ namespace Valve.VR
                         preview.transform.localScale = Vector3.one * poserScale.floatValue;
                         preview.transform.parent = poser.transform;
 
-                        preview.transform.localRotation = Quaternion.Inverse(handData.rotation);
-                        preview.transform.position = preview.transform.TransformPoint(-handData.position);
+
+
+//CHANGE THSI MAYBE
+                        // preview.transform.localRotation = Quaternion.Inverse(handData.rotation);
+                        // preview.transform.position = preview.transform.TransformPoint(-handData.position);
+                        
+                        preview.transform.localRotation = handData.rotation;//Quaternion.Inverse(handData.rotation);
+                        preview.transform.localPosition = handData.position;//preview.transform.TransformPoint(-handData.position);
 
 
                         for (int boneIndex = 0; boneIndex < handData.bonePositions.Length; boneIndex++)
