@@ -915,7 +915,7 @@ namespace Valve.VR
         public TrackingChangeHandler onTrackingChangedEvent;
 
 
-        protected SteamVR_Skeleton_Poser blendPoser;
+        // protected SteamVR_Skeleton_Poser blendPoser;
         protected SteamVR_Skeleton_PoseSnapshot blendSnapshot = null;
 
 
@@ -1189,6 +1189,11 @@ namespace Valve.VR
                 onTrackingChangedEvent.Invoke(this, inputSource, trackingState);
         }
 
+        SteamVR_Skeleton_PoserCustom customPoser;
+        public void SetPoser (SteamVR_Skeleton_PoserCustom poser) {
+            this.customPoser = poser;
+        }
+
         protected virtual void SteamVR_Input_OnSkeletonsUpdated(bool skipSendingEvents)
         {
             UpdateSkeleton();
@@ -1202,10 +1207,16 @@ namespace Valve.VR
             if (updatePose)
                 UpdatePose();
 
-            if (blendPoser != null && skeletonBlend < 1)
+
+            // if (blendPoser != null && skeletonBlend < 1)
+            if (customPoser.isPosing && skeletonBlend < 1)
+            
             {
-                if (blendSnapshot == null) blendSnapshot = blendPoser.GetBlendedPose(this);
-                blendSnapshot.CopyFrom(blendPoser.GetBlendedPose(this));
+                // if (blendSnapshot == null) blendSnapshot = blendPoser.GetBlendedPose(this);
+                // blendSnapshot.CopyFrom(blendPoser.GetBlendedPose(this));
+
+                if (blendSnapshot == null) blendSnapshot = customPoser.GetBlendedPose(this);
+                blendSnapshot.CopyFrom(customPoser.GetBlendedPose(this));
             }
 
             if (rangeOfMotionBlendRoutine == null)
@@ -1215,7 +1226,13 @@ namespace Valve.VR
                 else
                     skeletonAction.SetRangeOfMotion(rangeOfMotion); //this may be a frame behind
 
-                UpdateSkeletonTransforms();
+
+                
+                // SteamVR_Skeleton_Pose targetPose = null;
+                // if (blendPoser != null) {
+                //     targetPose = blendPoser.skeletonMainPose;
+                // }
+                UpdateSkeletonTransforms();//targetPose);
             }
         }
 
@@ -1265,8 +1282,13 @@ namespace Valve.VR
         /// <param name="overTime">How long you want the blend to take (in seconds)</param>
         public void BlendToSkeleton(float overTime = 0.1f)
         {
-            blendSnapshot = blendPoser.GetBlendedPose(this);
-            blendPoser = null;
+
+            // blendSnapshot = blendPoser.GetBlendedPose(this);
+            blendSnapshot = customPoser.GetBlendedPose(this);
+            
+            customPoser.DoneWithPoser();
+            // blendPoser = null;
+            
             BlendTo(1, overTime);
         }
 
@@ -1280,7 +1302,9 @@ namespace Valve.VR
             if (poser == null)
                 return;
 
-            blendPoser = poser;
+            customPoser.SetUpWithPoser(poser);
+            // blendPoser = poser;
+
             BlendTo(0, overTime);
         }
 
@@ -1419,7 +1443,8 @@ namespace Valve.VR
 
                         if (skeletonBlend < 1)
                         {
-                            if (blendPoser != null)
+                            if (customPoser.isPosing)
+                            // if (blendPoser != null)
                             {
                                 SetBonePosition(boneIndex, Vector3.Lerp(blendSnapshot.bonePositions[boneIndex], blendedRangeOfMotionPosition, skeletonBlend));
                                 SetBoneRotation(boneIndex, Quaternion.Lerp(blendSnapshot.boneRotations[boneIndex], blendedRangeOfMotionRotation, skeletonBlend));
@@ -1450,23 +1475,28 @@ namespace Valve.VR
         private Vector3[] bonePositionBuffer = new Vector3[SteamVR_Action_Skeleton.numBones];
         private Quaternion[] boneRotationBuffer = new Quaternion[SteamVR_Action_Skeleton.numBones];
 
-        protected virtual void UpdateSkeletonTransforms()
+        protected virtual void UpdateSkeletonTransforms()//SteamVR_Skeleton_Pose currentPoseTarget)
         {
             CopyBonePositions(bonePositionBuffer);
             CopyBoneRotations(boneRotationBuffer);
 
             if (skeletonBlend <= 0)
             {
-                if (blendPoser != null)
+                // if (blendPoser != null)
+                // if (currentPoseTarget != null)
+                if (customPoser.isPosing)
+                
                 {
-                    SteamVR_Skeleton_Pose_Hand mainPose = blendPoser.skeletonMainPose.GetHand(inputSource);
+                    // SteamVR_Skeleton_Pose_Hand mainPose = currentPoseTarget.GetHand(inputSource);
                     for (int boneIndex = 0; boneIndex < bones.Length; boneIndex++)
                     {
                         if (bones[boneIndex] == null)
                             continue;
 
-                        if ((boneIndex == SteamVR_Skeleton_JointIndexes.wrist && mainPose.ignoreWristPoseData) ||
-                            (boneIndex == SteamVR_Skeleton_JointIndexes.root && mainPose.ignoreRootPoseData))
+                        // if ((boneIndex == SteamVR_Skeleton_JointIndexes.wrist && mainPose.ignoreWristPoseData) ||
+                        //     (boneIndex == SteamVR_Skeleton_JointIndexes.root && mainPose.ignoreRootPoseData))
+                        if ((boneIndex == SteamVR_Skeleton_JointIndexes.wrist) || (boneIndex == SteamVR_Skeleton_JointIndexes.root))
+                        
                         {
                             SetBonePosition(boneIndex, bonePositionBuffer[boneIndex]);
                             SetBoneRotation(boneIndex, boneRotationBuffer[boneIndex]);
@@ -1505,12 +1535,17 @@ namespace Valve.VR
                     if (bones[boneIndex] == null)
                         continue;
                     
-                    if (blendPoser != null)
+                    // if (blendPoser != null)
+                    // if (currentPoseTarget != null)
+                    if (customPoser.isPosing)
                     {
-                        SteamVR_Skeleton_Pose_Hand mainPose = blendPoser.skeletonMainPose.GetHand(inputSource);
+                        // SteamVR_Skeleton_Pose_Hand mainPose = currentPoseTarget.GetHand(inputSource);
 
-                        if ((boneIndex == SteamVR_Skeleton_JointIndexes.wrist && mainPose.ignoreWristPoseData) ||
-                            (boneIndex == SteamVR_Skeleton_JointIndexes.root && mainPose.ignoreRootPoseData))
+                        // if ((boneIndex == SteamVR_Skeleton_JointIndexes.wrist && mainPose.ignoreWristPoseData) ||
+                        //     (boneIndex == SteamVR_Skeleton_JointIndexes.root && mainPose.ignoreRootPoseData))
+                        if ((boneIndex == SteamVR_Skeleton_JointIndexes.wrist) ||
+                            (boneIndex == SteamVR_Skeleton_JointIndexes.root))
+                        
                         {
                             SetBonePosition(boneIndex, bonePositionBuffer[boneIndex]);
                             SetBoneRotation(boneIndex, boneRotationBuffer[boneIndex]);
@@ -1594,7 +1629,7 @@ namespace Valve.VR
                 return bones[joint].rotation;
         }
 
-        protected void CopyBonePositions(Vector3[] positionBuffer)
+        public void CopyBonePositions(Vector3[] positionBuffer)
         {
             // if (skeletonAvailable)
             // {
@@ -1626,7 +1661,7 @@ namespace Valve.VR
             // }
         }
 
-        protected void CopyBoneRotations(Quaternion[] rotationBuffer)
+        public void CopyBoneRotations(Quaternion[] rotationBuffer)
         {
             // if (skeletonAvailable)
             // {
