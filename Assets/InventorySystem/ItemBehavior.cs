@@ -2,6 +2,42 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+
+
+/*
+
+
+
+SEPERATE STASHED ITEM TO HAVE 
+    ON STASH 
+    ON CONSUME
+    ON UNSTASH
+
+CALLBACKS
+
+CAN SEPERATE BUFFS INTO OTHER COMPONENTS
+
+
+CONSUME ON STASH OPTION FOR ITEM MAYBE
+
+
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 namespace InventorySystem {
     [CreateAssetMenu()]
     public class ItemBehavior : ScriptableObject

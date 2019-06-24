@@ -105,8 +105,29 @@ namespace SimpleUI {
         // }
     }
 
-    public void OnSubmit(BaseEventData eventData)
-    {
+    void Update () {
+        if (Application.isPlaying) {
+            if (parentHolder.needsInput) {
+                if (selected) {
+                    if (parentHolder.getAlternativeSubmitToUse != null) {
+                        int alternativeSubmit = parentHolder.getAlternativeSubmitToUse();
+                        if (alternativeSubmit >= 0) {
+                            if (alternativeSubmit == 0) {
+                                Debug.LogError("dont use action 0 for alternative ui submit, it's already used internally");
+                            }
+                            else {
+                            
+                                DoSubmit(alternativeSubmit);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    void DoSubmit (int submitAction) {
         // Debug.Log("Submitted on " + name);
         
         if (onClick != null) {
@@ -138,6 +159,43 @@ namespace SimpleUI {
         // if (onSubmit != null) {
         //     onSubmit(this);
         // }
+
+    }
+
+    public void OnSubmit(BaseEventData eventData)
+    {
+        DoSubmit(0);
+        // // Debug.Log("Submitted on " + name);
+        
+        // if (onClick != null) {
+        //     onClick.Invoke(data);
+        // }
+
+        // if (parentHolder.onSubmitToUse != null) {
+        //     parentHolder.onSubmitToUse(data, customData);
+        // }
+
+        // // if (onSubmit != null) {
+        // //     onSubmit(data, customData);
+        // // }
+        // // if (onClickWCustomData != null) {
+        // //     onClickWCustomData(customData);
+        // // }
+
+        // if (destination != null) {
+        //     destination.gameObject.SetActive(true);
+
+        //     if (!destination.isBase) {
+        //         destination.parentHolder = parentHolder;
+        //     }
+        //     parentHolder.gameObject.SetActive(false);
+        // }
+
+        // OnSubmit();
+
+        // // if (onSubmit != null) {
+        // //     onSubmit(this);
+        // // }
     }
     public void OnDeselect(BaseEventData data)
     {
