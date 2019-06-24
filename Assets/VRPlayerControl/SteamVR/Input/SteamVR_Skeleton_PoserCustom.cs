@@ -53,11 +53,11 @@ namespace Valve.VR
             blendedSnapshotL = new SteamVR_Skeleton_PoseSnapshot(boneCount, SteamVR_Input_Sources.LeftHand);
             blendedSnapshotR = new SteamVR_Skeleton_PoseSnapshot(boneCount, SteamVR_Input_Sources.RightHand);
             
-            isPosing = false;
+            isPosing = true;
         }
         public void DoneWithPoser ( )
         {
-            isPosing = true;
+            isPosing = false;
         }
         public SteamVR_Skeleton_Pose GetPoseByIndex(SteamVR_Skeleton_Poser originalPoser, int index)
         {
