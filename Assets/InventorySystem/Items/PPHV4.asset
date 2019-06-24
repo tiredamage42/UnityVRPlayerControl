@@ -17,7 +17,7 @@ MonoBehaviour:
   allowMultipleStashed: 1
   itemName: PPH-V4
   scenePrefabVariations:
-  - {fileID: 3555018068176067398, guid: 46987e92c36b7459f803ec3661b42cf1, type: 3}
+  - {fileID: 284590674192341788, guid: 7b762906b4d5a40b9ae7ffc4ea8e4c69, type: 3}
   permanentStash: 0
   stashActions: 0000000001000000
   equipActions: 00000000
@@ -26,4 +26,4 @@ MonoBehaviour:
   onStashBuffs: {fileID: 0}
   stashUseBehavior: {fileID: 11400000, guid: 11f12a8d2cb294126a519580ba24f367, type: 2}
   onEquipBuffs: {fileID: 0}
-  equipTransform: {fileID: 11400000, guid: 4d2afb7f8e365402f94727fafb2ef7d6, type: 2}
+  equipTransform: {fileID: 11400000, guid: 71b62170597e74e9ca5c0f162bb83d79, type: 2}

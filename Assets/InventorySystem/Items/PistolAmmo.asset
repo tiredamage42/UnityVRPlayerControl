@@ -26,4 +26,4 @@ MonoBehaviour:
   onStashBuffs: {fileID: 0}
   stashUseBehavior: {fileID: 0}
   onEquipBuffs: {fileID: 0}
-  equipTransform: {fileID: 11400000, guid: 4d2afb7f8e365402f94727fafb2ef7d6, type: 2}
+  equipTransform: {fileID: 11400000, guid: 0ac4c061f93fb476eb4fb99dd5ca7182, type: 2}

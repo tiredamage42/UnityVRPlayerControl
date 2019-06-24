@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 651118d94913b4ccaa693bae51d9b8b2, type: 3}
-  m_Name: DefaultEquip
+  m_Name: PPHEquip
   m_EditorClassIdentifier: 
   transformSettings:
   - position: {x: 0, y: 0, z: 0}
