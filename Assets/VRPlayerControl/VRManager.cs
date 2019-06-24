@@ -108,7 +108,9 @@ namespace VRPlayer{
             }
         }
         
-
+public static void ShowGameMessage (string message) {
+    ShowGameMessage(message, 0);
+}
         public static void ShowGameMessage (string message, int key) {
             gameManager.ShowGameMessage(message, key);
         }
