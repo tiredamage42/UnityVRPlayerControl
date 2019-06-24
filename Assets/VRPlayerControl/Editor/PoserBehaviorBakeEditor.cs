@@ -22,6 +22,8 @@ namespace VRPlayer
         {
 
             baker = (PoserBehaviorBake)target;
+                    OpenHand =  (SteamVR_Skeleton_Pose)Resources.Load("ReferencePose_OpenHand");
+
 
         }
 
@@ -40,7 +42,7 @@ namespace VRPlayer
 
 
 
-        string fileName = "New Pose";
+        string fileName = "HELD";
 
         EVRSkeletalReferencePose referencePose;
         // SteamVR_Input_Sources handToUse = SteamVR_Input_Sources.LeftHand;
@@ -67,7 +69,7 @@ namespace VRPlayer
             }
             EditorGUILayout.Space();
             GUI.enabled = true;
-            fileName = EditorGUILayout.TextField("New Pose Name: ", fileName);
+            fileName = EditorGUILayout.TextField("New Pose suffix: ", fileName);
             GUI.enabled = Application.isPlaying;
             if (GUILayout.Button("Make Pose")) {
                 CopyHandsToPose();
@@ -90,6 +92,7 @@ namespace VRPlayer
             
             GUI.enabled = Application.isPlaying;
             if (GUILayout.Button("Start Routine")) {
+                // baker.StartCoroutine(TestAnimations());
                 baker.StartCoroutine(RebakePosesRoutine());
             }
             EditorGUILayout.Space();
@@ -101,154 +104,105 @@ namespace VRPlayer
         }
 
         IEnumerator RebakePosesRoutine () {
+
+             VRManager.ShowGameMessage("testing animations");
+            yield return new WaitForSeconds (3);
+
+            for (int i = 0; i < 4; i++) {
+                VRManager.ShowGameMessage("testing animation : " + i.ToString());
+                getWorkingHand.GetComponentInChildren<Animator>().SetInteger("AnimationState", i);
+                getWorkingHand.BlendToAnimation(.25f);
+                yield return new WaitForSeconds (1);
+                VRManager.ShowGameMessage("Baking...");
+                yield return new WaitForSeconds (1);
+
+                SteamVR_Skeleton_Pose redonpose = MakeNewPose("_ANIMPOSE_"+i + ".asset", null);
+                SaveHandData (redonpose.GetHand(baker.handToUse), getWorkingHand);
+                CopyHand ( redonpose,  redonpose.GetHand(baker.handToUse),  redonpose.GetHand(getOppositeHand.inputSource));
+
+                yield return new WaitForSeconds (3);
+                VRManager.ShowGameMessage("blendign bakc from : " + i.ToString());
+                
+                getWorkingHand.BlendToSkeleton(.25f);
+                
+                yield return new WaitForSeconds (2);
+            
+            }
+
+                
+            
+
+
+
+
+
+
+
+
+
+
+
+
             VRManager.ShowGameMessage("starting rebake routine");
             yield return new WaitForSeconds (3);
                 
             SteamVR_Input_Sources handToUse = baker.handToUse;
 
-            // getWorkingHand.ForceToReferencePose(EVRSkeletalReferencePose.BindPose);
-            // getWorkingHand.ForceToReferencePose(EVRSkeletalReferencePose.Fist);
-            // getWorkingHand.ForceToReferencePose(EVRSkeletalReferencePose.GripLimit);
-            // getWorkingHand.ForceToReferencePose(EVRSkeletalReferencePose.OpenHand);
-            EVRSkeletalReferencePose[] everPoses = new EVRSkeletalReferencePose[] {
-                EVRSkeletalReferencePose.BindPose,
-                EVRSkeletalReferencePose.Fist,
-                EVRSkeletalReferencePose.GripLimit,
-                EVRSkeletalReferencePose.OpenHand
-            
-            };
-            foreach (EVRSkeletalReferencePose poseEnum in everPoses) {
-                VRManager.ShowGameMessage("woking on REF pose: " + poseEnum.ToString());
-                yield return new WaitForSeconds (3);
-                
-                VRManager.ShowGameMessage("setting psoe...");
-                
-                getWorkingHand.ForceToReferencePose(poseEnum);
-                
-                yield return new WaitForSeconds (3);
-
-                Vector3 newRootPosition = getWorkingHand.GetBone(0).localPosition;
-                VRManager.ShowGameMessage("new root position: ("+ newRootPosition.x+ "," + newRootPosition.y+ "," + newRootPosition.z + ")");
-                yield return new WaitForSeconds (3);
-                
-                newRootPosition = getWorkingHand.GetBone(1).localPosition;
-                VRManager.ShowGameMessage("new wrist position: ("+ newRootPosition.x+ "," + newRootPosition.y+ "," + newRootPosition.z + ")");
-                
-                yield return new WaitForSeconds (3);
-                VRManager.ShowGameMessage("Baking...");
-                yield return new WaitForSeconds (1);
-
-
-
-                // SteamVR_Skeleton_Pose newPose = MakeNewPose("_SCRIPT_REF_"+poseEnum.ToString() + ".asset");
-                // SaveHandData (newPose.GetHand(baker.handToUse), getWorkingHand);
-                // CopyHand ( newPose,  newPose.GetHand(baker.handToUse),  newPose.GetHand(getOppositeHand.inputSource));
-
-                yield return new WaitForSeconds (1);
-
-                VRManager.ShowGameMessage("Done Baking " + poseEnum.ToString());
-
-                yield return new WaitForSeconds (2);
-                    VRManager.ShowGameMessage("blendign back to skeleton");
-                yield return new WaitForSeconds (2);
-                getWorkingHand.BlendToSkeleton(1);
-                yield return new WaitForSeconds (5);
-                
-
-                
-                
-                
-                // yield return new WaitForSeconds (5);
-            }
-            
-
-
-
-
-
-
-
-
-
             foreach (SteamVR_Skeleton_Pose pose in baker.posesToBake) {
 
                 string poseName = pose.name;
                 VRManager.ShowGameMessage("woking on pose: " + poseName);
-                yield return new WaitForSeconds (3);
-                SteamVR_Skeleton_Pose_Hand hand = pose.GetHand(handToUse);
-                
-                Vector3 originalPoseRootHandPosition = hand.bonePositions[0];
-                VRManager.ShowGameMessage("original root position: ("+ originalPoseRootHandPosition.x+ "," + originalPoseRootHandPosition.y+ "," + originalPoseRootHandPosition.z + ")");
-                
-                yield return new WaitForSeconds (3);
-                
-                originalPoseRootHandPosition = hand.bonePositions[1];
-                VRManager.ShowGameMessage("original wrist position: ("+ originalPoseRootHandPosition.x+ "," + originalPoseRootHandPosition.y+ "," + originalPoseRootHandPosition.z + ")");
-                
-                yield return new WaitForSeconds (3);
-                
+                yield return new WaitForSeconds (1);
                 VRManager.ShowGameMessage("setting psoe...");
                 baker.GetComponent<SteamVR_Skeleton_Poser>().skeletonMainPose = pose;
                 SetHandToPoserBehavior();
+                yield return new WaitForSeconds (1);
 
-                
-                yield return new WaitForSeconds (3);
-
-                Vector3 newRootPosition = getWorkingHand.GetBone(0).localPosition;
-                VRManager.ShowGameMessage("new root position: ("+ newRootPosition.x+ "," + newRootPosition.y+ "," + newRootPosition.z + ")");
-                yield return new WaitForSeconds (3);
-                
-                newRootPosition = getWorkingHand.GetBone(1).localPosition;
-                VRManager.ShowGameMessage("new wrist position: ("+ newRootPosition.x+ "," + newRootPosition.y+ "," + newRootPosition.z + ")");
-                
-                yield return new WaitForSeconds (3);
                 VRManager.ShowGameMessage("Baking...");
-                yield return new WaitForSeconds (1);
 
+                SteamVR_Skeleton_Pose redonpose = MakeNewPose("_REDONE_"+poseName + ".asset", pose);
+                SaveHandData (redonpose.GetHand(baker.handToUse), getWorkingHand);
+                CopyHand ( redonpose,  redonpose.GetHand(baker.handToUse),  redonpose.GetHand(getOppositeHand.inputSource));
 
-                // string fileName = "_REDONE_"+poseName + ".asset";
-                // SteamVR_Skeleton_Pose newPose = MakeNewPose(fileName);
-                // SaveHandData (newPose.GetHand(baker.handToUse), getWorkingHand);
-                // CopyHand ( newPose,  newPose.GetHand(baker.handToUse),  newPose.GetHand(getOppositeHand.inputSource));
-                
-
-                yield return new WaitForSeconds (1);
+                yield return new WaitForSeconds (3);
 
                 VRManager.ShowGameMessage("Done Baking " + poseName);
 
-                
-                
-                
+                getWorkingHand.BlendToSkeleton(.25f);
                 yield return new WaitForSeconds (2);
-                    VRManager.ShowGameMessage("blendign back to skeleton");
-                yield return new WaitForSeconds (2);
-                getWorkingHand.BlendToSkeleton(1);
-                yield return new WaitForSeconds (5);
-                
-
-
-
-
-                                
-                
-
-                
-
-
             }
 
 
-            // yield return new WaitForSeconds (1);
-            // VRManager.ShowGameMessage("blendign back to skeleton");
-            // yield return new WaitForSeconds (2);
-            // getWorkingHand.BlendToSkeleton(1);
-            // yield return new WaitForSeconds (3);
-VRManager.ShowGameMessage("Done With ROUTINE!");
+
+
+            yield return new WaitForSeconds (1);
+            VRManager.ShowGameMessage("Done With ROUTINE! 5 seconds for finger TOP relaxed");
+            yield return new WaitForSeconds (5);
+            VRManager.ShowGameMessage("BAKING");
+            
+            SteamVR_Skeleton_Pose newPose = MakeNewPose("_TriggerHoldFingerTop_.asset", null);
+            SaveHandData (newPose.GetHand(baker.handToUse), getWorkingHand);
+            CopyHand ( newPose,  newPose.GetHand(baker.handToUse),  newPose.GetHand(getOppositeHand.inputSource));
+            yield return new WaitForSeconds (1);
+            VRManager.ShowGameMessage("5 seconds for finger top BOTTOM");
+            yield return new WaitForSeconds (5);
+VRManager.ShowGameMessage("BAKING");
             
 
+            newPose = MakeNewPose("_TriggerHoldFingerbottom_.asset", null);
+            SaveHandData (newPose.GetHand(baker.handToUse), getWorkingHand);
+            CopyHand ( newPose,  newPose.GetHand(baker.handToUse),  newPose.GetHand(getOppositeHand.inputSource));
+yield return new WaitForSeconds (1);
+            VRManager.ShowGameMessage(" 5 seconds for finger top OFF");
+            yield return new WaitForSeconds (5);
+VRManager.ShowGameMessage("BAKING");
+            
 
-
-
+newPose = MakeNewPose("_TriggerHoldOff_.asset", null);
+            SaveHandData (newPose.GetHand(baker.handToUse), getWorkingHand);
+            CopyHand ( newPose,  newPose.GetHand(baker.handToUse),  newPose.GetHand(getOppositeHand.inputSource));
+yield return new WaitForSeconds (1);
+            VRManager.ShowGameMessage("Done With ROUTINE!");
 
 
         }
@@ -258,22 +212,26 @@ VRManager.ShowGameMessage("Done With ROUTINE!");
             VRManager.ShowGameMessage("testing animations");
             yield return new WaitForSeconds (3);
 
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 4; i++) {
                 VRManager.ShowGameMessage("testing animation : " + i.ToString());
-                yield return new WaitForSeconds (3);
-                
                 getWorkingHand.GetComponentInChildren<Animator>().SetInteger("AnimationState", i);
-                        
-                getWorkingHand.BlendToAnimation(1);
+                getWorkingHand.BlendToAnimation(.25f);
+                yield return new WaitForSeconds (1);
+                VRManager.ShowGameMessage("Baking...");
+                yield return new WaitForSeconds (1);
+
+                string fileName = "_ANIMPOSE_"+i + "_" + this.fileName + ".asset";
+                SteamVR_Skeleton_Pose newPose = MakeNewPose(fileName, null);
+                SaveHandData (newPose.GetHand(baker.handToUse), getWorkingHand);
+                CopyHand ( newPose,  newPose.GetHand(baker.handToUse),  newPose.GetHand(getOppositeHand.inputSource));
 
                 yield return new WaitForSeconds (3);
                 VRManager.ShowGameMessage("blendign bakc from : " + i.ToString());
                 
-                getWorkingHand.BlendToSkeleton(1);
+                getWorkingHand.BlendToSkeleton(.25f);
                 
-                yield return new WaitForSeconds (3);
-                
-
+                yield return new WaitForSeconds (2);
+            
             }
 
                 
@@ -288,7 +246,7 @@ VRManager.ShowGameMessage("Done With ROUTINE!");
 
         }
         void SetHandToPoserBehavior () {
-            getWorkingHand.BlendToPoser(baker.GetComponent<SteamVR_Skeleton_Poser>(), 1);
+            getWorkingHand.BlendToPoser(baker.GetComponent<SteamVR_Skeleton_Poser>(), .1f);
         }
 
 
@@ -314,7 +272,7 @@ VRManager.ShowGameMessage("Done With ROUTINE!");
             {
                 dest.rightHand.bonePositions[boneIndex] = source.rightHand.bonePositions[boneIndex];
                 dest.rightHand.boneRotations[boneIndex] = source.rightHand.boneRotations[boneIndex];
-                EditorUtility.DisplayProgressBar("Copying...", "Copying right hand pose", (float)boneIndex / (float)boneNum / 2f);
+                // EditorUtility.DisplayProgressBar("Copying...", "Copying right hand pose", (float)boneIndex / (float)boneNum / 2f);
             }
             dest.rightHand.thumbFingerMovementType = source.rightHand.thumbFingerMovementType;
             dest.rightHand.indexFingerMovementType = source.rightHand.indexFingerMovementType;
@@ -330,7 +288,7 @@ VRManager.ShowGameMessage("Done With ROUTINE!");
             {
                 dest.leftHand.bonePositions[boneIndex] = source.leftHand.bonePositions[boneIndex];
                 dest.leftHand.boneRotations[boneIndex] = source.leftHand.boneRotations[boneIndex];
-                EditorUtility.DisplayProgressBar("Copying...", "Copying left hand pose", (float)boneIndex / (float)boneNum / 2f);
+                // EditorUtility.DisplayProgressBar("Copying...", "Copying left hand pose", (float)boneIndex / (float)boneNum / 2f);
             }
             dest.leftHand.thumbFingerMovementType = source.leftHand.thumbFingerMovementType;
             dest.leftHand.indexFingerMovementType = source.leftHand.indexFingerMovementType;
@@ -340,7 +298,7 @@ VRManager.ShowGameMessage("Done With ROUTINE!");
 
             EditorUtility.SetDirty(dest);
 
-            EditorUtility.ClearProgressBar();
+            // EditorUtility.ClearProgressBar();
         }
 
         void CopyHand (SteamVR_Skeleton_Pose pose, SteamVR_Skeleton_Pose_Hand source, SteamVR_Skeleton_Pose_Hand dest) {
@@ -357,7 +315,7 @@ VRManager.ShowGameMessage("Done With ROUTINE!");
             {
                 dest.bonePositions[boneIndex] = source.bonePositions[boneIndex];
                 dest.boneRotations[boneIndex] = source.boneRotations[boneIndex];
-                EditorUtility.DisplayProgressBar("Copying...", "Copying right hand pose", (float)boneIndex / (float)boneNum / 2f);
+                // EditorUtility.DisplayProgressBar("Copying...", "Copying right hand pose", (float)boneIndex / (float)boneNum / 2f);
             }
 
 
@@ -403,13 +361,14 @@ VRManager.ShowGameMessage("Done With ROUTINE!");
 
 
 
-        
+        SteamVR_Skeleton_Pose OpenHand;// =  (SteamVR_Skeleton_Pose)Resources.Load("ReferencePose_OpenHand");
 
 
-        SteamVR_Skeleton_Pose MakeNewPose (string fileName) {
+        SteamVR_Skeleton_Pose MakeNewPose (string fileName, SteamVR_Skeleton_Pose template) {
             SteamVR_Skeleton_Pose newPose = ScriptableObject.CreateInstance<SteamVR_Skeleton_Pose>();
 
-            SteamVR_Skeleton_Pose poseResource = (SteamVR_Skeleton_Pose)Resources.Load("ReferencePose_OpenHand");
+            SteamVR_Skeleton_Pose poseResource =template;
+            if (poseResource == null) poseResource = OpenHand;//(SteamVR_Skeleton_Pose)Resources.Load("ReferencePose_OpenHand");
             DeepCopyPose(poseResource, newPose);
             AssetDatabase.CreateAsset(newPose, "Assets/" + fileName);
             
@@ -434,9 +393,9 @@ VRManager.ShowGameMessage("Done With ROUTINE!");
                 // // if (showLeftPreviewProperty.boolValue)
                 //     SaveHandData(activePose.leftHand, leftSkeleton);
             
-            SteamVR_Skeleton_Pose pose = MakeNewPose(fileName);
-            SaveHandData (pose.GetHand(baker.handToUse), getWorkingHand);
-            CopyHand ( pose,  pose.GetHand(baker.handToUse),  pose.GetHand(getOppositeHand.inputSource));
+            // SteamVR_Skeleton_Pose pose = MakeNewPose(fileName);
+            // SaveHandData (pose.GetHand(baker.handToUse), getWorkingHand);
+            // CopyHand ( pose,  pose.GetHand(baker.handToUse),  pose.GetHand(getOppositeHand.inputSource));
             
 
 

@@ -1282,11 +1282,13 @@ namespace Valve.VR
         /// <param name="overTime">How long you want the blend to take (in seconds)</param>
         public void BlendToSkeleton(float overTime = 0.1f)
         {
+            if (customPoser.isPosing) {
 
-            // blendSnapshot = blendPoser.GetBlendedPose(this);
-            blendSnapshot = customPoser.GetBlendedPose(this);
+                // blendSnapshot = blendPoser.GetBlendedPose(this);
+                blendSnapshot = customPoser.GetBlendedPose(this);
+                customPoser.DoneWithPoser();
+            }
             
-            customPoser.DoneWithPoser();
             // blendPoser = null;
             
             BlendTo(1, overTime);
@@ -1475,6 +1477,110 @@ namespace Valve.VR
         private Vector3[] bonePositionBuffer = new Vector3[SteamVR_Action_Skeleton.numBones];
         private Quaternion[] boneRotationBuffer = new Quaternion[SteamVR_Action_Skeleton.numBones];
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//         protected virtual void UpdateSkeletonTransforms()
+//         {
+//             Vector3[] bonePositions = GetBonePositions();
+//             Quaternion[] boneRotations = GetBoneRotations();
+
+//             if (skeletonBlend <= 0)
+//             {
+//                 if (blendPoser != null)
+//                 {
+//                     SteamVR_Skeleton_Pose_Hand mainPose = blendPoser.skeletonMainPose.GetHand(inputSource);
+//                     for (int boneIndex = 0; boneIndex < bones.Length; boneIndex++)
+//                     {
+//                         if (bones[boneIndex] == null)
+//                             continue;
+
+//                         if ((boneIndex == SteamVR_Skeleton_JointIndexes.wrist && mainPose.ignoreWristPoseData) ||
+//                             (boneIndex == SteamVR_Skeleton_JointIndexes.root && mainPose.ignoreRootPoseData))
+//                         {
+//                             SetBonePosition(boneIndex, bonePositions[boneIndex]);
+//                             SetBoneRotation(boneIndex, boneRotations[boneIndex]);
+//                         }
+//                         else
+//                         {
+//                             Quaternion poseRotation = GetBlendPoseForBone(boneIndex, boneRotations[boneIndex]);
+
+//                             SetBonePosition(boneIndex, blendSnapshot.bonePositions[boneIndex]);
+//                             SetBoneRotation(boneIndex, poseRotation);
+//                         }
+//                     }
+//                 }
+//             }
+//             else
+//             {
+//                 for (int boneIndex = 0; boneIndex < bones.Length; boneIndex++)
+//                 {
+//                     if (bones[boneIndex] == null)
+//                         continue;
+                    
+//                     if (blendPoser != null)
+//                     {
+//                         SteamVR_Skeleton_Pose_Hand mainPose = blendPoser.skeletonMainPose.GetHand(inputSource);
+
+//                         if ((boneIndex == SteamVR_Skeleton_JointIndexes.wrist && mainPose.ignoreWristPoseData) ||
+//                             (boneIndex == SteamVR_Skeleton_JointIndexes.root && mainPose.ignoreRootPoseData))
+//                         {
+//                             SetBonePosition(boneIndex, bonePositions[boneIndex]);
+//                             SetBoneRotation(boneIndex, boneRotations[boneIndex]);
+//                         }
+//                         else
+//                         {
+//                             Quaternion poseRotation = GetBlendPoseForBone(boneIndex, boneRotations[boneIndex]);
+
+//                             SetBonePosition(boneIndex, Vector3.Lerp(blendSnapshot.bonePositions[boneIndex], bonePositions[boneIndex], skeletonBlend));
+//                             SetBoneRotation(boneIndex, Quaternion.Lerp(poseRotation, boneRotations[boneIndex], skeletonBlend));
+//                         }
+//                     }
+//                     else
+//                     {
+//                         SetBonePosition(boneIndex, Vector3.Lerp(bones[boneIndex].localPosition, bonePositions[boneIndex], skeletonBlend));
+//                         SetBoneRotation(boneIndex, Quaternion.Lerp(bones[boneIndex].localRotation, boneRotations[boneIndex], skeletonBlend));
+//                     }
+//                 }
+//             }
+//         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         protected virtual void UpdateSkeletonTransforms()//SteamVR_Skeleton_Pose currentPoseTarget)
         {
             CopyBonePositions(bonePositionBuffer);
@@ -1512,10 +1618,24 @@ namespace Valve.VR
                 {
                     for (int boneIndex = 0; boneIndex < bones.Length; boneIndex++)
                     {
-                        SetBonePosition(boneIndex, blendSnapshot.bonePositions[boneIndex]);
-                        SetBoneRotation(boneIndex, blendSnapshot.boneRotations[boneIndex]);
+                    if (blendSnapshot == null)
+                        {
+                            // SetBonePosition(boneIndex, bones[boneIndex].localPosition);
+                            // SetBoneRotation(boneIndex, bones[boneIndex].localRotation);
+                            
+                        }
+                        else
+                        {
+                            SetBonePosition(boneIndex, blendSnapshot.bonePositions[boneIndex]);
+                            SetBoneRotation(boneIndex, blendSnapshot.boneRotations[boneIndex]);
+                        }
+
+
+                    //     SetBonePosition(boneIndex, blendSnapshot.bonePositions[boneIndex]);
+                    //     SetBoneRotation(boneIndex, blendSnapshot.boneRotations[boneIndex]);
                     }
                 }
+                
             }
             else if (skeletonBlend >= 1)
             {
