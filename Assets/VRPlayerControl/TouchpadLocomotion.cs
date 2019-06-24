@@ -505,10 +505,10 @@ public class TouchpadLocomotion : MonoBehaviour
 
         bool movementEnabled = !VRManager.gamePaused && !isClimbing;
         
-        CheckForJump(movementEnabled); // also when jump hand isnt hovering
+        CheckForJump(movementEnabled && !VRUIInput.HandOccupied(moveHand)); // also when jump hand isnt hovering
 
-        HandleTurnInput(movementEnabled);
-        HandleMoveInput(movementEnabled);
+        HandleTurnInput(movementEnabled && !VRUIInput.HandOccupied(turnHand));
+        HandleMoveInput(movementEnabled && !VRUIInput.HandOccupied(moveHand));
         if (!isClimbing) {
             moveScript.SetInputMoveVector(new Vector3 (currentMoveVector.x, 0, currentMoveVector.y));
         }

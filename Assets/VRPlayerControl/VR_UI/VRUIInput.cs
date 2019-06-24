@@ -27,6 +27,9 @@ namespace VRPlayer{
                 return inputModule.gameObject.activeInHierarchy;//.UIManager.uiInputActive;
             }
         }
+        public static bool HandOccupied (SteamVR_Input_Sources forHand) {
+            return uiInputActive && forHand == currentUIHand;
+        }
         public static bool ActionOccupied (SteamVR_Action action, SteamVR_Input_Sources forHand) {
             return uiInputActive && forHand == currentUIHand && (
                 (action == instance.submitButton) || (action == instance.cancelButton) || (action == selectionAxis) 

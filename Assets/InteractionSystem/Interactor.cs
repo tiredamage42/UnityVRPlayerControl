@@ -81,6 +81,8 @@ namespace InteractionSystem {
             interactRay.SetPosition(1, end);
         }
         void DisableInteractionRay() {
+            if (interactRay == null)
+                return;
             interactRay.enabled = false;
         }
 

@@ -8,8 +8,7 @@ namespace SimpleUI{
     [ExecuteInEditMode]
     public class UIRadial : UIElementHolder
     {
-        public bool manualSelection;
-
+        
         public float textOffset = .8f;
 
         public float backgroundSize = 1;
@@ -98,7 +97,9 @@ namespace SimpleUI{
         protected override void Update () {
             base.Update ();
             if (Application.isPlaying) {
-                if (manualSelection) {
+                if (needsInput) {
+
+                    // Debug.LogError(transform.parent.name + " selecting radial");
                     SetSelection(UIManager.selectionAxis);
                 }
             }
