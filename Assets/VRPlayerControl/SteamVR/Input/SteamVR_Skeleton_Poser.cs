@@ -245,26 +245,26 @@ namespace Valve.VR
         // }
         
         /// <summary>Weighted average of n vector3s</summary>
-        protected Vector3 BlendVectors(Vector3[] vectors, float[] weights)
-        {
-            Vector3 blendedVector = Vector3.zero;
-            for (int i = 0; i < vectors.Length; i++)
-            {
-                blendedVector += vectors[i] * weights[i];
-            }
-            return blendedVector;
-        }
+        // protected Vector3 BlendVectors(Vector3[] vectors, float[] weights)
+        // {
+        //     Vector3 blendedVector = Vector3.zero;
+        //     for (int i = 0; i < vectors.Length; i++)
+        //     {
+        //         blendedVector += vectors[i] * weights[i];
+        //     }
+        //     return blendedVector;
+        // }
 
-        /// <summary>Weighted average of n quaternions</summary>
-        protected Quaternion BlendQuaternions(Quaternion[] quaternions, float[] weights)
-        {
-            Quaternion outquat = Quaternion.identity;
-            for (int i = 0; i < quaternions.Length; i++)
-            {
-                outquat *= Quaternion.Slerp(Quaternion.identity, quaternions[i], weights[i]);
-            }
-            return outquat;
-        }
+        // /// <summary>Weighted average of n quaternions</summary>
+        // protected Quaternion BlendQuaternions(Quaternion[] quaternions, float[] weights)
+        // {
+        //     Quaternion outquat = Quaternion.identity;
+        //     for (int i = 0; i < quaternions.Length; i++)
+        //     {
+        //         outquat *= Quaternion.Slerp(Quaternion.identity, quaternions[i], weights[i]);
+        //     }
+        //     return outquat;
+        // }
 
         // /// <summary>
         // /// A SkeletonBlendablePose holds a reference to a Skeleton_Pose scriptableObject, and also contains some helper functions. 
