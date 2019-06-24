@@ -45,7 +45,7 @@ namespace Valve.VR.InteractionSystem
         }
 
         public void SetPoser (SteamVR_Skeleton_PoserCustom poser) {
-            handSkeleton.SetPoser (poser, );
+            handSkeleton.SetPoser (poser);
         }
 
         protected void InitializeHand()
