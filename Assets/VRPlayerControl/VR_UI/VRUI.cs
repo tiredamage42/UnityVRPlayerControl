@@ -44,6 +44,8 @@ namespace VRPlayer {
             
 			Player.instance.GetComponent<Inventory>().onEquip += OnEquip;
             Player.instance.GetComponent<Inventory>().onUnequip += OnUnequip;
+
+            UIManager.HideUI(quickInventory);
             
             
         }
@@ -73,20 +75,20 @@ namespace VRPlayer {
         }
 
         void OnEquip (Inventory inventory, Item item, int slot, bool quickEquip) {
-            Debug.LogError("should show message");
+            // Debug.LogError("should show message");
             VRManager.ShowGameMessage("Equipped " + item.itemBehavior.itemName + " to slot " + slot + (quickEquip ? "*quick*" : ""), 0);
         }
         void OnUnequip (Inventory inventory, Item item, int slot, bool quickEquip) {
-            Debug.LogError("should show message");
+            // Debug.LogError("should show message");
             VRManager.ShowGameMessage("Unequipped " + item.itemBehavior.itemName + " from slot " + slot + (quickEquip ? "*quick*" : ""), 0);
         }
 
 
         void OnQuickInventorySubmit (GameObject[] data, object[] customData) {
-			Debug.LogError("on submit");
+			// Debug.LogError("on submit");
             if (customData != null) {
 
-                Debug.LogError("as cistom data");
+                // Debug.LogError("as cistom data");
 
                 SteamVR_Input_Sources hand = VRUIInput.GetUIHand();
                 int slot = Player.instance.GetHand(hand).GetComponent<EquipPoint>().equipSlotOnBase;
@@ -95,7 +97,7 @@ namespace VRPlayer {
                 Inventory inventory = Player.instance.GetComponent<Inventory>();
 
                 if (item.stashUseBehavior != null) {
-                    Debug.LogError("stash use!");
+                    // Debug.LogError("stash use!");
                     item.stashUseBehavior.OnStashedUse (inventory, item, Inventory.UI_USE_ACTION, slot, 1, null);
                 }
                 
@@ -119,7 +121,7 @@ namespace VRPlayer {
                 }
                 else {
                     allElements[i].elementText = "Empty";
-                    allElements[i].uiText.SetText("EMPTY");
+                    allElements[i].uiText.SetText("Empty");
                     
                     allElements[i].customData = null;
                 }

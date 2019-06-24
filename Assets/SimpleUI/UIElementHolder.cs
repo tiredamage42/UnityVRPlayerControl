@@ -215,14 +215,20 @@ namespace SimpleUI {
                 }
             }
         }
+        public bool needsInput=true;
 
         protected virtual void OnEnable () {
-            Debug.LogError("getting element references");
+            // Debug.LogError("getting element references");
             GetElementReferences();
             UpdateElementHolder();    
-            Debug.LogError("updateed holder");
+            // Debug.LogError("updateed holder");
         }
         protected virtual void OnDisable () {
+            if (needsInput) {
+                foreach(var e in allElements) {
+                    e.selected = false;
+                }
+            }
             allElements.Clear();
            
         }

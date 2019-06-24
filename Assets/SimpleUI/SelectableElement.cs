@@ -77,6 +77,9 @@ namespace SimpleUI {
     protected virtual void OnEnable () {
         _UpdateElement();
     }
+    protected virtual void OnDisable() {
+        // selected = false;
+    }
 
 
     
@@ -85,7 +88,7 @@ namespace SimpleUI {
     //Do this when the selectable UI object is selected.
     public void OnSelect(BaseEventData eventData)
     {
-        Debug.Log("Selected " + name);
+        // Debug.Log("Selected " + name);
         selected = true;
         OnSelect();
         _UpdateElement();

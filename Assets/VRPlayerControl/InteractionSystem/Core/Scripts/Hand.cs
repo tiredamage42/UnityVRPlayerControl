@@ -163,47 +163,26 @@ namespace VRPlayer
             if (vr_item.hideHandOnAttach)
                 Hide();
 
-            if (vr_item.handAnimationOnPickup != 0)
+            if (vr_item.handAnimationOnPickup != 0) {
+                    // Debug.LogError("animation state");
+
                 SetAnimationState(vr_item.handAnimationOnPickup);
+            }
 
-            if (vr_item.setRangeOfMotionOnPickup != SkeletalMotionRangeChange.None)
+            if (vr_item.setRangeOfMotionOnPickup != SkeletalMotionRangeChange.None) {
+                    // Debug.LogError("range of mot ion");
                 SetTemporarySkeletonRangeOfMotion(vr_item.setRangeOfMotionOnPickup);
+            }
 
-            if (vr_item.skeletonPoser != null && skeleton != null)
+            if (vr_item.skeletonPoser != null && skeleton != null) {
+                // Debug.LogError("blendign to poser");
                 skeleton.BlendToPoser(vr_item.skeletonPoser, blendToPoseTime);
+            }
 
             if (vr_item.activateActionSetOnAttach != null)
                 vr_item.activateActionSetOnAttach.Activate(handType);
         }
-
-        public virtual void GetReleaseVelocities(Rigidbody rigidbody, out Vector3 velocity, out Vector3 angularVelocity)
-        {
-            Player player = Player.instance;
-            switch (player.releaseVelocityStyle)
-            {
-                case ReleaseStyle.ShortEstimation:
-                    velocityEstimator.FinishEstimatingVelocity();
-                    velocity = velocityEstimator.GetVelocityEstimate();
-                    angularVelocity = velocityEstimator.GetAngularVelocityEstimate();
-                    break;
-                case ReleaseStyle.AdvancedEstimation:
-                    GetEstimatedPeakVelocities(out velocity, out angularVelocity);
-                    break;
-                case ReleaseStyle.GetFromHand:
-                    velocity = GetTrackedObjectVelocity(player.releaseVelocityTimeOffset);
-                    angularVelocity = GetTrackedObjectAngularVelocity(player.releaseVelocityTimeOffset);
-                    break;
-                default:
-                case ReleaseStyle.NoChange:
-                    velocity = rigidbody.velocity;
-                    angularVelocity = rigidbody.angularVelocity;
-                    break;
-            }
-
-            if (player.releaseVelocityStyle != ReleaseStyle.NoChange)
-                velocity *= player.scaleReleaseVelocity;
-        }
-
+        
         void OnItemUnequipped(Inventory inventory, Item item, int slotIndex, bool quickEquipped){
             if (slotIndex != myEquipIndex) {
                 return;
@@ -236,13 +215,28 @@ namespace VRPlayer
                 Show();
 
             if (vr_item.handAnimationOnPickup != 0)
-                StopAnimation();
+                {
 
-            if (vr_item.setRangeOfMotionOnPickup != SkeletalMotionRangeChange.None)
+                StopAnimation();
+                }
+
+            if (vr_item.setRangeOfMotionOnPickup != SkeletalMotionRangeChange.None) {
+                // Debug.LogError("range of motion unewiup");
                 ResetTemporarySkeletonRangeOfMotion();
+            }
               
-            if (mainRenderModel != null)
+            if (mainRenderModel != null) {
+                // Debug.LogError("render mdel");
                 mainRenderModel.MatchHandToTransform(mainRenderModel.transform);
+            }
+            //move to vr interacable
+            if (vr_item.skeletonPoser != null)
+            {
+                if (skeleton != null) {
+                    // Debug.LogError("blend to skeleton");
+                    skeleton.BlendToSkeleton(releasePoseBlendTime);
+                }
+            }
             
             if (vr_item.activateActionSetOnAttach != null)
             {
@@ -255,14 +249,37 @@ namespace VRPlayer
                 }
             }
 
-            //move to vr interacable
-            if (vr_item.skeletonPoser != null)
-            {
-                if (skeleton != null) {
-                    skeleton.BlendToSkeleton(releasePoseBlendTime);
-                }
-            }
+            
         }
+
+        public virtual void GetReleaseVelocities(Rigidbody rigidbody, out Vector3 velocity, out Vector3 angularVelocity)
+        {
+            Player player = Player.instance;
+            switch (player.releaseVelocityStyle)
+            {
+                case ReleaseStyle.ShortEstimation:
+                    velocityEstimator.FinishEstimatingVelocity();
+                    velocity = velocityEstimator.GetVelocityEstimate();
+                    angularVelocity = velocityEstimator.GetAngularVelocityEstimate();
+                    break;
+                case ReleaseStyle.AdvancedEstimation:
+                    GetEstimatedPeakVelocities(out velocity, out angularVelocity);
+                    break;
+                case ReleaseStyle.GetFromHand:
+                    velocity = GetTrackedObjectVelocity(player.releaseVelocityTimeOffset);
+                    angularVelocity = GetTrackedObjectAngularVelocity(player.releaseVelocityTimeOffset);
+                    break;
+                default:
+                case ReleaseStyle.NoChange:
+                    velocity = rigidbody.velocity;
+                    angularVelocity = rigidbody.angularVelocity;
+                    break;
+            }
+
+            if (player.releaseVelocityStyle != ReleaseStyle.NoChange)
+                velocity *= player.scaleReleaseVelocity;
+        }
+
 
 
         //-------------------------------------------------
@@ -452,9 +469,11 @@ namespace VRPlayer
         {
             UpdateDebugText();
 
-            bool useDown = useAction.GetStateDown(handType);
-            bool useUp = useAction.GetStateUp(handType);
-            bool useHeld = useAction.GetState(handType);
+            bool handOccupied = VRUIInput.HandOccupied(handType);
+
+            bool useDown = !handOccupied && useAction.GetStateDown(handType);
+            bool useUp = !handOccupied && useAction.GetStateUp(handType);
+            bool useHeld = !handOccupied && useAction.GetState(handType);
                 
             if (useDown) {
                 StandardizedVRInput.instance.HideHint(handType, useAction);
@@ -491,9 +510,9 @@ namespace VRPlayer
 
 
 
-            useDown = stashAction.GetStateDown(handType);
-            useUp = stashAction.GetStateUp(handType);
-            useHeld = stashAction.GetState(handType);
+            useDown = !handOccupied && stashAction.GetStateDown(handType);
+            useUp = !handOccupied && stashAction.GetStateUp(handType);
+            useHeld = !handOccupied && stashAction.GetState(handType);
                 
             if (useDown) {
                 StandardizedVRInput.instance.HideHint(handType, stashAction);
@@ -518,10 +537,9 @@ namespace VRPlayer
 
 
             
-
-            useDown = dropAction.GetStateDown(handType);
-            useUp = dropAction.GetStateUp(handType);
-            useHeld = dropAction.GetState(handType);
+            useDown = !handOccupied && dropAction.GetStateDown(handType);
+            useUp = !handOccupied && dropAction.GetStateUp(handType);
+            useHeld = !handOccupied && dropAction.GetState(handType);
                 
             if (useDown) {
                 StandardizedVRInput.instance.HideHint(handType, dropAction);
