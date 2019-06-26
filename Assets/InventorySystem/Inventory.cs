@@ -559,7 +559,7 @@ public bool ItemIsEquipped(int slotIndex, ItemBehavior item) {
         for (int i =0 ; i < equippedSlots.Length; i++) {
         
             // if (inv.equippedSlots[slotIndex] != null && inv.equippedSlots[slotIndex].item == item) {
-            if (equippedSlots[slotIndex] != null && equippedSlots[slotIndex].item == item) {
+            if (equippedSlots[i] != null && equippedSlots[i].item == item) {
             
                 return true;
             }

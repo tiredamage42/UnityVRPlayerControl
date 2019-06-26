@@ -233,10 +233,12 @@ namespace VRPlayer {
         void UpdateNormalInventory () {
             if (GameManager.isPaused)
                 return;
+
+            
             
                     
             if (inventoryToggle.GetStateDown(inventoryToggleHand)) {
-                if (!inventoryUI.normalInventory) {
+                if (!inventoryUI.normalInventoryOpen) {
                     VRUIInput.SetUIHand(SteamVR_Input_Sources.Any);
                     StandardizedVRInput.MarkActionOccupied(inventoryDropAction, SteamVR_Input_Sources.Any);
                     // StandardizedVRInput.MarkActionOccupied(inventoryFavoriteAction, SteamVR_Input_Sources.Any);
@@ -244,10 +246,14 @@ namespace VRPlayer {
                     StandardizedVRInput.instance.ShowHint(SteamVR_Input_Sources.RightHand, inventoryDropAction, "Drop");
                     StandardizedVRInput.instance.ShowHint(SteamVR_Input_Sources.RightHand, VRUIInput.instance.submitButton, "Use");
 
-
+                    Debug.LogError("openin ui");
                     inventoryUI.OpenNormalInventory(() => { return 0; }, GetAlternativeSubmitsForNormalInventory);
                 }
                 else {
+                    // check for canceled as well
+                    StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.RightHand, inventoryDropAction);
+                    StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.RightHand, VRUIInput.instance.submitButton);
+
                     StandardizedVRInput.MarkActionUnoccupied(inventoryDropAction);
                     // StandardizedVRInput.MarkActionUnoccupied(inventoryFavoriteAction);
             

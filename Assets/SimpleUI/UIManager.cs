@@ -13,6 +13,9 @@ namespace SimpleUI {
     {
 
         public static void SetSelection(GameObject selection) {
+            // inputModule.GetComponent<EventSystem>().currentSelectedGameObject	=null;
+            inputModule.GetComponent<EventSystem>().SetSelectedGameObject(null);
+
             inputModule.GetComponent<EventSystem>().SetSelectedGameObject(selection);
 
         }
@@ -214,14 +217,20 @@ namespace SimpleUI {
 
             //  Debug.LogError("adding callbacks");
             // foreach (var d in gameManager.GetUISelectInvocations()) {
-            foreach (var d in GetUISelectInvocations()) {
-            
-                uiObjectC.onSelectEvent += (System.Action<GameObject[], object[]>)d;
-            }
+                if (onUISelect != null) {
+
+                foreach (var d in GetUISelectInvocations()) {
+                
+                    uiObjectC.onSelectEvent += (System.Action<GameObject[], object[]>)d;
+                }
+                }
             // foreach (var d in gameManager.GetUISubmitInvocations()) {
-            foreach (var d in GetUISubmitInvocations()) {
-            
-                uiObjectC.onSubmitEvent += (System.Action<GameObject[], object[], int>)d;
+            if (onUISubmit != null) {
+
+                foreach (var d in GetUISubmitInvocations()) {
+                
+                    uiObjectC.onSubmitEvent += (System.Action<GameObject[], object[], int>)d;
+                }
             }
         }
 
