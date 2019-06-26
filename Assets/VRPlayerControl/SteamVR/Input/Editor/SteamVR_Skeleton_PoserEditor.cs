@@ -967,7 +967,7 @@ namespace Valve.VR
                     int i = blendingBehaviourArray.arraySize;
                     blendingBehaviourArray.InsertArrayElementAtIndex(i);
                     blendingBehaviourArray.GetArrayElementAtIndex(i).FindPropertyRelative("name").stringValue = "New Behaviour";
-                    blendingBehaviourArray.GetArrayElementAtIndex(i).FindPropertyRelative("enabled").boolValue = true;
+                    // blendingBehaviourArray.GetArrayElementAtIndex(i).FindPropertyRelative("enabled").boolValue = true;
                     blendingBehaviourArray.GetArrayElementAtIndex(i).FindPropertyRelative("influence").floatValue = 1;
                     blendingBehaviourArray.GetArrayElementAtIndex(i).FindPropertyRelative("previewEnabled").boolValue = true;
                     serializedObject.ApplyModifiedProperties();

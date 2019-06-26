@@ -213,7 +213,8 @@ MonoBehaviour:
   activateActionSetOnAttach:
     actionSetPath: 
   hideHandOnAttach: 0
-  handAnimationOnPickup: 3
-  setRangeOfMotionOnPickup: -1
-  skeletonPoser: {fileID: 0}
   handFollowTransform: 0
+  setRangeOfMotionOnPickup: -1
+  usePose: 1
+  poseName: Longbow
+  poseInfluence: 1

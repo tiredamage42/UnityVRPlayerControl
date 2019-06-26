@@ -105,15 +105,15 @@ namespace VRPlayer
 
         IEnumerator RebakePosesRoutine () {
 
-             VRManager.ShowGameMessage("testing animations");
+            SimpleUI.UIManager.ShowGameMessage("testing animations");
             yield return new WaitForSeconds (3);
 
             for (int i = 0; i < 4; i++) {
-                VRManager.ShowGameMessage("testing animation : " + i.ToString());
+                SimpleUI.UIManager.ShowGameMessage("testing animation : " + i.ToString());
                 getWorkingHand.GetComponentInChildren<Animator>().SetInteger("AnimationState", i);
                 getWorkingHand.BlendToAnimation(.25f);
                 yield return new WaitForSeconds (1);
-                VRManager.ShowGameMessage("Baking...");
+                SimpleUI.UIManager.ShowGameMessage("Baking...");
                 yield return new WaitForSeconds (1);
 
                 SteamVR_Skeleton_Pose redonpose = MakeNewPose("_ANIMPOSE_"+i + ".asset", null);
@@ -121,7 +121,7 @@ namespace VRPlayer
                 CopyHand ( redonpose,  redonpose.GetHand(baker.handToUse),  redonpose.GetHand(getOppositeHand.inputSource));
 
                 yield return new WaitForSeconds (3);
-                VRManager.ShowGameMessage("blendign bakc from : " + i.ToString());
+                SimpleUI.UIManager.ShowGameMessage("blendign bakc from : " + i.ToString());
                 
                 getWorkingHand.BlendToSkeleton(.25f);
                 
@@ -143,7 +143,7 @@ namespace VRPlayer
 
 
 
-            VRManager.ShowGameMessage("starting rebake routine");
+            SimpleUI.UIManager.ShowGameMessage("starting rebake routine");
             yield return new WaitForSeconds (3);
                 
             SteamVR_Input_Sources handToUse = baker.handToUse;
@@ -151,14 +151,14 @@ namespace VRPlayer
             foreach (SteamVR_Skeleton_Pose pose in baker.posesToBake) {
 
                 string poseName = pose.name;
-                VRManager.ShowGameMessage("woking on pose: " + poseName);
+                SimpleUI.UIManager.ShowGameMessage("woking on pose: " + poseName);
                 yield return new WaitForSeconds (1);
-                VRManager.ShowGameMessage("setting psoe...");
+                SimpleUI.UIManager.ShowGameMessage("setting psoe...");
                 baker.GetComponent<SteamVR_Skeleton_Poser>().skeletonMainPose = pose;
                 SetHandToPoserBehavior();
                 yield return new WaitForSeconds (1);
 
-                VRManager.ShowGameMessage("Baking...");
+                SimpleUI.UIManager.ShowGameMessage("Baking...");
 
                 SteamVR_Skeleton_Pose redonpose = MakeNewPose("_REDONE_"+poseName + ".asset", pose);
                 SaveHandData (redonpose.GetHand(baker.handToUse), getWorkingHand);
@@ -166,7 +166,7 @@ namespace VRPlayer
 
                 yield return new WaitForSeconds (3);
 
-                VRManager.ShowGameMessage("Done Baking " + poseName);
+                SimpleUI.UIManager.ShowGameMessage("Done Baking " + poseName);
 
                 getWorkingHand.BlendToSkeleton(.25f);
                 yield return new WaitForSeconds (2);
@@ -176,48 +176,48 @@ namespace VRPlayer
 
 
             yield return new WaitForSeconds (1);
-            VRManager.ShowGameMessage("Done With ROUTINE! 5 seconds for finger TOP relaxed");
+            SimpleUI.UIManager.ShowGameMessage("Done With ROUTINE! 5 seconds for finger TOP relaxed");
             yield return new WaitForSeconds (5);
-            VRManager.ShowGameMessage("BAKING");
+            SimpleUI.UIManager.ShowGameMessage("BAKING");
             
             SteamVR_Skeleton_Pose newPose = MakeNewPose("_TriggerHoldFingerTop_.asset", null);
             SaveHandData (newPose.GetHand(baker.handToUse), getWorkingHand);
             CopyHand ( newPose,  newPose.GetHand(baker.handToUse),  newPose.GetHand(getOppositeHand.inputSource));
             yield return new WaitForSeconds (1);
-            VRManager.ShowGameMessage("5 seconds for finger top BOTTOM");
+            SimpleUI.UIManager.ShowGameMessage("5 seconds for finger top BOTTOM");
             yield return new WaitForSeconds (5);
-VRManager.ShowGameMessage("BAKING");
+SimpleUI.UIManager.ShowGameMessage("BAKING");
             
 
             newPose = MakeNewPose("_TriggerHoldFingerbottom_.asset", null);
             SaveHandData (newPose.GetHand(baker.handToUse), getWorkingHand);
             CopyHand ( newPose,  newPose.GetHand(baker.handToUse),  newPose.GetHand(getOppositeHand.inputSource));
 yield return new WaitForSeconds (1);
-            VRManager.ShowGameMessage(" 5 seconds for finger top OFF");
+            SimpleUI.UIManager.ShowGameMessage(" 5 seconds for finger top OFF");
             yield return new WaitForSeconds (5);
-VRManager.ShowGameMessage("BAKING");
+SimpleUI.UIManager.ShowGameMessage("BAKING");
             
 
 newPose = MakeNewPose("_TriggerHoldOff_.asset", null);
             SaveHandData (newPose.GetHand(baker.handToUse), getWorkingHand);
             CopyHand ( newPose,  newPose.GetHand(baker.handToUse),  newPose.GetHand(getOppositeHand.inputSource));
 yield return new WaitForSeconds (1);
-            VRManager.ShowGameMessage("Done With ROUTINE!");
+            SimpleUI.UIManager.ShowGameMessage("Done With ROUTINE!");
 
 
         }
 
 
          IEnumerator TestAnimations () {
-            VRManager.ShowGameMessage("testing animations");
+            SimpleUI.UIManager.ShowGameMessage("testing animations");
             yield return new WaitForSeconds (3);
 
             for (int i = 0; i < 4; i++) {
-                VRManager.ShowGameMessage("testing animation : " + i.ToString());
+                SimpleUI.UIManager.ShowGameMessage("testing animation : " + i.ToString());
                 getWorkingHand.GetComponentInChildren<Animator>().SetInteger("AnimationState", i);
                 getWorkingHand.BlendToAnimation(.25f);
                 yield return new WaitForSeconds (1);
-                VRManager.ShowGameMessage("Baking...");
+                SimpleUI.UIManager.ShowGameMessage("Baking...");
                 yield return new WaitForSeconds (1);
 
                 string fileName = "_ANIMPOSE_"+i + "_" + this.fileName + ".asset";
@@ -226,7 +226,7 @@ yield return new WaitForSeconds (1);
                 CopyHand ( newPose,  newPose.GetHand(baker.handToUse),  newPose.GetHand(getOppositeHand.inputSource));
 
                 yield return new WaitForSeconds (3);
-                VRManager.ShowGameMessage("blendign bakc from : " + i.ToString());
+                SimpleUI.UIManager.ShowGameMessage("blendign bakc from : " + i.ToString());
                 
                 getWorkingHand.BlendToSkeleton(.25f);
                 
@@ -236,7 +236,7 @@ yield return new WaitForSeconds (1);
 
                 
             
-VRManager.ShowGameMessage("Done With ROUTINE!");
+SimpleUI.UIManager.ShowGameMessage("Done With ROUTINE!");
             
 
 
@@ -246,7 +246,7 @@ VRManager.ShowGameMessage("Done With ROUTINE!");
 
         }
         void SetHandToPoserBehavior () {
-            getWorkingHand.BlendToPoser(baker.GetComponent<SteamVR_Skeleton_Poser>(), .1f);
+            // getWorkingHand.BlendToPoser(baker.GetComponent<SteamVR_Skeleton_Poser>(), .1f);
         }
 
 

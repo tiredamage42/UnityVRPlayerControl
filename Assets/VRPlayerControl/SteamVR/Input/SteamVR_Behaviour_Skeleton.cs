@@ -916,7 +916,7 @@ namespace Valve.VR
 
 
         // protected SteamVR_Skeleton_Poser blendPoser;
-        protected SteamVR_Skeleton_PoseSnapshot blendSnapshot = null;
+        protected VRPlayer.SteamVR_Skeleton_PoseSnapshot blendSnapshot = null;
 
 
         /// <summary>Can be set to mirror the bone data across the x axis</summary>
@@ -1189,8 +1189,8 @@ namespace Valve.VR
                 onTrackingChangedEvent.Invoke(this, inputSource, trackingState);
         }
 
-        SteamVR_Skeleton_PoserCustom customPoser;
-        public void SetPoser (SteamVR_Skeleton_PoserCustom poser) {
+        VRPlayer.SteamVR_Skeleton_PoserCustom customPoser;
+        public void SetPoser (VRPlayer.SteamVR_Skeleton_PoserCustom poser) {
             this.customPoser = poser;
         }
 
@@ -1286,7 +1286,12 @@ namespace Valve.VR
 
                 // blendSnapshot = blendPoser.GetBlendedPose(this);
                 blendSnapshot = customPoser.GetBlendedPose(this);
-                customPoser.DoneWithPoser();
+
+                // customPoser.EnablePose(null);
+            
+
+                customPoser.DisablePosing();
+                // customPoser.DoneWithPoser();
             }
             
             // blendPoser = null;
@@ -1299,15 +1304,28 @@ namespace Valve.VR
         /// Note: This will ignore the root position and rotation of the pose.
         /// </summary>
         /// <param name="overTime">How long you want the blend to take (in seconds)</param>
-        public void BlendToPoser(SteamVR_Skeleton_Poser poser, float overTime = 0.1f)
+        public void BlendToPoser(
+            // SteamVR_Skeleton_Poser poser, 
+            string poseName, float influence,
+            float overTime)// = 0.1f)
         {
-            if (poser == null)
+            // if (poser == null)
+            //     return;
+
+
+            // if (!customPoser.SetBlendingBehaviourValue(poseName, 1))
+            if (!customPoser.EnablePose(poseName, influence))
                 return;
 
-            customPoser.SetUpWithPoser(poser);
-            // blendPoser = poser;
 
+            customPoser.EnablePosing();
+            // customPoser.SetUpWithPoser(poser);
+            // blendPoser = poser;
             BlendTo(0, overTime);
+
+
+
+
         }
 
         /// <summary>

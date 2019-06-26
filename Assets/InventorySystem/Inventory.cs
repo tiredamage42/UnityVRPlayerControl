@@ -14,6 +14,82 @@ using InteractionSystem;
 
 namespace InventorySystem {
 
+
+/*
+
+
+    recipes create items
+
+    item getes stashed
+
+
+
+
+    for workshop
+
+
+
+
+        instantiate scen items for item returns on current recipe
+
+            NOW HOVERLOCK to keep hovered over
+            highlight on hover true
+            keephighlighted
+
+
+        workshop item script:
+            bool isSelected = true; // wheneber instantiated tehy're the selected ones
+            current recipe
+
+            onuseDown () {
+
+                if (selected) {
+                    do whatever rigidibdy tstuff to place the object
+
+                    
+                    if (current recipe != null) {
+                        current recipe create (
+                            inventory, at position
+                        ) ;
+
+                        that gives items (
+                            workshop stashed items should be consume on equip
+                            then on consume gives permanent xp buff
+                            also drop on consume
+                         )
+
+
+                    }
+
+
+                        
+                }
+                else {
+
+                }
+
+
+
+            }
+
+        
+
+        prefab to instantiate
+
+        OnStash (inventory, item, count) {
+            //instantiate scene item
+
+            //drop item
+
+        }
+
+
+
+
+
+
+
+ */
 public class Inventory : MonoBehaviour
 {
 
@@ -563,7 +639,11 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
             }
 
             // add buffs
-            if (itemBehavior.onStashBuffs != null) {
+            if (itemBehavior.stashedItemBehavior != null) {
+            // if (itemBehavior.onStashBuffs != null) {
+
+                itemBehavior.stashedItemBehavior.OnItemStashed(this, itemBehavior, count);
+                
 
                 // itemBehavior.onStashBuffs.AddBuffsToActor(actor, count);
             
@@ -590,9 +670,9 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
             return false;
         }
 
-        public void DropItem (ItemBehavior itemBehavior, int count, bool getScene) {
+        public bool DropItem (ItemBehavior itemBehavior, int count, bool getScene) {
             if (itemBehavior.permanentStash) {
-                return;
+                return false;
             }
 
             //check if it's already in inventory
@@ -608,6 +688,7 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
 
 
             if (wasInInventory) {
+
                 count = Mathf.Min(count, slotInInventory.count);
 
                 slotInInventory.count -= count;
@@ -616,8 +697,10 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
                 }
                 
                 // remove buffs
-                if (itemBehavior.onStashBuffs != null) {
+                if (itemBehavior.stashedItemBehavior != null) {
 
+                    itemBehavior.stashedItemBehavior.OnItemDropped(this, itemBehavior, count);
+                    
                     // itemBehavior.onStashBuffs.RemoveBuffsFromActor(actor, count);
                 
                 }
@@ -638,7 +721,9 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
                     sceneItem.transform.rotation = Quaternion.Euler(UnityEngine.Random.Range(0,360), UnityEngine.Random.Range(0,360), UnityEngine.Random.Range(0,360));
                     sceneItem.gameObject.SetActive(true);
                 }
+                return true;
             }
+            return false;
         }
 
         // public QuickEquipInfo GetEquipInfo (Item sceneItem) {
@@ -761,11 +846,11 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
             }
 
             // equip buffs
-            if (itemBehavior.onEquipBuffs != null) {
+            // if (itemBehavior.onEquipBuffs != null) {
 
-                // itemBehavior.onEquipBuffs.AddBuffsToActor(actor, 1);
+            //     // itemBehavior.onEquipBuffs.AddBuffsToActor(actor, 1);
             
-            }
+            // }
 
 
 
@@ -1180,9 +1265,9 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
 
 
             // equip buffs
-            if (slot.item.onEquipBuffs != null) {
-                // itemBehavior.onEquipBuffs.RemoveBuffsFromActor(actor, 1);
-            }
+            // if (slot.item.onEquipBuffs != null) {
+            //     // itemBehavior.onEquipBuffs.RemoveBuffsFromActor(actor, 1);
+            // }
         }
 
 

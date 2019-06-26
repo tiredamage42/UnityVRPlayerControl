@@ -113,9 +113,9 @@ namespace SimpleUI {
         }
 
 
-        List<System.Action<GameObject[], object[]>> onSubmitdelegates = new List<System.Action<GameObject[], object[]>>();
-        event System.Action<GameObject[], object[]> onSubmit;
-        public System.Action<GameObject[], object[]> onSubmitToUse {
+        List<System.Action<GameObject[], object[], int>> onSubmitdelegates = new List<System.Action<GameObject[], object[], int>>();
+        event System.Action<GameObject[], object[], int> onSubmit;
+        public System.Action<GameObject[], object[], int> onSubmitToUse {
             get {
                 if (parentHolder != null) {
                     return parentHolder.onSubmitToUse;
@@ -124,7 +124,7 @@ namespace SimpleUI {
             }
         }
         
-        public event System.Action<GameObject[], object[]> onSubmitEvent {
+        public event System.Action<GameObject[], object[], int> onSubmitEvent {
             add {
                 onSubmit += value;
                 onSubmitdelegates.Add(value);
@@ -143,7 +143,7 @@ namespace SimpleUI {
             }
             onSelectdelegates.Clear();
             
-            foreach(System.Action<GameObject[], object[]> eh in onSubmitdelegates)
+            foreach(System.Action<GameObject[], object[], int> eh in onSubmitdelegates)
             {
                 onSubmit -= eh;
             }
@@ -226,12 +226,12 @@ namespace SimpleUI {
         }
 
         public virtual void UpdateElementHolder () {
-            if (!backGround){
-                Debug.LogError("nobackground");
-            }
-            if (!UIManager.instance) {
-                Debug.LogError("no manager");
-            }
+            // if (!backGround){
+            //     Debug.LogError("nobackground");
+            // }
+            // if (!UIManager.instance) {
+            //     Debug.LogError("no manager");
+            // }
             backGround.color = UIManager.instance.mainDarkColor;
             backGroundOverlay.color = UIManager.instance.mainLightColor;
             transform.localScale = Vector3.one * scale;

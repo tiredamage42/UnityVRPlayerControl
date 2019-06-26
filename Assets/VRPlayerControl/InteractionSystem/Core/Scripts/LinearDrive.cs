@@ -13,7 +13,7 @@ namespace Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
 	[RequireComponent( typeof( Interactable ) )]
-	public class LinearDrive : MonoBehaviour, IInteractable, IInventoryItem
+	public class LinearDrive : MonoBehaviour, IInteractable, ISceneItem
 	{
 		public void OnEquippedUseStart(Inventory inventory, int useIndex) {}
         public void OnEquippedUseEnd(Inventory inventory, int useIndex) {}

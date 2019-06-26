@@ -14,6 +14,7 @@ using UnityEngine.Events;
 using System.Collections;
 using Valve.VR.InteractionSystem;
 using Valve.VR;
+using GameBase;
 namespace VRPlayer
 {
 	//-------------------------------------------------------------------------
@@ -176,7 +177,7 @@ namespace VRPlayer
 				}
 			}
 
-			if (!VRManager.gamePaused && teleportationAllowed) {
+			if (!GameManager.isPaused && teleportationAllowed) {
 
 				if (!StandardizedVRInput.ActionOccupied(teleportAction, teleportHand) && teleportAction.GetStateDown(teleportHand) )
 					

@@ -10,7 +10,6 @@ namespace VRPlayer.UI {
 
         void Awake () {
             text = GetComponentInChildren<UIText>();
-
             Hide();
         }
         

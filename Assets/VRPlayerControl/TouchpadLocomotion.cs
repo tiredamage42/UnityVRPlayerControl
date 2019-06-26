@@ -4,6 +4,9 @@ using UnityEngine;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
+
+using GameBase;
+
 namespace VRPlayer 
 {
 /*
@@ -285,7 +288,7 @@ public class TouchpadLocomotion : MonoBehaviour
             return;
         }
 
-        if (!VRManager.gamePaused && !StandardizedVRInput.ActionOccupied(crouchAction, moveHand) && !Player.instance.handsTogether) {
+        if (!GameManager.isPaused && !StandardizedVRInput.ActionOccupied(crouchAction, moveHand) && !Player.instance.handsTogether) {
 
             if (crouchAction.GetStateDown(moveHand)) {
                 isCrouched = !isCrouched;
@@ -503,7 +506,7 @@ public class TouchpadLocomotion : MonoBehaviour
     void InputUpdateLoop (float deltaTime) {
         CheckCrouched(deltaTime);
 
-        bool movementEnabled = !VRManager.gamePaused && !isClimbing;
+        bool movementEnabled = !GameManager.isPaused && !isClimbing;
         
         CheckForJump(movementEnabled && !VRUIInput.HandOccupied(moveHand)); // also when jump hand isnt hovering
 

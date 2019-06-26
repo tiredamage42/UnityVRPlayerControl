@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using Valve.VR;
 
-using _GAME_MANAGER_TYPE_ = VRPlayerDemo.DemoGameManager;
+
+
+using GameBase;
+using _GAME_MANAGER_TYPE_ = GameBase.GameManager;
 
 namespace VRPlayer{
     
@@ -62,18 +65,18 @@ namespace VRPlayer{
             }
         }
 
-        public static bool gamePaused { get { return gameManager.isPaused; } }
+        // public static bool gamePaused { get { return GameBase.GameManager.isPaused; } }
         public static event System.Action<bool> onGamePaused;
 
     
         void OnEnable () {
-            gameManager.onPauseRoutineStart += OnPauseRoutineStart;
-            gameManager.onPauseRoutineEnd += OnPauseRoutineEnd;
+            GameManager.onPauseRoutineStart += OnPauseRoutineStart;
+            GameManager.onPauseRoutineEnd += OnPauseRoutineEnd;
 
-            gameManager.onUISelect += OnUISelection;
-            gameManager.onUISubmit += OnUISubmit;
+            // gameManager.onUISelect += OnUISelection;
+            // gameManager.onUISubmit += OnUISubmit;
 
-            gameManager.onShowGameMessage += OnShowGameMessage;
+            // gameManager.onShowGameMessage += OnShowGameMessage;
         }
 
 
@@ -82,52 +85,52 @@ namespace VRPlayer{
 
 
         void OnDisable () {
-            gameManager.onPauseRoutineStart -= OnPauseRoutineStart;
-            gameManager.onPauseRoutineEnd -= OnPauseRoutineEnd;
+            GameManager.onPauseRoutineStart -= OnPauseRoutineStart;
+            GameManager.onPauseRoutineEnd -= OnPauseRoutineEnd;
 
-            gameManager.onUISelect -= OnUISelection;
-            gameManager.onUISubmit -= OnUISubmit;
+            // gameManager.onUISelect -= OnUISelection;
+            // gameManager.onUISubmit -= OnUISubmit;
 
-            gameManager.onShowGameMessage -= OnShowGameMessage;
+            // gameManager.onShowGameMessage -= OnShowGameMessage;
             
         }
-        public static void ToggleGamePause () {
-            gameManager.TogglePause();
-        }
+        // public static void ToggleGamePause () {
+        //     gameManager.TogglePause();
+        // }
 
 
 
         
 
-        public static event System.Action<string, int> onShowGameMessage;
-        void OnShowGameMessage (string message, int key) {
+        // public static event System.Action<string, int> onShowGameMessage;
+        // void OnShowGameMessage (string message, int key) {
             
-            if (onShowGameMessage != null) {
-                // Debug.LogError("callingbakc on show message");
-                onShowGameMessage (message, key);
-            }
-        }
+        //     if (onShowGameMessage != null) {
+        //         // Debug.LogError("callingbakc on show message");
+        //         onShowGameMessage (message, key);
+        //     }
+        // }
         
-public static void ShowGameMessage (string message) {
-    ShowGameMessage(message, 0);
-}
-        public static void ShowGameMessage (string message, int key) {
-            gameManager.ShowGameMessage(message, key);
-        }
+// public static void ShowGameMessage (string message) {
+//     ShowGameMessage(message, 0);
+// }
+        // public static void ShowGameMessage (string message, int key) {
+        //     gameManager.ShowGameMessage(message, key);
+        // }
 
 
-        public static event System.Action<GameObject[], object[]> onUISelection, onUISubmit;
-        void OnUISelection (GameObject[] data, object[] customData) {
-            if (onUISelection != null) {
-                // Debug.LogError("callign back on ui selectin");
-                onUISelection (data, customData);
-            }
-        }
-        void OnUISubmit (GameObject[] data, object[] customData) {
-            if (onUISubmit != null) {
-                onUISubmit (data, customData);
-            }
-        }
+        // public static event System.Action<GameObject[], object[]> onUISelection, onUISubmit;
+        // void OnUISelection (GameObject[] data, object[] customData) {
+        //     if (onUISelection != null) {
+        //         // Debug.LogError("callign back on ui selectin");
+        //         onUISelection (data, customData);
+        //     }
+        // }
+        // void OnUISubmit (GameObject[] data, object[] customData) {
+        //     if (onUISubmit != null) {
+        //         onUISubmit (data, customData);
+        //     }
+        // }
         
         
 

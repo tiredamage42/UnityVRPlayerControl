@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: KnifeEquip
   m_EditorClassIdentifier: 
   transformSettings:
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
+  - position: {x: 0.0076, y: 0.0152, z: 0.0314}
+    rotation: {x: -0.000002561321, y: 270.00006, z: 19.581491}
+  - position: {x: 0.0076, y: 0.0152, z: 0.0314}
+    rotation: {x: -0.000002561321, y: 270.00006, z: 19.581491}

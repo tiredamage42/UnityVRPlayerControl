@@ -408,7 +408,7 @@ namespace Valve.VR
             public float smoothingSpeed = 0;
             public BlenderTypes type;
             public bool useMask;
-            public SteamVR_Skeleton_HandMask mask = new SteamVR_Skeleton_HandMask();
+            public VRPlayer.SteamVR_Skeleton_HandMask mask = new VRPlayer.SteamVR_Skeleton_HandMask();
 
             public bool previewEnabled;
 

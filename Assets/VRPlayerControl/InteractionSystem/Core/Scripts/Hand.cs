@@ -163,20 +163,27 @@ namespace VRPlayer
             if (vr_item.hideHandOnAttach)
                 Hide();
 
-            if (vr_item.handAnimationOnPickup != 0) {
-                    // Debug.LogError("animation state");
+            
 
-                SetAnimationState(vr_item.handAnimationOnPickup);
-            }
+            // if (vr_item.handAnimationOnPickup != 0) {
+            //         // Debug.LogError("animation state");
+
+            //     SetAnimationState(vr_item.handAnimationOnPickup);
+            // }
 
             if (vr_item.setRangeOfMotionOnPickup != SkeletalMotionRangeChange.None) {
                     // Debug.LogError("range of mot ion");
                 SetTemporarySkeletonRangeOfMotion(vr_item.setRangeOfMotionOnPickup);
             }
 
-            if (vr_item.skeletonPoser != null && skeleton != null) {
-                // Debug.LogError("blendign to poser");
-                skeleton.BlendToPoser(vr_item.skeletonPoser, blendToPoseTime);
+            if (vr_item.usePose) {
+                // if (!string.IsNullOrEmpty(vr_item.poseName)) {//.skeletonPoser != null)
+                // if (vr_item.skeletonPoser != null && skeleton != null) {
+                
+                    // Debug.LogError("blendign to poser");
+                    skeleton.BlendToPoser(vr_item.poseName, vr_item.poseInfluence, blendToPoseTime);
+                // }
+
             }
 
             if (vr_item.activateActionSetOnAttach != null)
@@ -211,14 +218,16 @@ namespace VRPlayer
                 return;
             }
             
-            if (vr_item.hideHandOnAttach)
+            if (vr_item.hideHandOnAttach) {
+
                 Show();
+            }
 
-            if (vr_item.handAnimationOnPickup != 0)
-                {
+            // if (vr_item.handAnimationOnPickup != 0)
+            //     {
 
-                StopAnimation();
-                }
+            //     StopAnimation();
+            //     }
 
             if (vr_item.setRangeOfMotionOnPickup != SkeletalMotionRangeChange.None) {
                 // Debug.LogError("range of motion unewiup");
@@ -231,7 +240,8 @@ namespace VRPlayer
                 // mainRenderModel.MatchHandToTransform(mainRenderModel.transform);
             }
             //move to vr interacable
-            if (vr_item.skeletonPoser != null)
+            if (vr_item.usePose) 
+            // if (!string.IsNullOrEmpty(vr_item.poseToUse))//.skeletonPoser != null)
             {
                 if (skeleton != null) {
                     // Debug.LogError("blend to skeleton");

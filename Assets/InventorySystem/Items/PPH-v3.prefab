@@ -357,7 +357,8 @@ MonoBehaviour:
   activateActionSetOnAttach:
     actionSetPath: 
   hideHandOnAttach: 0
-  handAnimationOnPickup: 0
-  setRangeOfMotionOnPickup: 0
-  skeletonPoser: {fileID: 0}
   handFollowTransform: 0
+  setRangeOfMotionOnPickup: 0
+  usePose: 1
+  poseName: TriggerHoldOff
+  poseInfluence: 1

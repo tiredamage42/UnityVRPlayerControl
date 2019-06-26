@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AxEquip
   m_EditorClassIdentifier: 
   transformSettings:
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
+  - position: {x: 0, y: 0.023, z: 0.067}
+    rotation: {x: -0.000005122642, y: 270, z: 23.277231}
+  - position: {x: 0, y: 0.023, z: 0.067}
+    rotation: {x: -0.000005122642, y: 270, z: 23.277231}
