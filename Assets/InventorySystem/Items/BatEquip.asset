@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BatEquip
   m_EditorClassIdentifier: 
   transformSettings:
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
+  - position: {x: -0.009, y: 0.078, z: 0.121}
+    rotation: {x: 20.787685, y: 180, z: 0}
+  - position: {x: -0.009, y: 0.078, z: 0.121}
+    rotation: {x: 20.787685, y: 180, z: 0}

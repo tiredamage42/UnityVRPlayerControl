@@ -19,11 +19,14 @@ MonoBehaviour:
   scenePrefabVariations:
   - {fileID: 3246538786618177894, guid: 22e271387cf8e461c96c839fc4b8c4a7, type: 3}
   permanentStash: 0
+  category: 0
   stashActions: 0000000001000000
   equipActions: 00000000
   equipType: 1
   hoverLockOnEquip: 1
-  onStashBuffs: {fileID: 0}
-  stashUseBehavior: {fileID: 11400000, guid: 11f12a8d2cb294126a519580ba24f367, type: 2}
-  onEquipBuffs: {fileID: 0}
+  stashedItemBehavior: {fileID: 4299545621166748805, guid: d1a6789bcdb0046a1b3f99c82f20d3b4,
+    type: 3}
   equipTransform: {fileID: 11400000, guid: 6b57c74da66d648689e087bef4168335, type: 2}
+  weight: 1
+  value: 50
+  composedOf: []

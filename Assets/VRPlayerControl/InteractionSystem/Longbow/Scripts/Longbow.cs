@@ -16,7 +16,7 @@ namespace Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
 	[RequireComponent( typeof( Interactable ) )]
-	public class Longbow : MonoBehaviour, IInventoryItem
+	public class Longbow : MonoBehaviour, ISceneItem
 	{
 
 		public void OnEquippedUseStart(Inventory inventory, int useIndex) {}

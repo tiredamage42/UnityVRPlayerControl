@@ -6,7 +6,7 @@ using InventorySystem;
 using VRPlayer;
 namespace Valve.VR.InteractionSystem.Sample
 {
-    public class JoeJeffController : MonoBehaviour, IInventoryItem
+    public class JoeJeffController : MonoBehaviour, ISceneItem
     {
         public void OnEquippedUseStart(Inventory inventory, int useIndex) {}
         public void OnEquippedUseEnd(Inventory inventory, int useIndex) {}

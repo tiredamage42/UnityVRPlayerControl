@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PPHEquip
   m_EditorClassIdentifier: 
   transformSettings:
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 45, y: 0, z: 0}
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 45, y: 0, z: 0}
+  - position: {x: 0, y: 0.062, z: 0.074}
+    rotation: {x: 6.9755244, y: -0, z: -0}
+  - position: {x: 0, y: 0.062, z: 0.074}
+    rotation: {x: 6.9755244, y: -0, z: -0}

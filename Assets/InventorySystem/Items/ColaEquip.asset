@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ColaEquip
   m_EditorClassIdentifier: 
   transformSettings:
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
+  - position: {x: -0.0028, y: -0.0183, z: -0.0929}
+    rotation: {x: 330.00006, y: 0, z: 0}
+  - position: {x: -0.0028, y: -0.0183, z: -0.0929}
+    rotation: {x: 330.00006, y: 0, z: 0}

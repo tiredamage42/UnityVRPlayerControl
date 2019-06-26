@@ -14,7 +14,7 @@ namespace Valve.VR.InteractionSystem.Sample
 {
 	//-------------------------------------------------------------------------
 	[RequireComponent( typeof( Interactable ) )]
-	public class InteractableExample : MonoBehaviour, IInventoryItem, IInteractable
+	public class InteractableExample : MonoBehaviour, ISceneItem, IInteractable
     {
 
 		public void OnEquippedUseStart(Inventory inventory, int useIndex) {}
