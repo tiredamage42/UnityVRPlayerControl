@@ -180,11 +180,11 @@ if (equipSlot < 0 || equipSlot >= equippedSlots.Length) {
 
                 slot.sceneItem.OnEquippedUseEnd(this, useIndex);
                 
-                if (useIndex == DROP_ACTION) {
+                // if (useIndex == DROP_ACTION) {
                     
-                    UnequipItem(equipSlot, true);
-                    DropItem(slot.item, 1, false);// true);
-                }
+                //     UnequipItem(equipSlot, true);
+                //     DropItem(slot.item, 1, false);// true);
+                // }
 
             }
                     
