@@ -37727,7 +37727,7 @@ MonoBehaviour:
   inventory: {fileID: 1893138401}
   quickInventory: {fileID: 752200187}
   normalInventory: {fileID: 265894322852135360}
-  maxPerPageInventory: 24
+  maxPerPageInventory: 10
 --- !u!114 &1893138401 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 107947, guid: dc06161b6d97feb419f45f03b62e14b9,
@@ -43362,12 +43362,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7574123744170017057, guid: b8cd3d39a02b3450da2dd77de5d445a1,
-        type: 3}
-      propertyPath: toSelect
-      value: 
-      objectReference: {fileID: 1307753912792430304, guid: 97a72d2af139e4517bb2bda6523a3da0,
-        type: 3}
     - target: {fileID: 4460107285783983218, guid: b8cd3d39a02b3450da2dd77de5d445a1,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -43433,11 +43427,6 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4460107285783983219, guid: b8cd3d39a02b3450da2dd77de5d445a1,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4460107285677693890, guid: b8cd3d39a02b3450da2dd77de5d445a1,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -43497,6 +43486,17 @@ PrefabInstance:
         type: 3}
       propertyPath: m_EffectColor.a
       value: 0.8745098
+      objectReference: {fileID: 0}
+    - target: {fileID: 7574123744170017057, guid: b8cd3d39a02b3450da2dd77de5d445a1,
+        type: 3}
+      propertyPath: toSelect
+      value: 
+      objectReference: {fileID: 1307753912792430304, guid: 97a72d2af139e4517bb2bda6523a3da0,
+        type: 3}
+    - target: {fileID: 4460107285783983219, guid: b8cd3d39a02b3450da2dd77de5d445a1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4460107286679315884, guid: b8cd3d39a02b3450da2dd77de5d445a1,
         type: 3}
@@ -45201,6 +45201,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameMessages
       objectReference: {fileID: 0}
+    - target: {fileID: 6704095862675926450, guid: 2be6c986f3c9042dc820b6d2c66cec1c,
+        type: 3}
+      propertyPath: scale
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6704095862675926450, guid: 2be6c986f3c9042dc820b6d2c66cec1c,
+        type: 3}
+      propertyPath: width
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6704095862675926454, guid: 2be6c986f3c9042dc820b6d2c66cec1c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -45305,16 +45315,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6704095862675926450, guid: 2be6c986f3c9042dc820b6d2c66cec1c,
-        type: 3}
-      propertyPath: scale
-      value: 0.15
-      objectReference: {fileID: 0}
-    - target: {fileID: 6704095862675926450, guid: 2be6c986f3c9042dc820b6d2c66cec1c,
-        type: 3}
-      propertyPath: width
-      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2be6c986f3c9042dc820b6d2c66cec1c, type: 3}
