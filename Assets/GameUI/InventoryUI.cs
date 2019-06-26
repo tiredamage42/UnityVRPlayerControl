@@ -153,10 +153,11 @@ public class InventoryUI : MonoBehaviour
             //     currentPageOffset--;
             // }
 
+            normalInventoryUIButtons = normalInventory.GetAllElements(maxPerPageInventory);
+            
             bool isAtEnd = currentPageOffset >= inventory.allInventory.Count - maxPerPageInventory;
             bool isAtBeginning = currentPageOffset == 0;
             if (!isAtBeginning) {
-                normalInventoryUIButtons = normalInventory.GetAllElements(maxPerPageInventory);
                 normalInventoryUIButtons[0].elementText = "** [ Page Up ] **";
                 normalInventoryUIButtons[0].uiText.SetText(normalInventoryUIButtons[0].elementText);
                 normalInventoryUIButtons[0].customData = new object[]{"BACK"};
@@ -165,7 +166,7 @@ public class InventoryUI : MonoBehaviour
             int start = isAtBeginning ? 0 : 1;
             int end = isAtEnd ? maxPerPageInventory : maxPerPageInventory - 1;
 
-            for (int i = start ; i< end; i++) {
+            for (int i = start ; i < end; i++) {
                 SelectableElement element = normalInventoryUIButtons[i];
 
                 int inventoryIndex = ((i-start)) + (currentPageOffset);
@@ -225,7 +226,7 @@ public class InventoryUI : MonoBehaviour
                         int slot = -1;
                         if (getWorkingInventorySlot != null) {
                             slot = getWorkingInventorySlot();
-                            getWorkingInventorySlot = null;
+                            // getWorkingInventorySlot = null;
                         }
                         else {
                             Debug.LogError("quick inventory wasnt supplied callback to get working inventory slot, defaulting to -1");
@@ -280,7 +281,7 @@ public class InventoryUI : MonoBehaviour
 			// Debug.LogError("on submit");
             if (customData != null) {
                 bool updateButtons = false;
-                string asString = (string)customData[0];
+                string asString = customData[0] as string;
                 SelectableElement newSelection = null;
                 if (asString != null) {
                     if (asString == "BACK") {
@@ -308,8 +309,8 @@ public class InventoryUI : MonoBehaviour
 
                     UpdateNormalInventoryUIButtons();
                     if (newSelection != null) {
-
-                        UIManager.SetSelection(newSelection.gameObject);
+                        StartCoroutine(SetSelection(newSelection.gameObject));
+                        // UIManager.SetSelection(newSelection.gameObject);
                     }
                 }
 
@@ -322,6 +323,11 @@ public class InventoryUI : MonoBehaviour
             // CloseQuickInventory();
             
 		}
+        IEnumerator SetSelection(GameObject selection) {
+            yield return new WaitForEndOfFrame();
+            
+                        UIManager.SetSelection(selection);
+                        }
 
         void BuildNormalInventory () {
             // normalInventoryUIButtons = normalInventory.GetAllElements(maxPerPageInventory);
@@ -357,6 +363,7 @@ public class InventoryUI : MonoBehaviour
             // normalInventoryUIButtons[maxPerPageInventory-1].customData = new object[]{"FWD"};
 
             UpdateNormalInventoryUIButtons();
+            UIManager.SetSelection(normalInventoryUIButtons[0].gameObject);
         }
 
         public void CloseNormalInventory () {
@@ -369,14 +376,19 @@ public class InventoryUI : MonoBehaviour
             
         public void OpenNormalInventory (System.Func<int> getWorkingInventorySlot, System.Func<int> getAlternateSubmits) {
             this.getWorkingInventorySlot = getWorkingInventorySlot;
+            if (getWorkingInventorySlot == null) {
+                Debug.LogError("NULLLL");
+            }
             currentPageOffset = 0;
 
-			UIManager.ShowUI(normalInventory, true, false);
+			UIManager.ShowUI(normalInventory, true, true);
 			// UIManager.onUISubmit += OnNormalInventorySubmit;
 
             normalInventory.onSelectEvent += OnNormalInventorySelect;
             normalInventory.onSubmitEvent += OnNormalInventorySubmit;
             normalInventory.alternativeSubmit += getAlternateSubmits;
+
+            // Debug.LogError("showign in inv ui");
             
             BuildNormalInventory();
 		}

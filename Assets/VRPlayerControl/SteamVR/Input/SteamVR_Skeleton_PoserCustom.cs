@@ -421,6 +421,9 @@ namespace VRPlayer//Valve.VR
 
                 for (int boneIndex = 0; boneIndex < snapshotL.bonePositions.Length; boneIndex++)
                 {
+                    // if ((boneIndex == 1) || (boneIndex == 0))
+                    //     continue;
+
                     int fingerIndex = SteamVR_Skeleton_JointIndexes.GetFingerForBone(boneIndex);
                     SteamVR_Skeleton_FingerExtensionTypes extensionType = poseHand.GetMovementTypeForBone(boneIndex);
 
@@ -497,13 +500,13 @@ namespace VRPlayer//Valve.VR
             // public 
             void PoseToSnapshots()
             {
-                snapshotR.position = pose.rightHand.position;
-                snapshotR.rotation = pose.rightHand.rotation;
+                // snapshotR.position = pose.rightHand.position;
+                // snapshotR.rotation = pose.rightHand.rotation;
                 pose.rightHand.bonePositions.CopyTo(snapshotR.bonePositions, 0);
                 pose.rightHand.boneRotations.CopyTo(snapshotR.boneRotations, 0);
 
-                snapshotL.position = pose.leftHand.position;
-                snapshotL.rotation = pose.leftHand.rotation;
+                // snapshotL.position = pose.leftHand.position;
+                // snapshotL.rotation = pose.leftHand.rotation;
                 pose.leftHand.bonePositions.CopyTo(snapshotL.bonePositions, 0);
                 pose.leftHand.boneRotations.CopyTo(snapshotL.boneRotations, 0);
             }
@@ -590,19 +593,22 @@ namespace VRPlayer//Valve.VR
                 // if (targetBehaviour.mask.GetFinger(0) || targetBehaviour.useMask == false)
                 if (t >= 1)
                 {
-                    snapshot.position = targetSnapshot.position;
-                    snapshot.rotation = targetSnapshot.rotation;
+                    // snapshot.position = targetSnapshot.position;
+                    // snapshot.rotation = targetSnapshot.rotation;
 
 
                 }
                 else {
-                    snapshot.position = Vector3.Lerp(snapshot.position, targetSnapshot.position, t);
-                    snapshot.rotation = Quaternion.Slerp(snapshot.rotation, targetSnapshot.rotation, t);
+                    // snapshot.position = Vector3.Lerp(snapshot.position, targetSnapshot.position, t);
+                    // snapshot.rotation = Quaternion.Slerp(snapshot.rotation, targetSnapshot.rotation, t);
 
                 }
 
                 for (int boneIndex = 0; boneIndex < snapshot.bonePositions.Length; boneIndex++)
                 {
+                    // if ((boneIndex == 1) || (boneIndex == 0))
+                    //     continue;
+                    
                     // verify the current finger is enabled in the mask, or if no mask is used.
                     // if (targetBehaviour.mask.GetFinger(SteamVR_Skeleton_JointIndexes.GetFingerForBone(boneIndex) + 1) || targetBehaviour.useMask == false)
                     {
@@ -635,8 +641,8 @@ namespace VRPlayer//Valve.VR
     {
         public HandType inputSource;
 
-        public Vector3 position;
-        public Quaternion rotation;
+        // public Vector3 position;
+        // public Quaternion rotation;
 
         public Vector3[] bonePositions;
         public Quaternion[] boneRotations;
@@ -646,8 +652,8 @@ namespace VRPlayer//Valve.VR
             inputSource = source;
             bonePositions = new Vector3[boneCount];
             boneRotations = new Quaternion[boneCount];
-            position = Vector3.zero;
-            rotation = Quaternion.identity;
+            // position = Vector3.zero;
+            // rotation = Quaternion.identity;
         }
 
         /// <summary>
@@ -656,8 +662,8 @@ namespace VRPlayer//Valve.VR
         public void CopyFrom(SteamVR_Skeleton_PoseSnapshot source)
         {
             inputSource = source.inputSource;
-            position = source.position;
-            rotation = source.rotation;
+            // position = source.position;
+            // rotation = source.rotation;
             for (int i = 0; i < bonePositions.Length; i++)
             {
                 bonePositions[i] = source.bonePositions[i];
