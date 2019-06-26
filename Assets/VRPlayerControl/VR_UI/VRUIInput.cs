@@ -54,7 +54,7 @@ namespace VRPlayer{
         }
 
         static VRUIInput _instance;
-		static VRUIInput instance
+		public static VRUIInput instance
 		{
 			get
 			{

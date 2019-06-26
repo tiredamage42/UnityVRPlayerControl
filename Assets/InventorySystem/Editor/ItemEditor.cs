@@ -25,7 +25,7 @@ namespace InventorySystem {
         public override void OnInspectorGUI() {
             base.OnInspectorGUI();
 
-            if (Application.isPlaying) {
+            // if (Application.isPlaying) {
                 EditorGUILayout.Space();
 
                 GUILayout.Label("Playtime Editing:");
@@ -36,7 +36,7 @@ namespace InventorySystem {
                     SaveLocalPositionAndRotation();
                     EditorUtility.SetDirty(item.itemBehavior.equipTransform);
                 }
-            }
+            // }
 
         }
     }

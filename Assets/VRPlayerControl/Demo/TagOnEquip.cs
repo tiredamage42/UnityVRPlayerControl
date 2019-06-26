@@ -4,7 +4,7 @@ using InventorySystem;
 
 namespace VRPlayerDemo
 {
-	public class TagOnEquip : MonoBehaviour, IInventoryItem
+	public class TagOnEquip : MonoBehaviour, ISceneItem
 	{
 		public void OnEquippedUseStart(Inventory inventory, int useIndex) {}
         public void OnEquippedUseEnd(Inventory inventory, int useIndex) {}

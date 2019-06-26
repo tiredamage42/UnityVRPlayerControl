@@ -13,7 +13,7 @@ using InteractionSystem;
 namespace Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
-	public class ArrowHand : MonoBehaviour, IInventoryItem, IInteractable
+	public class ArrowHand : MonoBehaviour, ISceneItem, IInteractable
 	{
 		// private Hand hand;
 		private Longbow bow;

@@ -150,11 +150,11 @@ gameMessage
             interactable = GetComponent<Interactable>();
 
             interactable.actionNames = new string[] {
-                "Equip", "Stash"
+                "Grab", "Stash"
             };
             rigidbody = GetComponent<Rigidbody>();
 
-            InitializeInteractableComponents();
+            InitializeListeners();
         }
 
         // public int useActionForEquip = 0;
@@ -193,68 +193,9 @@ gameMessage
                 inventory.EquipItem(itemBehavior, equipSlot, wasStashed ? null : this );
             }
 
-
-            // if (useIndex == useActionForEquip) {
-            //     if (inventory != null) {
-            //         // if (itemBehavior.hoverLockOnEquip)
-            //         //     interactor.HoverLock( interactable );
-
-                    
-            //         inventory.EquipItem(this);
-            //     }
-            //     else {
-
-            //     }
-            // }
-            // else if (useIndex == useActionForStash) {
-
-            // }
-            // else {
-            //     if (useIndex != 0 && useIndex != 1) 
-            //         Debug.LogError("unknown action for item " + name + "\naction: " + useIndex + "\ninteractor:" + interactor.name);
-            // }
         }
-        // public bool unequipOnUseEnd = true;
         public void OnUseEnd(Interactor interactor, int useIndex) {
 
-            // if (quickEquipInventory == null) {
-            //     return;
-            // }
-            // // if (!unequipOnUseEnd)
-            // //     return;
-                
-            // if (useIndex == useActionForEquip) {
-            //     // Debug.LogError("should beeee");
-            //     Inventory inventory = interactor.GetComponent<Inventory>();
-            //     if (inventory != null) {
-            //         if (inventory == quickEquipInventory){//}  parentInventory) {
-                    
-            //             if (hoverLockOnEquip)
-            //                 interactor.HoverUnlock( interactable );
-
-
-            //             inventory.UnequipItem(this);
-                        
-
-            //             // Uncomment to detach ourselves late in the frame.
-            //             // This is so that any vehicles the player is attached to
-            //             // have a chance to finish updating themselves.
-            //             // If we detach now, our position could be behind what it
-            //             // will be at the end of the frame, and the object may appear
-            //             // to teleport behind the hand when the player releases it.
-            //             //StartCoroutine( LateDetach( hand ) );
-
-            //         }
-            //     }
-            // }
-            // else if (useIndex == useActionForStash) {
-            //     Debug.LogError("stash!");
-
-            // }
-            // else {
-            //     if (useIndex != 0 && useIndex != 1) 
-            //         Debug.LogError("unknown action for item " + name + "\naction: " + useIndex + "\ninteractor:" + interactor.name);
-            // }
         }
         public void OnUseUpdate(Interactor interactor, int useIndex) {
 
@@ -293,8 +234,8 @@ gameMessage
 
                         
             
-            for (int i = 0; i < itemComponents.Count; i++) {
-                itemComponents[i].OnEquipped(inventory);
+            for (int i = 0; i < listeners.Count; i++) {
+                listeners[i].OnEquipped(inventory);
             }
         }
         public void OnUnequipped (Inventory inventory) {
@@ -306,20 +247,20 @@ gameMessage
 
                         
             
-            for (int i = 0; i < itemComponents.Count; i++) {
-                itemComponents[i].OnUnequipped(inventory);
+            for (int i = 0; i < listeners.Count; i++) {
+                listeners[i].OnUnequipped(inventory);
             }
         }
         public void OnEquippedUpdate(Inventory inventory) {
-            for (int i = 0; i < itemComponents.Count; i++) {
-                itemComponents[i].OnEquippedUpdate(inventory);
+            for (int i = 0; i < listeners.Count; i++) {
+                listeners[i].OnEquippedUpdate(inventory);
             }
         }
 
 
         public void OnEquippedUseStart (Inventory interactor, int useIndex) {
-            for (int i = 0; i < itemComponents.Count; i++) {
-                itemComponents[i].OnEquippedUseStart(interactor, useIndex);
+            for (int i = 0; i < listeners.Count; i++) {
+                listeners[i].OnEquippedUseStart(interactor, useIndex);
             }
             // if (onUseStart != null) {
             //     onUseStart(interactor, useIndex);
@@ -368,31 +309,31 @@ gameMessage
 
 
 
-            for (int i = 0; i < itemComponents.Count; i++) {
-                itemComponents[i].OnEquippedUseEnd(inventory, useIndex);
+            for (int i = 0; i < listeners.Count; i++) {
+                listeners[i].OnEquippedUseEnd(inventory, useIndex);
             }
             // if (onUseEnd != null) {
             //     onUseEnd(interactor, useIndex);
             // }
         }
         public void OnEquippedUseUpdate(Inventory interactor, int useIndex) {
-            for (int i = 0; i < itemComponents.Count; i++) {
-                itemComponents[i].OnEquippedUseUpdate(interactor, useIndex);
+            for (int i = 0; i < listeners.Count; i++) {
+                listeners[i].OnEquippedUseUpdate(interactor, useIndex);
             }
             // if (onUseUpdate != null) {
             //     onUseUpdate(interactor, useIndex);
             // }
         }
 
-        List<IInventoryItem> itemComponents = new List<IInventoryItem>();
-        void InitializeInteractableComponents() {
-            IInventoryItem[] itemComponents = GetComponents<IInventoryItem>();
-            for (int i = 0; i< itemComponents.Length; i++) {
-                this.itemComponents.Add(itemComponents[i]);
+        List<ISceneItem> listeners = new List<ISceneItem>();
+        void InitializeListeners() {
+            ISceneItem[] listeners_ = GetComponents<ISceneItem>();
+            for (int i = 0; i< listeners_.Length; i++) {
+                this.listeners.Add(listeners_[i]);
             }
         }
-        public void AddItemComponent (IInventoryItem itemComponent) {
-            itemComponents.Add(itemComponent);
+        public void AddListener (ISceneItem listener) {
+            listeners.Add(listener);
         }
 
         void OnDestroy()

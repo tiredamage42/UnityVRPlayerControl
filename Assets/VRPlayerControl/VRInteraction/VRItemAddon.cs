@@ -15,20 +15,28 @@ namespace VRPlayer {
         [Tooltip("Hide the whole hand on attachment and show on detach")]
         public bool hideHandOnAttach = true;
 
-        [Tooltip("The integer in the animator to trigger on pickup. 0 for none")]
-        public int handAnimationOnPickup = 0;
-
-        [Tooltip("The range of motion to set on the skeleton. None for no change.")]
-        public SkeletalMotionRangeChange setRangeOfMotionOnPickup = SkeletalMotionRangeChange.None;
-        [HideInInspector] public SteamVR_Skeleton_Poser skeletonPoser;
-
+        // [Tooltip("The integer in the animator to trigger on pickup. 0 for none")]
+        // public int handAnimationOnPickup = 0;
         [Tooltip("Should the rendered hand lock on to and follow the object")]
         public bool handFollowTransform = true;
 
 
-        private void Awake()
-        {
-            skeletonPoser = GetComponent<SteamVR_Skeleton_Poser>();
-        }
+        [Tooltip("The range of motion to set on the skeleton. None for no change.")]
+        public SkeletalMotionRangeChange setRangeOfMotionOnPickup = SkeletalMotionRangeChange.None;
+        
+        [Space]
+        public bool usePose = true;
+        public string poseName;
+        [Range(0,1)] public float poseInfluence = 1;
+        // [HideInInspector] public SteamVR_Skeleton_HandMask poseMask = new SteamVR_Skeleton_HandMask();
+
+        // [HideInInspector] public SteamVR_Skeleton_Poser skeletonPoser;
+
+
+
+        // private void Awake()
+        // {
+        //     skeletonPoser = GetComponent<SteamVR_Skeleton_Poser>();
+        // }
     }
 }

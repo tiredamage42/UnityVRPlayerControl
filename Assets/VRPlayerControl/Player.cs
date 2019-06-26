@@ -8,6 +8,8 @@ using UnityEngine;
 using System.Collections;
 using Valve.VR;
 
+using GameBase;
+
 namespace VRPlayer
 {
 
@@ -186,9 +188,9 @@ namespace VRPlayer
             if (SteamVR.initializedState != SteamVR.InitializedStates.InitializeSuccess)
                 return;
 
-			if (StandardizedVRInput.instance.MenuButton.GetStateDown(SteamVR_Input_Sources.LeftHand)) {
-                VRManager.ToggleGamePause();
-            }
+			// if (StandardizedVRInput.instance.MenuButton.GetStateDown(SteamVR_Input_Sources.LeftHand)) {
+            //     GameManager.ToggleGamePause();
+            // }
 
 
 			Teleport.instance.SetCurrentTrackingTransformOffset(totalHeightOffset);

@@ -135,7 +135,7 @@ namespace SimpleUI {
         }
 
         if (parentHolder.onSubmitToUse != null) {
-            parentHolder.onSubmitToUse(data, customData);
+            parentHolder.onSubmitToUse(data, customData, submitAction);
         }
 
         // if (onSubmit != null) {

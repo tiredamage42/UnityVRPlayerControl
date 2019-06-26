@@ -5,12 +5,17 @@ using UnityEngine.EventSystems;
 
 
 using StandaloneInputModule = SimpleUI.StandaloneInputModule;
-using _GAME_MANAGER_TYPE_ = VRPlayerDemo.DemoGameManager;
+using _GAME_MANAGER_TYPE_ = GameBase.GameManager;
 
 namespace SimpleUI {
     // [RequireComponent(typeof(StandaloneInputModule))]
     public class UIManager : MonoBehaviour
     {
+
+        public static void SetSelection(GameObject selection) {
+            inputModule.GetComponent<EventSystem>().SetSelectedGameObject(selection);
+
+        }
 
         static _GAME_MANAGER_TYPE_ _gameManager;
         static _GAME_MANAGER_TYPE_ gameManager {
@@ -22,7 +27,7 @@ namespace SimpleUI {
             }
         }
         static StandaloneInputModule _inputModule;
-        static StandaloneInputModule inputModule {
+        public static StandaloneInputModule inputModule {
             get {
                 if (_inputModule == null) {
                     _inputModule = GameObject.FindObjectOfType<StandaloneInputModule>();
@@ -32,7 +37,7 @@ namespace SimpleUI {
         }
 
 
-        public UIPage mainMenuBasePage;
+        // public UIPage mainMenuBasePage;
 
         void Awake () {
             // uiInputModule = GetComponent<StandaloneInputModule>();
@@ -44,60 +49,72 @@ namespace SimpleUI {
         }
 
 
+
         void OnEnable ()  {
-            mainMenuBasePage.onBaseCancel += OnCancelMainMenuPage;
-            gameManager.onPauseRoutineEnd += OnPauseRoutineEnd;
-            gameManager.onShowGameMessage += OnShowGameMessage;
+            // gameManager.onPauseRoutineEnd += OnPauseRoutineEnd;
+            // gameManager.onShowGameMessage += OnShowGameMessage;
+            // mainMenuBasePage.onBaseCancel += OnCancelMainMenuPage;
         }
         void OnDisable ()  {
-            gameManager.onPauseRoutineEnd -= OnPauseRoutineEnd;
-            mainMenuBasePage.onBaseCancel -= OnCancelMainMenuPage;
-            gameManager.onShowGameMessage -= OnShowGameMessage;
+            // gameManager.onPauseRoutineEnd -= OnPauseRoutineEnd;
+            // gameManager.onShowGameMessage -= OnShowGameMessage;
+            // mainMenuBasePage.onBaseCancel -= OnCancelMainMenuPage;
             
         }
 
         
-        public static void ToggleGamePause () {
-            gameManager.TogglePause();
-        }
+        // public static void ToggleGamePause () {
+        //     gameManager.TogglePause();
+        // }
 
         public static event System.Action<string, int> onShowGameMessage;
-        void OnShowGameMessage (string message, int key) {
+        // void OnShowGameMessage (string message, int key) {
             
+        //     if (onShowGameMessage != null) {
+        //         onShowGameMessage (message, key);
+        //     }
+        // }
+        // public event System.Action<string, int> onShowGameMessage;
+        public static void ShowGameMessage (string message, int key) {
+
             if (onShowGameMessage != null) {
-                onShowGameMessage (message, key);
+                onShowGameMessage(message, key);
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        void OnCancelMainMenuPage () {
-            gameManager.TogglePause();
+        public static void ShowGameMessage (string message) {
+            ShowGameMessage(message, 0);
+            
         }
 
-        void OnPauseRoutineEnd(bool isPaused, float routineTime) {
-            if (isPaused) {
-                UIManager.ShowUI (mainMenuBasePage, true, true);
 
-            }
-            else
-                UIManager.HideUI (mainMenuBasePage);
 
-        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // void OnCancelMainMenuPage () {
+        //     gameManager.TogglePause();
+        // }
+
+        // void OnPauseRoutineEnd(bool isPaused, float routineTime) {
+        //     if (isPaused) {
+        //         UIManager.ShowUI (mainMenuBasePage, true, true);
+        //     }
+        //     else
+        //         UIManager.HideUI (mainMenuBasePage);
+
+        // }
 
         public static BaseInput input {
             get {
@@ -196,16 +213,31 @@ namespace SimpleUI {
             // }
 
             //  Debug.LogError("adding callbacks");
-            foreach (var d in gameManager.GetUISelectInvocations()) {
+            // foreach (var d in gameManager.GetUISelectInvocations()) {
+            foreach (var d in GetUISelectInvocations()) {
+            
                 uiObjectC.onSelectEvent += (System.Action<GameObject[], object[]>)d;
             }
-            foreach (var d in gameManager.GetUISubmitInvocations()) {
-                uiObjectC.onSubmitEvent += (System.Action<GameObject[], object[]>)d;
+            // foreach (var d in gameManager.GetUISubmitInvocations()) {
+            foreach (var d in GetUISubmitInvocations()) {
+            
+                uiObjectC.onSubmitEvent += (System.Action<GameObject[], object[], int>)d;
             }
+        }
+
+        public static event System.Action<GameObject[], object[]> onUISelect;//, onUISubmit;
+        public static event System.Action<GameObject[], object[], int> onUISubmit;
+        
+        public static System.Delegate[] GetUISelectInvocations () {
+            return onUISelect.GetInvocationList();
+        }
+        public static System.Delegate[] GetUISubmitInvocations () {
+            return onUISubmit.GetInvocationList();
+        }
+
 
            
 
-        }
         static void ShowUI (GameObject uiObject, UIElementHolder uiObjectC, bool needsInput, bool tryRepeat) {
             //set active so we can call coroutines on it
             // instance.gameObject.SetActive(true);

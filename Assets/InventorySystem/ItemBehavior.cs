@@ -56,6 +56,7 @@ namespace InventorySystem {
 
         // cant be dropped from inventory accidentally
         public bool permanentStash;
+        public int category;
 
 
 
@@ -71,19 +72,41 @@ namespace InventorySystem {
         public bool hoverLockOnEquip = true;
 
 
-        [Header("Stashing")]
-        public Buffs onStashBuffs;
+        // [Header("Stashing")]
+        // public Buffs onStashBuffs;
 
         // stash use logic needs to happen on scriptable objects
         // because runtime inventory slots only contain a refrence to the item behavior
         // (to prevent having multiple gameObjects of the same item in bloated inventories)
-        public StashUseBehavior stashUseBehavior;
+        // public StashUseBehavior stashUseBehavior;
+        public StashedItem stashedItemBehavior;
+        
 
-
-        [Header("Equipping")]
-        public Buffs onEquipBuffs;
+        // [Header("Equipping")]
+        // public Buffs onEquipBuffs;
         public TransformBehavior equipTransform;
+
+        public float weight = 1;
+        [Range(0,100)] public float value = 50;
+
+        public ItemComposition[] composedOf;
+
+
+        public bool OnConsume (Inventory inventory, int slot)
+        {
+            if (stashedItemBehavior != null) {
+                stashedItemBehavior.OnItemConsumed(inventory, this, slot);
+                return true;
+            }
+            return false;
+        }
     }
+
+    [System.Serializable] public class ItemComposition {
+        public ItemBehavior item;
+        public int amount = 1;
+    }
+
 
 
     public abstract class StashUseBehavior : ScriptableObject {

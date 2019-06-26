@@ -33,7 +33,7 @@ Transform:
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0.17747879, z: -2.424885}
-  m_LocalScale: {x: 0.05, y: 0.05, z: 0.05}
+  m_LocalScale: {x: 0.05, y: 0.050000004, z: 0.050000004}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -213,7 +213,8 @@ MonoBehaviour:
   activateActionSetOnAttach:
     actionSetPath: 
   hideHandOnAttach: 0
-  handAnimationOnPickup: 2
-  setRangeOfMotionOnPickup: -1
-  skeletonPoser: {fileID: 0}
   handFollowTransform: 0
+  setRangeOfMotionOnPickup: -1
+  usePose: 1
+  poseName: Anim1
+  poseInfluence: 1
