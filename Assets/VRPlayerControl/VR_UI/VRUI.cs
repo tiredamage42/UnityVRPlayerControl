@@ -475,22 +475,36 @@ namespace VRPlayer {
             switch (type) {
                 // quick inventory
                 case InventoryUI.UIType.QuickInventory:
+                    StandardizedVRInput.MarkActionUnoccupied(QUICK_INVENTORY_CONSUME_ACTION);//, SteamVR_Input_Sources.Any);
+                    
                     StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, QUICK_INVENTORY_CONSUME_ACTION);
                     break;
                 // full inventory
                 case InventoryUI.UIType.FullInventory:
+                    StandardizedVRInput.MarkActionUnoccupied(FULL_INVENTORY_CONSUME_ACTION);//, SteamVR_Input_Sources.Any);
+                    StandardizedVRInput.MarkActionUnoccupied(FULL_INVENTORY_DROP_ACTION);//, SteamVR_Input_Sources.Any);
+                    // StandardizedVRInput.MarkActionUnoccupied(FULL_INVENTORY_FAVORITE_ACTION, SteamVR_Input_Sources.Any);
+                    
                     StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, FULL_INVENTORY_CONSUME_ACTION);
                     StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, FULL_INVENTORY_DROP_ACTION);
                     // StandardizedVRInput.instance.ShowHint(SteamVR_Input_Sources.Any, FULL_INVENTORY_FAVORITE_ACTION,);
                     break;
                 // quick trade
                 case InventoryUI.UIType.QuickTrade:
+                    StandardizedVRInput.MarkActionUnoccupied(QUICK_TRADE_SINGLE_TRADE_ACTION);//, SteamVR_Input_Sources.Any);
+                    StandardizedVRInput.MarkActionUnoccupied(QUICK_TRADE_TRADE_ALL_ACTION);//, SteamVR_Input_Sources.Any);
+                    StandardizedVRInput.MarkActionUnoccupied(QUICK_TRADE_SWITCH_TO_FULL_TRADE_ACTION);//, SteamVR_Input_Sources.Any);
+                    
                     StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, QUICK_TRADE_SINGLE_TRADE_ACTION);
                     StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, QUICK_TRADE_TRADE_ALL_ACTION);
                     StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, QUICK_TRADE_SWITCH_TO_FULL_TRADE_ACTION);
                     break;
                 // full trade
                 case InventoryUI.UIType.FullTrade: 
+                    StandardizedVRInput.MarkActionUnoccupied(FULL_TRADE_CONSUME_ACTION);//, SteamVR_Input_Sources.Any);
+                    StandardizedVRInput.MarkActionUnoccupied(FULL_TRADE_TRADE_ALL_ACTION);//, SteamVR_Input_Sources.Any);
+                    StandardizedVRInput.MarkActionUnoccupied(FULL_TRADE_SINGLE_TRADE_ACTION);//, SteamVR_Input_Sources.Any);
+                    
                     StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, FULL_TRADE_CONSUME_ACTION);
                     StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, FULL_TRADE_SINGLE_TRADE_ACTION);
                     StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, FULL_TRADE_TRADE_ALL_ACTION);

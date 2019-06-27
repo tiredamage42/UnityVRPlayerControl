@@ -13,20 +13,35 @@ namespace VRPlayer {
         public Vector3 offset = new Vector3(0,0.5f,1);
         Transform baseTransform, hmdTransform;
 
+        Vector3 rotationTarget, lastRotationFWD = Vector3.forward;
+
+        private void OnEnable() {
+                lastRotationFWD = hmdTransform.forward;
+                rotationTarget = hmdTransform.rotation.eulerAngles;
+                rotationTarget.z = 0;
+                
+                if (!matchXRotation)
+                    rotationTarget.x = 0;
+                
+        }
+
         void FollowCameraPosition (float deltaTime) {
             transform.localPosition = offset;
             
             baseTransform.position = Vector3.Lerp(baseTransform.position, hmdTransform.position, deltaTime * followSpeed);
 
-            if (Vector3.Angle(hmdTransform.forward, baseTransform.forward) > angleThreshold) {
-                Vector3 targetRot = hmdTransform.rotation.eulerAngles;
-                targetRot.z = 0;
+            // Vector3 targetRot = baseTransform.rotation.eulerAngles;
+            if (Vector3.Angle(hmdTransform.forward, lastRotationFWD) > angleThreshold) {
+                //Vector3 
+                lastRotationFWD = hmdTransform.forward;
+                rotationTarget = hmdTransform.rotation.eulerAngles;
+                rotationTarget.z = 0;
                 
                 if (!matchXRotation)
-                    targetRot.x = 0;
+                    rotationTarget.x = 0;
                 
-                baseTransform.rotation = Quaternion.Slerp(baseTransform.rotation, Quaternion.Euler(targetRot), deltaTime * followSpeed);
             }
+                baseTransform.rotation = Quaternion.Slerp(baseTransform.rotation, Quaternion.Euler(rotationTarget), deltaTime * followSpeed);
         }
 
         void Awake () {

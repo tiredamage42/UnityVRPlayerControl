@@ -265,6 +265,7 @@ public class Inventory : MonoBehaviour, IInteractable
             bool isQuickEquipped = false;
             if (slot.isQuickEquipped) {
                 if (slot.item.equipActions.Contains(useIndex)) {
+                    Debug.LogError("unequipping quick");
                     UnequipItem(equipSlot, true);
                     isQuickEquipped = true;
                 }

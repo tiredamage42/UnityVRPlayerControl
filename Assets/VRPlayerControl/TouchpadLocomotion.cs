@@ -275,8 +275,12 @@ public class TouchpadLocomotion : MonoBehaviour
 
     void CheckForJump (bool movementEnabled) {
         if (moveScript.isGrounded && movementEnabled) {
-            if (!StandardizedVRInput.ActionOccupied(jumpAction, moveHand) && jumpAction.GetStateDown(moveHand)) {
-                moveScript.Jump();
+            if (jumpAction.GetStateDown(moveHand)) {
+
+                    Debug.LogError("jumped");
+                if (!StandardizedVRInput.ActionOccupied(jumpAction, moveHand)) {
+                    moveScript.Jump();
+                }
             }
         }
     }
