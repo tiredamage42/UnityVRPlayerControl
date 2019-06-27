@@ -451,7 +451,10 @@ namespace VRPlayer
         void OnInspectStart (Interactor interactor, Interactable hoveringInteractable) {
             
             if (canQuickEquip) {
+                if (hoveringInteractable.actionNames.Length > inventory.GRAB_ACTION) {
+            
                 StandardizedVRInput.instance.ShowHint(handType, useAction, hoveringInteractable.actionNames[inventory.GRAB_ACTION]);
+                }
             }
             else {
 

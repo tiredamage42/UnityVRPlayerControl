@@ -293,6 +293,7 @@ namespace SimpleUI {
         public bool needsInput=true;
 
         protected virtual void OnEnable () {
+            InitializeSubHolders();
             // Debug.LogError("getting element references");
             GetElementReferences();
             UpdateElementHolder();    
@@ -320,6 +321,8 @@ namespace SimpleUI {
             }
 
             if (Application.isPlaying) {
+                if (needsInput) {
+
                 if (UIManager.input.GetButtonDown(UIManager.cancelButton)) {
                     if (!isBase) {
                         gameObject.SetActive(false);
@@ -328,6 +331,7 @@ namespace SimpleUI {
                     else {
                         OnBaseCancel();
                     }
+                }
                 }
             }
         }
