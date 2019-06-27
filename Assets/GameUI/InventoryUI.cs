@@ -128,9 +128,12 @@ public class InventoryUI : MonoBehaviour
         InitializeSingleInventoryUI(UIType.FullInventory, false, inventory, null, maxFullInventoryButtons, OnFullInventorySubmit);   
     }
     public void OpenQuickTradeUI (Inventory showInventory, int throughID) {
+        if (IsOpen(UIType.FullInventory) || IsOpen(UIType.FullTrade)) {
+            return;
+        } 
         if (quickTradeInteractorID < 0 && quickInventoryInteractorID != throughID) {
             quickTradeInteractorID = throughID;
-            Debug.LogError("wooo");
+            // Debug.LogError("wooo");
             InitializeSingleInventoryUI(UIType.QuickTrade, false, showInventory, inventory, maxQuickTradeButtons, OnQuickTradeSubmit);
         }
     }
@@ -270,20 +273,21 @@ public class InventoryUI : MonoBehaviour
         OpenQuickTradeUI(trader, interactorID);
     }
 
-    void OnQuickTradeEnd (Inventory mine, Inventory trader) {
+    void OnQuickTradeEnd (Inventory mine, Inventory trader, int interactorID) {
         if (currentLinkedInventory == trader) {
-            Debug.LogError("CLSIGN");
-            CloseQuickTradeUI();
+            if (quickTradeInteractorID == interactorID) {
+                Debug.LogError("CLSIGN");
+                CloseQuickTradeUI();
+            }
         }
         else {
             Debug.LogError("trying to end quick trade with " + trader.name + ", but we're already quick trading with " + currentLinkedInventory.name);
         }
     }
-    void OnTradeStart (Inventory mine, Inventory trader) {
+    void OnTradeStart (Inventory mine, Inventory trader, int interactorID) {
         OpenFullTradeUI (trader);
         
     }
-
 
     // void OnInspectStart (Interactor interactor, Interactable interactable) {
 
@@ -344,7 +348,6 @@ public class InventoryUI : MonoBehaviour
             inventory.onDrop -= OnDrop;
 			inventory.onEquip -= OnEquip;
             inventory.onUnequip -= OnUnequip;
-
 
             inventory.onTradeStart -= OnTradeStart;
             inventory.onQuickTradeStart -= OnQuickTradeStart;

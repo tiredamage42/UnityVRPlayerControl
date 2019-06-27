@@ -14,10 +14,21 @@ namespace InventorySystem {
         public float respawnRate = 3.0f;
         Inventory inventory;
 
+        public bool respawnDebug;
+
         public Actor actorValuesToUse;
         
         void Awake () {
             inventory = GetComponent<Inventory>();
+        }
+        void Update () {
+            if (respawnDebug) {
+
+                if (actorValuesToUse != null) {
+                    Respawn(actorValuesToUse.GetValueDictionary());
+                }
+                respawnDebug = false;
+            }
         }
 
         void Start () {

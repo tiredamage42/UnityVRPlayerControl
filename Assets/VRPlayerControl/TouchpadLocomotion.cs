@@ -91,13 +91,13 @@ public class TouchpadLocomotion : MonoBehaviour
     int currentClimbHand;
     public Vector3 climbExitForceMultiplier = new Vector3(10, 100, 10);
     
-    int Hand2Index(SteamVR_Input_Sources hand) 
-    {
-        return hand == SteamVR_Input_Sources.LeftHand ? 1 : 0;
-    }
-    SteamVR_Input_Sources Index2Hand (int index) {
-        return index == 0 ? SteamVR_Input_Sources.RightHand : SteamVR_Input_Sources.LeftHand;
-    }
+    // int Hand2Index(SteamVR_Input_Sources hand) 
+    // {
+    //     return hand == SteamVR_Input_Sources.LeftHand ? 1 : 0;
+    // }
+    // SteamVR_Input_Sources Index2Hand (int index) {
+    //     return index == 0 ? SteamVR_Input_Sources.RightHand : SteamVR_Input_Sources.LeftHand;
+    // }
     int OtherHand (int hand) {
         return hand == 0 ? 1 : 0;
     }
@@ -109,7 +109,7 @@ public class TouchpadLocomotion : MonoBehaviour
     void SetHandClimb (int climbHand) {
         isClimbing = true;
         currentClimbHand = climbHand;
-        previousHandPosition = Player.instance.GetHand(Index2Hand(currentClimbHand)).transform.localPosition;
+        previousHandPosition = Player.instance.GetHand(VRManager.Int2Hand(currentClimbHand)).transform.localPosition;
     }
 
     
@@ -128,7 +128,7 @@ public class TouchpadLocomotion : MonoBehaviour
             bool isClimbable = climbables[hand];
 
             // if we just clicked to start climbing, make this the primary climb hand
-            if (isClimbable && climbAction.GetStateDown(Index2Hand(hand))) {
+            if (isClimbable && climbAction.GetStateDown(VRManager.Int2Hand(hand))) {
                 SetHandClimb(hand);
             }
 
@@ -136,7 +136,7 @@ public class TouchpadLocomotion : MonoBehaviour
             if (isClimbing && currentClimbHand == hand) {
 
                 // if we've let go to stop climbing
-                if (!isClimbable || climbAction.GetStateUp(Index2Hand(hand))) {
+                if (!isClimbable || climbAction.GetStateUp(VRManager.Int2Hand(hand))) {
 
                     isClimbing = false;
                     justLetGo = true;
@@ -144,7 +144,7 @@ public class TouchpadLocomotion : MonoBehaviour
                     //check if our other hand is climbable and gripping (so we make that the primary one again)
                     int otherHand = OtherHand(hand);
 
-                    if (climbables[otherHand] && climbAction.GetState(Index2Hand(otherHand))) {
+                    if (climbables[otherHand] && climbAction.GetState(VRManager.Int2Hand(otherHand))) {
                         justLetGo = false;
 
                         SetHandClimb(otherHand);
@@ -162,7 +162,7 @@ public class TouchpadLocomotion : MonoBehaviour
         moveScript.useRawMovement = isClimbing;
         if (isClimbing) {
 
-            Vector3 handLocalPosition = Player.instance.GetHand(Index2Hand(currentClimbHand)).transform.localPosition;
+            Vector3 handLocalPosition = Player.instance.GetHand(VRManager.Int2Hand(currentClimbHand)).transform.localPosition;
             
             moveScript.SetInputMoveVector(previousHandPosition - handLocalPosition);
             previousHandPosition = handLocalPosition;
@@ -170,7 +170,7 @@ public class TouchpadLocomotion : MonoBehaviour
         }
         else {
             if (justLetGo) {
-                Vector3 momentum = previousHandPosition - (Player.instance.GetHand(Index2Hand(currentClimbHand)).transform.localPosition);
+                Vector3 momentum = previousHandPosition - (Player.instance.GetHand(VRManager.Int2Hand(currentClimbHand)).transform.localPosition);
                 moveScript.SetMomentum(momentum.MultiplyBy(climbExitForceMultiplier)
                     
                 );

@@ -7,6 +7,7 @@ namespace VRPlayer {
     */
     public class VRMenu : MonoBehaviour
     {
+        public float angleThreshold = 15;
         public bool matchXRotation;
         public float followSpeed = 5;
         public Vector3 offset = new Vector3(0,0.5f,1);
@@ -17,12 +18,15 @@ namespace VRPlayer {
             
             baseTransform.position = Vector3.Lerp(baseTransform.position, hmdTransform.position, deltaTime * followSpeed);
 
-            Vector3 targetRot = hmdTransform.rotation.eulerAngles;
-            if (!matchXRotation)
-                targetRot.x = 0;
-            targetRot.z = 0;
-
-            baseTransform.rotation = Quaternion.Slerp(baseTransform.rotation, Quaternion.Euler(targetRot), deltaTime * followSpeed);
+            if (Vector3.Angle(hmdTransform.forward, baseTransform.forward) > angleThreshold) {
+                Vector3 targetRot = hmdTransform.rotation.eulerAngles;
+                targetRot.z = 0;
+                
+                if (!matchXRotation)
+                    targetRot.x = 0;
+                
+                baseTransform.rotation = Quaternion.Slerp(baseTransform.rotation, Quaternion.Euler(targetRot), deltaTime * followSpeed);
+            }
         }
 
         void Awake () {
