@@ -100,11 +100,12 @@ namespace InteractionSystem
                 onInspectStart.Invoke(interactor);
             }
         }
+        
         public void OnInspectedEnd (Interactor interactor) {
             currentHoveringIDs.Remove(interactor.GetInstanceID());
-            if (highlightOnHover) {
-                UnHighlight();
-            }
+            // if (highlightOnHover) {
+            //     UnHighlight();
+            // }
             for (int i = 0; i < listeners.Count; i++) {
                 listeners[i].OnInspectedEnd(interactor);
             }
