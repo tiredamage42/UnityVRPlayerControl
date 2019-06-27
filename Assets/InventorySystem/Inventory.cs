@@ -101,7 +101,7 @@ public class Inventory : MonoBehaviour, IInteractable
 
     public void OnInspectedStart (Interactor interactor) {
         if (allowQuickTrade) {
-            Inventory interactorInventory = interactor.GetComponent<Inventory>();
+            Inventory interactorInventory = interactor.GetComponentInParent<Inventory>();
             if (interactorInventory != null) {
                 interactorInventory.SuggestQuickTrade(this, interactor.interactorID);
             }
@@ -110,7 +110,7 @@ public class Inventory : MonoBehaviour, IInteractable
 
     public void OnInspectedEnd (Interactor interactor) {
         if (allowQuickTrade) {
-            Inventory interactorInventory = interactor.GetComponent<Inventory>();
+            Inventory interactorInventory = interactor.GetComponentInParent<Inventory>();
             if (interactorInventory != null) {
                 interactorInventory.ForgetQuickTrade(this);
             }
@@ -121,7 +121,7 @@ public class Inventory : MonoBehaviour, IInteractable
     public void OnUsedStart (Interactor interactor, int useAction) {
         if (useAction == TRADE_ACTION) {
             Debug.LogError("Trading with " + name);
-            Inventory interactorInventory = interactor.GetComponent<Inventory>();
+            Inventory interactorInventory = interactor.GetComponentInParent<Inventory>();
             if (interactorInventory != null) {
                 interactorInventory.ForgetQuickTrade(this);
                 interactorInventory.InitiateTrade(this);
@@ -136,11 +136,14 @@ public class Inventory : MonoBehaviour, IInteractable
 
     public void ForgetQuickTrade(Inventory withInventory) {
         if (onQuickTradeEnd != null) {
+            Debug.LogError("forget quick trade");
             onQuickTradeEnd(this, withInventory);
         }
     }
     public void SuggestQuickTrade(Inventory withInventory, int throughInteractor) {
+        Debug.LogError("suggesting quick trade");
         if (onQuickTradeStart != null) {
+
             onQuickTradeStart(this, withInventory, throughInteractor);
         }
     }

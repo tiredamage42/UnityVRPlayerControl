@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 651118d94913b4ccaa693bae51d9b8b2, type: 3}
   m_Name: QuickTradeTransform
   m_EditorClassIdentifier: 
-  transformSettings: []
+  transformSettings:
+  - position: {x: 0, y: 0.075, z: -0.5}
+    rotation: {x: 90, y: 0, z: 0}
