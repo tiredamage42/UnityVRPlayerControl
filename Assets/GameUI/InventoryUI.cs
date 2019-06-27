@@ -110,7 +110,7 @@ public class InventoryUI : MonoBehaviour
         // }
         if (!CheckForAlternateCallback(type)) return;
         InitializeCallbacksForUIs (isRadial, type, onSubmit);        
-        BeginShow(!isRadial, !isRadial, forInventory, linkedInventory, Type2UI(type), maxButtons, 0);
+        BeginShow(!isRadial, !isRadial, forInventory, linkedInventory, Type2UI(type), maxButtons, 0, 0);
         BroadcastUIOpen(type);
     }
 
@@ -146,22 +146,22 @@ public class InventoryUI : MonoBehaviour
         InitializeCallbacksForUIs(false, type, OnFullTradeSubmit);
         
         int uiIndex = 0;
-        BeginShow(true, true, inventory, showInventory, fullTrade.subHolders[uiIndex], maxFullInventoryButtons, uiIndex);
+        BeginShow(true, true, inventory, showInventory, fullTrade.subHolders[uiIndex], maxFullInventoryButtons, uiIndex, 1);
         
         uiIndex = 1;
-        BeginShow(true, false, showInventory, inventory, fullTrade.subHolders[uiIndex], maxFullInventoryButtons, uiIndex);
+        BeginShow(true, false, showInventory, inventory, fullTrade.subHolders[uiIndex], maxFullInventoryButtons, uiIndex, 0);
 
         BroadcastUIOpen(UIType.FullTrade);
     }
     
 
-        void BeginShow (bool paginate, bool setSelection, Inventory forInventory, Inventory linkedInventory, UIElementHolder uiHolder, int maxButtons, int uiIndex) {
+        void BeginShow (bool paginate, bool setSelection, Inventory forInventory, Inventory linkedInventory, UIElementHolder uiHolder, int maxButtons, int uiIndex, int otherIndex) {
             if (forInventory != this.inventory) {
                 currentLinkedInventory = forInventory;
             }
             
             if (inventoryButtonsPerInventory[uiIndex] == null) inventoryButtonsPerInventory[uiIndex] = uiHolder.GetAllElements(maxButtons);
-            UpdateUIButtons(paginate, forInventory, linkedInventory, maxButtons, uiIndex);
+            UpdateUIButtons(paginate, forInventory, linkedInventory, maxButtons, uiIndex, otherIndex);
             if (setSelection) {
                 UIManager.SetSelection(inventoryButtonsPerInventory[uiIndex][0].gameObject);
             }
@@ -170,7 +170,6 @@ public class InventoryUI : MonoBehaviour
         void BeginClose (UIType type, UIElementHolder uiHolder) {
             UIManager.HideUI(uiHolder);
             
-
             for (int i = 0; i < inventoryButtonsPerInventory.Length; i++)
                 inventoryButtonsPerInventory[i] = null;
             for (int i = 0; i < currentPaginatedOffsets.Length; i++)
@@ -232,7 +231,8 @@ public class InventoryUI : MonoBehaviour
             quickTradeInteractorID = -1;
         }
         public void CloseFullTradeUI () {
-            BeginClose(UIType.FullTrade, quickTrade);
+            Debug.LogError("closing full trade");
+            BeginClose(UIType.FullTrade, fullTrade);
         }
         System.Action Type2Close (UIType type) {
             switch(type) {
@@ -274,15 +274,15 @@ public class InventoryUI : MonoBehaviour
     }
 
     void OnQuickTradeEnd (Inventory mine, Inventory trader, int interactorID) {
-        if (currentLinkedInventory == trader) {
-            if (quickTradeInteractorID == interactorID) {
-                Debug.LogError("CLSIGN");
-                CloseQuickTradeUI();
-            }
+        if (quickTradeInteractorID == interactorID) {
+            Debug.LogError("CLSIGN");
+            CloseQuickTradeUI();
         }
-        else {
-            Debug.LogError("trying to end quick trade with " + trader.name + ", but we're already quick trading with " + currentLinkedInventory.name);
-        }
+        // if (currentLinkedInventory == trader) {
+        // }
+        // else {
+        //     Debug.LogError("trying to end quick trade with " + trader.name + ", but we're already quick trading with " + currentLinkedInventory.name);
+        // }
     }
     void OnTradeStart (Inventory mine, Inventory trader, int interactorID) {
         OpenFullTradeUI (trader);
@@ -433,7 +433,7 @@ public class InventoryUI : MonoBehaviour
                     // }
                     
                     if (updateButtons){
-                        UpdateUIButtons(true, (Inventory)customData[1], (Inventory)customData[2], (int)customData[3], (int)customData[4]);
+                        UpdateUIButtons(true, (Inventory)customData[1], (Inventory)customData[2], (int)customData[3], (int)customData[4], (int)customData[5]);
                     }
                 }
             }
@@ -468,7 +468,7 @@ public class InventoryUI : MonoBehaviour
                         OpenFullTradeUI(trader);
                     }
                     if (updateButtons){
-                        UpdateUIButtons(true, trader, tradee, (int)customData[3], (int)customData[4]);
+                        UpdateUIButtons(true, trader, tradee, (int)customData[3], (int)customData[4], (int)customData[5]);
                     }
                 // }
             }
@@ -479,7 +479,6 @@ public class InventoryUI : MonoBehaviour
         void OnFullTradeSubmit (GameObject[] data, object[] customData, Vector2Int submitType) {
 			if (customData != null) {
                 ItemBehavior item = (ItemBehavior)customData[0];
-                if (item != null) {
                     
                     bool updateButtons = false;
                     Inventory trader = (Inventory)customData[1];
@@ -487,10 +486,12 @@ public class InventoryUI : MonoBehaviour
                     
                     // single trade
                     if (submitType.x == FULL_TRADE_SINGLE_TRADE_ACTION) {
+                if (item != null) {
                         Debug.LogError("heyyyy");
                         if (trader.TransferItemTo(item, 1, tradee)) {
                             updateButtons = true;
                         }
+                }
                     }
                     // take all
                     else if (submitType.x == FULL_TRADE_TRADE_ALL_ACTION) {   
@@ -500,6 +501,8 @@ public class InventoryUI : MonoBehaviour
                     }
                     //consume on selected inventory
                     else if (submitType.x == FULL_TRADE_CONSUME_ACTION) {
+                        if (item != null) {
+
                         // if (item.OnConsume(trader, GetWorkingInventorySlot(UIType.FullTrade))) {
                         
                         int count = 1;
@@ -508,6 +511,7 @@ public class InventoryUI : MonoBehaviour
                         
                             updateButtons = true;
                         }
+                        }
                     }
                     //change working inventory
                     // else if (submitType == 3) {
@@ -515,9 +519,11 @@ public class InventoryUI : MonoBehaviour
                     // }
                     
                     if (updateButtons){
-                        UpdateUIButtons(true, trader, tradee, (int)customData[3], (int)customData[4]);
+                        UpdateUIButtons(true, trader, tradee, (int)customData[3], (int)customData[4], (int)customData[5]);
+                        UpdateUIButtons(true, tradee, trader, (int)customData[3], (int)customData[5], (int)customData[4]);
+
                     }
-                }
+                
             }
 		}
 
@@ -531,9 +537,9 @@ public class InventoryUI : MonoBehaviour
 
         
         
-        void MakeItemButton (SelectableElement element, Inventory.InventorySlot slot, Inventory inventory, Inventory linkedInventory, int maxButtons, int uiIndex) {
+        void MakeItemButton (SelectableElement element, Inventory.InventorySlot slot, Inventory forInventory, Inventory linkedInventory, int maxButtons, int uiIndex, int otherIndex) {
             string display = slot.item.itemName + " ( x"+slot.count+" )";
-            MakeButton( element, display, new object[] { slot.item, inventory, linkedInventory, maxButtons, uiIndex } );
+            MakeButton( element, display, new object[] { slot.item, forInventory, linkedInventory, maxButtons, uiIndex, otherIndex } );
         }
 
         void MakeButton (SelectableElement element, string text, object[] customData) {
@@ -602,7 +608,7 @@ public class InventoryUI : MonoBehaviour
         // }
 
 
-        void UpdateUIButtons (bool paginate, Inventory forInventory, Inventory linkedInventory, int maxButtons, int uiIndex) 
+        void UpdateUIButtons (bool paginate, Inventory forInventory, Inventory linkedInventory, int maxButtons, int uiIndex, int otherIndex) 
         {
             
             int allInventoryCount = forInventory.allInventory.Count;
@@ -619,11 +625,11 @@ public class InventoryUI : MonoBehaviour
                 bool isAtBeginning = currentPaginatedOffsets[uiIndex] == 0;
 
                 if (!isAtBeginning){
-                    MakeButton(elements[0], " [ Page Up ] ", new object[]{"BACK", forInventory, linkedInventory, maxButtons, uiIndex });
+                    MakeButton(elements[0], " [Page Up ] ", new object[]{"BACK", forInventory, linkedInventory, maxButtons, uiIndex, otherIndex });
                     start = 1;
                 }
                 if (!isAtEnd) {
-                    MakeButton(elements[maxButtons-1], " [ Page Down ] ", new object[]{"FWD", forInventory, linkedInventory, maxButtons, uiIndex });
+                    MakeButton(elements[maxButtons-1], "[ Page Down ] ", new object[]{"FWD", forInventory, linkedInventory, maxButtons, uiIndex, otherIndex });
                     end = maxButtons - 1;
                 }
             }
@@ -631,10 +637,10 @@ public class InventoryUI : MonoBehaviour
             for (int i = start ; i < end; i++) {
                 int inventoryIndex = paginate ? (i-start) + currentPaginatedOffsets[uiIndex] : i;
                 if (inventoryIndex < allInventoryCount) {
-                    MakeItemButton ( elements[i], forInventory.allInventory[inventoryIndex], forInventory, linkedInventory, maxButtons, uiIndex );
+                    MakeItemButton ( elements[i], forInventory.allInventory[inventoryIndex], forInventory, linkedInventory, maxButtons, uiIndex, otherIndex );
                 }
                 else {
-                    MakeButton( elements[i], " Empty ", null );
+                    MakeButton( elements[i], "Empty ", new object[] { null, forInventory, linkedInventory, maxButtons, uiIndex, otherIndex } );
                 }
             }
         }
@@ -679,7 +685,7 @@ public class InventoryUI : MonoBehaviour
                     if (updateButtons){
                         Inventory linkedInventory = (Inventory)customData[2];
 
-                        UpdateUIButtons(true, forInventory, linkedInventory, maxButtons, uiIndex);
+                        UpdateUIButtons(true, forInventory, linkedInventory, maxButtons, uiIndex, (int)customData[5]);
                         
                         if (newSelection != null) {
                             StartCoroutine(SetSelection(newSelection.gameObject));
