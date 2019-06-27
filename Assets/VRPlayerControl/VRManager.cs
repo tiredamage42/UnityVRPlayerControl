@@ -53,6 +53,36 @@ namespace VRPlayer{
             }
         }
 
+        public static int Hand2Int(SteamVR_Input_Sources hand) {
+            if (hand == SteamVR_Input_Sources.RightHand) 
+                return 0;
+            else if (hand == SteamVR_Input_Sources.LeftHand) 
+                return 1;
+            
+            Debug.LogError("no integer defined for vr source :: " + hand + ", only left and right hands are supported");
+            return -1;
+        }
+        public static SteamVR_Input_Sources Int2Hand (int hand) {
+            if (hand == 0)
+                return SteamVR_Input_Sources.RightHand;
+            else if (hand == 1)
+                return SteamVR_Input_Sources.LeftHand;
+        
+            Debug.LogError("no vr source defined for integer :: " + hand + ", only 0 and 1 are supported");
+            return errorVRSource;
+        }
+        public static SteamVR_Input_Sources OtherHand (SteamVR_Input_Sources hand) {
+            if (hand == SteamVR_Input_Sources.RightHand) 
+                return SteamVR_Input_Sources.LeftHand;
+            else if (hand == SteamVR_Input_Sources.LeftHand) 
+                return SteamVR_Input_Sources.RightHand;
+            
+            Debug.LogError("no other vr source for vr source :: " + hand + ", only left and right hands are supported");
+            return errorVRSource;
+        }
+
+        public const SteamVR_Input_Sources errorVRSource = SteamVR_Input_Sources.Keyboard;
+
         
         
         static _GAME_MANAGER_TYPE_ _gameManager;

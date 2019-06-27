@@ -38,7 +38,7 @@ namespace InteractionSystem
 
         private void Awake()
         {
-            InitializeInteractableComponents();
+            InitializeListeners();
         }
 
         protected virtual bool ShouldIgnoreHighlight(Component component)
@@ -88,76 +88,74 @@ namespace InteractionSystem
             }
         }
 
-        public void OnInspectStart (Interactor interactor) {
+        public void OnInspectedStart (Interactor interactor) {
             currentHoveringIDs.Add(interactor.GetInstanceID());
             if (highlightOnHover) {
                 SubmitForHighlight();
             }
-            for (int i = 0; i < interactables.Count; i++) {
-                interactables[i].OnInspectStart(interactor);
+            for (int i = 0; i < listeners.Count; i++) {
+                listeners[i].OnInspectedStart(interactor);
             }
             if (onInspectStart != null) {
                 onInspectStart.Invoke(interactor);
             }
         }
-        public void OnInspectEnd (Interactor interactor) {
+        public void OnInspectedEnd (Interactor interactor) {
             currentHoveringIDs.Remove(interactor.GetInstanceID());
             if (highlightOnHover) {
                 UnHighlight();
             }
-            for (int i = 0; i < interactables.Count; i++) {
-                interactables[i].OnInspectEnd(interactor);
+            for (int i = 0; i < listeners.Count; i++) {
+                listeners[i].OnInspectedEnd(interactor);
             }
             if (onInspectEnd != null) {
                 onInspectEnd.Invoke(interactor);
             }
         }
-        public void OnInspectUpdate(Interactor interactor) {
-            for (int i = 0; i < interactables.Count; i++) {
-                interactables[i].OnInspectUpdate(interactor);
+        public void OnInspectedUpdate(Interactor interactor) {
+            for (int i = 0; i < listeners.Count; i++) {
+                listeners[i].OnInspectedUpdate(interactor);
             }
             if (onInspectUpdate != null) {
                 onInspectUpdate.Invoke(interactor);
             }
         }
 
-        public void OnUseStart (Interactor interactor, int useIndex) {
-            for (int i = 0; i < interactables.Count; i++) {
-                interactables[i].OnUseStart(interactor, useIndex);
+        public void OnUsedStart (Interactor interactor, int useIndex) {
+            for (int i = 0; i < listeners.Count; i++) {
+                listeners[i].OnUsedStart(interactor, useIndex);
             }
             if (onUseStart != null) {
                 onUseStart.Invoke(interactor, useIndex);
             }
         }
-        public void OnUseEnd (Interactor interactor, int useIndex) {
-            for (int i = 0; i < interactables.Count; i++) {
-                interactables[i].OnUseEnd(interactor, useIndex);
+        public void OnUsedEnd (Interactor interactor, int useIndex) {
+            for (int i = 0; i < listeners.Count; i++) {
+                listeners[i].OnUsedEnd(interactor, useIndex);
             }
             if (onUseEnd != null) {
                 onUseEnd.Invoke(interactor, useIndex);
             }
         }
-        public void OnUseUpdate(Interactor interactor, int useIndex) {
-            for (int i = 0; i < interactables.Count; i++) {
-                interactables[i].OnUseUpdate(interactor, useIndex);
+        public void OnUsedUpdate(Interactor interactor, int useIndex) {
+            for (int i = 0; i < listeners.Count; i++) {
+                listeners[i].OnUsedUpdate(interactor, useIndex);
             }
             if (onUseUpdate != null) {
                 onUseUpdate.Invoke(interactor, useIndex);
             }
         }
 
-        List<IInteractable> interactables = new List<IInteractable>();
-        void InitializeInteractableComponents() {
-
-            IInteractable[] interactables = GetComponents<IInteractable>();
-
-            for (int i = 0; i< interactables.Length; i++) {
-                this.interactables.Add(interactables[i]);
+        List<IInteractable> listeners = new List<IInteractable>();
+        void InitializeListeners() {
+            IInteractable[] listeners_ = GetComponents<IInteractable>();
+            for (int i = 0; i< listeners_.Length; i++) {
+                this.listeners.Add(listeners_[i]);
             }
         }
 
-        public void AddInteractableComponent (IInteractable interactable) {
-            interactables.Add(interactable);
+        public void AddListener (IInteractable listener) {
+            listeners.Add(listener);
         }
 
         protected virtual void Update()

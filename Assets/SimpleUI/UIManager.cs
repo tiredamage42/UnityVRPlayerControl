@@ -13,8 +13,8 @@ namespace SimpleUI {
     {
 
         public static void SetSelection(GameObject selection) {
-            // inputModule.GetComponent<EventSystem>().currentSelectedGameObject	=null;
-            inputModule.GetComponent<EventSystem>().SetSelectedGameObject(null);
+            // // inputModule.GetComponent<EventSystem>().currentSelectedGameObject	=null;
+            // inputModule.GetComponent<EventSystem>().SetSelectedGameObject(null);
 
             inputModule.GetComponent<EventSystem>().SetSelectedGameObject(selection);
 
@@ -229,13 +229,13 @@ namespace SimpleUI {
 
                 foreach (var d in GetUISubmitInvocations()) {
                 
-                    uiObjectC.onSubmitEvent += (System.Action<GameObject[], object[], int>)d;
+                    uiObjectC.onSubmitEvent += (System.Action<GameObject[], object[], Vector2Int>)d;
                 }
             }
         }
 
         public static event System.Action<GameObject[], object[]> onUISelect;//, onUISubmit;
-        public static event System.Action<GameObject[], object[], int> onUISubmit;
+        public static event System.Action<GameObject[], object[], Vector2Int> onUISubmit;
         
         public static System.Delegate[] GetUISelectInvocations () {
             return onUISelect.GetInvocationList();

@@ -7,23 +7,23 @@ namespace Valve.VR.InteractionSystem.Sample
     {
 
         
-		public void OnInspectStart(Interactor interactor) {
+		public void OnInspectedStart(Interactor interactor) {
 
 		}
-        public void OnInspectEnd(Interactor interactor){
+        public void OnInspectedEnd(Interactor interactor){
 
 		}
-        public void OnInspectUpdate(Interactor interactor){
+        public void OnInspectedUpdate(Interactor interactor){
 
 		}
-        public void OnUseStart(Interactor interactor, int useIndex){
+        public void OnUsedStart(Interactor interactor, int useIndex){
             Debug.LogError("planting");
             StartCoroutine(DoPlant());
 		}
-        public void OnUseEnd(Interactor interactor, int useIndex){
+        public void OnUsedEnd(Interactor interactor, int useIndex){
 			
 		}
-        public void OnUseUpdate(Interactor interactor, int useIndex){
+        public void OnUsedUpdate(Interactor interactor, int useIndex){
 
 		}
 

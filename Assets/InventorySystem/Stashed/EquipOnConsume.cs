@@ -16,7 +16,7 @@ namespace InventorySystem {
         public void OnItemDropped (Inventory inventory, ItemBehavior item, int count) {
 
         }
-        public void OnItemConsumed (Inventory inventory, ItemBehavior item, int equipSlot) {
+        public void OnItemConsumed (Inventory inventory, ItemBehavior item, int count, int equipSlot) {
 
             Debug.LogError("Equipping on consume");
             if (inventory.ItemIsEquipped(equipSlot, item)) {
