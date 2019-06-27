@@ -35,18 +35,18 @@ namespace Valve.VR.InteractionSystem.Sample
 			generalText.text = string.Format("Attached: {0} :: Time: {1:F2}", inventory.name, (Time.time - attachTime));
 		}
 					
-		public void OnInspectStart(Interactor interactor) {
+		public void OnInspectedStart(Interactor interactor) {
 			generalText.text = "Hovering hand: " + interactor.name;
 
 		}
-        public void OnInspectEnd(Interactor interactor){
+        public void OnInspectedEnd(Interactor interactor){
 			generalText.text = "No Hand Hovering";
 		}
 
-        public void OnInspectUpdate(Interactor interactor){
+        public void OnInspectedUpdate(Interactor interactor){
 
 		}
-        public void OnUseStart(Interactor interactor, int useIndex){
+        public void OnUsedStart(Interactor interactor, int useIndex){
 
 			// Save our position/rotation so that we can restore it when we detach
 			oldPosition = transform.position;
@@ -60,7 +60,7 @@ namespace Valve.VR.InteractionSystem.Sample
 			// hand.AttachObject(gameObject, attachmentFlags);
 		}
 
-        public void OnUseEnd(Interactor interactor, int useIndex){
+        public void OnUsedEnd(Interactor interactor, int useIndex){
 			
 
 			// hand.DetachObject(gameObject);
@@ -73,7 +73,7 @@ namespace Valve.VR.InteractionSystem.Sample
 			transform.rotation = oldRotation;
 		}
 			
-        public void OnUseUpdate(Interactor interactor, int useIndex){
+        public void OnUsedUpdate(Interactor interactor, int useIndex){
 
 		}
 

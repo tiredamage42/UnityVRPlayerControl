@@ -30,6 +30,15 @@ namespace SimpleUI {
         public float textScale = 0.125f;
         public float scale = 0.01f;
 
+
+        public UIElementHolder[] subHolders;
+
+        void InitializeSubHolders () {
+            for (int i =0 ; i < subHolders.Length; i++) {
+                subHolders[i].parentHolder = this;
+            }
+        }
+
         [HideInInspector] public UIElementHolder parentHolder;
         public bool isBase;
 
@@ -56,9 +65,9 @@ namespace SimpleUI {
         // }
 
 
-        List<System.Func<int>> getAlternativeSubmitDelegates = new List<System.Func<int>>();
-        event System.Func<int> getAlternativeSubmit;
-        public System.Func<int> getAlternativeSubmitToUse {
+        List<System.Func<Vector2Int>> getAlternativeSubmitDelegates = new List<System.Func<Vector2Int>>();
+        event System.Func<Vector2Int> getAlternativeSubmit;
+        public System.Func<Vector2Int> getAlternativeSubmitToUse {
             get {
                 if (parentHolder != null) {
                     return parentHolder.getAlternativeSubmitToUse;
@@ -67,7 +76,7 @@ namespace SimpleUI {
             }
         }
         
-        public event System.Func<int> alternativeSubmit {
+        public event System.Func<Vector2Int> alternativeSubmit {
             add {
                 getAlternativeSubmit += value;
                 getAlternativeSubmitDelegates.Add(value);
@@ -113,9 +122,9 @@ namespace SimpleUI {
         }
 
 
-        List<System.Action<GameObject[], object[], int>> onSubmitdelegates = new List<System.Action<GameObject[], object[], int>>();
-        event System.Action<GameObject[], object[], int> onSubmit;
-        public System.Action<GameObject[], object[], int> onSubmitToUse {
+        List<System.Action<GameObject[], object[], Vector2Int>> onSubmitdelegates = new List<System.Action<GameObject[], object[], Vector2Int>>();
+        event System.Action<GameObject[], object[], Vector2Int> onSubmit;
+        public System.Action<GameObject[], object[], Vector2Int> onSubmitToUse {
             get {
                 if (parentHolder != null) {
                     return parentHolder.onSubmitToUse;
@@ -124,7 +133,7 @@ namespace SimpleUI {
             }
         }
         
-        public event System.Action<GameObject[], object[], int> onSubmitEvent {
+        public event System.Action<GameObject[], object[], Vector2Int> onSubmitEvent {
             add {
                 onSubmit += value;
                 onSubmitdelegates.Add(value);
@@ -137,20 +146,20 @@ namespace SimpleUI {
 
         public void RemoveAllEvents()
         {
-            foreach(System.Action<GameObject[], object[]> eh in onSelectdelegates)
+            foreach(var eh in onSelectdelegates)
             {
                 onSelect -= eh;
             }
             onSelectdelegates.Clear();
             
-            foreach(System.Action<GameObject[], object[], int> eh in onSubmitdelegates)
+            foreach(var  eh in onSubmitdelegates)
             {
                 onSubmit -= eh;
             }
             onSubmitdelegates.Clear();
 
 
-            foreach(System.Func<int> eh in getAlternativeSubmitDelegates)
+            foreach(var  eh in getAlternativeSubmitDelegates)
             {
                 getAlternativeSubmit -= eh;
             }
@@ -167,6 +176,9 @@ namespace SimpleUI {
         Image _backgroundPanel;
         protected Image backGround {
             get {
+                if (subHolders != null && subHolders.Length > 0) {
+                    return null;
+                }
                 if (_backgroundPanel == null) {
                     _backgroundPanel = Background();
                 }
@@ -176,6 +188,10 @@ namespace SimpleUI {
         Image _overlayPanel;
         protected Image backGroundOverlay {
             get {
+                if (subHolders != null && subHolders.Length > 0) {
+                    return null;
+                }
+                
                 if (_overlayPanel == null) {
                     _overlayPanel = BackgroundOverlay();
                 }
@@ -187,6 +203,10 @@ namespace SimpleUI {
         RectTransform _backgroundPanelRect;
         protected RectTransform backGroundRect {
             get {
+                if (subHolders != null && subHolders.Length > 0) {
+                    return null;
+                }
+                
                 if (_backgroundPanelRect == null) {
                     _backgroundPanelRect = backGround.GetComponent<RectTransform>();
                 }
@@ -196,6 +216,13 @@ namespace SimpleUI {
         RectTransform _overlayPanelRect;
         protected RectTransform backGroundOverlayRect {
             get {
+                if (subHolders != null && subHolders.Length > 0) {
+                    return null;
+                }
+                if (subHolders != null && subHolders.Length > 0) {
+                    return null;
+                }
+                
                 if (_overlayPanelRect == null) {
                     _overlayPanelRect = backGroundOverlay.GetComponent<RectTransform>();
                 }
@@ -212,6 +239,11 @@ namespace SimpleUI {
         protected List<SelectableElement> allElements = new List<SelectableElement>();
 
         void GetElementReferences () {
+
+            if (subHolders != null && subHolders.Length > 0) {
+                    return;
+                }
+                
             allElements.Clear();
             SelectableElement[] _allElements = GetComponentsInChildren<SelectableElement>();
             for (int i = 0; i < _allElements.Length; i++) {
@@ -226,6 +258,10 @@ namespace SimpleUI {
         }
 
         public virtual void UpdateElementHolder () {
+            if (subHolders != null && subHolders.Length > 0) {
+                    return;
+                }
+                
             // if (!backGround){
             //     Debug.LogError("nobackground");
             // }
@@ -263,6 +299,11 @@ namespace SimpleUI {
             // Debug.LogError("updateed holder");
         }
         protected virtual void OnDisable () {
+
+            if (subHolders != null && subHolders.Length > 0) {
+                    return;
+                }
+                
             if (needsInput) {
                 foreach(var e in allElements) {
                     e.selected = false;
@@ -272,6 +313,7 @@ namespace SimpleUI {
            
         }
         protected virtual void Update () {
+
             if (!Application.isPlaying) {
                 GetElementReferences();
                 UpdateElementHolder();
@@ -279,26 +321,39 @@ namespace SimpleUI {
 
             if (Application.isPlaying) {
                 if (UIManager.input.GetButtonDown(UIManager.cancelButton)) {
-                    if (parentHolder != null) {
+                    if (!isBase) {
                         gameObject.SetActive(false);
                         parentHolder.gameObject.SetActive(true);
                     }
                     else {
-                        if (onBaseCancel != null) {
-                            onBaseCancel ();
-                        }
-                        else {
-                            Debug.LogError(name + " has no onBaseCancel");
-                        }
+                        OnBaseCancel();
                     }
                 }
             }
         }
 
+        void OnBaseCancel () {
+            if (parentHolder != null) {
+                parentHolder.OnBaseCancel();
+            }
+            else {
+                if (onBaseCancel != null) {
+                    onBaseCancel ();
+                }
+                else {
+                    Debug.LogError(name + " has no onBaseCancel");
+                }
+            }
+        }
+
         public SelectableElement[] GetAllElements (int targetCount) {
+            if (subHolders != null && subHolders.Length > 0) {
+                return null;
+            }
+            
             if (allElements.Count < targetCount) {
                 int c = allElements.Count;
-                Debug.LogError("adding new " + (targetCount - c));
+                // Debug.LogError("adding new " + (targetCount - c));
                 for (int i = 0 ; i < targetCount - c; i++) {
                     AddNewElement("Adding new");
                 }
@@ -308,6 +363,11 @@ namespace SimpleUI {
         }
 
         public SelectableElement AddNewElement (string elementText) {
+
+            if (subHolders != null && subHolders.Length > 0) {
+                return null;
+            }
+            
             SelectableElement newElement = Instantiate(ElementPrefab());
             newElement.parentHolder = this;
             newElement.transform.SetParent( backGroundOverlay.transform );

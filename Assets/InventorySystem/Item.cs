@@ -162,17 +162,18 @@ gameMessage
         // [Header("Set to -1 for no stash")]
         // public int useActionForStash = 1;
 
-        public void OnInspectStart(Interactor interactor) {}
-        public void OnInspectEnd(Interactor interactor) {}
-        public void OnInspectUpdate(Interactor interactor) {}
-        public void OnUseStart(Interactor interactor, int useIndex) {
+        public void OnInspectedStart(Interactor interactor) {}
+        public void OnInspectedEnd(Interactor interactor) {}
+        public void OnInspectedUpdate(Interactor interactor) {}
+        public void OnUsedStart(Interactor interactor, int useIndex) {
             bool wasStashed = false;
             Inventory inventory = interactor.GetComponentInParent<Inventory>();
 
             if (itemBehavior.stashActions.Contains(useIndex)) {
-                if (inventory.StashItem(this)) {
-                    wasStashed = true;
+                if (inventory.CanStashItem(this.itemBehavior)) {
+                    inventory.StashItem(this);
                 }
+                    
             }
 
             if (itemBehavior.equipActions.Contains(useIndex)) {
@@ -194,10 +195,10 @@ gameMessage
             }
 
         }
-        public void OnUseEnd(Interactor interactor, int useIndex) {
+        public void OnUsedEnd(Interactor interactor, int useIndex) {
 
         }
-        public void OnUseUpdate(Interactor interactor, int useIndex) {
+        public void OnUsedUpdate(Interactor interactor, int useIndex) {
 
         }
 

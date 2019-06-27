@@ -1,16 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Valve.VR;
+// using Valve.VR;
 namespace InventorySystem {
     
     public class EquipPoint : MonoBehaviour {
         public Inventory baseInventory;
-        public int equipSlotOnBase;
+        public int equipID;
 
 
-        void Awake () {
-            baseInventory.SetEquipPoint(equipSlotOnBase, this);
+        void Start () {
+            baseInventory.SetEquipPoint(equipID, this);
         }
 
 
@@ -20,24 +20,14 @@ namespace InventorySystem {
         protected const float AngularVelocityMagic = 50f;
         protected const float MaxAngularVelocityChange = 20f;
 
-
-        // bool ThisSubInventoryHasCurrentEquipped (out Inventory.InventorySlot slot) {
-        //     return baseInventory.EquipSlotIsOccupied(equipSlotOnBase, out slot);
-        // }
-
-
-
-
-        protected virtual void FixedUpdate()
+        void FixedUpdate()
         {
+            if (equipID < 0 || equipID >= baseInventory.equippedSlots.Length) {
+                Debug.LogError("Equip slot " + equipID + " is out of range on inventory " + baseInventory);
+                return;
+            }
 
-
-            if (equipSlotOnBase < 0 || equipSlotOnBase >= baseInventory.equippedSlots.Length) {
-            Debug.LogError("Equip slot " + equipSlotOnBase + " is out of range on inventory " + baseInventory);
-            return;
-        }
-
-            Inventory.InventorySlot slot = baseInventory.equippedSlots[equipSlotOnBase]; 
+            Inventory.InventorySlot slot = baseInventory.equippedSlots[equipID]; 
             if (slot != null) {
                 ItemBehavior item = slot.item;
 
@@ -45,21 +35,8 @@ namespace InventorySystem {
                     UpdateAttachedVelocity(slot);
                 }
                 else if (item.equipType == Inventory.EquipType.Normal) {
-
-                    // Vector3 localPosition;
-                    // Quaternion localRotation;
-
-                    // TransformBehavior.GetValues(item.equipTransform, equipSlotOnBase, out localPosition, out localRotation);
-
-                    // slot.sceneItem.transform.localPosition = localPosition;//attachedInfo.targetLocalPos;
-                    // slot.sceneItem.transform.localRotation = localRotation;//attachedInfo.initialRotationalOffset;
-
-
-                    TransformBehavior.AdjustTransform(slot.sceneItem.transform, transform, item.equipTransform, equipSlotOnBase);
-
-                    
+                    TransformBehavior.AdjustTransform(slot.sceneItem.transform, transform, item.equipTransform, equipID);
                 }
-   
             }
         }
 
@@ -67,10 +44,9 @@ namespace InventorySystem {
         void UpdateAttachedVelocity(Inventory.InventorySlot equippedSlot)
         {
             Vector3 velocityTarget, angularTarget;
-            bool success = GetUpdatedEquippedVelocities(equippedSlot, out velocityTarget, out angularTarget);
-            if (success)
+            if (GetUpdatedEquippedVelocities(equippedSlot, out velocityTarget, out angularTarget))
             {
-                float scale = SteamVR_Utils.GetLossyScale(transform);// equipPoint);
+                float scale = Valve.VR.SteamVR_Utils.GetLossyScale(transform);// equipPoint);
                 
                 float maxAngularVelocityChange = MaxAngularVelocityChange * scale;
                 float maxVelocityChange = MaxVelocityChange * scale;
@@ -80,7 +56,7 @@ namespace InventorySystem {
             }
         }
 
-        public bool GetUpdatedEquippedVelocities(Inventory.InventorySlot equippedSlot, out Vector3 velocityTarget, out Vector3 angularTarget)
+        bool GetUpdatedEquippedVelocities(Inventory.InventorySlot equippedSlot, out Vector3 velocityTarget, out Vector3 angularTarget)
         {
             bool realNumbers = false;
 
@@ -88,17 +64,10 @@ namespace InventorySystem {
             Vector3 localPosition;
             Quaternion localRotation;
 
-            TransformBehavior.GetValues(equippedSlot.item.equipTransform, equipSlotOnBase, out localPosition, out localRotation);
+            TransformBehavior.GetValues(equippedSlot.item.equipTransform, equipID, out localPosition, out localRotation);
 
-            // GetLocalEquippedPositionTargets (equippedItem.item, out localPosition, out localRotation);
-
-
-            Vector3 targetItemPosition = transform.TransformPoint(localPosition);//equippedItem.targetLocalPos);
-            // Vector3 targetItemPosition = TargetEquippedItemWorldPosition();//equippedItem);
-
-
-
-
+            Vector3 targetItemPosition = transform.TransformPoint(localPosition);
+            
             Vector3 positionDelta = (targetItemPosition - equippedSlot.sceneItem.rigidbody.position);
             velocityTarget = (positionDelta * VelocityMagic * Time.deltaTime);
 

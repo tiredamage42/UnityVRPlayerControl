@@ -16,7 +16,7 @@ namespace InventorySystem {
 
         void OnItemStashed (Inventory inventory, ItemBehavior item, int count);
         void OnItemDropped (Inventory inventory, ItemBehavior item, int count);
-        void OnItemConsumed (Inventory inventory, ItemBehavior item, int equipSlot);
+        void OnItemConsumed (Inventory inventory, ItemBehavior item, int count, int equipSlot);
 
 
 

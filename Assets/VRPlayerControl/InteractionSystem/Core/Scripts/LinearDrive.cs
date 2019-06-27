@@ -13,7 +13,7 @@ namespace Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
 	[RequireComponent( typeof( Interactable ) )]
-	public class LinearDrive : MonoBehaviour, IInteractable, ISceneItem
+	public class LinearDrive : MonoBehaviour, ISceneItem
 	{
 		public void OnEquippedUseStart(Inventory inventory, int useIndex) {}
         public void OnEquippedUseEnd(Inventory inventory, int useIndex) {}
@@ -41,24 +41,24 @@ namespace Valve.VR.InteractionSystem
 
 
 		
-		public void OnInspectStart(Interactor interactor) {
+		// public void OnInspectStart(Interactor interactor) {
 
-		}
-        public void OnInspectEnd(Interactor interactor){
+		// }
+        // public void OnInspectEnd(Interactor interactor){
 
-		}
-        public void OnInspectUpdate(Interactor interactor){
+		// }
+        // public void OnInspectUpdate(Interactor interactor){
 
-		}
-        public void OnUseStart(Interactor interactor, int useIndex){
+		// }
+        // public void OnUseStart(Interactor interactor, int useIndex){
 
-		}
-        public void OnUseEnd(Interactor interactor, int useIndex){
+		// }
+        // public void OnUseEnd(Interactor interactor, int useIndex){
 			
-		}
-        public void OnUseUpdate(Interactor interactor, int useIndex){
+		// }
+        // public void OnUseUpdate(Interactor interactor, int useIndex){
 
-		}
+		// }
 
 
 		public Transform startPosition;

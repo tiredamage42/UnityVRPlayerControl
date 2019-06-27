@@ -109,16 +109,18 @@ namespace SimpleUI {
         if (Application.isPlaying) {
             if (parentHolder.needsInput) {
                 if (selected) {
+
+
                     if (parentHolder.getAlternativeSubmitToUse != null) {
-                        int alternativeSubmit = parentHolder.getAlternativeSubmitToUse();
-                        if (alternativeSubmit >= 0) {
-                            if (alternativeSubmit == 0) {
-                                Debug.LogError("dont use action 0 for alternative ui submit, it's already used internally");
-                            }
-                            else {
+                        Vector2Int alternativeSubmit = parentHolder.getAlternativeSubmitToUse();
+                        if (alternativeSubmit.x >= 0) {
+                            // if (alternativeSubmit == 0) {
+                            //     Debug.LogError("dont use action 0 for alternative ui submit, it's already used internally");
+                            // }
+                            // else {
                             
                                 DoSubmit(alternativeSubmit);
-                            }
+                            // }
                         }
                     }
                 }
@@ -127,7 +129,7 @@ namespace SimpleUI {
     }
 
 
-    void DoSubmit (int submitAction) {
+    void DoSubmit (Vector2Int submitAction) {
         // Debug.Log("Submitted on " + name);
         
         if (onClick != null) {
@@ -164,7 +166,11 @@ namespace SimpleUI {
 
     public void OnSubmit(BaseEventData eventData)
     {
-        DoSubmit(0);
+        if (parentHolder.getAlternativeSubmitToUse != null) {
+            return;
+        }
+
+        DoSubmit(Vector2Int.zero);
         // // Debug.Log("Submitted on " + name);
         
         // if (onClick != null) {

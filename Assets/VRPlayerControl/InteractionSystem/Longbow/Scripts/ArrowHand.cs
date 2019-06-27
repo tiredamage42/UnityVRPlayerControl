@@ -13,7 +13,7 @@ using InteractionSystem;
 namespace Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
-	public class ArrowHand : MonoBehaviour, ISceneItem, IInteractable
+	public class ArrowHand : MonoBehaviour, ISceneItem//, IInteractable
 	{
 		// private Hand hand;
 		private Longbow bow;
@@ -285,25 +285,25 @@ namespace Valve.VR.InteractionSystem
 		}
 
 
-public void OnUseStart (Interactor interactor, int useIndex) {
+// public void OnUseStart (Interactor interactor, int useIndex) {
 
-}
-public void OnUseEnd (Interactor interactor, int useIndex) {
+// }
+// public void OnUseEnd (Interactor interactor, int useIndex) {
 
-}
-		public void OnUseUpdate (Interactor interactor, int useIndex) {
+// }
+// 		public void OnUseUpdate (Interactor interactor, int useIndex) {
 
-		}
+// 		}
 
-		public void OnInspectStart (Interactor interactor) {
+// 		public void OnInspectStart (Interactor interactor) {
 
-		}
-		public void OnInspectEnd (Interactor interactor) {
+// 		}
+// 		public void OnInspectEnd (Interactor interactor) {
 
-		}
-		public void OnInspectUpdate (Interactor interactor) {
+// 		}
+// 		public void OnInspectUpdate (Interactor interactor) {
 
-		}
+// 		}
 
 
 		

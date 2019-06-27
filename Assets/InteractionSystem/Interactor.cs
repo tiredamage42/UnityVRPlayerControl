@@ -86,6 +86,10 @@ namespace InteractionSystem {
             interactRay.enabled = false;
         }
 
+        public int interactorID = 0;
+
+        
+
 
         public void ForceHoverUnlock()
         {
@@ -239,7 +243,7 @@ namespace InteractionSystem {
                 {
                     if (oldInteractable != null)
                     {
-                        oldInteractable.OnInspectEnd(this);
+                        oldInteractable.OnInspectedEnd(this);
                         if (onInspectEnd != null) {
                             onInspectEnd(this, oldInteractable);
                         }
@@ -249,7 +253,7 @@ namespace InteractionSystem {
 
                     if (newInteractable != null)
                     {
-                        newInteractable.OnInspectStart(this);
+                        newInteractable.OnInspectedStart(this);
                         if (onInspectStart != null) {
                             onInspectStart(this, newInteractable);
                         }
@@ -263,7 +267,7 @@ namespace InteractionSystem {
             if (hoveringInteractable != null) {
                 bool isUseable = hoveringInteractable.useType != Interactable.UseType.Scripted;
                 if (isUseable) {
-                    hoveringInteractable.OnUseStart(this, useIndex);
+                    hoveringInteractable.OnUsedStart(this, useIndex);
                 }
             }
             if (onUseStart != null) {
@@ -275,7 +279,7 @@ namespace InteractionSystem {
             if (hoveringInteractable != null) {
                 bool isUseable = hoveringInteractable.useType != Interactable.UseType.Scripted;
                 if (isUseable) {
-                    hoveringInteractable.OnUseEnd(this, useIndex);
+                    hoveringInteractable.OnUsedEnd(this, useIndex);
                 }
             }
             if (onUseEnd != null) {
@@ -287,7 +291,7 @@ namespace InteractionSystem {
                 bool isUseable = hoveringInteractable.useType != Interactable.UseType.Scripted;
                 if (isUseable) {
                 
-                hoveringInteractable.OnUseUpdate(this, useIndex);
+                hoveringInteractable.OnUsedUpdate(this, useIndex);
                 }
             }
             if (onUseUpdate != null) {
@@ -304,7 +308,7 @@ namespace InteractionSystem {
          
             if (hoveringInteractable)
             {  
-                hoveringInteractable.OnInspectUpdate(this);
+                hoveringInteractable.OnInspectedUpdate(this);
 
                 if (onInspectUpdate != null){
                     onInspectUpdate(this, hoveringInteractable);

@@ -13,13 +13,13 @@ namespace Valve.VR.InteractionSystem
     {
         public int useActionIndex = 0;
         
-		public void OnInspectStart(Interactor interactor) {
+		public void OnInspectedStart(Interactor interactor) {
 
 		}
-        public void OnInspectEnd(Interactor interactor){
+        public void OnInspectedEnd(Interactor interactor){
 
 		}
-        public void OnInspectUpdate(Interactor interactor){
+        public void OnInspectedUpdate(Interactor interactor){
             hovering = true;
             // lastHoveredHand = hand;
             lastInspector = interactor;
@@ -51,14 +51,14 @@ namespace Valve.VR.InteractionSystem
             InvokeEvents(wasEngaged, engaged);
 
 		}
-        public void OnUseStart(Interactor interactor, int useIndex){
+        public void OnUsedStart(Interactor interactor, int useIndex){
             Debug.LogError("hover button use start");
 		}
 
-        public void OnUseEnd(Interactor interactor, int useIndex){
+        public void OnUsedEnd(Interactor interactor, int useIndex){
 			
 		}
-        public void OnUseUpdate(Interactor interactor, int useIndex){
+        public void OnUsedUpdate(Interactor interactor, int useIndex){
 
 		}
 
@@ -123,11 +123,11 @@ namespace Valve.VR.InteractionSystem
             buttonUp = wasEngaged == true && isEngaged == false;
 
             if (buttonDown)
-                interactable.OnUseStart(lastInspector, useActionIndex);
+                interactable.OnUsedStart(lastInspector, useActionIndex);
             if (isEngaged)
-                interactable.OnUseUpdate(lastInspector, useActionIndex);
+                interactable.OnUsedUpdate(lastInspector, useActionIndex);
             if (buttonUp)
-                interactable.OnUseEnd(lastInspector, useActionIndex);
+                interactable.OnUsedEnd(lastInspector, useActionIndex);
         }
     }
 }

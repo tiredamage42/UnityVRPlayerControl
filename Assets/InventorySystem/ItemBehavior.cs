@@ -42,6 +42,8 @@ namespace InventorySystem {
     [CreateAssetMenu()]
     public class ItemBehavior : ScriptableObject
     {
+        [Header("Set to false for utility items")]
+        public bool keepOnStash = true;
         // -1 if set by where equipped from
                 // else equip point index (overwritten if quick equipped)
                 
@@ -92,10 +94,10 @@ namespace InventorySystem {
         public ItemComposition[] composedOf;
 
 
-        public bool OnConsume (Inventory inventory, int slot)
+        public bool OnConsume (Inventory inventory, int count, int slot)
         {
             if (stashedItemBehavior != null) {
-                stashedItemBehavior.OnItemConsumed(inventory, this, slot);
+                stashedItemBehavior.OnItemConsumed(inventory, this, count, slot);
                 return true;
             }
             return false;
@@ -109,22 +111,22 @@ namespace InventorySystem {
 
 
 
-    public abstract class StashUseBehavior : ScriptableObject {
-        public void OnStashedUse (Inventory inventory, ItemBehavior item, int useAction, int slotIndex, int affectingCount, Inventory secondaryInventory) {
-            if (useAction == Inventory.UI_DROP_ACTION) {
-                inventory.DropItem(item, affectingCount, true);
-            }
-            else if (useAction == Inventory.UI_TRADE_ACTION) {
-                inventory.DropItem(item, affectingCount, false);
-                secondaryInventory.StashItem(item, affectingCount);
-            }
-            else {
-                _OnStashedUse ( inventory, item, useAction, slotIndex, affectingCount, secondaryInventory);
-            }
+    // public abstract class StashUseBehavior : ScriptableObject {
+    //     public void OnStashedUse (Inventory inventory, ItemBehavior item, int useAction, int slotIndex, int affectingCount, Inventory secondaryInventory) {
+    //         if (useAction == Inventory.UI_DROP_ACTION) {
+    //             inventory.DropItem(item, affectingCount, true);
+    //         }
+    //         else if (useAction == Inventory.UI_TRADE_ACTION) {
+    //             inventory.DropItem(item, affectingCount, false);
+    //             secondaryInventory.StashItem(item, affectingCount);
+    //         }
+    //         else {
+    //             _OnStashedUse ( inventory, item, useAction, slotIndex, affectingCount, secondaryInventory);
+    //         }
 
-        }
-        protected abstract void _OnStashedUse (Inventory inventory, ItemBehavior item, int useAction, int slotIndex, int affectingCount, Inventory secondaryInventory);
-    }
+    //     }
+    //     protected abstract void _OnStashedUse (Inventory inventory, ItemBehavior item, int useAction, int slotIndex, int affectingCount, Inventory secondaryInventory);
+    // }
         
         
 // [CreateAssetMenu()]

@@ -18,12 +18,12 @@ namespace Valve.VR.InteractionSystem
 	public class CircularDrive : MonoBehaviour, IInteractable
 	{
 		
-		public void OnInspectStart(Interactor interactor) {
+		public void OnInspectedStart(Interactor interactor) {
 
 			
 
 		}
-        public void OnInspectEnd(Interactor interactor){
+        public void OnInspectedEnd(Interactor interactor){
 			if ( driving)// && hand )
 			{
              	// StartCoroutine( HapticPulses( hand, 1.0f, 10 ) );
@@ -32,10 +32,10 @@ namespace Valve.VR.InteractionSystem
 			driving = false;
 			handHoverLocked = null;
 		}
-        public void OnInspectUpdate(Interactor interactor){
+        public void OnInspectedUpdate(Interactor interactor){
 
 		}
-        public void OnUseStart(Interactor interactor, int useIndex){
+        public void OnUsedStart(Interactor interactor, int useIndex){
 			if (!isBeingGrabbed)
             {
 				isBeingGrabbed = true;
@@ -52,9 +52,9 @@ namespace Valve.VR.InteractionSystem
 				ComputeAngle( interactor.lastInteractionPoint );
 				UpdateAll();
 			}
-
 		}
-        public void OnUseEnd(Interactor interactor, int useIndex) {
+
+        public void OnUsedEnd(Interactor interactor, int useIndex) {
 
 			if (isBeingGrabbed)
 			{
@@ -71,7 +71,7 @@ namespace Valve.VR.InteractionSystem
             }
 			
 		}
-        public void OnUseUpdate(Interactor interactor, int useIndex){
+        public void OnUsedUpdate(Interactor interactor, int useIndex){
 			if ( driving )
 			
 			{
