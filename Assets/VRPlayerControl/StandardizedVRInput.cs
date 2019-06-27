@@ -26,15 +26,16 @@ namespace VRPlayer {
 
         void Update()
         {
-            if (headsetOnHead.GetStateDown(SteamVR_Input_Sources.Head))
-            {
+            if (headsetOnHead.GetStateDown(SteamVR_Input_Sources.Head)) {
                 Debug.Log("<b>SteamVR Interaction System</b> Headset placed on head");
                 headsetIsOnPlayerHead = true;
             }
-            else if (headsetOnHead.GetStateUp(SteamVR_Input_Sources.Head))
-            {
+            else if (headsetOnHead.GetStateUp(SteamVR_Input_Sources.Head)) {
                 Debug.Log("<b>SteamVR Interaction System</b> Headset removed");
                 headsetIsOnPlayerHead = false;
+            }
+            else if (headsetOnHead.GetState(SteamVR_Input_Sources.Head)) {
+                headsetIsOnPlayerHead = true;
             }
         }
 
@@ -45,7 +46,7 @@ namespace VRPlayer {
             occupiedActions[action] = forHand;
         }
         public static void MarkActionUnoccupied(SteamVR_Action action) {
-            occupiedActions[action] = SteamVR_Input_Sources.Keyboard;
+            occupiedActions[action] = VRManager.errorVRSource;
         }
         public static bool ActionOccupied (SteamVR_Action action, SteamVR_Input_Sources forHand) {
             if (VRUIInput.ActionOccupied(action, forHand)) {
@@ -59,8 +60,29 @@ namespace VRPlayer {
             else {
                 return false;
             }
-
         }
+        public enum ButtonState {
+            None, Down, Held, Up
+        };
+
+        public void GetInputActionInfo(SteamVR_Action_Boolean action, out ButtonState[] buttonStates) {
+            buttonStates = new ButtonState[] { ButtonState.None, ButtonState.None };
+        
+            for (int i = 0; i < 2; i++) {
+                SteamVR_Input_Sources hand = VRManager.Int2Hand(i);
+                if (action.GetStateDown(hand)) {
+                    buttonStates[i] = ButtonState.Down;
+                }
+                else if (action.GetStateUp(hand)) {
+                    buttonStates[i] = ButtonState.Up;
+                }
+                else if (action.GetState(hand)) {
+                    buttonStates[i] = ButtonState.Held;
+                }
+            }
+        }
+
+
 
         
         public ControllerLayoutHintRoutine debugRoutine;

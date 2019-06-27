@@ -17,27 +17,27 @@ namespace InteractionSystem {
             }
         }
 
-        public void OnInspectStart(Interactor interactor) {
+        public void OnInspectedStart(Interactor interactor) {
             lastInteractor = interactor;
             AddTags(interactor, inspectTags);
         }
-        public void OnInspectEnd(Interactor interactor) {
+        public void OnInspectedEnd(Interactor interactor) {
             lastInteractor = null;
             RemoveTags(interactor, inspectTags);
         }
-        public void OnUseStart(Interactor interactor, int useIndex) {
+        public void OnUsedStart(Interactor interactor, int useIndex) {
             if (useActionToUse == useIndex) {
                 AddTags(interactor, useTags);
             }
         }
-        public void OnUseEnd(Interactor interactor, int useIndex) {
+        public void OnUsedEnd(Interactor interactor, int useIndex) {
             if (useActionToUse == useIndex) {
                 RemoveTags(interactor, useTags);
             }
         }
 
-        public void OnInspectUpdate(Interactor interactor) {}
-        public void OnUseUpdate(Interactor interactor, int useIndex) {}
+        public void OnInspectedUpdate(Interactor interactor) {}
+        public void OnUsedUpdate(Interactor interactor, int useIndex) {}
 
         public List<string> inspectTags, useTags;
 

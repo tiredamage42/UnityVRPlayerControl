@@ -48,12 +48,16 @@ namespace VRPlayer
 
         int myEquipIndex {
             get {
-                return GetComponent<EquipPoint>().equipSlotOnBase;
+                return VRManager.Hand2Int(handType);
+                
+                // return GetComponent<EquipPoint>().equipSlotOnBase;
             }
         }
         int otherHandEquipIndex {
             get {
-                return 1-myEquipIndex;
+                return VRManager.Hand2Int(VRManager.OtherHand(handType));
+                // return 1-myEquipIndex;
+                
             }
         }
 
@@ -251,7 +255,8 @@ namespace VRPlayer
             
             if (vr_item.activateActionSetOnAttach != null)
             {
-                int otherHandEquipIndex = 1-GetComponent<EquipPoint>().equipSlotOnBase;
+                // int otherHandEquipIndex = VRManager.Hand2Int(VRManager.OtherHand(handType));
+                // int otherHandEquipIndex = 1-GetComponent<EquipPoint>().equipSlotOnBase;
                 // if (inventory.otherInventory.equippedItem == null || inventory.otherInventory.equippedItem.item.GetComponent<VRItemAddon>().activateActionSetOnAttach != vr_item.activateActionSetOnAttach)
                 if (inventory.equippedSlots[otherHandEquipIndex] == null || inventory.equippedSlots[otherHandEquipIndex].sceneItem.GetComponent<VRItemAddon>().activateActionSetOnAttach != vr_item.activateActionSetOnAttach)
                 
@@ -342,6 +347,9 @@ namespace VRPlayer
             
             interactor = GetComponent<Interactor>();
             inventory = Player.instance.GetComponent<Inventory>();
+
+            interactor.interactorID = VRManager.Hand2Int(handType);
+            GetComponent<EquipPoint>().equipID = interactor.interactorID;
         }
 
         Inventory inventory;
@@ -443,7 +451,7 @@ namespace VRPlayer
         void OnInspectStart (Interactor interactor, Interactable hoveringInteractable) {
             
             if (canQuickEquip) {
-                StandardizedVRInput.instance.ShowHint(handType, useAction, hoveringInteractable.actionNames[Inventory.GRAB_ACTION]);
+                StandardizedVRInput.instance.ShowHint(handType, useAction, hoveringInteractable.actionNames[inventory.GRAB_ACTION]);
             }
             else {
 
@@ -454,8 +462,8 @@ namespace VRPlayer
             }
             
 
-            if (hoveringInteractable.actionNames.Length > Inventory.STASH_ACTION) {
-                StandardizedVRInput.instance.ShowHint(handType, stashAction, hoveringInteractable.actionNames[Inventory.STASH_ACTION]);
+            if (hoveringInteractable.actionNames.Length > inventory.STASH_ACTION) {
+                StandardizedVRInput.instance.ShowHint(handType, stashAction, hoveringInteractable.actionNames[inventory.STASH_ACTION]);
             }
             // StandardizedVRInput.instance.ShowHint(handType, useAction, "Use");
         }
@@ -491,31 +499,31 @@ namespace VRPlayer
                 inventory.SetMainEquipPointIndex(myEquipIndex);
 
                 if (canQuickEquip) {
-                    interactor.OnUseStart(Inventory.GRAB_ACTION);
+                    interactor.OnUseStart(inventory.GRAB_ACTION);
                 }
 
-                inventory.OnUseStart(myEquipIndex, Inventory.GRAB_ACTION);
+                inventory.OnUseStart(myEquipIndex, inventory.GRAB_ACTION);
                 inventory.SetMainEquipPointIndex(-1);
             }
             if (useUp) {
                 inventory.SetMainEquipPointIndex(myEquipIndex);
 
                 if (canQuickEquip) {
-                    interactor.OnUseEnd(Inventory.GRAB_ACTION);
+                    interactor.OnUseEnd(inventory.GRAB_ACTION);
                 }
                 
                 
-                inventory.OnUseEnd(myEquipIndex, Inventory.GRAB_ACTION);
+                inventory.OnUseEnd(myEquipIndex, inventory.GRAB_ACTION);
                 inventory.SetMainEquipPointIndex(-1);
             }
             if (useHeld) {
                 inventory.SetMainEquipPointIndex(myEquipIndex);
                 
                 if (canQuickEquip) {
-                    interactor.OnUseUpdate(Inventory.GRAB_ACTION);
+                    interactor.OnUseUpdate(inventory.GRAB_ACTION);
                 }
 
-                inventory.OnUseUpdate(myEquipIndex, Inventory.GRAB_ACTION);
+                inventory.OnUseUpdate(myEquipIndex, inventory.GRAB_ACTION);
                 inventory.SetMainEquipPointIndex(-1);
             }         
 
@@ -528,20 +536,20 @@ namespace VRPlayer
             if (useDown) {
                 StandardizedVRInput.instance.HideHint(handType, stashAction);
                 inventory.SetMainEquipPointIndex(myEquipIndex);
-                interactor.OnUseStart(Inventory.STASH_ACTION);
-                inventory.OnUseStart(myEquipIndex, Inventory.STASH_ACTION);
+                interactor.OnUseStart(inventory.STASH_ACTION);
+                inventory.OnUseStart(myEquipIndex, inventory.STASH_ACTION);
                 inventory.SetMainEquipPointIndex(-1);
             }
             if (useUp) {
                 inventory.SetMainEquipPointIndex(myEquipIndex);
-                interactor.OnUseEnd(Inventory.STASH_ACTION);
-                inventory.OnUseEnd(myEquipIndex, Inventory.STASH_ACTION);
+                interactor.OnUseEnd(inventory.STASH_ACTION);
+                inventory.OnUseEnd(myEquipIndex, inventory.STASH_ACTION);
                 inventory.SetMainEquipPointIndex(-1);
             }
             if (useHeld) {
                 inventory.SetMainEquipPointIndex(myEquipIndex);
-                interactor.OnUseUpdate(Inventory.STASH_ACTION);
-                inventory.OnUseUpdate(myEquipIndex, Inventory.STASH_ACTION);
+                interactor.OnUseUpdate(inventory.STASH_ACTION);
+                inventory.OnUseUpdate(myEquipIndex, inventory.STASH_ACTION);
                 inventory.SetMainEquipPointIndex(-1);
             }
 
@@ -555,20 +563,20 @@ namespace VRPlayer
             if (useDown) {
                 StandardizedVRInput.instance.HideHint(handType, dropAction);
                 inventory.SetMainEquipPointIndex(myEquipIndex);
-                interactor.OnUseStart(Inventory.DROP_ACTION);
-                inventory.OnUseStart(myEquipIndex, Inventory.DROP_ACTION);
+                interactor.OnUseStart(inventory.TRADE_ACTION);
+                inventory.OnUseStart(myEquipIndex, inventory.TRADE_ACTION);
                 inventory.SetMainEquipPointIndex(-1);
             }
             if (useUp) {
                 inventory.SetMainEquipPointIndex(myEquipIndex);
-                interactor.OnUseEnd(Inventory.DROP_ACTION);
-                inventory.OnUseEnd(myEquipIndex, Inventory.DROP_ACTION);
+                interactor.OnUseEnd(inventory.TRADE_ACTION);
+                inventory.OnUseEnd(myEquipIndex, inventory.TRADE_ACTION);
                 inventory.SetMainEquipPointIndex(-1);
             }
             if (useHeld) {
                 inventory.SetMainEquipPointIndex(myEquipIndex);
-                interactor.OnUseUpdate(Inventory.DROP_ACTION);
-                inventory.OnUseUpdate(myEquipIndex, Inventory.DROP_ACTION);
+                interactor.OnUseUpdate(inventory.TRADE_ACTION);
+                inventory.OnUseUpdate(myEquipIndex, inventory.TRADE_ACTION);
                 inventory.SetMainEquipPointIndex(-1);
             }           
         }

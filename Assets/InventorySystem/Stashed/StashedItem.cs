@@ -20,10 +20,10 @@ namespace InventorySystem {
                 listeners[i].OnItemDropped(inventory, item, count);
             }
         }
-        public void OnItemConsumed(Inventory inventory, ItemBehavior item, int equipSlot) {
+        public void OnItemConsumed(Inventory inventory, ItemBehavior item, int count, int equipSlot) {
             InitializeListeners();
             for (int i = 0; i < listeners.Count; i++) {
-                listeners[i].OnItemConsumed(inventory, item, equipSlot);
+                listeners[i].OnItemConsumed(inventory, item, count, equipSlot);
             }
         }
 

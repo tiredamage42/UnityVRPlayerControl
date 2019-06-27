@@ -24,7 +24,7 @@ namespace Valve.VR.InteractionSystem
 	public class ItemPackageSpawner : MonoBehaviour, IInteractable
 	{
 		
-		public void OnInspectStart(Interactor interactor) {
+		public void OnInspectedStart(Interactor interactor) {
 
 			Inventory inventory = interactor.GetComponentInParent<Inventory>();
 			ItemPackage currentAttachedItemPackage = GetAttachedItemPackage( inventory );
@@ -43,12 +43,12 @@ namespace Valve.VR.InteractionSystem
 			}
 
 		}
-        public void OnInspectEnd(Interactor interactor){
+        public void OnInspectedEnd(Interactor interactor){
 						justPickedUpItem = false;
 
 
 		}
-        public void OnInspectUpdate(Interactor interactor){
+        public void OnInspectedUpdate(Interactor interactor){
 
 			// if ( takeBackItem && requireReleaseActionToReturn )
 			// {
@@ -75,7 +75,7 @@ namespace Valve.VR.InteractionSystem
 			// }
 
 		}
-        public void OnUseStart(Interactor interactor, int useIndex){
+        public void OnUsedStart(Interactor interactor, int useIndex){
 			if ( requireGrabActionToTake )
 			{
                 // GrabTypes startingGrab = hand.GetGrabStarting();
@@ -88,7 +88,7 @@ namespace Valve.VR.InteractionSystem
 			}
 
 		}
-        public void OnUseEnd(Interactor interactor, int useIndex){
+        public void OnUsedEnd(Interactor interactor, int useIndex){
 			if ( takeBackItem && requireReleaseActionToReturn )
 			{
 					Inventory inventory = interactor.GetComponentInParent<Inventory>();
@@ -102,7 +102,7 @@ namespace Valve.VR.InteractionSystem
 			}
 			
 		}
-        public void OnUseUpdate(Interactor interactor, int useIndex){
+        public void OnUsedUpdate(Interactor interactor, int useIndex){
 
 		}
 
