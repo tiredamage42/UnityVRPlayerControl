@@ -342,6 +342,7 @@ namespace SimpleUI {
             }
             else {
                 if (onBaseCancel != null) {
+                    Debug.LogError("calling cancel callbacks " + name);
                     onBaseCancel ();
                 }
                 else {

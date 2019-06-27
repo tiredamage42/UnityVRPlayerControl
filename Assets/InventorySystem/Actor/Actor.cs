@@ -12,10 +12,12 @@ namespace ActorSystem {
             if (isPlayer) {
                 playerActor = this;
             }
+            CheckForTemplate();
         }
         public Dictionary<string, GameValue> GetValueDictionary() {
             Dictionary<string, GameValue> toReturn = new Dictionary<string, GameValue>();
             for (int i = 0; i < gameValues.Length; i++) {
+                Debug.LogError("adding " + gameValues[i].name);
                 toReturn.Add(gameValues[i].name, gameValues[i]);
             }
             return toReturn;

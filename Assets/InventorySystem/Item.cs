@@ -172,9 +172,10 @@ gameMessage
             if (itemBehavior.stashActions.Contains(useIndex)) {
                 if (inventory.CanStashItem(this.itemBehavior)) {
                     inventory.StashItem(this);
+                    wasStashed = true;
                 }
-                    
             }
+                    
 
             if (itemBehavior.equipActions.Contains(useIndex)) {
                 

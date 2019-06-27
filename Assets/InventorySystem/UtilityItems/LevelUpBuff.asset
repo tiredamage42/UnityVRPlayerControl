@@ -17,7 +17,7 @@ MonoBehaviour:
     modifierKey: 0
     count: 0
     isStackable: 0
-    gameValueName: 
+    gameValueName: Level
     modifyValueComponent: 0
     modifyBehavior: 1
     modifyValue: 1

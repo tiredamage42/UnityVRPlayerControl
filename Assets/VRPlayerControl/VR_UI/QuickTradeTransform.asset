@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: QuickTradeTransform
   m_EditorClassIdentifier: 
   transformSettings:
-  - position: {x: 0, y: 0.075, z: -0.5}
-    rotation: {x: 90, y: 0, z: 0}
+  - position: {x: 0.1, y: 0.075, z: -0.175}
+    rotation: {x: 45, y: 0, z: 0}
+  - position: {x: 0.1, y: 0.075, z: -0.175}
+    rotation: {x: 45, y: 0, z: 0}
