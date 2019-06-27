@@ -197,6 +197,7 @@ namespace VRPlayer {
 
         bool CheckHandForWristRadialOpen (SteamVR_Input_Sources hand) {
 			if (quickInventoryToggle.GetStateDown(hand)) {
+                Debug.LogError("YO");
 				inventoryUI.OpenQuickInventoryUI(VRManager.Hand2Int(hand));
                 
                 // VRUIInput.SetUIHand(hand);
@@ -299,10 +300,10 @@ namespace VRPlayer {
 
         Vector2Int GetAlternativeSubmitsQI () {
                     
-            SteamVR_Input_Sources hand = VRManager.Int2Hand( inventoryUI.quickTradeInteractorID );
+            SteamVR_Input_Sources hand = VRManager.Int2Hand( inventoryUI.quickInventoryInteractorID );
             // SteamVR_Input_Sources hand = VRUIInput.GetUIHand();
             if (QUICK_INVENTORY_CONSUME_ACTION.GetStateDown(hand)) {
-                return new Vector2Int(InventoryUI.QUICK_INVENTORY_CONSUME_ACTION, inventoryUI.quickTradeInteractorID);//VRManager.Hand2Int(hand));
+                return new Vector2Int(InventoryUI.QUICK_INVENTORY_CONSUME_ACTION, inventoryUI.quickInventoryInteractorID);//VRManager.Hand2Int(hand));
             }
             
             return new Vector2Int(-1, 1);

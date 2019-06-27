@@ -137,6 +137,7 @@ namespace SimpleUI {
         }
 
         if (parentHolder.onSubmitToUse != null) {
+            Debug.LogError("herereree");
             parentHolder.onSubmitToUse(data, customData, submitAction);
         }
 
@@ -170,8 +171,9 @@ namespace SimpleUI {
             return;
         }
 
+
         DoSubmit(Vector2Int.zero);
-        // // Debug.Log("Submitted on " + name);
+        Debug.Log("Submitted on " + name);
         
         // if (onClick != null) {
         //     onClick.Invoke(data);

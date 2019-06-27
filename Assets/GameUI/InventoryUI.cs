@@ -114,7 +114,7 @@ public class InventoryUI : MonoBehaviour
         BroadcastUIOpen(type);
     }
 
-    public int quickInventoryInteractorID;
+    public int quickInventoryInteractorID=-1;
 
     public void OpenQuickInventoryUI (int throughID){
         if (quickInventoryInteractorID < 0 && quickTradeInteractorID != throughID) {        
@@ -130,6 +130,7 @@ public class InventoryUI : MonoBehaviour
     public void OpenQuickTradeUI (Inventory showInventory, int throughID) {
         if (quickTradeInteractorID < 0 && quickInventoryInteractorID != throughID) {
             quickTradeInteractorID = throughID;
+            Debug.LogError("wooo");
             InitializeSingleInventoryUI(UIType.QuickTrade, false, showInventory, inventory, maxQuickTradeButtons, OnQuickTradeSubmit);
         }
     }
@@ -166,7 +167,6 @@ public class InventoryUI : MonoBehaviour
         void BeginClose (UIType type, UIElementHolder uiHolder) {
             UIManager.HideUI(uiHolder);
             
-            currentLinkedInventory = null;
 
             for (int i = 0; i < inventoryButtonsPerInventory.Length; i++)
                 inventoryButtonsPerInventory[i] = null;
@@ -174,6 +174,7 @@ public class InventoryUI : MonoBehaviour
                 currentPaginatedOffsets[i] = 0;
 
             BroadcastUIClose(type);
+            currentLinkedInventory = null;
         }
 
         UIElementHolder Type2UI (UIType type) {
@@ -262,14 +263,16 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    public int quickTradeInteractorID;
+    public int quickTradeInteractorID=-1;
 
     void OnQuickTradeStart (Inventory mine, Inventory trader, int interactorID) {
+        Debug.LogError("wuick trade tart");
         OpenQuickTradeUI(trader, interactorID);
     }
 
     void OnQuickTradeEnd (Inventory mine, Inventory trader) {
         if (currentLinkedInventory == trader) {
+            Debug.LogError("CLSIGN");
             CloseQuickTradeUI();
         }
         else {
@@ -435,21 +438,24 @@ public class InventoryUI : MonoBehaviour
 
         void OnQuickTradeSubmit (GameObject[] data, object[] customData, Vector2Int submitType) {
 			if (customData != null) {
-                ItemBehavior item = (ItemBehavior)customData[0];
-                if (item != null) {
+                bool updateButtons = false;
+                Inventory trader = (Inventory)customData[1];
+                Inventory tradee = (Inventory)customData[2];
+                
                     
-                    bool updateButtons = false;
-                    Inventory trader = (Inventory)customData[1];
-                    Inventory tradee = (Inventory)customData[2];
                     
                     // single trade
                     if (submitType.x == QUICK_TRADE_SINGLE_TRADE_ACTION) {
+                        ItemBehavior item = (ItemBehavior)customData[0];
+                        if (item != null) {
                         if (trader.TransferItemTo(item, 1, tradee)) {
                             updateButtons = true;
+                        }
                         }
                     }
                     // take all
                     else if (submitType.x == QUICK_TRADE_TRADE_ALL_ACTION) {
+                            Debug.LogError("trade all");
                         if (trader.TransferInventoryContentsTo(tradee)) {
                             updateButtons = true;
                         }
@@ -461,7 +467,7 @@ public class InventoryUI : MonoBehaviour
                     if (updateButtons){
                         UpdateUIButtons(true, trader, tradee, (int)customData[3], (int)customData[4]);
                     }
-                }
+                // }
             }
 		}
 
@@ -478,6 +484,7 @@ public class InventoryUI : MonoBehaviour
                     
                     // single trade
                     if (submitType.x == FULL_TRADE_SINGLE_TRADE_ACTION) {
+                        Debug.LogError("heyyyy");
                         if (trader.TransferItemTo(item, 1, tradee)) {
                             updateButtons = true;
                         }
