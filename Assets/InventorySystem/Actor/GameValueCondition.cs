@@ -58,6 +58,7 @@ namespace ActorSystem {
             
             GameValue gameValue;
             if (!gameValues.TryGetValue(gameValueName, out gameValue)) {
+                Debug.LogError("Cant find game value: " + gameValueName);
                 return trueIfNoValue;
             }
 
@@ -65,12 +66,16 @@ namespace ActorSystem {
             
             if (condition == ConditionCheck.Equals)
                 return value == valueCheck;
+
             else if (condition == ConditionCheck.LessThan)
                 return value < valueCheck;
+            
             else if (condition == ConditionCheck.GreaterThan)
                 return value > valueCheck;
+            
             else if (condition == ConditionCheck.LessThanEqualTo)
                 return value <= valueCheck;
+            
             else if (condition == ConditionCheck.GreaterThanEqualTo)
                 return value >= valueCheck;
 

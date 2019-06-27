@@ -112,7 +112,7 @@ public class Inventory : MonoBehaviour, IInteractable
         if (allowQuickTrade) {
             Inventory interactorInventory = interactor.GetComponentInParent<Inventory>();
             if (interactorInventory != null) {
-                interactorInventory.ForgetQuickTrade(this);
+                interactorInventory.ForgetQuickTrade(this, interactor.interactorID);
             }
         }
     }
@@ -123,21 +123,21 @@ public class Inventory : MonoBehaviour, IInteractable
             Debug.LogError("Trading with " + name);
             Inventory interactorInventory = interactor.GetComponentInParent<Inventory>();
             if (interactorInventory != null) {
-                interactorInventory.ForgetQuickTrade(this);
-                interactorInventory.InitiateTrade(this);
+                interactorInventory.ForgetQuickTrade(this, interactor.interactorID);
+                interactorInventory.InitiateTrade(this, interactor.interactorID);
             }
         }
     }
     public void OnUsedEnd (Interactor interactor, int useAction) { }
     public void OnUsedUpdate (Interactor interactor, int useAction) { }
 
-    public event System.Action<Inventory, Inventory> onQuickTradeEnd, onTradeStart;
+    public event System.Action<Inventory, Inventory, int> onQuickTradeEnd, onTradeStart;
     public event System.Action<Inventory, Inventory, int> onQuickTradeStart;
 
-    public void ForgetQuickTrade(Inventory withInventory) {
+    public void ForgetQuickTrade(Inventory withInventory, int throughInteractor) {
         if (onQuickTradeEnd != null) {
-            Debug.LogError("forget quick trade");
-            onQuickTradeEnd(this, withInventory);
+            // Debug.LogError("forget quick trade");
+            onQuickTradeEnd(this, withInventory, throughInteractor);
         }
     }
     public void SuggestQuickTrade(Inventory withInventory, int throughInteractor) {
@@ -147,9 +147,9 @@ public class Inventory : MonoBehaviour, IInteractable
             onQuickTradeStart(this, withInventory, throughInteractor);
         }
     }
-    public void InitiateTrade(Inventory withInventory) {
+    public void InitiateTrade(Inventory withInventory, int throughInteractor) {
         if (onTradeStart != null) {
-            onTradeStart(this, withInventory);
+            onTradeStart(this, withInventory, throughInteractor);
         }
     }
 
