@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Valve.VR.InteractionSystem
+namespace GameBase
 {
 	public class LinearMapping : MonoBehaviour
 	{

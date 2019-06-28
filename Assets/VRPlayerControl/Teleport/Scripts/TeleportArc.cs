@@ -5,7 +5,7 @@
 //=============================================================================
 
 using UnityEngine;
-using Valve.VR.InteractionSystem;
+// using Valve.VR.InteractionSystem;
 namespace VRPlayer
 {
     //-------------------------------------------------------------------------
@@ -42,14 +42,12 @@ namespace VRPlayer
         private float scale = 1;
 
 
-        //-------------------------------------------------
         void Start()
         {
             arcTimeOffset = Time.time;
         }
 
 
-        //-------------------------------------------------
         void Update()
         {
             //scale arc to match player scale
@@ -64,8 +62,7 @@ namespace VRPlayer
 
 
 
-        //-------------------------------------------------
-        private void CreateLineRendererObjects()
+        void CreateLineRendererObjects()
         {
             //Destroy any existing line renderer objects
             if (arcObjectsTransfrom != null)
@@ -98,7 +95,6 @@ namespace VRPlayer
         }
 
 
-        //-------------------------------------------------
         public void SetArcData(Vector3 position, Vector3 velocity, bool gravity, bool pointerAtBadAngle)
         {
             startPos = position;
@@ -113,7 +109,6 @@ namespace VRPlayer
         }
 
 
-        //-------------------------------------------------
         public void Show()
         {
             showArc = true;
@@ -124,7 +119,6 @@ namespace VRPlayer
         }
 
 
-        //-------------------------------------------------
         public void Hide()
         {
             //Hide the line segments if they were previously being shown
@@ -136,9 +130,6 @@ namespace VRPlayer
         }
 
 
-        //-------------------------------------------------
-        // Draws each segment of the arc individually
-        //-------------------------------------------------
         public bool DrawArc(out RaycastHit hitInfo)
         {
             float timeStep = arcDuration / segmentCount;
@@ -225,7 +216,6 @@ namespace VRPlayer
         }
 
 
-        //-------------------------------------------------
         private void DrawArcSegment(int index, float startTime, float endTime)
         {
             lineRenderers[index].enabled = true;
@@ -234,7 +224,6 @@ namespace VRPlayer
         }
 
 
-        //-------------------------------------------------
         public void SetColor(Color color)
         {
             for (int i = 0; i < segmentCount; ++i)
@@ -245,8 +234,7 @@ namespace VRPlayer
         }
 
 
-        //-------------------------------------------------
-        private float FindProjectileCollision(out RaycastHit hitInfo)
+        float FindProjectileCollision(out RaycastHit hitInfo)
         {
             float timeStep = arcDuration / segmentCount;
             float segmentStartTime = 0.0f;
@@ -261,13 +249,9 @@ namespace VRPlayer
 
                 if (Physics.Linecast(segmentStartPos, segmentEndPos, out hitInfo, traceLayerMask))
                 {
-                    // if (hitInfo.collider.GetComponent<IgnoreTeleportTrace>() == null)
-                    // {
-                        // Util.DrawCross(hitInfo.point, Color.red, 0.5f);
-                        float segmentDistance = Vector3.Distance(segmentStartPos, segmentEndPos);
-                        float hitTime = segmentStartTime + (timeStep * (hitInfo.distance / segmentDistance));
-                        return hitTime;
-                    // }
+                    float segmentDistance = Vector3.Distance(segmentStartPos, segmentEndPos);
+                    float hitTime = segmentStartTime + (timeStep * (hitInfo.distance / segmentDistance));
+                    return hitTime;
                 }
 
                 segmentStartTime = segmentEndTime;
@@ -287,9 +271,7 @@ namespace VRPlayer
             return arcPos;
         }
 
-
-        //-------------------------------------------------
-        private void HideLineSegments(int startSegment, int endSegment)
+        void HideLineSegments(int startSegment, int endSegment)
         {
             if (lineRenderers != null)
             {

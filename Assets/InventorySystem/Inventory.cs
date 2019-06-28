@@ -22,12 +22,7 @@ namespace InventorySystem {
 
     item getes stashed
 
-
-
-
     for workshop
-
-
 
 
         instantiate scen items for item returns on current recipe
@@ -95,8 +90,96 @@ namespace InventorySystem {
 [RequireComponent(typeof(Interactable))]
 public class Inventory : MonoBehaviour, IInteractable
 {
+    public const string equippedItemLayer = "EquippedItem";
 
-    
+
+
+
+
+
+    // // Create a layer at the next available index. Returns silently if layer already exists.
+    // public static void CreateLayer(string name)
+    // {
+    //     if (string.IsNullOrEmpty(name))
+    //         throw new System.ArgumentNullException("name", "New layer name string is either null or empty.");
+
+    //     var tagManager = new UnityEditor.SerializedObject(UnityEditor.AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+    //     var layerProps = tagManager.FindProperty("layers");
+    //     var propCount = layerProps.arraySize;
+
+    //     UnityEditor.SerializedProperty firstEmptyProp = null;
+
+    //     for (var i = 0; i < propCount; i++)
+    //     {
+    //         var layerProp = layerProps.GetArrayElementAtIndex(i);
+    //         var stringValue = layerProp.stringValue;
+
+    //         if (stringValue == name) return;
+
+    //         if (i < 8 || stringValue != string.Empty) 
+    //             continue;
+
+    //         if (firstEmptyProp == null) {
+    //             firstEmptyProp = layerProp;
+    //             break;
+    //         }
+    //     }
+
+    //     if (firstEmptyProp == null)
+    //     {
+    //         Debug.LogError("Maximum limit of " + propCount + " layers exceeded. Layer \"" + name + "\" not created.");
+    //         return;
+    //     }
+
+    //     firstEmptyProp.stringValue = name;
+    //     tagManager.ApplyModifiedProperties();
+    // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public bool allowQuickTrade;
 
     public void OnInspectedStart (Interactor interactor) {
@@ -120,7 +203,6 @@ public class Inventory : MonoBehaviour, IInteractable
 
     public void OnUsedStart (Interactor interactor, int useAction) {
         if (useAction == TRADE_ACTION) {
-            Debug.LogError("Trading with " + name);
             Inventory interactorInventory = interactor.GetComponentInParent<Inventory>();
             if (interactorInventory != null) {
                 interactorInventory.ForgetQuickTrade(this, interactor.interactorID);
@@ -225,40 +307,30 @@ public class Inventory : MonoBehaviour, IInteractable
     // when used BY inventory
     public int GRAB_ACTION = 0;
     public int STASH_ACTION = 1;
-    // public const int DROP_ACTION = 2;
-
+    
     //when used ON inventory
     public int TRADE_ACTION = 2;
 
-
-    int mainEquipPointIndex = -1;
-
-    public void SetMainEquipPointIndex(int index) {
-        mainEquipPointIndex = index;
-    }
-    public void SwitchMainUsedEquipPoint() {
-        mainEquipPointIndex = 1-mainEquipPointIndex;
-    }
 
     public void OnUseStart (int equipSlot, int useIndex) {
         if (equipSlot < 0 || equipSlot >= equippedSlots.Length) {
             Debug.LogError("Equip slot " + equipSlot + " is out of range on inventory " + name);
             return;
         }
-        SetMainEquipPointIndex(equipSlot);
+        // SetMainEquipPointIndex(equipSlot);
                 
 
         if (equippedSlots[equipSlot] != null) {
             equippedSlots[equipSlot].sceneItem.OnEquippedUseStart(this, useIndex);
         }
 
-        }
-        public void OnUseEnd (int equipSlot, int useIndex) {
+    }
+    public void OnUseEnd (int equipSlot, int useIndex) {
         if (equipSlot < 0 || equipSlot >= equippedSlots.Length) {
             Debug.LogError("Equip slot " + equipSlot + " is out of range on inventory " + name);
             return;
         }
-        SetMainEquipPointIndex(equipSlot);
+        // SetMainEquipPointIndex(equipSlot);
         
         InventorySlot slot = equippedSlots[equipSlot];
         if (slot != null) {
@@ -272,24 +344,9 @@ public class Inventory : MonoBehaviour, IInteractable
             }
             if (!isQuickEquipped) {
                 slot.sceneItem.OnEquippedUseEnd(this, useIndex);
-                // if (useIndex == DROP_ACTION) {
-                    
-                //     UnequipItem(equipSlot, true);
-                //     DropItem(slot.item, 1, false);// true);
-                // }
             }
         }
 
-            // InventorySlot slot;
-            // if (ThisSubInventoryHasCurrentEquipped(out slot)) {
-            
-            // // if (equippedItem != null) {
-            //     // bool isUseable = hoveringInteractable.useType != Interactable.UseType.Scripted;
-            //     // if (isUseable) {
-                
-            //     equippedItem.item.OnEquippedUseEnd(this, useIndex);
-            //     // }
-            // }
             // if (onUseEnd != null) {
             //     onUseEnd (this, useIndex, hoveringInteractable);
             // }
@@ -300,7 +357,7 @@ public class Inventory : MonoBehaviour, IInteractable
                 Debug.LogError("Equip slot " + equipSlot + " is out of range on inventory " + name);
                 return;
             }
-            SetMainEquipPointIndex(equipSlot);
+            // SetMainEquipPointIndex(equipSlot);
         
 
         if (equippedSlots[equipSlot] != null) {
@@ -436,94 +493,29 @@ public enum EquipType {
 }
 
 
-// public Inventory baseInventory;
-
-// public int equipSlotOnBase;
-// public bool isSubInventory {
-//     get {
-//         return baseInventory != null;
-//     }
-// }
-
 
 [HideInInspector] [System.NonSerialized] public InventorySlot[] equippedSlots = new InventorySlot[2];
 public int favoritesCount = 8;
 public List<InventorySlot> allInventory = new List<InventorySlot>();
 
-
-// bool ItemWithinInventoryRange (ItemBehavior item, int range) {
-//     // Inventory inv = isSubInventory ? baseInventory : this;
-//     // int count = range <= 0 ? inv.allInventory.Count : range;
-//     int count = range <= 0 ? allInventory.Count : range;
-
-//     for (int i =0 ; i < count; i++) {
-//         // if (inv.allInventory[i].item == item) {
-//         if (allInventory[i].item == item) {
-        
-//             return true;
-//         }
-//     }
-//     return false;
-// }
-
-// public bool ItemIsStashed (ItemBehavior item) {
-//     return ItemWithinInventoryRange(item, -1);
-// }
-// // public bool ItemIsStashed (Item item) {
-// //     return ItemIsStashed(item.itemBehavior);
-// // }
-// // public bool ItemIsFavorited (ItemBehavior item) {
-// //     // return ItemWithinInventoryRange(item, isSubInventory ? baseInventory.favoritesCount : favoritesCount);
-// //     return ItemWithinInventoryRange(item, favoritesCount);
-
-// // }
-// // public bool ItemIsFavorited (Item item) {
-// //     return ItemIsFavorited(item.itemBehavior);
-// // }
-
-
-
-
-// bool ThisSubInventoryHasCurrentEquipped (out InventorySlot slot) {
-//     return EquipSlotIsOccupied(equipSlotOnBase, out slot);
-// }
-
-// public bool EquipSlotIsOccupied (int slotIndex, out InventorySlot slot) {
-//     // Inventory inv = isSubInventory ? baseInventory : this;
-//     slot = inv.equippedSlots[slotIndex];
-//     return slot != null;
-// }
 public bool ItemIsEquipped(int slotIndex, ItemBehavior item) {
-    // Inventory inv = isSubInventory ? baseInventory : this;
-    if (slotIndex == -1) {
-        // for (int i =0 ; i < inv.equippedSlots.Length; i++) {
+    if (slotIndex < 0) {
         for (int i =0 ; i < equippedSlots.Length; i++) {
-        
-            // if (inv.equippedSlots[slotIndex] != null && inv.equippedSlots[slotIndex].item == item) {
-            if (equippedSlots[i] != null && equippedSlots[i].item == item) {
-            
+            if (equippedSlots[i] != null && equippedSlots[i].item == item) {        
                 return true;
             }
         }
         return false;
     }
     else {
-        // return inv.equippedSlots[slotIndex] != null && inv.equippedSlots[slotIndex].item == item;
         return equippedSlots[slotIndex] != null && equippedSlots[slotIndex].item == item;
 
     }
 }
-// public bool ItemIsEquipped (ItemBehavior item) {
-//     int slotIndex = isSubInventory ? equipSlotOnBase : -1;
-//     return ItemIsEquipped(slotIndex, item); 
-// }
 
 public bool ItemIsEquipped (int slotIndex, Item item) {
     return ItemIsEquipped(slotIndex, item.itemBehavior);
 }
-// public bool ItemIsEquipped (Item item) {
-//     return ItemIsEquipped(item.itemBehavior);
-// }
 
         public Vector3 dropLocalPoint = new Vector3 (0,1,1);
 
@@ -551,28 +543,19 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
             else {
 
                 slotInInventory = new InventorySlot(itemBehavior, count);
-                slotInInventory.sceneItem = null;
-                slotInInventory.equipInfo = null;
-
+                
                 if (itemBehavior.keepOnStash) {
                     allInventory.Add(slotInInventory);
                 }
             }
 
-            // add buffs
             if (itemBehavior.stashedItemBehavior != null) {
-            // if (itemBehavior.onStashBuffs != null) {
-
                 itemBehavior.stashedItemBehavior.OnItemStashed(this, itemBehavior, count);
-                
-                // itemBehavior.onStashBuffs.AddBuffsToActor(actor, count);
             }
 
             if (onStash != null) {
                 onStash(this, itemBehavior, count);
             }
-
-            // return true;
         }
 
         public void StashItem(Item item)
@@ -581,16 +564,11 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
 
             if (CanStashItem(itemBehavior)) {
 
-            
-            // if (StashItem(itemBehavior, itemBehavior.stackable ? item.itemCount : 1)) {
                 StashItem(itemBehavior, itemBehavior.stackable ? item.itemCount : 1);
 
-                //disable the scene item
-                //frees it up for pool
+                //disable the scene item (frees it up for pool)
                 item.gameObject.SetActive(false);
-                // return true;
             }
-            // return false;
         }
 
 
@@ -620,6 +598,8 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
                     }
                 }
             }
+
+
             
             InventorySlot slotInInventory = null;
             if (inventoryIndex >= 0) {
@@ -628,9 +608,12 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
 
             bool wasInInventory = slotInInventory != null;
 
-
-
             if (wasInInventory) {
+                bool hasModel = false;
+                if (ItemIsEquipped(-1, itemBehavior)) {
+                    UnequipItem(itemBehavior, getScene);
+                    hasModel= true;
+                }
 
                 count = Mathf.Min(count, slotInInventory.count);
 
@@ -641,11 +624,7 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
                 
                 // remove buffs
                 if (itemBehavior.stashedItemBehavior != null) {
-
-                    itemBehavior.stashedItemBehavior.OnItemDropped(this, itemBehavior, count);
-                    
-                    // itemBehavior.onStashBuffs.RemoveBuffsFromActor(actor, count);
-                
+                    itemBehavior.stashedItemBehavior.OnItemDropped(this, itemBehavior, count);   
                 }
 
 
@@ -657,13 +636,18 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
                     onDrop(this, itemBehavior, count);
                 }
 
-                if (getScene) {
 
-                    Item sceneItem = Item.GetSceneItem(itemBehavior);
-                    sceneItem.transform.position = transform.TransformPoint(dropLocalPoint);
-                    sceneItem.transform.rotation = Quaternion.Euler(UnityEngine.Random.Range(0,360), UnityEngine.Random.Range(0,360), UnityEngine.Random.Range(0,360));
-                    sceneItem.gameObject.SetActive(true);
+                if (!hasModel) {
+
+                    if (getScene) {
+
+                        Item sceneItem = Item.GetSceneItem(itemBehavior);
+                        sceneItem.transform.position = transform.TransformPoint(dropLocalPoint);
+                        sceneItem.transform.rotation = Quaternion.Euler(UnityEngine.Random.Range(0,360), UnityEngine.Random.Range(0,360), UnityEngine.Random.Range(0,360));
+                        sceneItem.gameObject.SetActive(true);
+                    }
                 }
+
                 // return true;
             }
             // return false;
@@ -686,12 +670,13 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
         // equip from item behavior
         public void EquipItem (ItemBehavior itemBehavior, int equipSlot, Item sceneItem) {
 
-            if (equipSlot == -1) {
-                equipSlot = mainEquipPointIndex;
-            }
+            // if (equipSlot == -1) {
+            //     equipSlot = mainEquipPointIndex;
+            // }
 
             if (equipSlot == -1) {
-                Debug.LogError("problem with equi slot not set");
+                Debug.LogError("problem with equi slot not set, cant equip " + itemBehavior.itemName);
+                return;
             }
                 
             InventorySlot equippedInventorySlot = null;
@@ -776,25 +761,10 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
             if (onEquip != null) {
                 onEquip(this, equippedSlots[equipSlot].sceneItem, equipSlot, equippedSlots[equipSlot].isQuickEquipped);
             }
-
-            // equip buffs
-            // if (itemBehavior.onEquipBuffs != null) {
-
-            //     // itemBehavior.onEquipBuffs.AddBuffsToActor(actor, 1);
-            
-            // }
-
-
-
-
-
-            
-
         }
 
 
         void SnapItemToPosition (int equipSlot) {
-
             Transform itemTransform = equippedSlots[equipSlot].sceneItem.transform;
             ItemBehavior item = equippedSlots[equipSlot].item;
 
@@ -807,13 +777,20 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
             }
         }
            
-
-
         public void UnequipItem(Item item, bool showScene) {
             for (int i =0 ; i < equippedSlots.Length; i++) {
                 if (equippedSlots[i] != null) {
                     if (equippedSlots[i].sceneItem == item) {
-                        
+                        UnequipItem(i, showScene);
+                        return;
+                    }
+                }
+            }
+        }
+        public void UnequipItem(ItemBehavior item, bool showScene) {
+            for (int i =0 ; i < equippedSlots.Length; i++) {
+                if (equippedSlots[i] != null) {
+                    if (equippedSlots[i].item == item) {
                         UnequipItem(i, showScene);
                         return;
                     }
@@ -836,10 +813,6 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
             equippedSlots[slotIndex] = null;
             equipPoints[slotIndex].GetComponent<Interactor>().HoverUnlock(null);
 
-            
-    
-            
-                
             slot.sceneItem.linkedInventory = null;
             slot.sceneItem.myEquipPoint = null;
             
@@ -850,12 +823,6 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
 
             slot.equipInfo.ReturnItemToOriginalStateBeforeEquip(slot.sceneItem);
             slot.sceneItem.gameObject.SetActive(showScene);
-
-
-            // equip buffs
-            // if (slot.item.onEquipBuffs != null) {
-            //     // itemBehavior.onEquipBuffs.RemoveBuffsFromActor(actor, 1);
-            // }
         }
     }
 }

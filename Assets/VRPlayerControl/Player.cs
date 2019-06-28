@@ -1,9 +1,4 @@
-﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
-//
-// Purpose: Player interface used to query HMD transforms and VR hands
-//
-//=============================================================================
-
+﻿
 using UnityEngine;
 using System.Collections;
 using Valve.VR;
@@ -12,38 +7,27 @@ using GameBase;
 
 namespace VRPlayer
 {
-
     public enum ReleaseStyle
     {
-        NoChange,
-        GetFromHand,
-        ShortEstimation,
-        AdvancedEstimation,
+        NoChange, GetFromHand, ShortEstimation, AdvancedEstimation,
     }
-	//-------------------------------------------------------------------------
-	// Singleton representing the local VR player/user, with methods for getting
-	// the player's hands, head, tracking origin, and guesses for various properties.
-	//-------------------------------------------------------------------------
+	
 	public class Player : MonoBehaviour
 	{
+		public SteamVR_Input_Sources mainHand;
+		public SteamVR_Input_Sources offHand { get { return VRManager.OtherHand(mainHand); } }
+		public SteamVR_Action_Boolean pauseAction;
+
 		
-
-
 		public float handsTogetherThreshold = .25f;
-
-
-		public bool handsTogether {
-			get {
-				return Vector3.Distance(hands[0].transform.position, hands[1].transform.position) <= handsTogetherThreshold;
-			}
-		}
+		[HideInInspector] public bool handsTogether;
 
 		public ReleaseStyle releaseVelocityStyle = ReleaseStyle.GetFromHand;
 
         [Tooltip("The time offset used when releasing the object with the RawFromHand option")]
         public float releaseVelocityTimeOffset = -0.011f;
-
         public float scaleReleaseVelocity = 1.1f;
+
 
 		SimpleCharacterController moveScript;
 
@@ -163,14 +147,13 @@ namespace VRPlayer
 		// Guess for the world-space position of the player's feet, directly beneath the HMD.
 		public Vector3 feetPositionGuess { get { return trackingOriginTransform.position + Vector3.ProjectOnPlane( hmdTransform.position - trackingOriginTransform.position, trackingOriginTransform.up ); } }
 
-		private void Awake()
+		void Awake()
 		{
 			moveScript = GetComponent<SimpleCharacterController>();
 		}
 
 
-		//-------------------------------------------------
-		private IEnumerator Start()
+		IEnumerator Start()
 		{
 			_instance = this;
 
@@ -178,27 +161,23 @@ namespace VRPlayer
                 yield return null;
 
 			if ( SteamVR.instance == null )
-			{
 				Debug.LogError("there was a problem initializing steam vr");
-			}
         }
 
-        protected virtual void Update()
+        void Update()
         {
             if (SteamVR.initializedState != SteamVR.InitializedStates.InitializeSuccess)
                 return;
 
-			// if (StandardizedVRInput.instance.MenuButton.GetStateDown(SteamVR_Input_Sources.LeftHand)) {
-            //     GameManager.ToggleGamePause();
-            // }
-
-
-			Teleport.instance.SetCurrentTrackingTransformOffset(totalHeightOffset);
-		
 			CheckForInitialScaling();
-			UpdateWorldScale();
-        
+			
+			handsTogether = Vector3.SqrMagnitude(hands[0].transform.position - hands[1].transform.position) <= (handsTogetherThreshold * handsTogetherThreshold);
+			
+			if (pauseAction.GetStateDown(offHand)) {
+                GameManager.TogglePause();
+            }
+		
+			UpdateWorldScale();        
         }
-
 	}
 }

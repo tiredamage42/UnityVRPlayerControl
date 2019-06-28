@@ -12,7 +12,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
-using Valve.VR.InteractionSystem;
+// using Valve.VR.InteractionSystem;
 using Valve.VR;
 using GameBase;
 namespace VRPlayer
@@ -119,10 +119,10 @@ namespace VRPlayer
 			}
 		}
 
-		float trackingTransformOffset;
-		public void SetCurrentTrackingTransformOffset (float offset) {
-			trackingTransformOffset = offset;
-		}
+		// float trackingTransformOffset;
+		// public void SetCurrentTrackingTransformOffset (float offset) {
+		// 	trackingTransformOffset = offset;
+		// }
 
 
 		//-------------------------------------------------
@@ -426,7 +426,7 @@ namespace VRPlayer
 
 			//Scale the invalid reticle based on the distance from the player
 			float distanceFromPlayer = Vector3.Distance( pointerEnd, Player.instance.hmdTransform.position );
-			float invalidReticleCurrentScale = Util.RemapNumberClamped( distanceFromPlayer, invalidReticleMinScaleDistance, invalidReticleMaxScaleDistance, invalidReticleMinScale, invalidReticleMaxScale );
+			float invalidReticleCurrentScale = Mathf.Lerp(invalidReticleMinScale, invalidReticleMaxScale, Mathf.InverseLerp(invalidReticleMinScaleDistance, invalidReticleMaxScaleDistance, distanceFromPlayer)); 
 			reticle.transform.localScale = Vector3.one * invalidReticleCurrentScale;
 
 				
@@ -562,15 +562,11 @@ namespace VRPlayer
 		{
 			if (isPointing)
 			{
-				StandardizedVRInput.instance.TriggerHapticPulse( 
-					teleportHand,
-					// this,
-					 (ushort)(validLocation ? 800 : 100) );
+				StandardizedVRInput.instance.TriggerHapticPulse(teleportHand, (ushort)(validLocation ? 800 : 100) );
 			}
 		}
 
 
-		//-------------------------------------------------
 		private void TryTeleportPlayer()
 		{
 			if ( visible && !teleporting )
@@ -592,6 +588,11 @@ namespace VRPlayer
 
 
 
+
+
+		
+
+
 		void SmoothTeleport (float deltaTime) {
 			if (teleporting && fastTeleport) {
 
@@ -599,12 +600,6 @@ namespace VRPlayer
 				if (teleportLerp > 1) {
 					teleportLerp = 1;
 				}
-
-
-
-
-
-
 
 
 				Vector3 teleportPosition = pointedAtPosition;
@@ -616,8 +611,9 @@ namespace VRPlayer
 
 				
 			}
-			Vector3 playerFeetOffset = Player.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
-			Vector3 targetPos = (teleportPosition + playerFeetOffset) + Vector3.up * trackingTransformOffset;
+			// Vector3 playerFeetOffset = Player.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
+			// Vector3 targetPos = (teleportPosition + playerFeetOffset) + Vector3.up * Player.instance.totalHeightOffset;
+			Vector3 targetPos = GetNewPlayAreaPosition(teleportPosition);
 
 
 
@@ -625,14 +621,7 @@ namespace VRPlayer
 
 
 
-
-				Player.instance.trackingOriginTransform.position = Vector3.Lerp(
-					teleportStartPosition, 
-					targetPos
-
-					,
-					teleportLerp
-				);
+				Player.instance.trackingOriginTransform.position = Vector3.Lerp(teleportStartPosition, targetPos, teleportLerp);
 
 
 
@@ -645,10 +634,7 @@ namespace VRPlayer
 			}
 		}
 		
-
-
-		//-------------------------------------------------
-		private void InitiateTeleportFade()
+		void InitiateTeleportFade()
 		{
 			teleporting = true;
 
@@ -678,8 +664,6 @@ namespace VRPlayer
 				SteamVR_Fade.Start( Color.black, currentFadeTime );
 			}
 
-
-
 			headAudioSource.transform.SetParent( Player.instance.hmdTransform );
 			headAudioSource.transform.localPosition = Vector3.zero;
 			PlayAudioClip( headAudioSource, teleportSound );
@@ -696,7 +680,6 @@ namespace VRPlayer
 		private void TeleportPlayer()
 		{
 			teleporting = false;
-
 
 			SteamVR_Fade.Start( Color.clear, currentFadeTime );
 
@@ -715,15 +698,19 @@ namespace VRPlayer
 				}
 			}
 			
+			// Vector3 playerFeetOffset = Player.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
+			// Player.instance.trackingOriginTransform.position = (teleportPosition + playerFeetOffset) + Vector3.up * Player.instance.totalHeightOffset;			
+
+
+			Player.instance.trackingOriginTransform.position = GetNewPlayAreaPosition(teleportPosition);
+		}
+		Vector3 GetNewPlayAreaPosition (Vector3 teleportPosition) {
 			Vector3 playerFeetOffset = Player.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
-			Player.instance.trackingOriginTransform.position = (teleportPosition + playerFeetOffset) + Vector3.up * trackingTransformOffset;
-			
-			
+			return (teleportPosition + playerFeetOffset) + Vector3.up * Player.instance.totalHeightOffset;
 		}
 
 
-		//-------------------------------------------------
-		private void HighlightSelected( TeleportPoint hitTeleportMarker )
+		void HighlightSelected( TeleportPoint hitTeleportMarker )
 		{
 			if ( pointedAtTeleportMarker != hitTeleportMarker ) //Pointing at a new teleport marker
 			{

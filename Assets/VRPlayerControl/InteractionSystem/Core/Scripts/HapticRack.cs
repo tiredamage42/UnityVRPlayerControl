@@ -10,8 +10,9 @@ using System.Collections;
 
 
 using InteractionSystem;
-using VRPlayer;
-namespace Valve.VR.InteractionSystem
+// using VRPlayer;
+using GameBase;
+namespace VRPlayer//Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
 	[RequireComponent( typeof( Interactable ) )]
