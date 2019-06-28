@@ -12,6 +12,8 @@ using InventorySystem;
 using InteractionSystem;
 using VRPlayer;
 
+using GameBase;
+
 namespace Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
@@ -639,10 +641,6 @@ namespace Valve.VR.InteractionSystem
 			}
 		}
 
-
-
-
-		//-------------------------------------------------
 		void OnDestroy()
 		{
 			ShutDown();

@@ -10,7 +10,7 @@ using System.Collections;
 
 using InteractionSystem;
 
-namespace Valve.VR.InteractionSystem
+namespace GameBase//Valve.VR.InteractionSystem
 {
 
 	//-------------------------------------------------------------------------

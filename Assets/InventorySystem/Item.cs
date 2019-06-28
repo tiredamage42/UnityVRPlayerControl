@@ -96,15 +96,12 @@ gameMessage
             if (itemPoolsPerPrefab.ContainsKey(instanceID)) {
                 hasKey = true;
 
-
                 foreach (var it in itemPoolsPerPrefab[instanceID]) {
                     if (!it.gameObject.activeInHierarchy) {
                         sceneItem = it;
                         break;
                     }
                 }
-
-
             }
             
             if (sceneItem == null) {
@@ -114,35 +111,15 @@ gameMessage
                     itemPoolsPerPrefab[instanceID].Add(sceneItem);
                 }
                 else {
-
                     itemPoolsPerPrefab.Add(instanceID, new HashSet<Item>(){ sceneItem });
                 }
             }
-
             return sceneItem;
         }
 
 
         public int itemCount = 1;
-
-
-
-
-
-
-        // public List<int> stashActions = new List<int> () {
-        //     1
-        // };
-        // public List<int> equipActions = new List<int> () {
-        //     0
-        // };
-
         public ItemBehavior itemBehavior;
-
-        // public Inventory.EquipType equipType = Inventory.EquipType.Normal;
-        // public TransformBehavior equipBehavior;
-        // public bool hoverLockOnEquip = true;
-
         Interactable interactable;
         [HideInInspector] new public Rigidbody rigidbody;
 
@@ -156,11 +133,6 @@ gameMessage
 
             InitializeListeners();
         }
-
-        // public int useActionForEquip = 0;
-
-        // [Header("Set to -1 for no stash")]
-        // public int useActionForStash = 1;
 
         public void OnInspectedStart(Interactor interactor) {}
         public void OnInspectedEnd(Interactor interactor) {}
@@ -203,38 +175,51 @@ gameMessage
 
         }
 
-
-
-
-
-
-
-
-        // protected virtual IEnumerator LateDetach( Inventory inventory )
-		// {
-		// 	yield return new WaitForEndOfFrame();
-        //     inventory.UnequipItem(this);
-		// }
-
-
-
-
-
-
-
-        // [HideInInspector] public Inventory parentInventory;
-
         [HideInInspector] public Inventory linkedInventory;
         [HideInInspector] public EquipPoint myEquipPoint;
 
+
+
+        void SetItemColliderLayers () {
+            Collider[] cols = GetComponentsInChildren<Collider>();
+            for (int i = 0; i < cols.Length; i++) {
+                colliderLayers.Add(new ColliderLayerPair(cols[i], Inventory.equippedItemLayer));
+            }
+        }
+        void ResetItemColliderLayers () {
+            for (int i = colliderLayers.Count - 1; i >= 0; i--) {
+                colliderLayers[i].ResetPair();
+                colliderLayers.Remove(colliderLayers[i]);
+            }
+        }
+
+        List<ColliderLayerPair> colliderLayers = new List<ColliderLayerPair>();
+
+
+        struct ColliderLayerPair {
+            Collider collider;
+            int originalLayer;
+            public void ResetPair () {
+                collider.gameObject.layer = originalLayer;
+            }
+
+            public ColliderLayerPair (Collider collider, string newLayer) {
+                this.collider = collider;
+                originalLayer = collider.gameObject.layer;
+                collider.gameObject.layer = LayerMask.NameToLayer(newLayer);
+            }
+        }
+        
         public void OnEquipped (Inventory inventory) {
             // this.parentInventory = inventory;
             interactable.isAvailable = false;
 
+
+            SetItemColliderLayers();
+            
+
             // if (itemBehavior.hoverLockOnEquip)
             //             interactor.HoverLock( interactable );
-
-                        
             
             for (int i = 0; i < listeners.Count; i++) {
                 listeners[i].OnEquipped(inventory);
@@ -243,6 +228,8 @@ gameMessage
         public void OnUnequipped (Inventory inventory) {
             // this.parentInventory = null;
             interactable.isAvailable = true;
+
+            ResetItemColliderLayers();
 
             // if (hoverLockOnEquip)
             //     interactor.HoverUnlock( interactable );
@@ -270,35 +257,6 @@ gameMessage
         }
         public void OnEquippedUseEnd (Inventory inventory, int useIndex) {
 
-            // if (linkedInventory != null) {
-            //     if (itemBehavior.equipActions.Contains(useIndex)) {
-            //         if (inventory == linkedInventory){//}  parentInventory) {
-
-            //                 inventory.UnequipItem(this);
-                            
-
-                            // Uncomment to detach ourselves late in the frame.
-                            // This is so that any vehicles the player is attached to
-                            // have a chance to finish updating themselves.
-                            // If we detach now, our position could be behind what it
-                            // will be at the end of the frame, and the object may appear
-                            // to teleport behind the hand when the player releases it.
-                            //StartCoroutine( LateDetach( hand ) );
-
-                //         }
-                    
-                // }
-                // else if (useIndex == useActionForStash) {
-                //     Debug.LogError("stash!");
-
-                // }
-                // else {
-                //     if (useIndex != 0 && useIndex != 1) 
-                //         Debug.LogError("unknown action for item " + name + "\naction: " + useIndex + "\ninteractor:" + interactor.name);
-                // }
-                
-            // }
-                
 
 
 

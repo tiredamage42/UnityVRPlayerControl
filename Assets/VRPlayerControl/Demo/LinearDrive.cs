@@ -9,7 +9,7 @@ using System.Collections;
 using InteractionSystem;
 using InventorySystem;
 using VRPlayer;
-namespace Valve.VR.InteractionSystem
+namespace GameBase// Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
 	[RequireComponent( typeof( Interactable ) )]
@@ -31,34 +31,12 @@ namespace Valve.VR.InteractionSystem
 		}
 		public void OnUnequipped (Inventory inventory) {
 			CalculateMappingChangeRate();
-
 		}
 		public void OnEquippedUpdate (Inventory inventory) {
 			UpdateLinearMapping(inventory.transform);
-
-
 		}
 
 
-		
-		// public void OnInspectStart(Interactor interactor) {
-
-		// }
-        // public void OnInspectEnd(Interactor interactor){
-
-		// }
-        // public void OnInspectUpdate(Interactor interactor){
-
-		// }
-        // public void OnUseStart(Interactor interactor, int useIndex){
-
-		// }
-        // public void OnUseEnd(Interactor interactor, int useIndex){
-			
-		// }
-        // public void OnUseUpdate(Interactor interactor, int useIndex){
-
-		// }
 
 
 		public Transform startPosition;
@@ -95,9 +73,6 @@ namespace Valve.VR.InteractionSystem
 				UpdateLinearMapping( transform );
 			}
 		}
-
-        
-
 
         protected void CalculateMappingChangeRate()
 		{
@@ -153,7 +128,6 @@ namespace Valve.VR.InteractionSystem
 				if ( repositionGameObject )
 				{
 					transform.position = Vector3.Lerp( startPosition.position, endPosition.position, linearMapping.value );
-					
 				}
 			}
 		}
