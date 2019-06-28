@@ -39,7 +39,7 @@ namespace Valve.VR.InteractionSystem
 
 			if (!requireGrabActionToTake) // we don't require trigger press for pickup. Spawn and attach object.
 			{
-				SpawnAndAttachObject( inventory );//, GrabTypes.Scripted );
+				SpawnAndAttachObject( inventory, interactor.interactorID );//, GrabTypes.Scripted );
 			}
 
 		}
@@ -83,7 +83,7 @@ namespace Valve.VR.InteractionSystem
 				// if (startingGrab != GrabTypes.None)
 				// if (hand.GetGrabDown())
 				// {
-					SpawnAndAttachObject( interactor.GetComponentInParent<Inventory>() );//, GrabTypes.Scripted);
+					SpawnAndAttachObject( interactor.GetComponentInParent<Inventory>(), interactor.interactorID );//, GrabTypes.Scripted);
 				// }
 			}
 
@@ -530,7 +530,7 @@ namespace Valve.VR.InteractionSystem
 
 		//-------------------------------------------------
 		// private void SpawnAndAttachObject( Hand hand)//, GrabTypes grabType )
-		private void SpawnAndAttachObject( Inventory inventory)//, GrabTypes grabType )
+		private void SpawnAndAttachObject( Inventory inventory, int interactorID)//, GrabTypes grabType )
 		
 		{
 
@@ -587,8 +587,8 @@ namespace Valve.VR.InteractionSystem
 
 			//dont quick equip
 			Item sceneItem = spawnedItem.GetComponent<Item>();
-			inventory.EquipItem(sceneItem.itemBehavior, -1, null);// sceneItem.itemBehavior.equipSlot, null);
-			inventory.SwitchMainUsedEquipPoint();
+			inventory.EquipItem(sceneItem.itemBehavior, interactorID, null);// sceneItem.itemBehavior.equipSlot, null);
+			// inventory.SwitchMainUsedEquipPoint();
 
 
 			// inventory.EquipItem( spawnedItem.GetComponent<Item>()//, 
@@ -607,7 +607,7 @@ namespace Valve.VR.InteractionSystem
 				sceneItem = otherHandObjectToAttach.GetComponent<Item>();
 				//dont quick equip
 				// otherInventory.
-				inventory.EquipItem(sceneItem.itemBehavior, -1, null);//sceneItem.itemBehavior.equipSlot, null);
+				inventory.EquipItem(sceneItem.itemBehavior, 1-interactorID, null);//sceneItem.itemBehavior.equipSlot, null);
 
 
 			}

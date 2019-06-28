@@ -1,16 +1,11 @@
-﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
-//
-// Purpose: Single location that the player can teleport to
-//
-//=============================================================================
-
+﻿
 using UnityEngine;
 using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-using Valve.VR.InteractionSystem;
+// using Valve.VR.InteractionSystem;
 
 namespace VRPlayer// Valve.VR.InteractionSystem
 {
@@ -30,8 +25,7 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 		public Color titleVisibleColor;
 		public Color titleHighlightedColor;
 		public Color titleLockedColor;
-		public bool playerSpawnPoint = false;
-
+		
 		//Private data
 		private bool gotReleventComponents = false;
 		private MeshRenderer markerMesh;
@@ -82,14 +76,12 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 		}
 
 
-		//-------------------------------------------------
 		void Start()
 		{
 			player = Player.instance;
 		}
 
 
-		//-------------------------------------------------
 		void Update()
 		{
 
@@ -120,13 +112,6 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 			UpdateVisuals();
 		}
 	
-
-
-		//-------------------------------------------------
-		// public override bool ShouldMovePlayer()
-		// {
-		// 	return true;
-		// }
 
 
 		//-------------------------------------------------

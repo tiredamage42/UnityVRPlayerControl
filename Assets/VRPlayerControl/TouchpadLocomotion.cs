@@ -88,28 +88,13 @@ public class TouchpadLocomotion : MonoBehaviour
 
     bool[] climbables = new bool[2];
     public bool isClimbing;
-    int currentClimbHand;
+    SteamVR_Input_Sources currentClimbHand;
     public Vector3 climbExitForceMultiplier = new Vector3(10, 100, 10);
     
-    // int Hand2Index(SteamVR_Input_Sources hand) 
-    // {
-    //     return hand == SteamVR_Input_Sources.LeftHand ? 1 : 0;
-    // }
-    // SteamVR_Input_Sources Index2Hand (int index) {
-    //     return index == 0 ? SteamVR_Input_Sources.RightHand : SteamVR_Input_Sources.LeftHand;
-    // }
-    int OtherHand (int hand) {
-        return hand == 0 ? 1 : 0;
-    }
-    // SteamVR_Input_Sources OtherHand(SteamVR_Input_Sources hand) {
-    //     return Index2Hand(OtherHand(Hand2Index(hand)));
-    // }
-
-
-    void SetHandClimb (int climbHand) {
+    void SetHandClimb (SteamVR_Input_Sources climbHand) {
         isClimbing = true;
         currentClimbHand = climbHand;
-        previousHandPosition = Player.instance.GetHand(VRManager.Int2Hand(currentClimbHand)).transform.localPosition;
+        previousHandPosition = Player.instance.GetHand(climbHand).transform.localPosition;
     }
 
     
@@ -122,29 +107,30 @@ public class TouchpadLocomotion : MonoBehaviour
 
         // foreach (var hand in climbableChecks.Keys) {
         for (int hand = 0; hand < 2; hand++) {
+            SteamVR_Input_Sources handVR = VRManager.Int2Hand(hand);
 
 
             // bool isClimbable = climbableChecks[hand].isClimbable;
             bool isClimbable = climbables[hand];
 
             // if we just clicked to start climbing, make this the primary climb hand
-            if (isClimbable && climbAction.GetStateDown(VRManager.Int2Hand(hand))) {
-                SetHandClimb(hand);
+            if (isClimbable && climbAction.GetStateDown(handVR)) {
+                SetHandClimb(handVR);
             }
 
             //if this is the current climbing hand
-            if (isClimbing && currentClimbHand == hand) {
+            if (isClimbing && currentClimbHand == handVR) {
 
                 // if we've let go to stop climbing
-                if (!isClimbable || climbAction.GetStateUp(VRManager.Int2Hand(hand))) {
+                if (!isClimbable || climbAction.GetStateUp(handVR)) {
 
                     isClimbing = false;
                     justLetGo = true;
 
                     //check if our other hand is climbable and gripping (so we make that the primary one again)
-                    int otherHand = OtherHand(hand);
+                    SteamVR_Input_Sources otherHand = VRManager.OtherHand(handVR);
 
-                    if (climbables[otherHand] && climbAction.GetState(VRManager.Int2Hand(otherHand))) {
+                    if (climbables[VRManager.Hand2Int(otherHand)] && climbAction.GetState(otherHand)) {
                         justLetGo = false;
 
                         SetHandClimb(otherHand);
@@ -162,7 +148,7 @@ public class TouchpadLocomotion : MonoBehaviour
         moveScript.useRawMovement = isClimbing;
         if (isClimbing) {
 
-            Vector3 handLocalPosition = Player.instance.GetHand(VRManager.Int2Hand(currentClimbHand)).transform.localPosition;
+            Vector3 handLocalPosition = Player.instance.GetHand(currentClimbHand).transform.localPosition;
             
             moveScript.SetInputMoveVector(previousHandPosition - handLocalPosition);
             previousHandPosition = handLocalPosition;
@@ -170,7 +156,7 @@ public class TouchpadLocomotion : MonoBehaviour
         }
         else {
             if (justLetGo) {
-                Vector3 momentum = previousHandPosition - (Player.instance.GetHand(VRManager.Int2Hand(currentClimbHand)).transform.localPosition);
+                Vector3 momentum = previousHandPosition - (Player.instance.GetHand(currentClimbHand).transform.localPosition);
                 moveScript.SetMomentum(momentum.MultiplyBy(climbExitForceMultiplier)
                     
                 );
@@ -320,8 +306,19 @@ public class TouchpadLocomotion : MonoBehaviour
 
     public SteamVR_Action_Boolean turnActionLeft, turnActionRight;
 
-    public SteamVR_Input_Sources moveHand;
-    public SteamVR_Input_Sources turnHand;
+    public SteamVR_Input_Sources moveHand 
+    {
+        get {
+            return Player.instance.offHand;
+        }
+    }
+    public SteamVR_Input_Sources turnHand
+    {
+        get {
+            return Player.instance.mainHand;
+        }
+    }
+    
 
     [Header("Movement")]
     SimpleCharacterController moveScript;

@@ -5,7 +5,7 @@ using UnityEngine.Events;
 using InteractionSystem;
 
 // using VRPlayer;
-namespace Valve.VR.InteractionSystem
+namespace GameBase//Valve.VR.InteractionSystem
 {
     //-------------------------------------------------------------------------
     [RequireComponent(typeof(Interactable))]

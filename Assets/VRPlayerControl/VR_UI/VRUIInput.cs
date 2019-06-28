@@ -1,18 +1,13 @@
-﻿// using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Valve.VR;
-// using SimpleUI;
-
 
 using StandaloneInputModule = SimpleUI.StandaloneInputModule;
-
 
 namespace VRPlayer{
 
     /*
-    
         interface for any ui input system set up
     */
 
@@ -54,22 +49,17 @@ namespace VRPlayer{
         }
 
         static VRUIInput _instance;
-		public static VRUIInput instance
-		{
-			get
-			{
+		public static VRUIInput instance {
+			get {
 				if ( _instance == null )
 					_instance = FindObjectOfType<VRUIInput>();
 				return _instance;
 			}
 		}
 
-
-
         public static void SetUIHand (SteamVR_Input_Sources hand) {
             currentUIHand = hand;
         }
-
 
         public SteamVR_Action_Boolean submitButton;
         public SteamVR_Action_Boolean cancelButton;      
@@ -83,8 +73,6 @@ namespace VRPlayer{
         }
         static SteamVR_Input_Sources lastUsedUIHand = SteamVR_Input_Sources.Any;
         static SteamVR_Input_Sources currentUIHand = SteamVR_Input_Sources.Any;
-
-        
 
         public override Vector2 mousePosition { get { return selectionAxis.GetAxis( currentUIHand ); } }
 
@@ -120,9 +108,7 @@ namespace VRPlayer{
                     returnAxis = Mathf.Clamp(delta * 99999, -1, 1);
                 }
                 lastAxis[axisIndex] = currentAxis[axisIndex];
-                
             }
-
             checkedFrame = true;
             savedAxis[axisIndex] = returnAxis;
             return returnAxis;

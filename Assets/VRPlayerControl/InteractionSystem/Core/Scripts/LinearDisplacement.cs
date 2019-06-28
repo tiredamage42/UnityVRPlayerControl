@@ -7,7 +7,7 @@
 using UnityEngine;
 using System.Collections;
 
-namespace Valve.VR.InteractionSystem
+namespace GameBase//Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
 	public class LinearDisplacement : MonoBehaviour

@@ -12068,9 +12068,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20bea63586cae401293454372581c9be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainMenuToggle:
-    actionPath: /actions/VRControlActionSet/in/MenuButton
-    needsReinit: 0
   quickInventoryToggle:
     actionPath: /actions/VRControlActionSet/in/SideButton
     needsReinit: 0
@@ -44599,16 +44596,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameMessages
       objectReference: {fileID: 0}
-    - target: {fileID: 6704095862675926450, guid: 2be6c986f3c9042dc820b6d2c66cec1c,
-        type: 3}
-      propertyPath: scale
-      value: 0.15
-      objectReference: {fileID: 0}
-    - target: {fileID: 6704095862675926450, guid: 2be6c986f3c9042dc820b6d2c66cec1c,
-        type: 3}
-      propertyPath: width
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 6704095862675926454, guid: 2be6c986f3c9042dc820b6d2c66cec1c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -44713,6 +44700,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6704095862675926450, guid: 2be6c986f3c9042dc820b6d2c66cec1c,
+        type: 3}
+      propertyPath: scale
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6704095862675926450, guid: 2be6c986f3c9042dc820b6d2c66cec1c,
+        type: 3}
+      propertyPath: width
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2be6c986f3c9042dc820b6d2c66cec1c, type: 3}
