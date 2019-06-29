@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3354586}
   - component: {fileID: 2361788}
   - component: {fileID: 6591716}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: lo_Prop_Bed_A_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 439586}
   - component: {fileID: 20580684}
   - component: {fileID: 6472113288713002882}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Prop_Bed_A
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -174,7 +174,7 @@ GameObject:
   - component: {fileID: 3378230}
   - component: {fileID: 2327652}
   - component: {fileID: 6578616}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: lo_Prop_Bed_A_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

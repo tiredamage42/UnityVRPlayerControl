@@ -150,6 +150,32 @@ namespace VRPlayer
 		void Awake()
 		{
 			moveScript = GetComponent<SimpleCharacterController>();
+
+			/*
+
+
+QualitySettings.lodBias = 3.8;
+
+the main camera that renders in editor has FOV at 60d, 
+while the VR device FOV is 90d. 
+
+LODBias1 * (tan(FOV2/2)/tan(FOV1/2)) where:
+LODBias1 is the LODBias for the first camera you are coming from (in this case main camera)
+FOV1 is the FOV for the first camera (again main camera) in radians.
+FOV2 is the FOV for the second camera (in this case Daydream) in radians.
+
+For main camera we have FOV1 = 60 degrees = pi/3 radians, LODBias = 2
+For the Daydream camera we have FOV2 = 90 degrees = pi/2 radians
+
+So: 2 * (tan(pi/2/2)/tan(pi/3/2)) = 
+2 * (tan(pi/4)/tan(pi/6)) = ~3.46
+
+ */
+ QualitySettings.lodBias = 3.46f;
+
+
+
+			
 		}
 
 
@@ -181,3 +207,4 @@ namespace VRPlayer
         }
 	}
 }
+
