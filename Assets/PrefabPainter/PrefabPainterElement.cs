@@ -1,14 +1,12 @@
 ﻿// using System.Collections;
-// using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu()]
 public class PrefabPainterElement : ScriptableObject{
-    public GameObject[] variations;
-    public bool randomX, randomY, randomZ;
-    public Vector3 localPositionOffset;
-    public Vector3 localRotationOffset;
-    public Vector2 sizeRange = Vector2.one;
-    public bool randomizeSize;
+    
+    public List<GameObject> variations = new List<GameObject>();
+    public Vector3 posOffsetMin, posOffsetMax, rotOffsetMin, rotOffsetMax;
+    public Vector2 sizeMultiplierRange = Vector2.one;
     public bool alignNormal = true;
 }

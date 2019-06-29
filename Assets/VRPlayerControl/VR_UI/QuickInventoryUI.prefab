@@ -55,6 +55,7 @@ MonoBehaviour:
   elementText: Slot 3
   destination: {fileID: 0}
   parentHolder: {fileID: 3893053533296130512}
+  hasText: 1
   data: []
   onClick:
     m_PersistentCalls:
@@ -373,6 +374,7 @@ MonoBehaviour:
   elementText: Slot 1
   destination: {fileID: 0}
   parentHolder: {fileID: 3893053533296130512}
+  hasText: 1
   data: []
   onClick:
     m_PersistentCalls:
@@ -1133,6 +1135,7 @@ MonoBehaviour:
   elementText: Slot 4
   destination: {fileID: 0}
   parentHolder: {fileID: 3893053533296130512}
+  hasText: 1
   data: []
   onClick:
     m_PersistentCalls:
@@ -1417,6 +1420,7 @@ MonoBehaviour:
   elementText: Slot 2
   destination: {fileID: 0}
   parentHolder: {fileID: 3893053533296130512}
+  hasText: 1
   data: []
   onClick:
     m_PersistentCalls:
@@ -1449,7 +1453,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9095693333479880186}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1652,6 +1656,7 @@ MonoBehaviour:
   elementText: Slot 5
   destination: {fileID: 0}
   parentHolder: {fileID: 3893053533296130512}
+  hasText: 1
   data: []
   onClick:
     m_PersistentCalls:
@@ -2268,6 +2273,7 @@ MonoBehaviour:
   elementText: Slot 6
   destination: {fileID: 0}
   parentHolder: {fileID: 3893053533296130512}
+  hasText: 1
   data: []
   onClick:
     m_PersistentCalls:
@@ -2469,11 +2475,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: UIRadial
       objectReference: {fileID: 0}
-    - target: {fileID: 6693414524990403536, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6693414524990403537, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2594,25 +2595,15 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.1
       objectReference: {fileID: 0}
-    - target: {fileID: 5205179763256309693, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
+    - target: {fileID: 6693414526691722643, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
         type: 3}
-      propertyPath: scale
-      value: 0.1
+      propertyPath: m_SizeDelta.x
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5205179763256309693, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
+    - target: {fileID: 6693414526691722643, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
         type: 3}
-      propertyPath: flairSize
-      value: 1.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5205179763256309693, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
-        type: 3}
-      propertyPath: textOffset
-      value: 0.67
-      objectReference: {fileID: 0}
-    - target: {fileID: 5205179763256309693, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
-        type: 3}
-      propertyPath: textScale
-      value: 0.003
+      propertyPath: m_SizeDelta.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5205179763256309693, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
         type: 3}
@@ -2626,18 +2617,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5205179763256309693, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
         type: 3}
-      propertyPath: manualSelection
+      propertyPath: textScale
+      value: 0.003
+      objectReference: {fileID: 0}
+    - target: {fileID: 5205179763256309693, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
+        type: 3}
+      propertyPath: scale
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5205179763256309693, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
+        type: 3}
+      propertyPath: isBase
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 6693414526691722643, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
+    - target: {fileID: 5205179763256309693, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
         type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6693414526691722643, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 1
+      propertyPath: textOffset
+      value: 0.67
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 29b3d6eec2c874d0aa9b12a0e909ea13, type: 3}
