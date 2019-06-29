@@ -25,49 +25,98 @@ public class PrefabPainterEditor : Editor {
         return a;
     }
 
+    // static GUILayoutOption randomAxisWidth, randomAxisLabelWidth, smallButtonWidth;
+    static GUILayoutOption[] smallButtonWidth;
 
-    void DrawPainterElement(PrefabPainterElement element) {
+    static Color32 redColor = new Color32(225, 75, 75, 255);
+
+    void InitializeGUI () {
+        // randomAxisWidth = GUILayout.Width(32);
+        // randomAxisLabelWidth = GUILayout.Width(200);
+        smallButtonWidth = new GUILayoutOption[]{ GUILayout.Height(10), GUILayout.Width(10) };
+
+    }
+
+
+    static void DrawPainterElement(PrefabPainterElement element) {
+        if (element == null) 
+        {
+            return;
+        }
+
         EditorGUI.indentLevel++;
 
         EditorGUILayout.BeginVertical("box");
-        
-        GameObject newVariation = (GameObject)EditorGUILayout.ObjectField("Add New Variation", null, typeof(GameObject), false);
-        if (newVariation != null) {
-            System.Array.Resize(ref element.variations, element.variations.Length + 1);
-            element.variations[element.variations.Length -1] = newVariation;
-        }
         EditorGUILayout.Space();
+        
+        GameObject newVariation = (GameObject)EditorGUILayout.ObjectField("New Variation:", null, typeof(GameObject), false);
+        if (newVariation != null) {
+            element.variations.Add(newVariation);
+            // System.Array.Resize(ref element.variations, element.variations.Count + 1);
+            // element.variations[element.variations.Count -1] = newVariation;
+        }
 
-        for (int i = 0; i < element.variations.Length; i++) {
+        int indexToDelete = -1;
+        for (int i = 0; i < element.variations.Count; i++) {
+            EditorGUILayout.BeginHorizontal();
             element.variations[i] = (GameObject)EditorGUILayout.ObjectField(element.variations[i], typeof(GameObject), false);
+            GUI.backgroundColor = redColor;
+            if (GUILayout.Button("", smallButtonWidth)) {
+                indexToDelete = i;
+            }
+            GUI.backgroundColor = Color.white;
+            EditorGUILayout.EndHorizontal();
         }
-        
-        EditorGUILayout.BeginHorizontal();
-
-        EditorGUILayout.LabelField("Randomize Rotations: (X, Y, Z)", GUILayout.Width(200));
-        
-        element.randomX = EditorGUILayout.Toggle(element.randomX, GUILayout.Width(32));
-        element.randomY = EditorGUILayout.Toggle(element.randomY, GUILayout.Width(32));
-        element.randomZ = EditorGUILayout.Toggle(element.randomZ, GUILayout.Width(32));
-        
-        EditorGUILayout.EndHorizontal();
-
-        element.localPositionOffset = EditorGUILayout.Vector3Field("Local Pos Offset", element.localPositionOffset);
-        element.localRotationOffset = EditorGUILayout.Vector3Field("Local Rot Offset", element.localRotationOffset);
-
-        element.randomizeSize = EditorGUILayout.Toggle("Random Size", element.randomizeSize);
-        if (element.randomizeSize) {
-            element.sizeRange = EditorGUILayout.Vector2Field("Size Range", element.sizeRange);
+        if (indexToDelete != -1) {
+            element.variations.Remove(element.variations[indexToDelete]);
         }
+
+        
+        // EditorGUILayout.BeginHorizontal();
+
+        // EditorGUILayout.LabelField("Randomize Rotations: (X, Y, Z)", randomAxisLabelWidth);
+        
+        // element.randomX = EditorGUILayout.Toggle(element.randomX, randomAxisWidth);
+        // element.randomY = EditorGUILayout.Toggle(element.randomY, randomAxisWidth);
+        // element.randomZ = EditorGUILayout.Toggle(element.randomZ, randomAxisWidth);
+        
+        // EditorGUILayout.EndHorizontal();
+
+        // element.yOffset = EditorGUILayout.Vector3Field("Local Pos Offset", element.localPositionOffset);
+        
+        // element.localPositionOffset = EditorGUILayout.Vector3Field("Local Pos Offset", element.localPositionOffset);
+        // element.localRotationOffset = EditorGUILayout.Vector3Field("Local Rot Offset", element.localRotationOffset);
+
+        EditorGUILayout.Space();
+        
+        element.posOffsetMin = EditorGUILayout.Vector3Field("Pos Offset Min", element.posOffsetMin);
+        element.posOffsetMax = EditorGUILayout.Vector3Field("Pos Offset Max", element.posOffsetMax);
+        
+        EditorGUILayout.Space();
+        element.rotOffsetMin = EditorGUILayout.Vector3Field("Ros Offset Min", element.rotOffsetMin);
+        element.rotOffsetMax = EditorGUILayout.Vector3Field("Rot Offset Max", element.rotOffsetMax);
+
+
+EditorGUILayout.Space();
+        
+        element.sizeMultiplierRange = EditorGUILayout.Vector2Field("Size Multiplier Range", element.sizeMultiplierRange);
+        // element.randomizeSize = EditorGUILayout.Toggle("Random Size", element.randomizeSize);
+        // if (element.randomizeSize) {
+        // }
+
+        EditorGUILayout.Space();
+        
         element.alignNormal = EditorGUILayout.Toggle("Align To Normal", element.alignNormal);
         EditorGUILayout.EndVertical();
         EditorGUI.indentLevel--;
         
         EditorUtility.SetDirty(element);
     }
-
-
     PrefabPainterElement[] allElements;
+
+
+
+
     int currentElementIndex=-1;
     bool validElement { get { return currentElementIndex >= 0 && currentElementIndex < allElements.Length; } }
     PrefabPainterElement currentElement { get { return validElement ? allElements[currentElementIndex] : null; } }
@@ -80,7 +129,7 @@ public class PrefabPainterEditor : Editor {
 
         string newElementName = "NewPainterElement";
         if (variation != null) {
-            newElement.variations = new GameObject[1] { variation };
+            newElement.variations = new List<GameObject>() { variation };
             newElementName = variation.name + "_PainterElement";
         }
         AssetDatabase.CreateAsset(newElement, AssetDatabase.GenerateUniqueAssetPath("Assets/"+newElementName+".asset"));
@@ -108,8 +157,7 @@ public class PrefabPainterEditor : Editor {
     void OnEnable()
     {
         painter = target as PrefabPainter;
-        // painter.gameObject.name = "Prefab Painter";
-
+        
         allElements = GetAllInstances<PrefabPainterElement>();
 
         elementNames = new string[allElements.Length];
@@ -119,6 +167,9 @@ public class PrefabPainterEditor : Editor {
         }
 
         helperTransform = new GameObject("PREFAB_PAINTER_HELPER").transform;
+        helperTransform.SetParent(painter.transform);
+
+        InitializeGUI();
     }
 
     Transform helperTransform;
@@ -127,6 +178,7 @@ public class PrefabPainterEditor : Editor {
         
      
     void OnDisable () {
+        DestroyImmediate(gameObjectEditor);
         DestroyImmediate(helperTransform.gameObject);
     }
 
@@ -135,16 +187,37 @@ public class PrefabPainterEditor : Editor {
     int amount = 1;
     bool drawMode = true;
     bool useRadius;
+
+
     int variationIndex=-2;    
     GameObject currentPreview;
-    Vector4 chosenPreviewRotation;
+    Quaternion chosenPreviewRotation;
+    Vector4 chosenPreviewPosition;
+    
+    int previewIndex;
+
+
 
 
     void UpdatePreviewRandom () {
-        chosenPreviewRotation.x = Random.Range(0,360);
-        chosenPreviewRotation.y = Random.Range(0,360);
-        chosenPreviewRotation.z = Random.Range(0,360);
-        chosenPreviewRotation.w = Random.Range(currentElement.sizeRange.x, currentElement.sizeRange.y);
+        chosenPreviewRotation = Quaternion.Euler (
+            Random.Range(currentElement.rotOffsetMin.x, currentElement.rotOffsetMax.x),
+            Random.Range(currentElement.rotOffsetMin.y, currentElement.rotOffsetMax.y),
+            Random.Range(currentElement.rotOffsetMin.z, currentElement.rotOffsetMax.z)
+        );
+        chosenPreviewPosition = new Vector4 (
+            Random.Range(currentElement.posOffsetMin.x, currentElement.posOffsetMax.x),
+            Random.Range(currentElement.posOffsetMin.y, currentElement.posOffsetMax.y),
+            Random.Range(currentElement.posOffsetMin.z, currentElement.posOffsetMax.z),
+            Random.Range(currentElement.sizeMultiplierRange.x, currentElement.sizeMultiplierRange.y)
+
+        );
+
+
+        // chosenPreviewRotation.x = Random.Range(0,360);
+        // chosenPreviewRotation.y = Random.Range(0,360);
+        // chosenPreviewRotation.z = Random.Range(0,360);
+        // chosenPreviewRotation.w = Random.Range(currentElement.sizeRange.x, currentElement.sizeRange.y);
     }
 
     void DestoryCurrentPreview () {
@@ -154,24 +227,60 @@ public class PrefabPainterEditor : Editor {
     }
 
 
+
+    GameObject previewOBJ;
+
+    void UpdatePreviewObj () {
+        if (previewOBJ) {
+
+            gameObjectEditor = Editor.CreateEditor(previewOBJ);
+            previewOBJ = null;
+        }
+
+    }
+
+
     void OnPreviewIndexChange () {
         if (!validElement)
             return;
-        if (useRadius) 
-            return;
+        // if (useRadius) 
+        //     return;
 
         DestoryCurrentPreview();
         
-        int index = variationIndex == -1 ? Random.Range(0, currentElement.variations.Length) : variationIndex;
-        currentPreview = PrefabUtility.InstantiatePrefab(currentElement.variations[index]) as GameObject;
+        // GameObject obj = variationIndex != -1 ? currentElement.variations[variationIndex] : null;
         
+        int index = variationIndex == -1 ? Random.Range(0, currentElement.variations.Count) : variationIndex;
+        
+
+        previewIndex = variationIndex == -1 ? index : -1;
+        if (gameObjectEditor != null) {
+            DestroyImmediate(gameObjectEditor);
+        }
+        previewOBJ = null;
+        if (index != -1 && index < currentElement.variations.Count) {
+            previewOBJ = currentElement.variations[index];
+            // gameObjectEditor = Editor.CreateEditor(currentElement.variations[index]);
+        }
+
+        if (previewOBJ == null) 
+            return;
+        
+        currentPreview = PrefabUtility.InstantiatePrefab(previewOBJ) as GameObject;
+        originalPreviewScale = currentPreview.transform.localScale;
+
+
         Collider[] cols = currentPreview.GetComponentsInChildren<Collider>();
         for (int i = 0; i < cols.Length; i++) cols[i].enabled = false;
         
         currentPreview.transform.SetParent(helperTransform);
-        // currentPreview.transform.localPosition = currentElement.localPositionOffset;
-        // currentPreview.transform.localRotation = Quaternion.Euler(currentElement.localRotationOffset);
+
+        currentPreview.transform.localPosition = chosenPreviewPosition;
+        currentPreview.transform.localRotation = chosenPreviewRotation;
         
+
+        currentPreview.transform.localScale = originalPreviewScale * chosenPreviewPosition.w;// new Vector3 (chosenPreviewPosition.w, chosenPreviewPosition.w, chosenPreviewPosition.w);
+
         UpdatePreviewRandom();
     }
 
@@ -180,17 +289,17 @@ public class PrefabPainterEditor : Editor {
         OnPreviewIndexChange();
     }
 
-    Vector3 lastHitPos, lastHitNormal;
+    Vector3 lastHitPos, lastHitNormal, originalPreviewScale;
 
     void HandlePreview (bool isValid, Vector3 hitPos, Vector3 hitNormal, bool shiftHeld) {
         
         if (useRadius || !drawMode || !validElement) {
-            previewLocked = false;
+            // previewLocked = false;
             DestoryCurrentPreview();
             return;
         }
 
-        if ((!isValid||shiftHeld) && !previewLocked) {
+        if ((!isValid||shiftHeld)){// && !previewLocked) {
             if (currentPreview != null) {
                 currentPreview.SetActive(false);
             }
@@ -203,14 +312,14 @@ public class PrefabPainterEditor : Editor {
             currentPreview.SetActive(true);
         }
 
-        if (previewLocked) {
-            hitPos = lastHitPos;
-            hitNormal = lastHitNormal;
-        }
-        else {
+        // if (previewLocked) {
+        //     hitPos = lastHitPos;
+        //     hitNormal = lastHitNormal;
+        // }
+        // else {
             lastHitPos = hitPos;
             lastHitNormal = hitNormal;
-        }
+        // }
 
         helperTransform.position = hitPos;
         helperTransform.rotation = Quaternion.identity;
@@ -218,30 +327,37 @@ public class PrefabPainterEditor : Editor {
         if (currentElement.alignNormal)
             helperTransform.rotation = Quaternion.FromToRotation(Vector3.up, hitNormal);
 
-        if (currentElement.randomX) helperTransform.Rotate(chosenPreviewRotation.x, 0, 0);
-        if (currentElement.randomY) helperTransform.Rotate(0, chosenPreviewRotation.y, 0);
-        if (currentElement.randomZ) helperTransform.Rotate(0, 0, chosenPreviewRotation.z);
+        // if (currentElement.randomX) helperTransform.Rotate(chosenPreviewRotation.x, 0, 0);
+        // if (currentElement.randomY) helperTransform.Rotate(0, chosenPreviewRotation.y, 0);
+        // if (currentElement.randomZ) helperTransform.Rotate(0, 0, chosenPreviewRotation.z);
         
-        if (currentElement.randomizeSize) {
-            currentPreview.transform.localScale = new Vector3 (chosenPreviewRotation.w, chosenPreviewRotation.w, chosenPreviewRotation.w);
-        }
-    
-        currentPreview.transform.localPosition = currentElement.localPositionOffset;
-        currentPreview.transform.localRotation = Quaternion.Euler(currentElement.localRotationOffset);
+        // if (currentElement.randomizeSize) {
+            // currentPreview.transform.localScale = originalPreviewScale * chosenPreviewPosition.w;// new Vector3 (chosenPreviewPosition.w, chosenPreviewPosition.w, chosenPreviewPosition.w);
+        // }
 
 
-        if (previewLocked) {
-            GUI.enabled = false;
-            Handles.PositionHandle (currentPreview.transform.position, currentPreview.transform.rotation);
-            GUI.enabled = true;
-        }
+        // currentPreview.transform.localPosition = chosenPreviewPosition;
+        // currentPreview.transform.localRotation = chosenPreviewRotation;
+        
+        // currentPreview.transform.localPosition = currentElement.localPositionOffset;
+        // currentPreview.transform.localRotation = Quaternion.Euler(currentElement.localRotationOffset);
+
+
+        // if (previewLocked) {
+        //     GUI.enabled = false;
+        //     Handles.PositionHandle (currentPreview.transform.position, currentPreview.transform.rotation);
+        //     GUI.enabled = true;
+        // }
     }
 
-    bool previewLocked;
+    // bool previewLocked;
     
 
     public override void OnInspectorGUI()
     {
+        // DrawModeButton();
+
+        UpdatePreviewObj();
         // base.OnInspectorGUI();
 
         paintLayerMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Paint Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(paintLayerMask), InternalEditorUtility.layers));
@@ -257,13 +373,27 @@ public class PrefabPainterEditor : Editor {
         EditorGUILayout.Space();
         EditorGUILayout.Space();
 
-        if (GUILayout.Button("Create New Element")) {
+        // EditorGUILayout.BeginHorizontal();
+        
+
+        if (GUILayout.Button("Create New Element")){//}, GUILayout.Width(150))) {
             CreateNewPainterElement (null);
         }
-        GameObject newVariation = (GameObject)EditorGUILayout.ObjectField("New From Prefab", null, typeof(GameObject), false);
+
+        // float old = EditorGUIUtility.labelWidth; 
+        // EditorGUIUtility.labelWidth = 0;
+
+
+
+        GameObject newVariation = (GameObject)EditorGUILayout.ObjectField("From Prefab", null, typeof(GameObject), false);//, GUILayout.Width(200));
+        // GameObject newVariation = (GameObject)EditorGUILayout.ObjectField("From Prefab", null, typeof(GameObject), false, GUILayout.Width(128));
+        // EditorGUIUtility.labelWidth = old;
+        
         if (newVariation != null) {
             CreateNewPainterElement(newVariation);
         }
+        // EditorGUILayout.EndHorizontal();
+            
 
         EditorGUILayout.Space();
         EditorGUILayout.Space();
@@ -293,7 +423,12 @@ public class PrefabPainterEditor : Editor {
             EditorGUILayout.Space();
         
             int oldIndex = variationIndex;
-            variationIndex = EditorGUILayout.IntSlider("Paint Variation (-1: Random)", variationIndex, -1, currentElement.variations.Length-1);
+
+            
+            // GUI.enabled = !randomizeVariation;
+            variationIndex = EditorGUILayout.IntSlider("Paint Variation", variationIndex, currentElement.variations.Count == 1 ? 0 : -1, currentElement.variations.Count -1);
+            // GUI.enabled = true;
+            
             if (oldIndex != variationIndex) {
                 OnPreviewIndexChange();
             }
@@ -308,7 +443,11 @@ public class PrefabPainterEditor : Editor {
         EditorGUILayout.Space();
         EditorGUILayout.Space();
         
+DrawModeButton();
+        
+    }
 
+    void DrawModeButton () {
         if (drawMode) {
             GUI.backgroundColor = Color.red;
             if (GUILayout.Button("Exit Draw Mode")) {
@@ -321,7 +460,17 @@ public class PrefabPainterEditor : Editor {
                 drawMode = true;
             }
         }
+    }
      
+    public override bool HasPreviewGUI() { return variationIndex != -1; }
+    Editor gameObjectEditor;
+    
+    public override void OnPreviewGUI(Rect r, GUIStyle background)
+    {
+        if (gameObjectEditor)
+        {
+            gameObjectEditor.OnPreviewGUI(r, background);
+        } 
     }
 
     
@@ -342,13 +491,13 @@ public class PrefabPainterEditor : Editor {
         Handles.BeginGUI();
         Rect r = new Rect(e.mousePosition.x + mosuePosOffset, e.mousePosition.y + mosuePosOffset, sceneViewBoxSize, sceneViewBoxSize);
         
-
         string helpString = "";
         if (useRadius) {
             helpString = string.Format("Radius: {0:0.00}\nA: Switch To Single Draw\nD: Exit draw mode.\nF: Focus area\nShift+Scroll: Adjust radius", radius);
         }
         else {
-            helpString = string.Format("Preview Lock: {0}\nA: Switch To Radius Draw\nD: Exit draw mode.\nF: Focus area\nS: Lock preview", previewLocked);
+            // helpString = string.Format("Preview Lock: {0}\nA: Switch To Radius Draw\nD: Exit draw mode.\nF: Focus area\nS: Lock preview", previewLocked);
+            helpString = "A: Switch To Radius Draw\nD: Exit draw mode.\nF: Focus area";
         }
         
         GUI.Label(r, helpString);
@@ -377,24 +526,28 @@ public class PrefabPainterEditor : Editor {
             focus = EventType.KeyUp == current.type;
             current.Use();
         }
+        if (EventType.KeyUp == current.type) {
+
         if((EventType.KeyUp == current.type ) && KeyCode.D == current.keyCode)
         {
             current.Use();
             drawMode = false;
             // return;
         }
-        if((EventType.KeyUp == current.type ) && KeyCode.S == current.keyCode)
-        {
-            current.Use();
-            previewLocked = !previewLocked;
-            return;
-        }
+        // if((EventType.KeyUp == current.type ) && KeyCode.S == current.keyCode)
+        // {
+        //     current.Use();
+        //     previewLocked = !previewLocked;
+        //     return;
+        // }
         if((EventType.KeyUp == current.type ) && KeyCode.A == current.keyCode)
         {
             current.Use();
             useRadius = !useRadius;
             return;
         }
+        }
+        
 
         if (EventType.ScrollWheel == current.type && current.shift) {
             radius += current.delta.y;
@@ -443,8 +596,6 @@ public class PrefabPainterEditor : Editor {
         }
         
         HandlePreview(isValid, hitPos, hitNormal, current.shift);
-
-
         
         if (Event.current.type == EventType.Layout)
             HandleUtility.AddDefaultControl(controlId);
@@ -473,15 +624,13 @@ public class PrefabPainterEditor : Editor {
     }
 
 
-
-
     public void PrefabInstantiate (Vector3 hitPos, Vector3 hitNormal)
     {
-        if (previewLocked) {
-            Debug.LogWarning("Cant instantiate when preview locked");
-            return;
-        }
-        if (!validElement || currentElement.variations == null || currentElement.variations.Length == 0)
+        // if (previewLocked) {
+        //     Debug.LogWarning("Cant instantiate when preview locked");
+        //     return;
+        // }
+        if (!validElement || currentElement.variations == null || currentElement.variations.Count == 0)
             return;
         
         // Transform helperTransform = new GameObject("PREFAB_PAINTER_HELPER").transform;
@@ -490,6 +639,9 @@ public class PrefabPainterEditor : Editor {
 
         if (currentElement.alignNormal)
             helperTransform.rotation = Quaternion.FromToRotation(Vector3.up, hitNormal);
+
+        
+        // helperTransform.position = helperTransform.position + helperTransform.up * currentElement.yOffset; 
         
         // if (amount > 1)
         if (useRadius)
@@ -504,40 +656,65 @@ public class PrefabPainterEditor : Editor {
                 helperTransform.position = hit.point;
                 if (currentElement.alignNormal)
                     helperTransform.up = hit.normal;
+                
+                // helperTransform.position = helperTransform.position + helperTransform.up * currentElement.yOffset; 
+        
             }
             else
             {
                 return;
             }
 
-            if (currentElement.randomX) helperTransform.Rotate(Random.Range(0, 360), 0, 0);
-            if (currentElement.randomY) helperTransform.Rotate(0, Random.Range(0, 360), 0);
-            if (currentElement.randomZ) helperTransform.Rotate(0, 0, Random.Range(0, 360));
+            // if (currentElement.randomX) helperTransform.Rotate(Random.Range(0, 360), 0, 0);
+            // if (currentElement.randomY) helperTransform.Rotate(0, Random.Range(0, 360), 0);
+            // if (currentElement.randomZ) helperTransform.Rotate(0, 0, Random.Range(0, 360));
 
         }
         else {
-            if (currentElement.randomX) helperTransform.Rotate(chosenPreviewRotation.x, 0, 0);
-            if (currentElement.randomY) helperTransform.Rotate(0, chosenPreviewRotation.y, 0);
-            if (currentElement.randomZ) helperTransform.Rotate(0, 0, chosenPreviewRotation.z);
-
+            // if (currentElement.randomX) helperTransform.Rotate(chosenPreviewRotation.x, 0, 0);
+            // if (currentElement.randomY) helperTransform.Rotate(0, chosenPreviewRotation.y, 0);
+            // if (currentElement.randomZ) helperTransform.Rotate(0, 0, chosenPreviewRotation.z);
         }
 
+        int index = variationIndex == -1 ? previewIndex : variationIndex;
+        if (useRadius) {
+            index = variationIndex == -1 ? Random.Range(0, currentElement.variations.Count) : variationIndex;
+        }
 
-        int index = variationIndex == -1 ? Random.Range(0, currentElement.variations.Length) : variationIndex;
         GameObject instance = PrefabUtility.InstantiatePrefab(currentElement.variations[index]) as GameObject;
         
         instance.transform.SetParent(helperTransform);
-        instance.transform.localPosition = currentElement.localPositionOffset;
-        instance.transform.localRotation = Quaternion.Euler(currentElement.localRotationOffset);
-        
 
-        if (currentElement.randomizeSize) {
-            float size = chosenPreviewRotation.w;
-            if (useRadius) {
-                size = Random.Range(currentElement.sizeRange.x, currentElement.sizeRange.y);
-            }
-            instance.transform.localScale = new Vector3 (size, size, size);
+        if (useRadius) {
+            instance.transform.localPosition = new Vector3 (
+            Random.Range(currentElement.posOffsetMin.x, currentElement.posOffsetMax.x),
+            Random.Range(currentElement.posOffsetMin.y, currentElement.posOffsetMax.y),
+            Random.Range(currentElement.posOffsetMin.z, currentElement.posOffsetMax.z)
+            
+
+        );
+            instance.transform.localRotation = Quaternion.Euler (
+            Random.Range(currentElement.rotOffsetMin.x, currentElement.rotOffsetMax.x),
+            Random.Range(currentElement.rotOffsetMin.y, currentElement.rotOffsetMax.y),
+            Random.Range(currentElement.rotOffsetMin.z, currentElement.rotOffsetMax.z)
+        );
+        
         }
+        else {
+            instance.transform.localPosition = chosenPreviewPosition;
+            instance.transform.localRotation = chosenPreviewRotation;
+        }
+
+        // instance.transform.localPosition = currentElement.localPositionOffset;
+        // instance.transform.localRotation = Quaternion.Euler(currentElement.localRotationOffset);
+        
+        // if (currentElement.randomizeSize) {
+            float size = chosenPreviewPosition.w;
+            if (useRadius) {
+                size = Random.Range(currentElement.sizeMultiplierRange.x, currentElement.sizeMultiplierRange.y);
+            }
+            instance.transform.localScale = instance.transform.localScale * size;// new Vector3 (size, size, size);
+        // }
         
         instance.transform.SetParent(null);
         
@@ -546,7 +723,8 @@ public class PrefabPainterEditor : Editor {
         Undo.RegisterCreatedObjectUndo(instance, "Instantiate");
 
         if (!useRadius) {
-            UpdatePreviewRandom();
+            OnPreviewIndexChange();
+            // UpdatePreviewRandom();
         }
     }
 
