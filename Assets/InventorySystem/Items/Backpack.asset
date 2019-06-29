@@ -1,36 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2b52ef604cb54a54ae56556da48a30e, type: 3}
-  m_Name: Backpack
-  m_EditorClassIdentifier: 
-  equipSlot: 2
-  stackable: 0
-  allowMultipleStashed: 1
-  itemName: Backpack
-  scenePrefabVariations:
-  - {fileID: 4059460929881129149, guid: 85cabae2abba14828b2348dee7d1b443, type: 3}
-  - {fileID: 4417822710243179157, guid: 7c1924ae5b12d451085cecfda3c2340a, type: 3}
-  - {fileID: 3782446068247926477, guid: 0f3ca9896e0c74710941083d65ce21cf, type: 3}
-  - {fileID: 8001040304083995294, guid: 20625ce9e4cfe4ac7873422af14d224a, type: 3}
-  - {fileID: 7675389908402188198, guid: cc875eef3a5c842449557f1997d95aa9, type: 3}
-  permanentStash: 0
-  category: 0
-  stashActions: 01000000
-  equipActions: 00000000
-  equipType: 1
-  hoverLockOnEquip: 1
-  stashedItemBehavior: {fileID: 4299545621166748805, guid: d1a6789bcdb0046a1b3f99c82f20d3b4,
-    type: 3}
-  equipTransform: {fileID: 11400000, guid: 19dd97d23aa4542d48c9b8a6fe440c3c, type: 2}
-  weight: 1
-  value: 50
-  composedOf: []
+version https://git-lfs.github.com/spec/v1
+oid sha256:89db289a9bb64ad163b6db6eb03a5c177ea265e33fdc8f66bbaffa2f9b7fc050
+size 1268

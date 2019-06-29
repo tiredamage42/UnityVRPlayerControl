@@ -1,36 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2b52ef604cb54a54ae56556da48a30e, type: 3}
-  m_Name: CannedFood
-  m_EditorClassIdentifier: 
-  equipSlot: -1
-  stackable: 0
-  allowMultipleStashed: 1
-  itemName: Canned Food
-  scenePrefabVariations:
-  - {fileID: 6429096639013500809, guid: 5f7ca43eebd804220bc10194406bc4e7, type: 3}
-  - {fileID: 5534400124607559193, guid: c6c4d11d587064f9b82068ef25cbbe86, type: 3}
-  - {fileID: 2121094752818424148, guid: 8bec4ab1a29014fa992da8ceda5f1d5c, type: 3}
-  - {fileID: 3121014444410578511, guid: 53845eab28b15418e84efbfcf3810d44, type: 3}
-  - {fileID: 6672206808035743979, guid: a1b8308a7657f457fba668e99d54e41c, type: 3}
-  - {fileID: 9085122727992794275, guid: ceefe698924024f74bfb5aeaa31bebec, type: 3}
-  - {fileID: 7635606593529852643, guid: c6e2e7529b899453cb1e5f7f031f8584, type: 3}
-  - {fileID: 4445270251483246609, guid: 2315ac22440a34225bb9f844321bca65, type: 3}
-  permanentStash: 0
-  stashActions: 01000000
-  equipActions: 00000000
-  equipType: 1
-  hoverLockOnEquip: 1
-  onStashBuffs: {fileID: 0}
-  stashUseBehavior: {fileID: 0}
-  onEquipBuffs: {fileID: 0}
-  equipTransform: {fileID: 11400000, guid: f11c0f9aed30d48e198f2b43b7b091eb, type: 2}
+version https://git-lfs.github.com/spec/v1
+oid sha256:e1887fcbb9009cb062389d00ee8858405ea2da735297e15b0e80272570953aaa
+size 1450

@@ -1,19 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 651118d94913b4ccaa693bae51d9b8b2, type: 3}
-  m_Name: KnifeEquip
-  m_EditorClassIdentifier: 
-  transformSettings:
-  - position: {x: 0.0076, y: 0.0152, z: 0.0314}
-    rotation: {x: -0.000002561321, y: 270.00006, z: 19.581491}
-  - position: {x: 0.0076, y: 0.0152, z: 0.0314}
-    rotation: {x: -0.000002561321, y: 270.00006, z: 19.581491}
+version https://git-lfs.github.com/spec/v1
+oid sha256:bdc4486a9a7ec2384a0aedb14a88d6e0a940c475dfadb7531be552706090b24e
+size 642

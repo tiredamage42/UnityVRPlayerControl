@@ -1,32 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2b52ef604cb54a54ae56556da48a30e, type: 3}
-  m_Name: Cola
-  m_EditorClassIdentifier: 
-  equipSlot: -1
-  stackable: 0
-  allowMultipleStashed: 1
-  itemName: Cola
-  scenePrefabVariations:
-  - {fileID: 748296490126931971, guid: 2b104102a661c4b9c937fee7e56d548e, type: 3}
-  - {fileID: 8133798715094351910, guid: f49aeef7c9c754591a9fa414d100cf87, type: 3}
-  - {fileID: 4804280165750351824, guid: be11de1660a864ad2a7b533a248004f3, type: 3}
-  - {fileID: 691624102756497592, guid: 50a6ee7f4e208480cb44b223e117e007, type: 3}
-  permanentStash: 0
-  stashActions: 01000000
-  equipActions: 00000000
-  equipType: 1
-  hoverLockOnEquip: 1
-  onStashBuffs: {fileID: 0}
-  stashUseBehavior: {fileID: 0}
-  onEquipBuffs: {fileID: 0}
-  equipTransform: {fileID: 11400000, guid: f448995db95334f7c89ad3bccb1cb7e0, type: 2}
+version https://git-lfs.github.com/spec/v1
+oid sha256:9bafd737a7fa12e8d9fc94f0cb490ca7c3ede067b0d7c53deb3f74463a211ac9
+size 1103

@@ -1,32 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2b52ef604cb54a54ae56556da48a30e, type: 3}
-  m_Name: PPHV4
-  m_EditorClassIdentifier: 
-  equipSlot: -1
-  stackable: 0
-  allowMultipleStashed: 1
-  itemName: PPH-V4
-  scenePrefabVariations:
-  - {fileID: 284590674192341788, guid: 7b762906b4d5a40b9ae7ffc4ea8e4c69, type: 3}
-  permanentStash: 0
-  category: 0
-  stashActions: 0000000001000000
-  equipActions: 00000000
-  equipType: 1
-  hoverLockOnEquip: 1
-  stashedItemBehavior: {fileID: 4299545621166748805, guid: d1a6789bcdb0046a1b3f99c82f20d3b4,
-    type: 3}
-  equipTransform: {fileID: 11400000, guid: 71b62170597e74e9ca5c0f162bb83d79, type: 2}
-  weight: 1
-  value: 50
-  composedOf: []
+version https://git-lfs.github.com/spec/v1
+oid sha256:d3fc783d5d856db83b567fab0647390c64f99a310c47fd64e3058211b1ec10fa
+size 939

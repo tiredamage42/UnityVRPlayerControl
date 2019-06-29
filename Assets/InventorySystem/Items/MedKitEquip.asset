@@ -1,19 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 651118d94913b4ccaa693bae51d9b8b2, type: 3}
-  m_Name: MedKitEquip
-  m_EditorClassIdentifier: 
-  transformSettings:
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-  - position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:b35ad464f6a83d8131f2f7db8c34dcc29b214e31283ae871b2f01ba301f7f6ed
+size 553
