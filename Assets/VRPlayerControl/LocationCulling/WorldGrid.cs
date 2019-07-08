@@ -89,6 +89,18 @@ namespace EnvironmentTools {
 			return Mathf.Max(Mathf.Abs(gridA.x - gridB.x), Mathf.Abs(gridA.y - gridB.y));
 		}
 
+		public static Vector3 GridStartPosition(Vector2Int grid, float cellSize) {
+			return new Vector3(grid.x * cellSize, 0, grid.y * cellSize);
+		}
+		public static Vector3 GridCenterPosition(Vector2Int grid, float cellSize) {
+			float halfCell = cellSize * .5f;
+			return new Vector3(grid.x * cellSize + halfCell, 0, grid.y * cellSize + halfCell);
+		}
+		public static Vector3 GridCenterPosition(Vector2Int grid) {
+			return GridCenterPosition(grid, instance.cellSize);
+		}
+
+
 		public static Vector2Int GetGrid (Vector3 location, float cellSize) {
 			float inv = 1f/cellSize;
 			
