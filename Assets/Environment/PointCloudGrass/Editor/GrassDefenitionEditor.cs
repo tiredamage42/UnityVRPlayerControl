@@ -41,7 +41,14 @@ GrassDefenition grassDef;
             grassDef.material = new Material(Shader.Find("Custom/PCGrass"));
         }
         grassDef.material.SetTexture("_MainTex", grassDef.atlasedTexture);
-        // grassDef.material.SetTexture("_BumpMap", grassDef.atlasedNormal);
+        grassDef.material.SetTexture("_BumpMap", grassDef.atlasedNormal);
+        
+        if (grassDef.shadowMaterial == null) {
+            grassDef.shadowMaterial = new Material(Shader.Find("Custom/PCGrass_Shadows"));
+        }
+        grassDef.shadowMaterial.SetTexture("_MainTex", grassDef.atlasedTexture);
+        
+        
         EditorUtility.SetDirty(grassDef);
     }
 
