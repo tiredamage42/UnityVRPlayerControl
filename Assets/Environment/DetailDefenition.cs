@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CustomVegetation {
+namespace RenderTools {
 	[CreateAssetMenu()] public class DetailDefenition : ScriptableObject {
 		[System.Serializable] public class LODInfo {
 			public Mesh mesh;

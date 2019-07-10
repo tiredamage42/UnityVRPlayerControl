@@ -1,8 +1,7 @@
 ﻿
-Shader "Custom/PCGrass_Shadows" {
+Shader "Custom Environment/Grass/ShadowPass" {
 	Properties{
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
-		_Cutoff("Cutoff", Range(0,1)) = 0.25
 	}
     SubShader{
 		CULL OFF
@@ -24,11 +23,9 @@ Shader "Custom/PCGrass_Shadows" {
             #include "UnityCGGEOM.cginc" 
             #include "PCGrassInclude.cginc"
             
-            fixed _Cutoff;
-
             fixed frag(g2f IN) : SV_Target
             {
-                return GRASS_SHADOW_CASTER_FRAG (IN, _Cutoff * IN.uv_cutoff_distancemod.w);
+                return GRASS_SHADOW_CASTER_FRAG (IN, IN.uv_cutoff_distancemod.z * IN.uv_cutoff_distancemod.w);
             }
 		    ENDCG
         }	

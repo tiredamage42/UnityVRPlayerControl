@@ -19,7 +19,10 @@ Shader "Hidden/TerrainEngine/Splatmap/Standard-Base_Custom" {
         CGPROGRAM
         #pragma surface surf Standard vertex:SplatmapVert addshadow fullforwardshadows
         #pragma instancing_options assumeuniformscaling nomatrices nolightprobe nolightmap forwardadd
+        #pragma fragmentoption ARB_precision_hint_fastest
+
         #pragma target 3.0
+
         // needs more than 8 texcoords
         #pragma exclude_renderers gles
 
@@ -33,7 +36,7 @@ Shader "Hidden/TerrainEngine/Splatmap/Standard-Base_Custom" {
 
         void surf (Input IN, inout SurfaceOutputStandard o) {
             half4 c = tex2D (_MainTex, IN.tc.xy);
-            o.Albedo = fixed3(1,0,0);//c.rgb;
+            o.Albedo = c.rgb;
             o.Alpha = 1;
             o.Smoothness = c.a;
             o.Metallic = tex2D (_MetallicTex, IN.tc.xy).r;

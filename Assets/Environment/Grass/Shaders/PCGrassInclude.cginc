@@ -3,6 +3,7 @@
 #ifndef PC_GRASS_INCLUDED
 #define PC_GRASS_INCLUDED
 
+
 // VERTEX
 struct VertexBuffer
 {
@@ -10,9 +11,9 @@ struct VertexBuffer
     fixed3 ground_normal : NORMAL;
     fixed4 tint_color : COLOR;
     fixed4 uv_offset_main : TEXCOORD0;
-    fixed4 uv_offset_bump : TEXCOORD1;
+    fixed4 cutoff_shadowcutoff : TEXCOORD1;
     fixed4 hue_variation : TEXCOORD2;
-    fixed4 width_height_cutoff_bumpStrength : TEXCOORD3;
+    fixed4 width_height_bumpStrength : TEXCOORD3;
 };
     
 VertexBuffer vert(VertexBuffer v) { 
@@ -20,6 +21,7 @@ VertexBuffer vert(VertexBuffer v) {
 }
 
 sampler2D _MainTex;
+
 
 // QUAD ROTATION TOOLS
 
@@ -207,8 +209,13 @@ fixed4x4 rotationMatrix(fixed3 axis, fixed sinAngle, fixed cosAngle)
         {
 
             UNITY_INITIALIZE_OUTPUT(g2f, OUT);
+
+#if defined (COLOR_PASS)
+            OUT.uv_cutoff_distancemod = fixed4(uv, V2G.cutoff_shadowcutoff.x, distanceFade); 
+#else 
+            OUT.uv_cutoff_distancemod = fixed4(uv, V2G.cutoff_shadowcutoff.y, distanceFade); 
+#endif
             
-            OUT.uv_cutoff_distancemod = fixed4(uv, V2G.width_height_cutoff_bumpStrength.z, distanceFade); 
 
 #if defined (COLOR_PASS)
             
@@ -216,7 +223,7 @@ fixed4x4 rotationMatrix(fixed3 axis, fixed sinAngle, fixed cosAngle)
             
             OUT.pos = UnityObjectToClipPos(vertex);
             
-            OUT.tint_bumpstrength = fixed4(V2G.tint_color.rgb, V2G.width_height_cutoff_bumpStrength.w);
+            OUT.tint_bumpstrength = fixed4(V2G.tint_color.rgb, V2G.width_height_bumpStrength.z);
             OUT.hueVariation = hueVariation;
 
             // fixed3 wTangent = UnityObjectToWorldDir(tangent.xyz);
@@ -230,7 +237,10 @@ fixed4x4 rotationMatrix(fixed3 axis, fixed sinAngle, fixed cosAngle)
             OUT.tSpace2 = fixed4(wTangent.z, wBitangent.z, worldNormal.z, worldPos.z);
             
             // EEHHHHH
-            OUT.lightDir = normalize(WorldSpaceLightDir (fixed4(vertex, 1)));
+            OUT.lightDir = normalize(
+                //TODO remove world space calc
+                WorldSpaceLightDir (fixed4(vertex, 1))
+            );
 
 // #if defined (DEFERRED_LIGHTING)
 //             #if UNITY_SHOULD_SAMPLE_SH && !UNITY_SAMPLE_FULL_SH_PER_PIXEL
@@ -264,18 +274,24 @@ fixed4x4 rotationMatrix(fixed3 axis, fixed sinAngle, fixed cosAngle)
             fixed distanceFade, fixed3 worldNormal, fixed4 uvOffset, 
             VertexBuffer V2G, fixed3 perpDir
 #if defined (COLOR_PASS)
-            , fixed3 obj2World, fixed4 objTangent, fixed3 wTangent, fixed3 wBitangent
+            // , fixed3 obj2World, 
+            , fixed4 objTangent, fixed3 wTangent, fixed3 wBitangent
 #endif
         ) {
             
             fixed3 quadCorner = base - perpDir;
+            fixed3 quadCorner_world = quadCorner;// + obj2World;
+            fixed quadRandom = frac(abs(quadCorner_world.x + quadCorner_world.y + quadCorner_world.z) * 2);
+
+
+            fixed flipUV =  floor(quadRandom+0.5); //flip uv randomly per quad
+
 
 #if defined (COLOR_PASS)
-            fixed3 quadCorner_world = quadCorner + obj2World;
-            fixed4 quadHueVariation = fixed4(V2G.hue_variation.rgb, saturate( frac(abs(quadCorner_world.x + quadCorner_world.y + quadCorner_world.z)) * V2G.hue_variation.a));
+            fixed4 quadHueVariation = fixed4(V2G.hue_variation.rgb, saturate( quadRandom * V2G.hue_variation.a));
 #endif
 
-            AddVertex (distanceFade, OUT, triStream, quadCorner, uvOffset.xy + fixed2(0, 0) * uvOffset.zw, V2G, worldNormal
+            AddVertex (distanceFade, OUT, triStream, quadCorner, uvOffset.xy + fixed2(flipUV, 0) * uvOffset.zw, V2G, worldNormal
 
 #if defined (COLOR_PASS)
                 , quadCorner_world, objTangent, quadHueVariation, wTangent, wBitangent
@@ -283,26 +299,29 @@ fixed4x4 rotationMatrix(fixed3 axis, fixed sinAngle, fixed cosAngle)
             );
             
             quadCorner = base + perpDir;
-            AddVertex (distanceFade, OUT, triStream, quadCorner, uvOffset.xy + fixed2(1, 0) * uvOffset.zw, V2G, worldNormal
+            AddVertex (distanceFade, OUT, triStream, quadCorner, uvOffset.xy + fixed2(1-flipUV, 0) * uvOffset.zw, V2G, worldNormal
 
 #if defined (COLOR_PASS)
-                , quadCorner + obj2World, objTangent, quadHueVariation, wTangent, wBitangent
+                , quadCorner,// + obj2World, 
+                objTangent, quadHueVariation, wTangent, wBitangent
 #endif
             );
             
             quadCorner = WaveGrass (top - perpDir, distanceFade);
-            AddVertex (distanceFade, OUT, triStream, quadCorner, uvOffset.xy + fixed2(0, 1) * uvOffset.zw, V2G, worldNormal
+            AddVertex (distanceFade, OUT, triStream, quadCorner, uvOffset.xy + fixed2(flipUV, 1) * uvOffset.zw, V2G, worldNormal
 
 #if defined (COLOR_PASS)
-                , quadCorner + obj2World, objTangent, quadHueVariation, wTangent, wBitangent
+                , quadCorner,// + obj2World, 
+                objTangent, quadHueVariation, wTangent, wBitangent
 #endif
             );
             
             quadCorner = WaveGrass (top + perpDir, distanceFade);
-            AddVertex (distanceFade, OUT, triStream, quadCorner, uvOffset.xy + fixed2(1, 1) * uvOffset.zw, V2G, worldNormal
+            AddVertex (distanceFade, OUT, triStream, quadCorner, uvOffset.xy + fixed2(1-flipUV, 1) * uvOffset.zw, V2G, worldNormal
 
 #if defined (COLOR_PASS)
-                , quadCorner + obj2World, objTangent, quadHueVariation, wTangent, wBitangent
+                , quadCorner,// + obj2World, 
+                objTangent, quadHueVariation, wTangent, wBitangent
 #endif
             );
             
@@ -314,13 +333,13 @@ fixed4x4 rotationMatrix(fixed3 axis, fixed sinAngle, fixed cosAngle)
         [maxvertexcount(16)]
         void geom(point VertexBuffer IN[1], inout TriangleStream<g2f> triStream)
         {
-            fixed3 obj2World = fixed3(unity_ObjectToWorld[0].w, unity_ObjectToWorld[1].w, unity_ObjectToWorld[2].w);
+            // fixed3 obj2World = fixed3(unity_ObjectToWorld[0].w, unity_ObjectToWorld[1].w, unity_ObjectToWorld[2].w);
             
             VertexBuffer vertBuffer = IN[0];
             
             fixed3 grass_point = vertBuffer.grass_point.xyz;
 
-            fixed3 world_grass_point = grass_point + obj2World;
+            fixed3 world_grass_point = grass_point;// + obj2World;
 
             fixed3 viewDir = _WorldSpaceCameraPos - world_grass_point;
             fixed cameraDistance = length(viewDir);
@@ -336,8 +355,8 @@ fixed4x4 rotationMatrix(fixed3 axis, fixed sinAngle, fixed cosAngle)
             fixed distanceFade = 1.0 - saturate(max(cameraDistance - fadeStart, 0) / (fadeEnd - fadeStart));
 
             fixed3 groundNorm = IN[0].ground_normal;
-            fixed width = IN[0].width_height_cutoff_bumpStrength.x;
-            fixed height = IN[0].width_height_cutoff_bumpStrength.y;
+            fixed width = IN[0].width_height_bumpStrength.x;
+            fixed height = IN[0].width_height_bumpStrength.y;
 
             fixed4 uvOffset = IN[0].uv_offset_main;
 
@@ -363,7 +382,7 @@ fixed4x4 rotationMatrix(fixed3 axis, fixed sinAngle, fixed cosAngle)
             fixed3 quad1Norm = cross(perpDir, groundNorm);
             fixed4 quad1Tang = fixed4(cross(quad1Norm, perpDir), 1);
 
-            fixed3 wTangent = UnityObjectToWorldDir(quad1Tang.xyz);
+            fixed3 wTangent = quad1Tang.xyz;// UnityObjectToWorldDir(quad1Tang.xyz);
             // compute bitangent from cross product of normal and tangent
             fixed tangentSign = quad1Tang.w * unity_WorldTransformParams.w;
             fixed3 wBitangent = cross(groundNorm, wTangent) * tangentSign;
@@ -373,7 +392,8 @@ fixed4x4 rotationMatrix(fixed3 axis, fixed sinAngle, fixed cosAngle)
             DrawQuadWind (OUT, triStream, grass_point, top, distanceFade, groundNorm, uvOffset, vertBuffer, quad1Perp
 
 #if defined (COLOR_PASS)
-                , obj2World, quad1Tang, wTangent, wBitangent            
+                , //obj2World, 
+                quad1Tang, wTangent, wBitangent            
 #endif
             );
             
@@ -382,7 +402,8 @@ fixed4x4 rotationMatrix(fixed3 axis, fixed sinAngle, fixed cosAngle)
             DrawQuadWind (OUT, triStream, grass_point, top, distanceFade, groundNorm, uvOffset, vertBuffer, mul(quad1Matrix, quad1Perp)
 
 #if defined (COLOR_PASS)
-                , obj2World, quad1Tang, wTangent, wBitangent //mul(quad1Matrix, quad1Tang)
+                , //obj2World, 
+                quad1Tang, wTangent, wBitangent //mul(quad1Matrix, quad1Tang)
 #endif
             );
 
@@ -391,7 +412,8 @@ fixed4x4 rotationMatrix(fixed3 axis, fixed sinAngle, fixed cosAngle)
             DrawQuadWind (OUT, triStream, grass_point, top, distanceFade, groundNorm, uvOffset, vertBuffer, mul(quad2Matrix, quad1Perp)
 
 #if defined (COLOR_PASS)
-                , obj2World, quad1Tang, wTangent, wBitangent //mul(quad2Matrix, quad1Tang)
+                , //obj2World, 
+                quad1Tang, wTangent, wBitangent //mul(quad2Matrix, quad1Tang)
 #endif
             );
 
@@ -400,7 +422,8 @@ fixed4x4 rotationMatrix(fixed3 axis, fixed sinAngle, fixed cosAngle)
             DrawQuadWind (OUT, triStream, grass_point, top, distanceFade, groundNorm, uvOffset, vertBuffer, mul(quad3Matrix, quad1Perp)
 
 #if defined (COLOR_PASS)
-                , obj2World, quad1Tang, wTangent, wBitangent //mul(quad3Matrix, quad1Tang)
+                , //obj2World, 
+                quad1Tang, wTangent, wBitangent //mul(quad3Matrix, quad1Tang)
 #endif
             );
 

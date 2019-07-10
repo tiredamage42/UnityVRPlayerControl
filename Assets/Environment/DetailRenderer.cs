@@ -1,19 +1,18 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 using UnityEngine;
-
-// using System.Collections;
-// using UnityEngine.Rendering;
 using EnvironmentTools;
-using RenderTools;
-namespace CustomVegetation {
+
+namespace RenderTools {
 
     [ExecuteInEditMode]
     public class DetailRenderer : MonoBehaviour
     {
         public DetailDefenition[] allDefenitions;
         public DetailMap detailMap;
-        
+        Dictionary<Vector2Int, InstancedMeshRenderList> meshRenderLists = new Dictionary<Vector2Int, InstancedMeshRenderList>();
 
+        
         void InitializeMaterials (DetailDefenition.LODInfo lodInfo) {
             if (lodInfo.billboardAsset != null) {
                 for (int i = 0; i < lodInfo.materials.Length; i++) {
@@ -35,177 +34,82 @@ namespace CustomVegetation {
             }
 
             FlushRenderList();
-
-            if (detailMap != null) {
-
-                Debug.Log(detailMap.details.Length);
-                lodsPerDetail = new int[detailMap.details.Length];
-                ResetLODs();
-            }
         }
 
-        int[] lodsPerDetail;
 
-		void ResetLODs () {
-			for (int i =0 ; i < lodsPerDetail.Length; i++) {
-				lodsPerDetail[i] = -1;
-			}
-		}
-
-
-    Dictionary<Vector2Int, InstancedMeshRenderList> meshRenderLists = new Dictionary<Vector2Int, InstancedMeshRenderList>();
-
-    void FlushRenderList () {
-        meshRenderLists.Clear();
-    }
-    
-
-    void UpdateLODsPerDetail (Vector2Int newCell) {
-        if (detailMap == null) {
-            return;
+        void FlushRenderList () {
+            meshRenderLists.Clear();
         }
 
-        foreach (var k in meshRenderLists.Keys) {
-            meshRenderLists[k].ResetList();
-        }
-
-        int defenitionsCount = allDefenitions.Length;
-        
-        Dictionary<Vector2Int, int> cellDistances = new Dictionary<Vector2Int, int>();
-
-        for (int i = 0; i < detailMap.details.Length; i++) {
-
-            DetailMap.Detail detail = detailMap.details[i];
-
-            Vector2Int detailCell = WorldGrid.GetGrid(detail.worldPosition);
-				
-            int cellDistance;
-            if (!cellDistances.TryGetValue(detailCell, out cellDistance)) {
-                cellDistance = WorldGrid.GetDistance(detailCell, newCell);
-                cellDistances[detailCell] = cellDistance;
+        void UpdateLODsPerDetail (Vector2Int cameraCell, Vector3 cameraPos, float worldGridSize) {
+            if (detailMap == null) {
+                return;
             }
 
-            DetailDefenition detailDef = allDefenitions[Mathf.Min(detail.defenitionIndex, defenitionsCount-1)];
+            foreach (var k in meshRenderLists.Keys) {
+                meshRenderLists[k].ResetList();
+            }
+
+            int defenitionsCount = allDefenitions.Length;
             
-            lodsPerDetail[i] = -1;
-            
-            // continue;
-            for (int x = 0; x < detailDef.lods.Length; x++) {
-                if (cellDistance <= detailDef.lods[x].gridDistance) {
-                    lodsPerDetail[i] = x;
-                    break;
-                }
-                // else {
-                //     if (i < 10) {
+            for (int i = 0; i < detailMap.details.Length; i++) {
 
-                //         Debug.Log(cellDistance);
-                //     }
-                // }
-            }
-            // if (lodsPerDetail[i] != -1) {
-            //     Debug.Log("drawing");
-            // }
-
-
-            if (lodsPerDetail[i] != -1) {
-                DetailDefenition.LODInfo lodInfo = detailDef.lods[Mathf.Min(lodsPerDetail[i], detailDef.lods.Length-1)];
-
-                Matrix4x4 transformMatrix = GetTransformMatrix(detail, lodInfo.isBillboard);
-                Mesh mesh = lodInfo.mesh;
-                Material[] materials = lodInfo.materials;
-
-
-                Vector2Int meshInstanceID_material0ID = new Vector2Int(mesh.GetInstanceID(), materials[0].GetInstanceID());
-
-
-                InstancedMeshRenderList renderList;
-                if (!meshRenderLists.TryGetValue(meshInstanceID_material0ID, out renderList)) {
-                    renderList = new InstancedMeshRenderList(mesh, materials, lodInfo.receiveShadows, lodInfo.castShadows);
-                    meshRenderLists[meshInstanceID_material0ID] = renderList;
-                }
-
+                DetailMap.Detail detail = detailMap.details[i];
+                    
+                int cellDistance = WorldGrid.GetDistance(detail.worldPosition, cameraCell, worldGridSize);
                 
+                DetailDefenition detailDef = allDefenitions[Mathf.Min(detail.defenitionIndex, defenitionsCount-1)];
+                
+                int lod = -1;
+                for (int x = 0; x < detailDef.lods.Length; x++) {
+                    if (cellDistance <= detailDef.lods[x].gridDistance) {
+                        lod = x;
+                        break;
+                    }
+                }
+                if (lod != -1) {
+                    DetailDefenition.LODInfo lodInfo = detailDef.lods[lod];
 
-                renderList.AddInstance(transformMatrix);
+                    Matrix4x4 transformMatrix = GetTransformMatrix(detail, lodInfo.isBillboard);
+                    Mesh mesh = lodInfo.mesh;
+                    Material[] materials = lodInfo.materials;
+
+                    Vector2Int meshInstanceID_material0ID = new Vector2Int(mesh.GetInstanceID(), materials[0].GetInstanceID());
+
+                    InstancedMeshRenderList renderList;
+                    if (!meshRenderLists.TryGetValue(meshInstanceID_material0ID, out renderList)) {
+                        renderList = new InstancedMeshRenderList(mesh, materials, lodInfo.receiveShadows, lodInfo.castShadows);
+                        meshRenderLists[meshInstanceID_material0ID] = renderList;
+                    }
+
+                    renderList.AddInstance(transformMatrix);
+                }
             }
-
-
-
         }
-    }
+
+        Matrix4x4 GetTransformMatrix(DetailMap.Detail detail, bool billBoard) {
+            return Matrix4x4.TRS(detail.worldPosition, billBoard ? Quaternion.identity : detail.rotation, detail.scale);
+        }
 
 
-    public Transform editorReferenceTransform;
-
-    Matrix4x4 GetTransformMatrix(DetailMap.Detail detail, bool billBoard) {
-        // if (!billBoard)
-        //     return Matrix4x4.TRS(detail.worldPosition, Quaternion.Euler(0, detail.yRotation, 0), Vector3.one * detail.sizeScale);
-        // return Matrix4x4.TRS(detail.worldPosition, Quaternion.identity, Vector3.one * detail.sizeScale);
-
-        return Matrix4x4.TRS(detail.worldPosition, billBoard ? Quaternion.identity : detail.rotation, detail.scale);
-    }
-
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (detailMap == null)
-            return;
-
-
-     
-
-        int defenitionsCount = allDefenitions.Length;
-        if (defenitionsCount == 0)
-            return;
-
-        if (lodsPerDetail == null) 
-            return;
-
-        if (!Application.isPlaying) {
-            if (editorReferenceTransform == null)
+        // Update is called once per frame
+        void Update()
+        {
+            if (detailMap == null)
                 return;
 
+            int defenitionsCount = allDefenitions.Length;
+            if (defenitionsCount == 0)
+                return;
 
-            UpdateLODsPerDetail(WorldGrid.GetGrid(editorReferenceTransform.position));
+            if (!Application.isPlaying) {
+                Vector3 cameraPos = transform.position;
+                UpdateLODsPerDetail(WorldGrid.GetGrid(cameraPos), cameraPos, WorldGrid.instance.cellSize);
+            }
+
+            foreach (var k in meshRenderLists.Keys) {
+                meshRenderLists[k].Render();
+            }       
         }
-
-        // for (int i = 0; i < lodsPerDetail.Length; i++) {
-
-            // if (lodsPerDetail[i] == -1) {
-            //     continue;
-            // }
-
-            // DetailMap.Detail detail = detailMap.details[i];
-            
-            // DetailDefenition detailDef = allDefenitions[Mathf.Min(detail.defenitionIndex, defenitionsCount-1)];
-    
-            // DetailDefenition.LODInfo lodInfo = detailDef.lods[Mathf.Min(lodsPerDetail[i], detailDef.lods.Length-1)];
-
-            // Matrix4x4 transformMatrix = GetTransformMatrix(detail, lodInfo.isBillboard);
-            // Mesh mesh = lodInfo.mesh;
-            // Material[] materials = lodInfo.materials;
-
-
-            // Vector2Int meshInstanceID_material0ID = new Vector2Int(mesh.GetInstanceID(), materials[0].GetInstanceID());
-
-            // InstancedMeshRenderList renderList;
-            // if (!meshRenderLists.TryGetValue(meshInstanceID_material0ID, out renderList)) {
-            //     renderList = new InstancedMeshRenderList(mesh, materials, lodInfo.receiveShadows, lodInfo.castShadows);
-            //     meshRenderLists[meshInstanceID_material0ID] = renderList;
-            // }
-
-            // renderList.AddInstance(transformMatrix);
-        // }
-
-        foreach (var k in meshRenderLists.Keys) {
-            meshRenderLists[k].Render();
-        }
-            
     }
-
-
-
 }
-}
-

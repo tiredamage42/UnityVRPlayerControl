@@ -84,9 +84,17 @@ namespace EnvironmentTools {
 			}
 		}
 
-			
+		public static int GetDistance (Vector3 a, Vector2Int gridB, float cellSize) {
+			return GetDistance(GetGrid(a, cellSize), gridB);
+		}
+
 		public static int GetDistance (Vector2Int gridA, Vector2Int gridB) {
-			return Mathf.Max(Mathf.Abs(gridA.x - gridB.x), Mathf.Abs(gridA.y - gridB.y));
+			int x = gridA.x - gridB.x;
+			if (x < 0) x = -x;
+			int y = gridA.y - gridB.y;
+			if (y < 0) y = -y;
+			return y > x ? y : x;
+			// return Mathf.Max(Mathf.Abs(gridA.x - gridB.x), Mathf.Abs(gridA.y - gridB.y));
 		}
 
 		public static Vector3 GridStartPosition(Vector2Int grid, float cellSize) {
@@ -111,9 +119,10 @@ namespace EnvironmentTools {
 			float y = location.z * inv;
 			int yCell = (int)y;
 			if (y < 0) yCell -= 1;
-			
 			return new Vector2Int (xCell, yCell);
 		}
+
+
 		public static Vector2Int GetGrid (Vector3 location) {
 			return GetGrid(location, instance.cellSize);
 		}

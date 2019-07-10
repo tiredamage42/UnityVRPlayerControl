@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CustomVegetation {
+namespace RenderTools {
 
     [CreateAssetMenu()] public class DetailMap : ScriptableObject {
 		[System.Serializable] public struct Detail {
@@ -9,14 +9,8 @@ namespace CustomVegetation {
 
             public Vector3 scale;
             public Quaternion rotation;
-			// public float sizeScale, yRotation;
-            
-            // public Detail (int defenitionIndex, Vector3 worldPosition, float sizeScale, float yRotation) {
-            public Detail (int defenitionIndex, Vector3 worldPosition, 
-            Vector3 scale, Quaternion rotation
-            // float sizeScale, float yRotation
-        ) {
-            
+			
+            public Detail (int defenitionIndex, Vector3 worldPosition, Vector3 scale, Quaternion rotation) {
                 this.defenitionIndex = defenitionIndex;
                 this.worldPosition = worldPosition;
                 this.scale = scale;

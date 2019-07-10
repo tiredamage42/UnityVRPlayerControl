@@ -1,19 +1,27 @@
 // Unity built-in shader source. Copyright (c) 2016 Unity Technologies. MIT license (see license.txt)
 
-Shader "Hidden/TerrainEngine/Splatmap/Standard-AddPass_Custom" {
+Shader "Nature/Terrain/Standard Custom" {
+    Properties {
+        // used in fallback on old cards & base map
+        [HideInInspector] _MainTex ("BaseMap (RGB)", 2D) = "white" {}
+        [HideInInspector] _Color ("Main Color", Color) = (1,1,1,1)
+    }
+
     SubShader {
         Tags {
-            "Queue" = "Geometry-99"
-            "IgnoreProjector"="True"
+            "Queue" = "Geometry-100"
             "RenderType" = "Opaque"
         }
 
         CGPROGRAM
-        // #pragma surface surf Standard decal:add vertex:SplatmapVert finalcolor:SplatmapFinalColor finalgbuffer:SplatmapFinalGBuffer fullforwardshadows nometa
-        #pragma surface surf Standard decal:add vertex:SplatmapVert fullforwardshadows nometa
+        // #pragma surface surf Standard vertex:SplatmapVert finalcolor:SplatmapFinalColor finalgbuffer:SplatmapFinalGBuffer addshadow fullforwardshadows
+        #pragma surface surf Standard vertex:SplatmapVert addshadow fullforwardshadows
         
+
+        #pragma fragmentoption ARB_precision_hint_fastest
+
         #pragma instancing_options assumeuniformscaling nomatrices nolightprobe nolightmap forwardadd
-        #pragma multi_compile_fog
+        #pragma multi_compile_fog // needed because finalcolor oppresses fog code generation.
         #pragma target 3.0
         // needs more than 8 texcoords
         #pragma exclude_renderers gles
@@ -21,7 +29,6 @@ Shader "Hidden/TerrainEngine/Splatmap/Standard-AddPass_Custom" {
 
         #pragma multi_compile __ _NORMALMAP
 
-        #define TERRAIN_SPLAT_ADDPASS
         // #define TERRAIN_STANDARD_SHADER
         #define TERRAIN_INSTANCED_PERPIXEL_NORMAL
         #define TERRAIN_SURFACE_OUTPUT SurfaceOutputStandard
@@ -49,7 +56,14 @@ Shader "Hidden/TerrainEngine/Splatmap/Standard-AddPass_Custom" {
             o.Metallic = dot(splat_control, half4(_Metallic0, _Metallic1, _Metallic2, _Metallic3));
         }
         ENDCG
+
+        // UsePass "Hidden/Nature/Terrain/Utilities/PICKING"
+        // UsePass "Hidden/Nature/Terrain/Utilities/SELECTION"
     }
 
-    // Fallback "Hidden/TerrainEngine/Splatmap/Diffuse-AddPass"
+    Dependency "AddPassShader"    = "Hidden/TerrainEngine/Splatmap/Standard-AddPass_Custom"
+    Dependency "BaseMapShader"    = "Hidden/TerrainEngine/Splatmap/Standard-Base_Custom"
+    Dependency "BaseMapGenShader" = "Hidden/TerrainEngine/Splatmap/Standard-BaseGen_Custom"
+    
+    Fallback "Nature/Terrain/Diffuse"
 }
