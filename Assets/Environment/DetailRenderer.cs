@@ -34,6 +34,17 @@ namespace RenderTools {
             }
 
             FlushRenderList();
+
+            if (Application.isPlaying) {
+                WorldGrid.instance.onPlayerGridChange += UpdateLODsPerDetail;
+				
+            }
+        }
+        void OnDisable () {
+            if (Application.isPlaying) {
+                WorldGrid.instance.onPlayerGridChange -= UpdateLODsPerDetail;
+				
+            }
         }
 
 

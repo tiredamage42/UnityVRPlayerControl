@@ -9,12 +9,14 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: NAT_Grass
   m_Shader: {fileID: 4800000, guid: 1bbc6d14b262140c09a700815bec6ea1, type: 3}
-  m_ShaderKeywords: _ALPHATEST_ON _EMISSION _NORMALMAP
+  m_ShaderKeywords: EFFECT_BUMP EFFECT_HUE_VARIATION GEOM_TYPE_LEAF _ALPHATEST_ON
+    _EMISSION _NORMALMAP
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
+  m_CustomRenderQueue: 2450
+  stringTagMap:
+    RenderType: TreeTransparentCutout
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -92,10 +94,20 @@ Material:
     - _WindQuality: 0
     - _ZWrite: 1
     m_Colors:
+    - _Bark_Wind_Frequency_Range: {r: 0.1, g: 0.1, b: 0, a: 0}
+    - _Bark_Wind_Height_Range: {r: 50, g: 50, b: 0, a: 0}
+    - _Bark_Wind_Height_Steepness_Range: {r: 2, g: 1, b: 0, a: 0}
+    - _Bark_Wind_Scale_Max: {r: 0, g: 0, b: 0, a: 0}
+    - _Bark_Wind_Scale_Min: {r: 0, g: 0, b: 0, a: 0}
+    - _Bark_Wind_Speed_Range: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColorUI: {r: 1, g: 1, b: 1, a: 1}
     - _HueVariation: {r: 1, g: 0.5, b: 0, a: 0.1}
+    - _Leaf_Wind_Frequency_Range: {r: 32, g: 32, b: 0, a: 0}
+    - _Leaf_Wind_Scale_Max: {r: 0, g: 0, b: 0, a: 0}
+    - _Leaf_Wind_Scale_Min: {r: 0, g: 0, b: 0, a: 0}
+    - _Leaf_Wind_Speed_Range: {r: 0, g: 0, b: 0, a: 0}
     - _TranslucencyColor: {r: 0, g: 0, b: 0, a: 1}
     - _TreeInstanceColor: {r: 1, g: 1, b: 1, a: 1}
     - _TreeInstanceScale: {r: 1, g: 1, b: 1, a: 1}

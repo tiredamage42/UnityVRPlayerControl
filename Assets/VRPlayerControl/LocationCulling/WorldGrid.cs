@@ -6,27 +6,27 @@ using UnityEngine;
 namespace EnvironmentTools {
 	
 	public class WorldGrid : MonoBehaviour {
-		public class CellObject {
+		// public class CellObject {
 			
-			System.Action<Vector2Int, int> playerGridChangeCallback;
-			System.Func<Vector3> getWorldPosition;
+		// 	System.Action<Vector2Int, int> playerGridChangeCallback;
+		// 	System.Func<Vector3> getWorldPosition;
 
-			public CellObject (
-				System.Action<Vector2Int, int> playerGridChangeCallback,
-				System.Func<Vector3> getWorldPosition
-			) {
-				this.playerGridChangeCallback = playerGridChangeCallback;
-				this.getWorldPosition = getWorldPosition;
-			}
+		// 	public CellObject (
+		// 		System.Action<Vector2Int, int> playerGridChangeCallback,
+		// 		System.Func<Vector3> getWorldPosition
+		// 	) {
+		// 		this.playerGridChangeCallback = playerGridChangeCallback;
+		// 		this.getWorldPosition = getWorldPosition;
+		// 	}
 
-			public Vector3 GetWorldPosition() {
-				return getWorldPosition();
-			}
+		// 	public Vector3 GetWorldPosition() {
+		// 		return getWorldPosition();
+		// 	}
 
-			public void OnPlayerGridChange (Vector2Int newGrid, int distance) {
-				playerGridChangeCallback(newGrid, distance);
-			}
-		}
+		// 	public void OnPlayerGridChange (Vector2Int newGrid, int distance) {
+		// 		playerGridChangeCallback(newGrid, distance);
+		// 	}
+		// }
 
 
 
@@ -38,19 +38,19 @@ namespace EnvironmentTools {
 
 		// public static event System.Action<Vector2Int> onPlayerGridChange;
 		// static Dictionary<Vector2Int, float> cellDistances = new Dictionary<Vector2Int, float>();
-		static Dictionary<Vector2Int, List<CellObject>> cellLists = new Dictionary<Vector2Int, List<CellObject>>();
+		// static Dictionary<Vector2Int, List<CellObject>> cellLists = new Dictionary<Vector2Int, List<CellObject>>();
 
 
-		public static void RegisterCellObject (CellObject cellObject) {
-			Vector2Int cell = GetGrid(cellObject.GetWorldPosition(), instance.cellSize);
+		// public static void RegisterCellObject (CellObject cellObject) {
+		// 	Vector2Int cell = GetGrid(cellObject.GetWorldPosition(), instance.cellSize);
 
-			if (cellLists.ContainsKey(cell)) {
-				cellLists[cell].Add(cellObject);
-			}
-			else {
-				cellLists[cell] = new List<CellObject>(){cellObject};
-			}
-		}
+		// 	if (cellLists.ContainsKey(cell)) {
+		// 		cellLists[cell].Add(cellObject);
+		// 	}
+		// 	else {
+		// 		cellLists[cell] = new List<CellObject>(){cellObject};
+		// 	}
+		// }
 		public Vector2Int GetPlayerGrid () {
 			return GetGrid(playerCamera.transform.position, cellSize);
 		}
@@ -65,20 +65,31 @@ namespace EnvironmentTools {
 		// 	RegisterCell(GetGrid(location));
 		// }
 
+
+		public event System.Action<Vector2Int, Vector3, float> onPlayerGridChange;
+
+
+
 		void Update () {
 			Vector2Int playerGrid = GetPlayerGrid();
 
 			if (lastPlayerGrid != playerGrid) {
 
-				foreach (var k in cellLists.Keys) {
-
-					int distance = GetDistance(k, playerGrid);
-
-					for (int i =0; i < cellLists[k].Count; i++) {
-						cellLists[k][i].OnPlayerGridChange(playerGrid, distance);
-					}
-					
+				if (onPlayerGridChange != null) {
+					onPlayerGridChange(playerGrid, playerCamera.transform.position, cellSize);
 				}
+
+
+
+				// foreach (var k in cellLists.Keys) {
+
+				// 	int distance = GetDistance(k, playerGrid);
+
+				// 	for (int i =0; i < cellLists[k].Count; i++) {
+				// 		cellLists[k][i].OnPlayerGridChange(playerGrid, distance);
+				// 	}
+					
+				// }
 				
 				lastPlayerGrid = playerGrid;
 			}

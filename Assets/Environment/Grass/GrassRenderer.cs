@@ -11,8 +11,6 @@ namespace CustomVegetation {
         [Range(0,1)] public float stormAmount = 1.0f;
 
 
-
-
         [Header("Grass Wind")]
         public Vector2 windSpeed_range = new Vector2(1,1);
         public Vector2 windFrequency_range = new Vector2(1,1);
@@ -49,6 +47,15 @@ namespace CustomVegetation {
 
         void OnEnable () {
             CheckForRenderMaskInitialize();
+
+            if (Application.isPlaying) {
+                WorldGrid.instance.onPlayerGridChange += UpdateRenderMask;
+            }
+        }
+        void OnDisable () {
+            if (Application.isPlaying) {
+                WorldGrid.instance.onPlayerGridChange -= UpdateRenderMask;	
+            }
         }
         
         bool CheckErrored () {
