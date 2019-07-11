@@ -5,13 +5,18 @@ namespace CustomVegetation {
     public class GrassMeshBuilder {
         public const int maxVerts = 65534;
 
+        const int uvCount = 5;
+
         // vertex = pos
         // normal = ground normal
         // color = tint color
-        // texcoord0 = textureAtlasOffset
-        // texcoord1 = (cutoff, shadowCutoff, 0, 0)
-        // texcoord2 = hueVariation
-        // texcoord3 = (width, height, bumpstrength, 0)
+
+        // texcoord0 = atlasUVMain
+        // texcoord1 = atlasUVBump
+        
+        // texcoord2 = (cutoff, shadowCutoff, 0, 0)
+        // texcoord3 = hueVariation
+        // texcoord4 = (width, height, bumpstrength, 0)
         
         List<int> indicies;
         List<Vector3> vertexPositions, normals;
@@ -36,10 +41,10 @@ namespace CustomVegetation {
             normals = new List<Vector3>(count);
             tintColors = new List<Color>(count);
 
-            uvs = new List<List<Vector4>>(4) {
-                new List<Vector4>(count), new List<Vector4>(count), 
-                new List<Vector4>(count), new List<Vector4>(count),
-            };
+            uvs = new List<List<Vector4>>(uvCount);
+            for (int i = 0; i < uvCount; i++) {
+                uvs.Add(new List<Vector4>(count));
+            }
         }
 
         public Mesh AddGrassInstance(GrassDefenition.GrassPrototype prototype, Vector3 worldPosition, Vector3 worldNormal) {
@@ -51,16 +56,20 @@ namespace CustomVegetation {
             tintColors.Add( prototype.tintColor);
             
             //uv offset
-            Rect offset = prototype.uvOffsetInAtlasTexture;
-            uvs[0].Add( new Vector4(offset.x, offset.y, offset.width, offset.height));
+            Rect offsetMain = prototype.atlasUVMain;
+            uvs[0].Add( new Vector4(offsetMain.x, offsetMain.y, offsetMain.width, offsetMain.height));
             
-            uvs[1].Add( new Vector4(prototype.cutoff, prototype.shadowCutoff, 0, 0) );
+            Rect offsetBump = prototype.atlasUVBump;
+            uvs[1].Add( new Vector4(offsetBump.x, offsetBump.y, offsetBump.width, offsetBump.height));
+
+            //cutoff shadow cutoff
+            uvs[2].Add( new Vector4(prototype.cutoffs.x, prototype.cutoffs.y, 0, 0) );
 
             //hue variation
-            uvs[2].Add( prototype.hueVariation);
+            uvs[3].Add( prototype.hueVariation);
             
-            //width, height, cutoff, bump strength
-            uvs[3].Add( new Vector4(
+            //width, height, bump strength
+            uvs[4].Add( new Vector4(
                 Random.Range(prototype.widthRange.x, prototype.widthRange.y), 
                 Random.Range(prototype.heightRange.x, prototype.heightRange.y),
                 prototype.bumpStrength, 0
@@ -70,7 +79,6 @@ namespace CustomVegetation {
             instances++;
 
             if (instances >= maxVerts) {
-                Debug.Log(instances);
                 return BakeToMesh();
             }
             return null;

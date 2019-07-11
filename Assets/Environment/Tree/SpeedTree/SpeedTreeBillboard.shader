@@ -1,6 +1,6 @@
 // Unity built-in shader source. Copyright (c) 2016 Unity Technologies. MIT license (see license.txt)
 
-Shader "Nature/SpeedTree Billboard_Custom"
+Shader "Custom Environment/Tree/SpeedTree Billboard"
 {
     Properties
     {
@@ -9,8 +9,6 @@ Shader "Nature/SpeedTree Billboard_Custom"
         _MainTex ("Base (RGB)", 2D) = "white" {}
         _BumpMap ("Normalmap", 2D) = "bump" {}
         _Cutoff ("Alpha cutoff", Range(0,1)) = 0.5
-        
-        [MaterialEnum(None,0,Fastest,1)] _WindQuality ("Wind Quality", Range(0,1)) = 0
     }
 
     SubShader
@@ -42,7 +40,7 @@ Shader "Nature/SpeedTree Billboard_Custom"
             {
                 UNITY_INITIALIZE_OUTPUT(Input, OUT);
 
-                // assume no scaling & rotation
+                // assume no scaling & rotation TODO: ADD SCALING IF BILLBOARD POPS TOO MUCH
                 fixed3 worldPos = fixed3(unity_ObjectToWorld[0].w, unity_ObjectToWorld[1].w, unity_ObjectToWorld[2].w);
                 
                 fixed3 eyeVec = normalize(_WorldSpaceCameraPos - worldPos);
@@ -58,9 +56,9 @@ Shader "Nature/SpeedTree Billboard_Custom"
                 IN.normal = billboardNormal.xyz;
                 IN.tangent = fixed4(billboardTangent.xyz,-1);
 
-                fixed randFactor = frac(worldPos.x + worldPos.y + worldPos.z);
+                fixed randFactor = abs(frac(worldPos.x + worldPos.y + worldPos.z));
 
-                fixed4 imageTexCoords = _BillboardSliceCoords[int(abs(randFactor) * _BillboardSlices)];
+                fixed4 imageTexCoords = _BillboardSliceCoords[int(randFactor * _BillboardSlices)];
                 
                 // if (imageTexCoords.w < 0)
                 // {

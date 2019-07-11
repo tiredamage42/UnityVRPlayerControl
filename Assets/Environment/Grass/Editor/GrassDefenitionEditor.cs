@@ -66,10 +66,13 @@ namespace CustomVegetation {
 
             Rect[] rects = atlas.PackTextures(atlasTextures, 0, maxAtlasSize, true);
             
-            if (!normals) {
                 for (int i = 0; i < l; i++) {
-                    grassDef.grassPrototypes[i].uvOffsetInAtlasTexture = rects[i];
-                }
+                    if (normals) {
+                        grassDef.grassPrototypes[i].atlasUVBump = rects[i];
+                    }
+                    else {
+                        grassDef.grassPrototypes[i].atlasUVMain = rects[i];
+                    }
             }
         
             return atlas;

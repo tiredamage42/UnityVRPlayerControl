@@ -1,10 +1,8 @@
-﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-
-
+﻿
 Shader "Custom Environment/Grass/Grass" {
 
 	Properties{
-		_MainTex("Albedo (RGB)", 2D) = "white" {}
+        _MainTex("Albedo (RGB)", 2D) = "white" {}
         _BumpMap("Bump", 2D) = "bump" {}
 	}
 

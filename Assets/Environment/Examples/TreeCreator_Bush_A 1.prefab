@@ -130,7 +130,17 @@ Material:
     - _SquashAmount: 1
     - _TranslucencyViewDependency: 0.7
     m_Colors:
+    - _Bark_Wind_Frequency_Range: {r: 0.1, g: 0.1, b: 0, a: 0}
+    - _Bark_Wind_Height_Range: {r: 25, g: 25, b: 0, a: 0}
+    - _Bark_Wind_Height_Steepness_Range: {r: 2, g: 1, b: 0, a: 0}
+    - _Bark_Wind_Scale_Max: {r: 0, g: 0, b: 0, a: 0}
+    - _Bark_Wind_Scale_Min: {r: 50, g: 0, b: 25, a: 0}
+    - _Bark_Wind_Speed_Range: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Leaf_Wind_Frequency_Range: {r: 50, g: 50, b: 0, a: 0}
+    - _Leaf_Wind_Scale_Max: {r: 0.5, g: 0.25, b: 0.5, a: 0}
+    - _Leaf_Wind_Scale_Min: {r: 0.5, g: 0.25, b: 0.5, a: 0}
+    - _Leaf_Wind_Speed_Range: {r: 2, g: 35, b: 0, a: 0}
     - _TranslucencyColor: {r: 0.5294407, g: 0.5882353, b: 0.24221453, a: 1}
     - _TreeInstanceColor: {r: 1, g: 1, b: 1, a: 1}
     - _TreeInstanceScale: {r: 1, g: 1, b: 1, a: 1}
@@ -169,6 +179,12 @@ Material:
     - _Cutoff: 0.3
     - _SquashAmount: 1
     m_Colors:
+    - _Bark_Wind_Frequency_Range: {r: 0.1, g: 0.1, b: 0, a: 0}
+    - _Bark_Wind_Height_Range: {r: 25, g: 25, b: 0, a: 0}
+    - _Bark_Wind_Height_Steepness_Range: {r: 2, g: 1, b: 0, a: 0}
+    - _Bark_Wind_Scale_Max: {r: 0, g: 0, b: 0, a: 0}
+    - _Bark_Wind_Scale_Min: {r: 50, g: 0, b: 25, a: 0}
+    - _Bark_Wind_Speed_Range: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _TreeInstanceColor: {r: 1, g: 1, b: 1, a: 1}

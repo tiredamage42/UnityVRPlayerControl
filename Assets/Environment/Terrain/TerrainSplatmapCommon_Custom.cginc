@@ -154,9 +154,9 @@ void SplatmapMix(Input IN, half4 defaultAlpha, out half4 splat_control, out half
     #endif
 }
 
-#ifndef TERRAIN_SURFACE_OUTPUT
-    #define TERRAIN_SURFACE_OUTPUT SurfaceOutput
-#endif
+// #ifndef TERRAIN_SURFACE_OUTPUT
+//     #define TERRAIN_SURFACE_OUTPUT SurfaceOutput
+// #endif
 
 // void SplatmapFinalColor(Input IN, TERRAIN_SURFACE_OUTPUT o, inout fixed4 color)
 // {

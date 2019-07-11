@@ -8,13 +8,20 @@ namespace CustomVegetation {
     [ExecuteInEditMode]
     public class GrassRenderer : MonoBehaviour
     {
+        [Range(0,1)] public float stormAmount = 1.0f;
+
+
+
+
+        [Header("Grass Wind")]
+        public Vector2 windSpeed_range = new Vector2(1,1);
+        public Vector2 windFrequency_range = new Vector2(1,1);
+        public Vector3 windScale_min = new Vector3(2, 0, 1);
+        public Vector3 windScale_max = new Vector3(2, 0, 1);
+
+        [Header("Grass Rendering")]
         public Vector2 cameraFadeRange = new Vector2(25, 35);
-        public float windSpeed = 1;
-        public float windFrequency = 1;
-        public float windScale = 1;
-
         public int worldGridRenderDistance = 2;
-
         public GrassDefenition grassDef;
         public GrassMap grassMap;
         bool[] renderMask;
@@ -22,7 +29,15 @@ namespace CustomVegetation {
         void Update()
         {
             Shader.SetGlobalVector("_PCGRASS_CAMERA_RANGE", new Vector4(cameraFadeRange.x, cameraFadeRange.y, 0, 0));
-            Shader.SetGlobalVector("_PCGRASS_WINDSETTINGS", new Vector4(windSpeed, windFrequency, windScale, 0));
+            
+            Shader.SetGlobalFloat("_ENVIRONMENT_STORM", stormAmount);
+
+            Shader.SetGlobalVector("_PCGRASS_WIND_SPEED_FREQUENCY_RANGES", new Vector4(windSpeed_range.x, windSpeed_range.y, windFrequency_range.x, windFrequency_range.y));
+            Shader.SetGlobalVector("_PCGRASS_WIND_SCALE_MIN", new Vector4(windScale_min.x, windScale_min.y, windScale_min.z, 0));
+            Shader.SetGlobalVector("_PCGRASS_WIND_SCALE_MAX", new Vector4(windScale_max.x, windScale_max.y, windScale_max.z, 0));
+
+            // Shader.SetGlobalVector("_PCGRASS_WINDSETTINGS", new Vector4(windSpeed, windFrequency, windScale, 0));
+
 
             if (!Application.isPlaying) {
                 Vector3 cameraPos = transform.position;

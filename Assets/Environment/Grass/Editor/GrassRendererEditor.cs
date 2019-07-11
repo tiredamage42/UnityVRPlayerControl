@@ -91,8 +91,10 @@ namespace CustomVegetation {
                     pos.y = terrain.SampleHeight(pos);
                         
                     Vector3 norm = data.GetInterpolatedNormal(pos.x / data.size.x, pos.z / data.size.x);
-
-                    if (builder.AddGrassInstance(grassDef.grassPrototypes[Random.Range(0, grassDef.grassPrototypes.Length)], pos, norm) != null) Debug.LogError("Max Verts...");
+                    
+                    int i = GetRandomGrassPrototype(grassDef);// Random.Range(0, grassDefCount);
+                                
+                    if (builder.AddGrassInstance(grassDef.grassPrototypes[i], pos, norm) != null) Debug.LogError("Max Verts...");
                 }   
             }
 
@@ -108,6 +110,30 @@ namespace CustomVegetation {
         float density = .2f;
         float squareSize = 50;
         int terrainDensityOffset = -2;
+
+
+
+        const int maxSpawnTries = 1000;
+
+
+        int GetRandomGrassPrototype (GrassDefenition grassDef) {
+            int grassDefCount = grassDef.grassPrototypes.Length;
+            int i = -1;
+
+            int tries = 0;
+            while (i == -1 && tries <= maxSpawnTries) {
+                int p = Random.Range(0, grassDefCount);
+                if (Random.value <= grassDef.grassPrototypes[p].rarity) {
+                    i = p;
+                }
+                tries++;
+            }
+            return i;
+                               
+        }
+
+
+
 
         void CopyFromTerrainWithDensity (Terrain terrain, GrassMap grassMap, GrassDefenition grassDef) {
             int maxDensity = 14;
@@ -167,14 +193,16 @@ namespace CustomVegetation {
                                 if (Random.Range(0, (maxDensity+1)-(terrainDensityOffset)) >= maxDensityAtGrid)
                                     continue;
                                 
-                                int i = Random.Range(0, grassDefCount);
-                                
-                                Vector3 wPos = worldPos + new Vector3(x2, 0, y2);
-                                wPos.y = terrain.SampleHeight(wPos);
+                                int i = GetRandomGrassPrototype(grassDef);// Random.Range(0, grassDefCount);
+                                if (i != -1) {
 
-                                Vector3 norm = data.GetInterpolatedNormal(wPos.x / terrainRes, wPos.z / terrainRes);
+                                    Vector3 wPos = worldPos + new Vector3(x2, 0, y2);
+                                    wPos.y = terrain.SampleHeight(wPos);
 
-                                if (meshInfo.AddGrassInstance(grassDef.grassPrototypes[i], wPos, norm) != null) Debug.LogError("Max Verts reached");
+                                    Vector3 norm = data.GetInterpolatedNormal(wPos.x / terrainRes, wPos.z / terrainRes);
+
+                                    if (meshInfo.AddGrassInstance(grassDef.grassPrototypes[i], wPos, norm) != null) Debug.LogError("Max Verts reached");
+                                }
                             }
                         }
                     }
