@@ -33,7 +33,8 @@ namespace EnvironmentTools {
 
 		void OnDestroy () {
 			subscribed = false;
-			WorldGrid.instance.onPlayerGridChange -= OnPlayerGridChange;
+			if (WorldGrid.instance != null)
+				WorldGrid.instance.onPlayerGridChange -= OnPlayerGridChange;
 		}
 
 		float Abs (float a) {

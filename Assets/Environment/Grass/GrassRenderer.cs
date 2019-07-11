@@ -54,7 +54,8 @@ namespace CustomVegetation {
         }
         void OnDisable () {
             if (Application.isPlaying) {
-                WorldGrid.instance.onPlayerGridChange -= UpdateRenderMask;	
+                if (WorldGrid.instance != null)
+                    WorldGrid.instance.onPlayerGridChange -= UpdateRenderMask;	
             }
         }
         

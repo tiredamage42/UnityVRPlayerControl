@@ -62,6 +62,7 @@ namespace CustomVegetation {
             
             if (atlas == null) {
                 atlas = new Texture2D(2, 2);
+                AssetDatabase.CreateAsset(atlas, "Assets/" + (normals? "GrassNorm" : "Grass") + "Atlas.texture");
             }
 
             Rect[] rects = atlas.PackTextures(atlasTextures, 0, maxAtlasSize, true);

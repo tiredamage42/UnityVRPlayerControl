@@ -13,9 +13,12 @@ public class SimpleCharacterController : MonoBehaviour
     public float moemntumDecaySpeed = 1;
     public LayerMask groundMask;
     public float ungroundedSpeedMultiplier = .25f;
-    [HideInInspector] public bool useRawMovement;
-    [HideInInspector] public bool isGrounded;
-    [HideInInspector] public float floorY = 0;
+    // [HideInInspector] 
+    public bool useRawMovement;
+    // [HideInInspector] 
+    public bool isGrounded;
+    // [HideInInspector] 
+    public float floorY = 0;
     public bool isMoving {
         get {
             return inputMoveVector != Vector3.zero;
