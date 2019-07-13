@@ -17,6 +17,7 @@ namespace CustomVegetation {
 
         public override void OnInspectorGUI() 
         {
+            
             base.OnInspectorGUI();
 
             EditorGUILayout.Space();
@@ -62,7 +63,7 @@ namespace CustomVegetation {
             
             if (atlas == null) {
                 atlas = new Texture2D(2, 2);
-                AssetDatabase.CreateAsset(atlas, "Assets/" + (normals? "GrassNorm" : "Grass") + "Atlas.texture");
+                AssetDatabase.CreateAsset(atlas, "Assets/" + (normals? "GrassNorm" : "Grass") + "Atlas.asset");
             }
 
             Rect[] rects = atlas.PackTextures(atlasTextures, 0, maxAtlasSize, true);
