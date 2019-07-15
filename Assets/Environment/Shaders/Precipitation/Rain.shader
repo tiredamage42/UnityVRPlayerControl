@@ -12,6 +12,7 @@ Shader "Custom Environment/Rain" {
 
         _MoveSpeed ("Fall Speed", float) = -5
         _QuadDimensions("Quad Size", vector) = (.0025, .25, 0, 0)
+        _SizeRange("Size Range", vector) = (.5,1,0,0)
 
         _MaxTravelDistance ("Max Travel Distance", float) = 15
 
@@ -21,7 +22,6 @@ Shader "Custom Environment/Rain" {
         _FlutterSpeed ("Flutter Speed", vector) = (.01, .01, 0,0)
         _FlutterMagnitude ("Flutter Magnitude", vector) = (.35, .25, 0,0)
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("BlendDestination", int) = 0
-        _SizeRange("Size Range", vector) = (.5,1,0,0)
 	}
 
     CGINCLUDE

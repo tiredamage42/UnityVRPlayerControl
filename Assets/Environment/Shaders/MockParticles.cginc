@@ -87,7 +87,7 @@ void MoveAlongVector (inout fixed3 vertex, fixed noise) {
 #if defined (SOFT_PARTICLE)
 
 sampler2D _CameraDepthTexture;
-float _InvFade;
+float _SoftParticleFactor;
 
 #endif
 
@@ -139,7 +139,7 @@ fixed4 frag(g2f IN) : SV_Target
 #if defined (SOFT_PARTICLE)
     float sceneZ = LinearEyeDepth (UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, UNITY_PROJ_COORD(IN.projPos))));
     float partZ = IN.projPos.z;
-    float fade = saturate (_InvFade * (sceneZ-partZ));
+    float fade = saturate (_SoftParticleFactor * (sceneZ-partZ));
     c.a *= fade;
 #endif
 

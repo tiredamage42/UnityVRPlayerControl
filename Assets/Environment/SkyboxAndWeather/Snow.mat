@@ -30,14 +30,14 @@ Material:
     m_Floats:
     - _DstBlend: 10
     - _MaxTravelDistance: 10
-    - _MoveSpeed: -0.25
+    - _MoveSpeed: -0.2
     - _ParticlesAmount: 1
     m_Colors:
     - _CameraRange: {r: 0, g: 10, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.764151, g: 0.764151, b: 0.764151, a: 1}
     - _FlutterFrequency: {r: 0.988, g: 1.234, b: 0, a: 0}
     - _FlutterMagnitude: {r: 0.35, g: 0.25, b: 0, a: 0}
-    - _FlutterSpeed: {r: 1, g: 0.5, b: 0, a: 0}
-    - _HueVariation: {r: 1, g: 0.5, b: 0, a: 1}
+    - _FlutterSpeed: {r: 0.25, g: 0.5, b: 0, a: 0}
+    - _HueVariation: {r: 0.4245283, g: 0.23495223, b: 0, a: 1}
     - _QuadDimensions: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _SizeRange: {r: 0.05, g: 0.025, b: 0, a: 0}

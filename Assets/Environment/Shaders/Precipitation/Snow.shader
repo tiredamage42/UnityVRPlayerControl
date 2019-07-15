@@ -11,7 +11,6 @@ Shader "Custom Environment/Snow" {
         _HueVariation ("Hue Variation", Color) = (1,.5,0, 1)
 
         _MoveSpeed ("Fall Speed", float) = -.25
-
         _QuadDimensions("Quad Size", vector) = (.5, .5, 0, 0)
         _SizeRange("Size Range", vector) = (.05,.025,0,0)
         
@@ -22,7 +21,6 @@ Shader "Custom Environment/Snow" {
         _FlutterFrequency ("Flutter Frequency", vector) = (0.988, 1.234, 0,0)
         _FlutterSpeed ("Flutter Speed", vector) = (1.0, .5, 0,0)
         _FlutterMagnitude ("Flutter Magnitude", vector) = (.35, .25, 0,0)
-
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("BlendDestination", int) = 0
 	}
 

@@ -19,7 +19,7 @@ Shader "Custom Environment/Ground Fog" {
 
         _RotateSpeed ("Rotate Speed", float) = .1
 
-        _InvFade ("Soft Particle Factor", float) = 1
+        _SoftParticleFactor ("Soft Particle Factor", float) = 1
         _StartEndFade ("Start End Fade Range", float) = 2
 
         _CameraRange ("Camera Range", vector) = (0, 10, 0,0)
@@ -29,6 +29,9 @@ Shader "Custom Environment/Ground Fog" {
         _FlutterFrequency ("Flutter Frequency", vector) = (0.1, .1, 0,0)
         _FlutterSpeed ("Flutter Speed", vector) = (.1, .1, 0,0)
         _FlutterMagnitude ("Flutter Magnitude", vector) = (.35, .25, 0,0)
+
+
+    
 
 
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("BlendDestination", int) = 0
