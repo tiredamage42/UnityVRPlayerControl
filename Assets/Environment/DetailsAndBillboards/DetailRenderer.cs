@@ -37,12 +37,14 @@ namespace RenderTools {
         }
 
 
-        void OnEnable () {
+        protected override void OnEnable () {
             for (int i =0 ; i < allDefenitions.Length; i++) {
                 InitializeMaterials(allDefenitions[i]);
             }
-
+            SetCameraRangeForBillboardMaterials();
             FlushRenderList();
+
+            base.OnEnable();
 
             // if (Application.isPlaying) {
             //     WorldGrid.instance.onPlayerGridChange += UpdateLODsPerDetail;
@@ -90,6 +92,9 @@ namespace RenderTools {
                 if (lod != -1) {
                     DetailDefenition.LODInfo lodInfo = detailDef.lods[lod];
 
+                    if (lodInfo.isBillboard)
+                        continue;
+
                     Matrix4x4 transformMatrix = GetTransformMatrix(detail, lodInfo.isBillboard);
                     Mesh mesh = lodInfo.mesh;
                     Material[] materials = lodInfo.materials;
@@ -131,7 +136,40 @@ namespace RenderTools {
 
             foreach (var k in meshRenderLists.Keys) {
                 meshRenderLists[k].Render();
-            }       
+            }      
+
+            RenderBillboardMaps(); 
         }
+
+
+        public Mesh[] billboardMaps;
+        public Material[] billboardMapMaterials;
+
+        public Vector2 billboardFadeRange = new Vector2(10, 20);
+
+        static readonly Matrix4x4 identityMatrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
+
+        void RenderBillboardMaps () {
+            if (billboardMaps == null || billboardMapMaterials == null)
+                return;
+            for (int i = 0; i < billboardMaps.Length; i++) {
+                if (i < billboardMapMaterials.Length) {
+                    Graphics.DrawMesh(billboardMaps[i], identityMatrix, billboardMapMaterials[i], 0, null, 0, null, true, true, true);
+                }
+            }
+
+            #if UNITY_EDITOR
+SetCameraRangeForBillboardMaterials();
+
+            #endif
+        }
+
+        void SetCameraRangeForBillboardMaterials () {
+            for (int i = 0; i < billboardMapMaterials.Length; i++) {
+                billboardMapMaterials[i].SetVector("_CameraRange", billboardFadeRange);
+            }
+        }
+
+
     }
 }

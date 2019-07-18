@@ -24,7 +24,8 @@ public class GroundFog : EnvironmentParticles
     }
     
     //ground fog max travel distance depends on grid size since it moves along z axis...
-    void OnEnable () {
+    protected override void OnEnable () {
+        base.OnEnable();
         SetMaxTravelDistance (gridSize);
     }
 

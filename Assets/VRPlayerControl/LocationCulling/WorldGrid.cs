@@ -137,6 +137,20 @@ namespace EnvironmentTools {
 
 		protected abstract void OnPlayerGridChange(Vector2Int playerGrid, Vector3 playerPosition, float cellSize);
 
+		protected virtual void OnEnable () {
+			Vector3 refPosition;
+			Vector2Int playerGrid = GetPlayerGrid(out refPosition);
+
+			if (onPlayerGridChange != null) {
+				onPlayerGridChange(playerGrid, refPosition, GetGridSize());
+			}
+
+			OnPlayerGridChange(playerGrid, refPosition, GetGridSize());
+
+			lastPlayerGrid = playerGrid;
+		}
+
+
 		protected virtual void Update () {
 			Vector3 refPosition;
 			Vector2Int playerGrid = GetPlayerGrid(out refPosition);

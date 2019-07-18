@@ -68,7 +68,8 @@ public abstract class EnvironmentParticles : EnvironmentTools.GridHandler
     // }
 
 
-    void OnEnable () {
+    protected override void OnEnable () {
+        base.OnEnable();
         currentParticlesAmount = GetParticlesAmount();
         // instancePositions = new Vector4[instanceCount];
         // renderMatrices = new Matrix4x4[instanceCount];
@@ -154,6 +155,9 @@ public abstract class EnvironmentParticles : EnvironmentTools.GridHandler
     // Matrix4x4[] renderList = new Matrix4x4[1]; //idk why instanced rendering doesnt work on these...
 
     protected override void OnPlayerGridChange(Vector2Int playerGrid, Vector3 playerPosition, float cellSize) {
+        if (currentParticlesAmount == 0)
+            return;
+        
         // Vector3[] positions = new Vector3[instanceCount];
         int i = 0;
         for (int x = -1; x <= 1; x++) {
@@ -172,7 +176,7 @@ public abstract class EnvironmentParticles : EnvironmentTools.GridHandler
 
 
                 gridCenter.y += GetYPositionOffset();
-                Debug.Log(gridCenter.y + " / " + name);
+                // Debug.Log(gridCenter.y + " / " + name);
 
                 // Debug.Log(i);
                 // instancePositions[i] = gridCenter;

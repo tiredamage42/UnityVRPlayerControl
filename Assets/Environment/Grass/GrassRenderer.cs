@@ -8,7 +8,7 @@ namespace CustomVegetation {
     [ExecuteInEditMode]
     public class GrassRenderer : GridHandler
     {
-        [Range(0,1)] public float stormAmount = 1.0f;
+        // [Range(0,1)] public float stormAmount = 1.0f;
 
 
         [Header("Grass Wind")]
@@ -40,7 +40,7 @@ namespace CustomVegetation {
             
             Shader.SetGlobalVector("_PCGRASS_CAMERA_RANGE", new Vector4(cameraFadeRange.x, cameraFadeRange.y, 0, 0));
             
-            Shader.SetGlobalFloat("_ENVIRONMENT_STORM", stormAmount);
+            // Shader.SetGlobalFloat("_ENVIRONMENT_STORM", stormAmount);
 
             Shader.SetGlobalVector("_PCGRASS_WIND_SPEED_FREQUENCY_RANGES", new Vector4(windSpeed_range.x, windSpeed_range.y, windFrequency_range.x, windFrequency_range.y));
             Shader.SetGlobalVector("_PCGRASS_WIND_SCALE_MIN", new Vector4(windScale_min.x, windScale_min.y, windScale_min.z, 0));
@@ -59,7 +59,8 @@ namespace CustomVegetation {
             RenderGrassMap();            
         }
 
-        void OnEnable () {
+        protected override void OnEnable () {
+            base.OnEnable();
             CheckForRenderMaskInitialize();
 
             // if (Application.isPlaying) {

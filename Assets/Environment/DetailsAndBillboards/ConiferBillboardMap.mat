@@ -7,20 +7,20 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Rain
-  m_Shader: {fileID: 4800000, guid: a5aa4aebbc69e42abb51aba9d669a2dd, type: 3}
+  m_Name: ConiferBillboardMap
+  m_Shader: {fileID: 4800000, guid: 7582435d8a1f14ced83a538c727b5b3c, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
+  m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
     - _BumpMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 6c2afc8a038f69f4aa35c25dcd94fd55, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -39,20 +39,12 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _FallNoise:
-        m_Texture: {fileID: 2800000, guid: 2be20b41512cf4ebb93f32541dd013ae, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 54ffcdb8884104669937675d617121d4, type: 3}
+        m_Texture: {fileID: 2800000, guid: 612b65e0cd1576e4bbba0516d756a99d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _NoiseMap:
-        m_Texture: {fileID: 2800000, guid: 2be20b41512cf4ebb93f32541dd013ae, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -65,42 +57,22 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BumpScale: 1
-    - _Cull: 0
-    - _Cutoff: 0.5
+    - _Cutoff: 0.02
     - _DetailNormalMapScale: 1
-    - _DstBlend: 10
-    - _FallSpeed: 5
-    - _FieldWidth: 100
+    - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _MaxRainTravelDistance: 25
-    - _MaxTravelDistance: 15
     - _Metallic: 0
-    - _MinY: 2
     - _Mode: 0
-    - _MoveSpeed: -5
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _ParticlesAmount: 0
-    - _PrecipitationAmount: 1
-    - _RainAmount: 1
-    - _RainSpeed: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
-    - _UseBottomQuad: 0
     - _ZWrite: 1
     m_Colors:
-    - _CameraRange: {r: 0, g: 15, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FlutterFrequency: {r: 0.988, g: 1.234, b: 0, a: 0}
-    - _FlutterMagnitude: {r: 0.01, g: 0.01, b: 0, a: 0}
-    - _FlutterSpeed: {r: 0.35, g: 0.25, b: 0, a: 0}
-    - _HueVariation: {r: 1, g: 1, b: 1, a: 1}
-    - _QuadDimensions: {r: 0.005, g: 0.25, b: 0, a: 0}
-    - _RainColor: {r: 1, g: 1, b: 1, a: 1}
-    - _RainDimensions: {r: 0.1, g: 0.1, b: 0, a: 0}
-    - _SizeRange: {r: 0.5, g: 1, b: 0, a: 0}
+    - _HueVariation: {r: 1, g: 0.5, b: 0, a: 0.1}

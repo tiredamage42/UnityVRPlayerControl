@@ -203,6 +203,8 @@ namespace AC.LSky
 			// float windYRotation = windTransform.eulerAngles.y;
 			float windStrength = LerpWeatherSwitch(oldWeather.windStrength, targetWeather.windStrength, tod);
 
+			Shader.SetGlobalFloat("_ENVIRONMENT_STORM", windStrength);
+
 			SetGroundFog(tod, windStrength, onEnable);
 			SetRain(tod, windStrength, onEnable);
 			SetSnow(tod, windStrength, onEnable);
