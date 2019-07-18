@@ -17,6 +17,7 @@ Shader "Custom Environment/Grass/ShadowPass" {
             #pragma target 4.0
             #pragma fragmentoption ARB_precision_hint_fastest
             
+            
             // #define NO_HEIGHT_FADE
             #include "Grass.cginc"
             

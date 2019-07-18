@@ -23,6 +23,7 @@
 #include "UnityShaderUtilities.cginc"
 #include "UnityInstancing.cginc"
 
+
 #ifdef UNITY_COLORSPACE_GAMMA
 #define unity_ColorSpaceGrey fixed4(0.5, 0.5, 0.5, 0.5)
 #define unity_ColorSpaceDouble fixed4(2.0, 2.0, 2.0, 2.0)

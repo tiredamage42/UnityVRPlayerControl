@@ -6,11 +6,20 @@ using EnvironmentTools;
 namespace RenderTools {
 
     [ExecuteInEditMode]
-    public class DetailRenderer : MonoBehaviour
+    public class DetailRenderer : GridHandler
     {
         public DetailDefenition[] allDefenitions;
         public DetailMap detailMap;
         Dictionary<Vector2Int, InstancedMeshRenderList> meshRenderLists = new Dictionary<Vector2Int, InstancedMeshRenderList>();
+
+        protected override float GetGridSize() {
+			return WorldGrid.instance.gridSize;
+		}
+
+        protected override void OnPlayerGridChange(Vector2Int playerGrid, Vector3 playerPosition, float cellSize) {
+            UpdateLODsPerDetail (playerGrid, playerPosition, cellSize);
+        
+        }
 
         
         void InitializeMaterials (DetailDefenition.LODInfo lodInfo) {
@@ -35,16 +44,16 @@ namespace RenderTools {
 
             FlushRenderList();
 
-            if (Application.isPlaying) {
-                WorldGrid.instance.onPlayerGridChange += UpdateLODsPerDetail;
+            // if (Application.isPlaying) {
+            //     WorldGrid.instance.onPlayerGridChange += UpdateLODsPerDetail;
 				
-            }
+            // }
         }
         void OnDisable () {
-            if (Application.isPlaying) {
-                WorldGrid.instance.onPlayerGridChange -= UpdateLODsPerDetail;
+            // if (Application.isPlaying) {
+            //     WorldGrid.instance.onPlayerGridChange -= UpdateLODsPerDetail;
 				
-            }
+            // }
         }
 
 
@@ -67,7 +76,7 @@ namespace RenderTools {
 
                 DetailMap.Detail detail = detailMap.details[i];
                     
-                int cellDistance = WorldGrid.GetDistance(detail.worldPosition, cameraCell, worldGridSize);
+                int cellDistance = GetDistance(detail.worldPosition, cameraCell, worldGridSize);
                 
                 DetailDefenition detailDef = allDefenitions[Mathf.Min(detail.defenitionIndex, defenitionsCount-1)];
                 
@@ -104,8 +113,10 @@ namespace RenderTools {
 
 
         // Update is called once per frame
-        void Update()
+        protected override void Update()
         {
+            base.Update();
+            
             if (detailMap == null)
                 return;
 
@@ -113,10 +124,10 @@ namespace RenderTools {
             if (defenitionsCount == 0)
                 return;
 
-            if (!Application.isPlaying) {
-                Vector3 cameraPos = transform.position;
-                UpdateLODsPerDetail(WorldGrid.GetGrid(cameraPos), cameraPos, WorldGrid.instance.cellSize);
-            }
+            // if (!Application.isPlaying) {
+            //     Vector3 cameraPos = transform.position;
+            //     UpdateLODsPerDetail(WorldGrid.GetGrid(cameraPos), cameraPos, WorldGrid.instance.cellSize);
+            // }
 
             foreach (var k in meshRenderLists.Keys) {
                 meshRenderLists[k].Render();

@@ -25,7 +25,9 @@ Shader "Custom Environment/Rain" {
 	}
 
     CGINCLUDE
-    #pragma multi_compile_fog
+    #pragma multi_compile_instancing
+            
+    // #pragma multi_compile_fog
     #pragma fragmentoption ARB_precision_hint_fastest
     #pragma vertex vert
     #pragma fragment frag
@@ -37,7 +39,7 @@ Shader "Custom Environment/Rain" {
     SubShader{
         
         Tags{ 
-            "DisableBatching" = "True" 
+            // "DisableBatching" = "True" 
             "Queue" = "Transparent" 
             "RenderType" = "Transparent" 
             "IgnoreProjector" = "True" 
@@ -49,28 +51,30 @@ Shader "Custom Environment/Rain" {
         // Blend SrcAlpha One //for additive
         ZWrite Off
         Pass {
-            Name "FORWARD"
-            Tags { "LightMode"="ForwardBase" }
+            // Name "FORWARD"
+            // Tags { "LightMode"="ForwardBase" }
             CGPROGRAM
-            #pragma multi_compile_fwdbase nolightmap nodirlightmap nodynlightmap
-            #define FORWARD_LIGHTING
-            #define FORWARD_BASE_LIGHTING
+            // #pragma multi_compile_fwdbase nolightmap nodirlightmap nodynlightmap
+            // #pragma nolightmap nodirlightmap nodynlightmap
+            
+            // #define FORWARD_LIGHTING
+            // #define FORWARD_BASE_LIGHTING
             #include "Precipitation.cginc"            
             ENDCG
         }
 
-        Pass
-        {
-            Name "FORWARD"
-            Tags { "LightMode" = "ForwardAdd" }
-            // ZWrite Off 
-            Blend One One
-            CGPROGRAM
-            #pragma multi_compile_fwdadd_fullshadows nolightmap nodirlightmap nodynlightmap
-            #define FORWARD_LIGHTING
-            #define FORWARD_ADD_LIGHTING
-            #include "Precipitation.cginc"   
-            ENDCG
-        }
+        // Pass
+        // {
+        //     Name "FORWARD"
+        //     Tags { "LightMode" = "ForwardAdd" }
+        //     // ZWrite Off 
+        //     Blend One One
+        //     CGPROGRAM
+        //     #pragma multi_compile_fwdadd_fullshadows nolightmap nodirlightmap nodynlightmap
+        //     #define FORWARD_LIGHTING
+        //     #define FORWARD_ADD_LIGHTING
+        //     #include "Precipitation.cginc"   
+        //     ENDCG
+        // }
     }
 }

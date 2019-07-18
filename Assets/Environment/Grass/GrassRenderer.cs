@@ -6,7 +6,7 @@ using EnvironmentTools;
 namespace CustomVegetation {
 
     [ExecuteInEditMode]
-    public class GrassRenderer : MonoBehaviour
+    public class GrassRenderer : GridHandler
     {
         [Range(0,1)] public float stormAmount = 1.0f;
 
@@ -24,8 +24,20 @@ namespace CustomVegetation {
         public GrassMap grassMap;
         bool[] renderMask;
 
-        void Update()
+
+
+        protected override float GetGridSize() {
+            return WorldGrid.instance.gridSize;
+        }
+        protected override void OnPlayerGridChange(Vector2Int playerGrid, Vector3 playerPosition, float cellSize) {
+            UpdateRenderMask(playerGrid, playerPosition, cellSize);
+        }
+
+
+        protected override void Update()
         {
+            base.Update();
+            
             Shader.SetGlobalVector("_PCGRASS_CAMERA_RANGE", new Vector4(cameraFadeRange.x, cameraFadeRange.y, 0, 0));
             
             Shader.SetGlobalFloat("_ENVIRONMENT_STORM", stormAmount);
@@ -37,10 +49,12 @@ namespace CustomVegetation {
             // Shader.SetGlobalVector("_PCGRASS_WINDSETTINGS", new Vector4(windSpeed, windFrequency, windScale, 0));
 
 
-            if (!Application.isPlaying) {
-                Vector3 cameraPos = transform.position;
-                UpdateRenderMask(WorldGrid.GetGrid(cameraPos), cameraPos, WorldGrid.instance.cellSize);
-            }
+            // if (!Application.isPlaying) {
+            //     Vector3 cameraPos = transform.position;
+
+                
+            //     UpdateRenderMask(WorldGrid.GetGrid(cameraPos), cameraPos, WorldGrid.instance.cellSize);
+            // }
 
             RenderGrassMap();            
         }
@@ -48,15 +62,15 @@ namespace CustomVegetation {
         void OnEnable () {
             CheckForRenderMaskInitialize();
 
-            if (Application.isPlaying) {
-                WorldGrid.instance.onPlayerGridChange += UpdateRenderMask;
-            }
+            // if (Application.isPlaying) {
+            //     WorldGrid.instance.onPlayerGridChange += UpdateRenderMask;
+            // }
         }
         void OnDisable () {
-            if (Application.isPlaying) {
-                if (WorldGrid.instance != null)
-                    WorldGrid.instance.onPlayerGridChange -= UpdateRenderMask;	
-            }
+            // if (Application.isPlaying) {
+            //     if (WorldGrid.instance != null)
+            //         WorldGrid.instance.onPlayerGridChange -= UpdateRenderMask;	
+            // }
         }
         
         bool CheckErrored () {

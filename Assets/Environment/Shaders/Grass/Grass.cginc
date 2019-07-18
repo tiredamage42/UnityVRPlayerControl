@@ -38,10 +38,8 @@ sampler2D _MainTex;
 
 #if defined (COLOR_PASS)
     #include "../Environment.cginc"    
-    #include "Lighting.cginc"
-            
+    #include "Lighting.cginc"      
 #endif
-
 
 #if defined (USE_WIND) 
     #include "../CustomWind.cginc"
@@ -83,7 +81,7 @@ sampler2D _MainTex;
 #if defined( FORWARD_LIGHTING )
         UNITY_LIGHTING_COORDS(1,2)
         UNITY_FOG_COORDS(3)
-        
+            
 #endif
 
         fixed3 lightDir : TEXCOORD4;
@@ -96,8 +94,10 @@ sampler2D _MainTex;
 
 //      //vertex lighting
 // #if defined (DEFERRED_LIGHTING) && UNITY_SHOULD_SAMPLE_SH && !UNITY_SAMPLE_FULL_SH_PER_PIXEL 
-//     fixed3 sh : TEXCOORD9; 
-// #endif
+#if defined (FORWARD_BASE_LIGHTING)
+
+    fixed3 sh : TEXCOORD10; 
+#endif
 
         UNITY_VERTEX_OUTPUT_STEREO
 #else
@@ -143,10 +143,13 @@ sampler2D _MainTex;
         OUT.lightDir = normalize(UnityWorldSpaceLightDir (vertex));
 
 // #if defined (DEFERRED_LIGHTING)
-//             #if UNITY_SHOULD_SAMPLE_SH && !UNITY_SAMPLE_FULL_SH_PER_PIXEL
-//                 OUT.sh = 0;                
-//                 OUT.sh = ShadeSHPerVertex (normal, OUT.sh);
-//             #endif
+            // #if UNITY_SHOULD_SAMPLE_SH && !UNITY_SAMPLE_FULL_SH_PER_PIXEL
+
+#if defined (FORWARD_BASE_LIGHTING)
+
+                // OUT.sh = ShadeSHPerVertex (normal, OUT.sh);
+                OUT.sh = ShadeSHPerVertex (fixed3(0,1,0), OUT.sh);
+            #endif
 // #endif
 
 #if defined( FORWARD_LIGHTING )
@@ -283,7 +286,13 @@ sampler2D _MainTex;
 
 #if defined (FORWARD_BASE_LIGHTING)
         // Ambient term. Only do this in Forward Base. It only needs calculating once.
+
         c.rgb = (UNITY_LIGHTMODEL_AMBIENT.rgb * 2 * diffuseColor.rgb);         
+
+        // c.rgb = (IN.sh.rgb * 2 * diffuseColor.rgb);      
+        // c.rgb = unity_AmbientSky.xyz * 2 * diffuseColor.rgb;
+        // c.rgb = ShadeSH9(half4(worldNormal, 1.0)); 
+                   
 #endif
 
         // Macro to get you the combined shadow & attenuation value.
@@ -305,7 +314,7 @@ sampler2D _MainTex;
 #else
 
     fixed GRASS_SHADOW_CASTER_FRAG(g2f IN, fixed cutoff) {
-
+        // return 1;
         fixed2 uv = IN.uv_cutoff_distancemod.xy; 
         fixed4 diffuseColor = tex2D(_MainTex, uv); 
         clip(diffuseColor.a - cutoff); 

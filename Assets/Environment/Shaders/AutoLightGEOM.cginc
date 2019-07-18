@@ -4,6 +4,7 @@
 #define AUTOLIGHT_INCLUDED
 
 #include "HLSLSupport.cginc"
+
 #include "UnityShadowLibrary.cginc"
 
 // ----------------

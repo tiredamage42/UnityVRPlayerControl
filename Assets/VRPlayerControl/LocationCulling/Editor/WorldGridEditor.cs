@@ -27,7 +27,7 @@ namespace EnvironmentTools {
             
             Handles.BeginGUI();
             Rect r = new Rect(e.mousePosition.x + mosuePosOffset, e.mousePosition.y + mosuePosOffset, sceneViewBoxSize, sceneViewBoxSize);
-            float cellSize = worldGrid.cellSize;
+            float cellSize = worldGrid.gridSize;
 
             Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
             Vector3 worldPos = ray.origin + ray.direction * 100;

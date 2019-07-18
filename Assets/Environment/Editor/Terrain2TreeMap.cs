@@ -93,7 +93,7 @@ namespace CustomVegetation {
         [MenuItem("GameObject/Custom Vegetation/Billboard Asset To Mesh")]
         static void CreateWizard()
         {
-            var window = ScriptableWizard.DisplayWizard<Terrain2TreeMap>("Billboard Asset To Mesh", "Create");
+            var window = ScriptableWizard.DisplayWizard<BillboardAsset2Mesh>("Billboard Asset To Mesh", "Create");
             TerrainEditorUtils.OpenWindow(window);
         }
 
@@ -114,7 +114,7 @@ namespace CustomVegetation {
                 return;
             }
 
-            var path = EditorUtility.SaveFilePanelInProject("New Mesh", asset.name + "_BBMesh.mesh", "mesh", "");
+            var path = EditorUtility.SaveFilePanelInProject("New Mesh", asset.name + "_BBMesh.asset", "asset", "");
             if (path.Length != 0)
             {
                 Mesh newMesh = new Mesh();

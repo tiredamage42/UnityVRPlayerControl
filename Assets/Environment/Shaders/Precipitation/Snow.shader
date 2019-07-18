@@ -25,7 +25,9 @@ Shader "Custom Environment/Snow" {
 	}
 
     CGINCLUDE
-    #pragma multi_compile_fog
+    #pragma multi_compile_instancing
+            
+    // #pragma multi_compile_fog
     #pragma fragmentoption ARB_precision_hint_fastest
     #pragma vertex vert
     #pragma fragment frag
@@ -37,7 +39,7 @@ Shader "Custom Environment/Snow" {
     SubShader{
         
         Tags{ 
-            "DisableBatching" = "True" 
+            // "DisableBatching" = "True" 
             "Queue" = "Transparent" 
             "RenderType" = "Transparent" 
             "IgnoreProjector" = "True" 
@@ -49,12 +51,14 @@ Shader "Custom Environment/Snow" {
         // Blend SrcAlpha One //for additive
         ZWrite Off
         Pass {
-            Name "FORWARD"
-            Tags { "LightMode"="ForwardBase" }
+            // Name "FORWARD"
+            // Tags { "LightMode"="ForwardBase" }
             CGPROGRAM
-            #pragma multi_compile_fwdbase nolightmap nodirlightmap nodynlightmap
-            #define FORWARD_LIGHTING
-            #define FORWARD_BASE_LIGHTING
+            // #pragma multi_compile_fwdbase nolightmap nodirlightmap nodynlightmap
+            // #pragma nolightmap nodirlightmap nodynlightmap
+            
+            // #define FORWARD_LIGHTING
+            // #define FORWARD_BASE_LIGHTING
             #define SPIN_QUAD
             #define BOTTOM_QUAD
 
@@ -62,21 +66,21 @@ Shader "Custom Environment/Snow" {
             ENDCG
         }
 
-        Pass
-        {
-            Name "FORWARD"
-            Tags { "LightMode" = "ForwardAdd" }
-            // ZWrite Off 
-            Blend One One
-            CGPROGRAM
-            #pragma multi_compile_fwdadd_fullshadows nolightmap nodirlightmap nodynlightmap
-            #define FORWARD_LIGHTING
-            #define FORWARD_ADD_LIGHTING
-            #define SPIN_QUAD
-            #define BOTTOM_QUAD
+        // Pass
+        // {
+        //     Name "FORWARD"
+        //     Tags { "LightMode" = "ForwardAdd" }
+        //     // ZWrite Off 
+        //     Blend One One
+        //     CGPROGRAM
+        //     #pragma multi_compile_fwdadd_fullshadows nolightmap nodirlightmap nodynlightmap
+        //     #define FORWARD_LIGHTING
+        //     #define FORWARD_ADD_LIGHTING
+        //     #define SPIN_QUAD
+        //     #define BOTTOM_QUAD
 
-            #include "Precipitation.cginc"   
-            ENDCG
-        }
+        //     #include "Precipitation.cginc"   
+        //     ENDCG
+        // }
     }
 }

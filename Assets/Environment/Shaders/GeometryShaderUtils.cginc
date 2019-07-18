@@ -5,8 +5,13 @@
 
 
 #include "AutoLightGEOM.cginc"
-#include "UnityCGGEOM.cginc"
 
+#if defined (USE_NORMAL_CG)
+#include "UnityCG.cginc"
+
+#else
+#include "UnityCGGEOM.cginc"
+#endif
 
 // QUAD ROTATION TOOLS
 #define COS90 0

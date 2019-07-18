@@ -3,16 +3,17 @@
 #define PRECIPITATION_INCLUDED
 
 
-// VERTEX
-struct VertexBuffer
-{
-    fixed4 vertex : POSITION;
-    fixed3 uv : TEXCOORD0;
-};
+// // VERTEX
+// struct VertexBuffer
+// {
+//     fixed4 vertex : POSITION;
+//     fixed3 uv : TEXCOORD0;
+//     UNITY_VERTEX_INPUT_INSTANCE_ID
+// };
     
-VertexBuffer vert(VertexBuffer v) { 
-    return v; 
-}
+// VertexBuffer vert(VertexBuffer v) { 
+//     return v; 
+// }
 
 
 // #include "UnityCG.cginc"
@@ -31,11 +32,12 @@ void AddVertex (inout g2f OUT, inout TriangleStream<g2f> stream, fixed3 vertex, 
 {        
     UNITY_INITIALIZE_OUTPUT(g2f, OUT);
 
-    OUT.diffLighting.xyz = diffuseLighting;
-    OUT.ambientLighting.xyz = ambientLighting;
+    // OUT.diffLighting.xyz = diffuseLighting;
+    // OUT.ambientLighting.xyz = ambientLighting;
 
-    OUT.diffLighting.a = uv.x;
-    OUT.ambientLighting.a = uv.y;
+    OUT.uv = uv;
+    // OUT.diffLighting.a = uv.x;
+    // OUT.ambientLighting.a = uv.y;
 
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
     
@@ -44,8 +46,8 @@ void AddVertex (inout g2f OUT, inout TriangleStream<g2f> stream, fixed3 vertex, 
 
 #if defined( FORWARD_LIGHTING )
     // Macro to send shadow & attenuation to the fragment shader.
-    TRANSFER_VERTEX_TO_FRAGMENT(OUT, fixed4(vertex, 1));              
-    UNITY_TRANSFER_FOG(OUT, OUT.pos);
+    // TRANSFER_VERTEX_TO_FRAGMENT(OUT, fixed4(vertex, 1));              
+    // UNITY_TRANSFER_FOG(OUT, OUT.pos);
 #endif
 
     stream.Append(OUT);
@@ -72,6 +74,9 @@ void geom(point VertexBuffer IN[1], inout TriangleStream<g2f> stream)
 #endif
 
 {    
+
+    UNITY_SETUP_INSTANCE_ID(IN[0]);
+
     VertexBuffer vertBuffer = IN[0];
 
     fixed2 uv = vertBuffer.uv.xy;
@@ -131,8 +136,8 @@ void geom(point VertexBuffer IN[1], inout TriangleStream<g2f> stream)
     fixed randomHueFactor = (sin(noiseSample1 * (vertex.x + vertex.y * noiseSample2 + vertex.z + _Time.y * 2)) * .5 + .5);
     fixed hueVariation = saturate( randomHueFactor * _HueVariation.a);
 
-    fixed3 ambientLighting;
-    fixed3 diffuseLighting = CalculateLighting(ambientLighting, vertex);
+    fixed3 ambientLighting = 0;
+    fixed3 diffuseLighting = 0;//CalculateLighting(ambientLighting, vertex);
     
 #if defined (SPIN_QUAD)
     quad1Perp = mul(spinMatrix, quad1Perp);

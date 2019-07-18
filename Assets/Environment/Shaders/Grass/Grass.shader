@@ -6,11 +6,6 @@ Shader "Custom Environment/Grass/Grass" {
         _BumpMap("Bump", 2D) = "bump" {}
 	}
     CGINCLUDE
-    #pragma fragmentoption ARB_precision_hint_fastest
-    #pragma vertex vert
-    #pragma fragment frag
-    #pragma geometry geom
-    #pragma target 4.0
     ENDCG
 
     SubShader{
@@ -20,7 +15,7 @@ Shader "Custom Environment/Grass/Grass" {
             "IgnoreProjector" = "True" 
         }
         CULL OFF
-
+        
         Pass {
             Name "FORWARD"
             Tags { "LightMode"="ForwardBase" }
@@ -29,6 +24,16 @@ Shader "Custom Environment/Grass/Grass" {
             #pragma multi_compile_fog
             #pragma multi_compile_fwdbase nolightmap nodirlightmap nodynlightmap
 
+
+#pragma fragmentoption ARB_precision_hint_fastest
+    #pragma vertex vert
+    #pragma fragment frag
+    #pragma geometry geom
+    #pragma target 4.0
+
+    #define USE_NORMAL_CG
+
+    
             #define COLOR_PASS;
             #define USE_WIND;
             #define FORWARD_LIGHTING
@@ -49,10 +54,18 @@ Shader "Custom Environment/Grass/Grass" {
             #pragma multi_compile_fog
             #pragma multi_compile_fwdadd_fullshadows nolightmap nodirlightmap nodynlightmap
 
+#pragma fragmentoption ARB_precision_hint_fastest
+    #pragma vertex vert
+    #pragma fragment frag
+    #pragma geometry geom
+    #pragma target 4.0
+    
             #define COLOR_PASS;
             #define USE_WIND;
             #define FORWARD_LIGHTING
             #define FORWARD_ADD_LIGHTING
+
+            #define USE_NORMAL_CG
 
             #include "Grass.cginc"
             ENDCG
@@ -62,8 +75,15 @@ Shader "Custom Environment/Grass/Grass" {
             Name "ShadowCaster"
             Tags { "LightMode"="ShadowCaster" }
             CGPROGRAM
+
             #pragma multi_compile_shadowcaster
             
+            #pragma fragmentoption ARB_precision_hint_fastest
+    #pragma vertex vert
+    #pragma fragment frag
+    #pragma geometry geom
+    #pragma target 4.0
+    
             #define USE_WIND
 
             #include "Grass.cginc"
