@@ -9,6 +9,13 @@ namespace AC.LSky
 	[ExecuteInEditMode] public partial class LSky : MonoBehaviour 
 	{
 
+		/*
+		
+		
+				ADD LIGHT FLARES TOS UN
+		
+		 */
+
 		[Range(0,1)] public float weatherSwitch;
 		[HideInInspector] public Weather targetWeather;
 		[HideInInspector] public Weather oldWeather;
@@ -217,7 +224,8 @@ namespace AC.LSky
 			if (!Application.isPlaying)
 				return;
 
-			float updateRate = timeOfDayScript.dayInSeconds / 24.0f;// updateInterval;// 1.0f / updateInterval;
+			// every half hour update
+			float updateRate = (timeOfDayScript.dayInSeconds / 24.0f) / 2.0f;// updateInterval;// 1.0f / updateInterval;
 			reflectionProbeTimer         += Time.deltaTime;
 
 			if(reflectionProbeTimer >= updateRate) 

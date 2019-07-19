@@ -80,10 +80,10 @@ Material:
     - _Metallic: 0
     - _MinY: 2
     - _Mode: 0
-    - _MoveSpeed: 0.2
+    - _MoveSpeed: 0.1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _ParticlesAmount: 0
+    - _ParticlesAmount: 0.5
     - _PrecipitationAmount: 1
     - _RainAmount: 1
     - _RainSpeed: 1
@@ -99,14 +99,14 @@ Material:
     m_Colors:
     - _CameraRange: {r: 3, g: 4, b: 0, a: 0}
     - _CloseCamRange: {r: 0, g: 5, b: 0, a: 0}
-    - _Color: {r: 1, g: 0.77521867, b: 0, a: 0.2509804}
+    - _Color: {r: 1, g: 0.9209212, b: 0.6462264, a: 0.101960786}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FlutterFrequency: {r: 0.1, g: 0.1, b: 0, a: 0}
     - _FlutterMagnitude: {r: 1, g: 0.5, b: 0, a: 0}
     - _FlutterSpeed: {r: 0.1, g: 0.1, b: 0, a: 0}
     - _HeightRange: {r: 0, g: 5, b: 0, a: 0}
     - _HeightRange_Steepness: {r: 0, g: 2, b: 2, a: 0}
-    - _HueVariation: {r: 0.23941702, g: 0.9528302, b: 0.06741722, a: 1}
+    - _HueVariation: {r: 0.9811321, g: 0.7047868, b: 0.087931626, a: 0.5019608}
     - _QuadDimensions: {r: 1, g: 1, b: 0, a: 0}
     - _RainColor: {r: 1, g: 1, b: 1, a: 1}
     - _RainDimensions: {r: 0.1, g: 0.1, b: 0, a: 0}

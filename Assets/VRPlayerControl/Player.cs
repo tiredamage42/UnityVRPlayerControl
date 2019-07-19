@@ -7,6 +7,29 @@ using GameBase;
 
 namespace VRPlayer
 {
+	/*
+
+	XRSettings.eyeTextureResolutionScale;
+	Controls the actual size of eye textures as a multiplier of the device's default resolution.
+	A value of 1.0 will use the default eye texture resolution specified by the XR device. Values less than 1.0 will use lower resolution eye textures, which may improve performance at the expense of a less sharp image. Values greater than 1.0 will use higher resolution eye textures, resulting in a potentially sharper image at a cost to performance and increased memory usage.
+
+
+	XRSettings.renderViewportScale
+
+	Controls how much of the allocated eye texture should be used for rendering.
+	Valid range is 0.0 to 1.0. This value can be changed at runtime without reallocating eye textures
+
+	
+	
+
+
+	11.1 milliseconds in the case of a refresh rate of 90 hz.
+
+If your app is GPU-bound, the Unity Profiler
+ displays XR.WaitForGPU in excess of one frame’s time in milliseconds.
+If your app is CPU-bound, a frame takes longer than the designated frame time, but the Unity Profiler displays XR.WaitForGPU shorter than the one frame.
+	
+	 */
     public enum ReleaseStyle
     {
         NoChange, GetFromHand, ShortEstimation, AdvancedEstimation,

@@ -360,13 +360,9 @@ inline half3 MiePhase(float cosTheta, float3 betaMiePhase, half scattering,  hal
 			void AddMieSun (v2f i, inout fixed3 color, inout fixed totalDraw, fixed3 ray) {
 
 				float  sunCosTheta  = dot(ray, LSky_SunDir.xyz);
-				
 				fixed3 miePhase = saturate(MiePhase(sunCosTheta, LSky_SunBetaMiePhase, LSky_SunMieScattering, LSky_SunMieColor) * i.outScatter.rgb);
 				miePhase *= 1.0-totalDraw;
-				
-				
 				color += miePhase;
-
 			}
 
 			void AddMoonHalo (v2f i, inout fixed3 color, inout fixed totalDraw, fixed moonCosTheta) {
@@ -396,14 +392,9 @@ inline half3 MiePhase(float cosTheta, float3 betaMiePhase, half scattering,  hal
 			void AddMoonTexture (v2f i, inout fixed3 color, inout fixed totalDraw, fixed moonCosTheta) {
 				
 				half4 moon  = Moon(i.moonCoords, moonCosTheta) * i.outScatter.a;
-
 				moon *= 1.0-totalDraw;
-
 				totalDraw += moon.a;// 1.0-moon.a;
-
 				totalDraw = saturate(totalDraw);
-
-				
 				color += moon.rgb * EXTINCTION;
 			}
 
@@ -507,6 +498,7 @@ inline half3 MiePhase(float cosTheta, float3 betaMiePhase, half scattering,  hal
 				AddMieSun (i, color, totalDraw, ray);
 
 				float  moonCosTheta = dot(ray, LSky_MoonDir.xyz); 
+				
 				AddMoonHalo (i, color, totalDraw, moonCosTheta);
 				AddMoonTexture(i, color, totalDraw, moonCosTheta);
 
