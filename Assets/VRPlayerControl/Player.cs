@@ -14,6 +14,7 @@ namespace VRPlayer
 	
 	public class Player : MonoBehaviour
 	{
+		public float lodBias = 10;
 		public SteamVR_Input_Sources mainHand;
 		public SteamVR_Input_Sources offHand { get { return VRManager.OtherHand(mainHand); } }
 		public SteamVR_Action_Boolean pauseAction;
@@ -171,7 +172,10 @@ So: 2 * (tan(pi/2/2)/tan(pi/3/2)) =
 2 * (tan(pi/4)/tan(pi/6)) = ~3.46
 
  */
- QualitySettings.lodBias = 3.46f;
+
+ Debug.Log("Setting lod bias");
+//  QualitySettings.lodBias = 3.46f;
+QualitySettings.lodBias = lodBias;
 
 
 
@@ -182,6 +186,7 @@ So: 2 * (tan(pi/2/2)/tan(pi/3/2)) =
 		IEnumerator Start()
 		{
 			_instance = this;
+			QualitySettings.vSyncCount = 0;
 
             while (SteamVR.initializedState == SteamVR.InitializedStates.None || SteamVR.initializedState == SteamVR.InitializedStates.Initializing)
                 yield return null;

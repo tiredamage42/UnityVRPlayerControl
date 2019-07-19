@@ -35,5 +35,5 @@ Material:
     - _GroundAltitude: 0
     - _GroundFade: 30
     - _HorizonFade: 0.006
-    - _NebulaExponent: 3
+    - _NebulaExponent: 5
     m_Colors: []

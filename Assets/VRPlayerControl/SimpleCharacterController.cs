@@ -58,6 +58,7 @@ public class SimpleCharacterController : MonoBehaviour
         if (momentum.y <= 0 && Physics.Raycast(ray, out hit, buffer + (wasGrounded && (momentum.y <= 0) ? .25f : .05f), groundMask)) {
             isGrounded = true;
             momentum = Vector3.zero;
+            momentum.y = -maxGravityVelocity;
             floorY = hit.point.y;
         }
     }

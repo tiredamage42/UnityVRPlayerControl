@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System.IO;
 
 namespace CustomVegetation {
     
@@ -47,15 +48,28 @@ namespace CustomVegetation {
                 EditorGUILayout.Space();
 
                 EditorGUILayout.LabelField("Build From Terrain:");
+
+                mapDirectory = EditorGUILayout.TextField("Map Directory", mapDirectory);
+        bool stringEmpty = string.IsNullOrEmpty(mapDirectory) || string.IsNullOrWhiteSpace(mapDirectory);
+        GUI.enabled = !stringEmpty;
+        
+
                 Terrain terrain = (Terrain)EditorGUILayout.ObjectField("Terrain", null, typeof(Terrain), true);
                 terrainDensityOffset = EditorGUILayout.IntField("Detail Density Offset", terrainDensityOffset);
                 
                 if (terrain != null) {
                     CopyFromTerrainWithDensity(terrain, grassRenderer.grassMap, grassRenderer.grassDef);
                 }
+            GUI.enabled = true;// !stringEmpty;
+            if (stringEmpty){
+            EditorGUILayout.HelpBox("Specify an map directory...", MessageType.Warning);
             }
+
+        }
+        
         }
 
+            string mapDirectory="";
         int VertsUsed () {
             int d = (int)(squareSize / density) + (squareSize % density != 0 ? 1 : 0);
             return d * d;
@@ -209,9 +223,22 @@ namespace CustomVegetation {
                 }
             }
 
+            if (!mapDirectory.EndsWith("/")) {
+                mapDirectory += "/";
+            }
+            if (!Directory.Exists(mapDirectory))
+             {
+                 Directory.CreateDirectory(mapDirectory);
+             }
+
+            int e = 0;
+
             foreach (var k in worldGrid2MeshInfo.Keys) {
                 Mesh mesh = worldGrid2MeshInfo[k].BakeToMesh();
                 if (mesh != null) {
+
+ AssetDatabase.CreateAsset(mesh, mapDirectory + "Mesh" + e + ".asset");
+ e++;
                     Vector3 cellMidPoint = EnvironmentTools.WorldGrid.GridCenterPosition(k, squareSize);
                     grassMap.AddGrassBatch(new Vector2(cellMidPoint.x, cellMidPoint.z), mesh);
                 }
@@ -220,6 +247,7 @@ namespace CustomVegetation {
             EditorUtility.SetDirty(grassRenderer);
             EditorUtility.SetDirty(grassMap);
             
+            AssetDatabase.SaveAssets();
         }
     }
 }

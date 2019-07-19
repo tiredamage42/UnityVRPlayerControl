@@ -97,9 +97,9 @@ namespace AC.LSky
 
 			timeOfDayScript = GetComponent<LSkyTOD>();
 
-			// m_Probe              = GetComponentInChildren<ReflectionProbe>();
-			// m_Probe.mode         = ReflectionProbeMode.Realtime;
-			// m_Probe.refreshMode  = ReflectionProbeRefreshMode.ViaScripting;
+			m_Probe              = GetComponentInChildren<ReflectionProbe>();
+			m_Probe.mode         = ReflectionProbeMode.Realtime;
+			m_Probe.refreshMode  = ReflectionProbeRefreshMode.ViaScripting;
 
 
 			groundFogPrecipitator = GetComponentInChildren<GroundFog>();
@@ -217,13 +217,16 @@ namespace AC.LSky
 			if (!Application.isPlaying)
 				return;
 
-			float updateRate = 1.0f / updateInterval;
+			float updateRate = timeOfDayScript.dayInSeconds / 24.0f;// updateInterval;// 1.0f / updateInterval;
 			reflectionProbeTimer         += Time.deltaTime;
 
 			if(reflectionProbeTimer >= updateRate) 
 			{
+				DynamicGI.UpdateEnvironment();
 				// Debug.Log("rendering probe");
-				// m_Probe.RenderProbe(rt);
+				m_Probe.RenderProbe(rt);
+
+
 				reflectionProbeTimer = 0;
 			}
 		}

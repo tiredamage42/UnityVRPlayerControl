@@ -488,7 +488,7 @@ namespace VRPlayer
 
         protected virtual void Update()
         {
-            UpdateDebugText();
+            // UpdateDebugText();
 
             bool handOccupied = VRUIInput.HandOccupied(handType);
 
