@@ -225,7 +225,7 @@ namespace AC.LSky
 				return;
 
 			// every half hour update
-			float updateRate = (timeOfDayScript.dayInSeconds / 24.0f) / 2.0f;// updateInterval;// 1.0f / updateInterval;
+			float updateRate = (timeOfDayScript.dayInSeconds / 24.0f) / 6.0f;// updateInterval;// 1.0f / updateInterval;
 			reflectionProbeTimer         += Time.deltaTime;
 
 			if(reflectionProbeTimer >= updateRate) 

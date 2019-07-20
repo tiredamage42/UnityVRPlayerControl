@@ -200,6 +200,8 @@ So: 2 * (tan(pi/2/2)/tan(pi/3/2)) =
 //  QualitySettings.lodBias = 3.46f;
 QualitySettings.lodBias = lodBias;
 
+// UnityEngine.XR.XRSettings.renderViewportScale = .75f;
+
 
 
 			

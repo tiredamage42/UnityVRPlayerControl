@@ -15,7 +15,10 @@ public class Flashlight : MonoBehaviour, ISceneItem
 
     }
     public void OnEquippedUseStart(Inventory inventory, int useIndex) {
-        EnableLight(!lightEnabled);
+        if (useIndex == 0) {
+
+            EnableLight(!lightEnabled);
+        }
     }
     public void OnEquippedUseEnd(Inventory inventory, int useIndex) {
 
@@ -28,7 +31,7 @@ public class Flashlight : MonoBehaviour, ISceneItem
     bool lightEnabled;
 
     void Awake () {
-        light = GetComponent<Light>();
+        light = GetComponentInChildren<Light>();
         light.enabled = false;
     }
     

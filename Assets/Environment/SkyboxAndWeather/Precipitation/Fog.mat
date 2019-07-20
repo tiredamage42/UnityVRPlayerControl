@@ -83,7 +83,7 @@ Material:
     - _MoveSpeed: 0.1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _ParticlesAmount: 0.5
+    - _ParticlesAmount: 0
     - _PrecipitationAmount: 1
     - _RainAmount: 1
     - _RainSpeed: 1

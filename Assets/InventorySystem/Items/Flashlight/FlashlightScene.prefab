@@ -43,7 +43,7 @@ Light:
   m_Type: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 2
-  m_Range: 10
+  m_Range: 15
   m_SpotAngle: 60
   m_CookieSize: 10
   m_Shadows:
@@ -54,7 +54,7 @@ Light:
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
-  m_Cookie: {fileID: 2800000, guid: 641bb2dce818a8a499b537a1963889ac, type: 3}
+  m_Cookie: {fileID: 2800000, guid: 2c29c08dd1c0b6749b7cd0fcff7a29fd, type: 3}
   m_DrawHalo: 0
   m_Flare: {fileID: 0}
   m_RenderMode: 0
@@ -83,6 +83,7 @@ GameObject:
   - component: {fileID: 6731844837837039086}
   - component: {fileID: 1710243302552063718}
   - component: {fileID: 4886987698000625243}
+  - component: {fileID: 1878902102}
   m_Layer: 0
   m_Name: FlashlightScene
   m_TagString: Untagged
@@ -185,6 +186,55 @@ CapsuleCollider:
   m_Height: 0.2689971
   m_Direction: 1
   m_Center: {x: 0, y: 0.123091415, z: 0}
+--- !u!114 &1878902102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7877459934682501253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b93b6a877adcbf94c89a9d6e0c0e844d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionNames:
+  - Use
+  onlyProximityHover: 0
+  isAvailable: 1
+  useType: 0
+  highlightOnHover: 1
+  hideHighlight: []
+  onUseStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUseEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onInspectEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1001 &7126453193330772509
 PrefabInstance:
   m_ObjectHideFlags: 0

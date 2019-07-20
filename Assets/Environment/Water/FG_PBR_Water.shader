@@ -21,7 +21,8 @@ SubShader {
 	CGPROGRAM
 	#pragma target 3.0
 	// #pragma surface surf Standard vertex:vert noshadow nolightmap nodynlightmap nodirlightmap nometa nolppv noshadowmask interpolateview halfasview
-	#pragma surface surf Standard vertex:vert nolightmap nodynlightmap nodirlightmap nometa nolppv noshadowmask interpolateview halfasview
+	// #pragma surface surf Standard vertex:vert nolightmap nodynlightmap nodirlightmap nometa nolppv noshadowmask interpolateview halfasview
+	#pragma surface surf Standard vertex:vert //interpolateview halfasview 
 	
 	#pragma fragmentoption ARB_precision_hint_fastest
 

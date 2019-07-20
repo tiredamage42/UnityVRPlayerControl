@@ -192,6 +192,7 @@ namespace RenderTricks {
             for (int i = 0; i < renderers.Count; i++) {
                 HighlightRenderer(renderers[i], highlightGroupIndex);
             }
+            enabled = true;
         }
 
         public void HighlightRenderer(Renderer renderer, int highlightGroupIndex) {
@@ -337,6 +338,7 @@ namespace RenderTricks {
             if (!renderingHighlighted) {
                 
                 Graphics.Blit(source, destination);
+                enabled = false;
                 return;
             }
 

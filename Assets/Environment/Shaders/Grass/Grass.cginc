@@ -205,6 +205,17 @@ sampler2D _MainTex;
         fixed distFade = CalculateDistanceFade (grass_point, _PCGRASS_CAMERA_RANGE.xy, camDistance);
         if (distFade <= 0)
             return;
+        
+        float3 camForward = mul((float3x3)unity_CameraToWorld, float3(0,0,1));
+        camForward.y = 0;
+        camForward = normalize(camForward);
+
+        fixed3 camDir = grass_point - _WorldSpaceCameraPos;
+        camDir.y = 0;
+        camDir = normalize(camDir);
+        if (dot(camForward, camDir) <= 0.25)
+            return;
+
 
 
         fixed3 groundNorm = IN[0].ground_normal;
