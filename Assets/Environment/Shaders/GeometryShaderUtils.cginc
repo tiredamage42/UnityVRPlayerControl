@@ -3,23 +3,13 @@
 #ifndef GEOMETRY_SHADER_UTILS_INCLUDED
 #define GEOMETRY_SHADER_UTILS_INCLUDED
 
-
-#include "AutoLightGEOM.cginc"
-
-#if defined (USE_NORMAL_CG)
 #include "UnityCG.cginc"
-
-#else
-#include "UnityCGGEOM.cginc"
-#endif
 
 // QUAD ROTATION TOOLS
 #define COS90 0
 #define SIN90 1
 #define SIN45 0.70710678087
 #define COS45 0.70710678087
-
-
 
 fixed4x4 rotationMatrix(fixed3 axis, fixed sinAngle, fixed cosAngle)
 {
@@ -54,19 +44,24 @@ fixed4x4 rotationMatrix(fixed3 axis, fixed sinAngle, fixed cosAngle)
 }
 
 
+#define CAMFWD i_camFwd
+#define CAMDIR i_camDir
+#define CAMDIST i_camDist
 
 
-fixed CalculateDistanceFade (fixed3 worldPos, fixed2 cameraRange, out fixed cameraDistance) {
-    fixed3 viewDir = _WorldSpaceCameraPos - worldPos;
-    cameraDistance = length(viewDir);
+#define CALCULATE_CAMERA_VARIABLES(rootPos) \
+    float3 CAMFWD = mul((float3x3)unity_CameraToWorld, float3(0,0,1)); \
+    CAMFWD.y = 0; \
+    CAMFWD = normalize(CAMFWD); \
+    fixed3 CAMDIR = rootPos - _WorldSpaceCameraPos; \
+    fixed CAMDIST = length(CAMDIR); \
+    CAMDIR.y = 0; \
+    CAMDIR = normalize(CAMDIR);
+    
 
-    fixed fadeStart = cameraRange.x;
-    fixed fadeEnd =cameraRange.y;
-
-    if (cameraDistance > fadeEnd)
-        return 0;
-
-    return 1.0 - saturate(max(cameraDistance - fadeStart, 0) / (fadeEnd - fadeStart));
+fixed InverseLerp (fixed2 range, fixed value) {
+    return min(max(value - range.x, 0) / (range.y - range.x), 1);
 }
+    
 
 #endif // SPEEDTREE_COMMON_INCLUDED

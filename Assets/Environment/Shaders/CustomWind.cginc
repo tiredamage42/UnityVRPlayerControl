@@ -54,20 +54,6 @@ fixed3 WaveBase (fixed3 vertex, fixed2 windSpeed_range, fixed2 windFrequency_ran
     return vertex;
 }
 
-// fixed4 _PCGRASS_WIND_SPEED_FREQUENCY_RANGES;
-// fixed4 _PCGRASS_WIND_SCALE_MIN;
-// fixed4 _PCGRASS_WIND_SCALE_MAX;
-
-// fixed3 WaveGrass (fixed3 vertex, fixed waveAmount)
-// {
-//     fixed2 windSpeed_range = _PCGRASS_WIND_SPEED_FREQUENCY_RANGES.xy;
-//     fixed2 windFrequency_range = _PCGRASS_WIND_SPEED_FREQUENCY_RANGES.zw;
-//     fixed3 windScale_min = _PCGRASS_WIND_SCALE_MIN;
-//     fixed3 windScale_max = _PCGRASS_WIND_SCALE_MAX;
-    
-//     return WaveBase (vertex, windSpeed_range, windFrequency_range, windScale_min, windScale_max, waveAmount);
-// }
-
 
 #if defined (TREE_WIND)
 //TREE ONLY

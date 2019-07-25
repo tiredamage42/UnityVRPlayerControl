@@ -83,7 +83,7 @@ Material:
     - _MoveSpeed: 0.1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _ParticlesAmount: 0
+    - _ParticlesAmount: 1
     - _PrecipitationAmount: 1
     - _RainAmount: 1
     - _RainSpeed: 1
@@ -99,7 +99,7 @@ Material:
     m_Colors:
     - _CameraRange: {r: 3, g: 4, b: 0, a: 0}
     - _CloseCamRange: {r: 0, g: 5, b: 0, a: 0}
-    - _Color: {r: 1, g: 0.9209212, b: 0.6462264, a: 0.101960786}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FlutterFrequency: {r: 0.1, g: 0.1, b: 0, a: 0}
     - _FlutterMagnitude: {r: 1, g: 0.5, b: 0, a: 0}

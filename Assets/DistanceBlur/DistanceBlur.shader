@@ -34,7 +34,7 @@
 	ENDCG
 
 	SubShader {
-		// Cull Off
+		Cull Off
 		ZTest Always
 		ZWrite Off
 
@@ -42,7 +42,7 @@
 			CGPROGRAM
 				half FragmentProgram (Interpolators i) : SV_Target {
 					half depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv));
-					float coc = (depth - _FocusDistance) / _FocusRange;
+					float coc = (depth - _FocusDistance) / (_FocusRange * _BokehRadius);
                     coc = (saturate(coc)) * _BokehRadius;
 					return coc;
 				}
@@ -172,13 +172,15 @@
         Pass { // 4 combinePass
 			CGPROGRAM
 				half4 FragmentProgram (Interpolators i) : SV_Target {
+					
+					// return fixed4(Linear01Depth((tex2D(_CameraDepthTexture, i.uv))).xxx, 1);
 				
 					half coc = tex2D(_CoCTex, i.uv).r;
                     half dofStrength = pow(smoothstep(0, 1, coc), _COCSteepness);
 
 #if defined(DEBUG_VISUAL)
-                    if (coc == 0) return fixed4(0.75,0.75,1,1);
-                    if (coc > 1) return fixed4(1,0.75,0.75,1);
+                    if (coc == 0) return fixed4(0,0,1,1);
+                    if (coc >= 1) return fixed4(1,0,0,1);
                     return dofStrength;
 #else
 

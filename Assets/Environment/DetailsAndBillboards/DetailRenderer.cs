@@ -154,7 +154,13 @@ namespace RenderTools {
                 return;
             for (int i = 0; i < billboardMaps.Length; i++) {
                 if (i < billboardMapMaterials.Length) {
-                    Graphics.DrawMesh(billboardMaps[i], identityMatrix, billboardMapMaterials[i], 0, null, 0, null, true, true, true);
+                    Graphics.DrawMesh(
+                        billboardMaps[i], 
+                        identityMatrix, 
+                        billboardMapMaterials[i], 0, null, 0, null,
+                        false, // cast shadows
+                        true, // receive shadows
+                        true);
                 }
             }
 

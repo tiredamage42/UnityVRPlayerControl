@@ -1,11 +1,12 @@
 // Unity built-in shader source. Copyright (c) 2016 Unity Technologies. MIT license (see license.txt)
 
-#ifndef AUTOLIGHT_INCLUDED
-#define AUTOLIGHT_INCLUDED
+#ifndef AUTOLIGHT_GEOM_INCLUDED
+#define AUTOLIGHT_GEOM_INCLUDED
 
 #include "HLSLSupport.cginc"
 
 #include "UnityShadowLibrary.cginc"
+
 
 // ----------------
 //  Shadow helpers

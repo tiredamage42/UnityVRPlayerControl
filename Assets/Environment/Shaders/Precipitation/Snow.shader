@@ -24,18 +24,7 @@ Shader "Custom Environment/Snow" {
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("BlendDestination", int) = 0
 	}
 
-    CGINCLUDE
-    #pragma multi_compile_instancing
-            
-    // #pragma multi_compile_fog
-    #pragma fragmentoption ARB_precision_hint_fastest
-    #pragma vertex vert
-    #pragma fragment frag
-    #pragma geometry geom
-    #pragma target 4.0
-    ENDCG
-        
-
+    
     SubShader{
         
         Tags{ 
@@ -47,40 +36,19 @@ Shader "Custom Environment/Snow" {
  
         CULL OFF
         Blend SrcAlpha [_DstBlend]
-        // Blend SrcAlpha OneMinusSrcAlpha
-        // Blend SrcAlpha One //for additive
         ZWrite Off
         Pass {
-            // Name "FORWARD"
-            // Tags { "LightMode"="ForwardBase" }
             CGPROGRAM
-            // #pragma multi_compile_fwdbase nolightmap nodirlightmap nodynlightmap
-            // #pragma nolightmap nodirlightmap nodynlightmap
-            
-            // #define FORWARD_LIGHTING
-            // #define FORWARD_BASE_LIGHTING
+            #pragma multi_compile_instancing
+            #pragma fragmentoption ARB_precision_hint_fastest
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma geometry geom
+            #pragma target 4.0        
             #define SPIN_QUAD
             #define BOTTOM_QUAD
-
             #include "Precipitation.cginc"            
             ENDCG
         }
-
-        // Pass
-        // {
-        //     Name "FORWARD"
-        //     Tags { "LightMode" = "ForwardAdd" }
-        //     // ZWrite Off 
-        //     Blend One One
-        //     CGPROGRAM
-        //     #pragma multi_compile_fwdadd_fullshadows nolightmap nodirlightmap nodynlightmap
-        //     #define FORWARD_LIGHTING
-        //     #define FORWARD_ADD_LIGHTING
-        //     #define SPIN_QUAD
-        //     #define BOTTOM_QUAD
-
-        //     #include "Precipitation.cginc"   
-        //     ENDCG
-        // }
     }
 }

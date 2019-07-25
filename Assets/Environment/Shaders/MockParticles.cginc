@@ -6,14 +6,7 @@
 
 #if defined (MOVE_COMPONENT) && defined (SECONDARY_COMPONENT_0) && defined (SECONDARY_COMPONENT_1)
 
-
-
-// UNITY_INSTANCING_BUFFER_START(Props)
-//     UNITY_DEFINE_INSTANCED_PROP(float3, _WorldPos)
-// UNITY_INSTANCING_BUFFER_END(Props)
-
-
-// #define WORLD_POS UNITY_ACCESS_INSTANCED_PROP(Props, _WorldPos)
+#include "UnityCG.cginc"
 
 // VERTEX
 struct VertexBuffer
@@ -23,25 +16,9 @@ struct VertexBuffer
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
-// StructuredBuffer<float3> positionBuffer;
-    
-VertexBuffer vert(VertexBuffer v){//}, uint instanceID : SV_InstanceID) { 
-    // UNITY_SETUP_INSTANCE_ID(v);
-
-    // float3 data = WORLD_POS;
-
-    // unity_ObjectToWorld[0].w = data.x;
-    // unity_ObjectToWorld[1].w = data.y;
-    // unity_ObjectToWorld[2].w = data.z;
-
-    
-
-
+VertexBuffer vert(VertexBuffer v) {
     return v; 
 }
-
-
-
 
 #define PARTICLE_AMOUNT_LEVELS 4.0
 
@@ -90,19 +67,9 @@ bool VertexBelowThreshold (fixed3 vertex, fixed2 uv, fixed vertexThreshold, out 
 }
 
 
-// fixed3 CalculateLighting (out fixed3 ambient, fixed3 vertex) {
-//     ambient = 0;
-// #if defined (FORWARD_BASE_LIGHTING)
-//     // Ambient term. Only do this in Forward Base. It only needs calculating once.
-//     ambient = (UNITY_LIGHTMODEL_AMBIENT.rgb * 2);         
-// #endif
-//     return saturate(dot(fixed3(0,1,0), normalize(UnityWorldSpaceLightDir (vertex)))) * 2 * _LightColor0.rgb;
-// }
-
-
 void CalculateWidthAndHeight (fixed noise0, fixed noise1, out fixed width, out fixed height) {
-    width = _QuadDimensions.x + (_QuadDimensions.x * noise0 * 2);
-    height = _QuadDimensions.y + (_QuadDimensions.y * noise1 * 2);
+    width = _QuadDimensions.x;// + (_QuadDimensions.x * noise0 * 2);
+    height = _QuadDimensions.y;// + (_QuadDimensions.y * noise1 * 2);
 
     fixed sizeMult = lerp(_SizeRange.x, _SizeRange.y, noise0);
 
@@ -115,10 +82,13 @@ void MoveAlongVector (inout fixed3 vertex, fixed noise) {
 }
 
 
-#define FRAGMENT_UV(i) i.uv//fixed2(i.diffLighting.a, i.ambientLighting.a)
-#define HUE_VARIATION(i) i.hueVariation_distFade.x
-#define DISTANCE_FADE(i) i.hueVariation_distFade.y
+#define FRAGMENT_UV(i) i.uv.xy
+#define HUE_VARIATION(i) i.uv.z
+#define DISTANCE_FADE(i) i.uv.w
 
+#define PACK_HUE_VARIATION_AND_FADE(o, hueVar, fade) \
+    o.uv.z = hueVar; \
+    o.uv.w = fade;
 
 
 #if defined (SOFT_PARTICLE)
@@ -131,60 +101,31 @@ float _SoftParticleFactor;
 struct g2f
 {
     UNITY_POSITION(pos);
-    
-#if defined( FORWARD_LIGHTING )
-    // UNITY_LIGHTING_COORDS(1,2)
-    // UNITY_FOG_COORDS(3)
-#endif
-    fixed2 uv : TEXCOORD0;
-
-    // fixed4 diffLighting : TEXCOORD4;
-    // fixed4 ambientLighting : TEXCOORD9;
-    fixed2 hueVariation_distFade : TEXCOORD5;    
-
+    fixed4 uv : TEXCOORD0;
 #if defined (SOFT_PARTICLE)
-    fixed4 projPos : TEXCOORD6;
+    fixed4 projPos : TEXCOORD1;
 #endif
-
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
-
-       
 fixed4 frag(g2f IN) : SV_Target
 {
-
+    
     fixed2 uv = FRAGMENT_UV(IN);
-
-    // return fixed4(uv, 0, DISTANCE_FADE(IN));
+    // return fixed4(uv, 0, 1);
 
     fixed4 diffuseColor = tex2D(_MainTex, uv) * _Color;
     
     // add hue variation
     AddHueVariation(diffuseColor.rgb, fixed4(_HueVariation.rgb, HUE_VARIATION(IN)));
                                 
-    fixed4 c = 0;
-    c = diffuseColor;
-
-#if defined (FORWARD_BASE_LIGHTING)
-    // Ambient term. Only do this in Forward Base. It only needs calculating once.
-    // c.rgb = IN.ambientLighting.rgb * diffuseColor.rgb;    
-#endif
-
-    // Macro to get you the combined shadow & attenuation value.
-    // c.rgb += (diffuseColor.rgb * IN.diffLighting.rgb) * LIGHT_ATTENUATION(IN); 
-    
-    c.a = diffuseColor.a * DISTANCE_FADE(IN);
-
+    fixed4 c = diffuseColor;
+    c.a *= DISTANCE_FADE(IN);
 
 #if defined (SOFT_PARTICLE)
     float sceneZ = LinearEyeDepth (UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, UNITY_PROJ_COORD(IN.projPos))));
-    float partZ = IN.projPos.z;
-    float fade = saturate (_SoftParticleFactor * (sceneZ-IN.projPos.z));
-    c.a *= fade;
+    c.a *= saturate (_SoftParticleFactor * (sceneZ-IN.projPos.z));
 #endif
-
-    // UNITY_APPLY_FOG(IN.fogCoord, c);
 
     return c;
 }

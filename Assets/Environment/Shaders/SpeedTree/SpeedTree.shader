@@ -25,114 +25,57 @@ Shader "Custom Environment/Tree/SpeedTree"
         _Leaf_Wind_Scale_Min ("Scale Min", Vector) = (1, 2, 1, 0)
         _Leaf_Wind_Scale_Max ("Scale Max", Vector) = (1, 2, 1, 0)
     }
-    CGINCLUDE
-
-
-    #define TREE_WIND
-    #include "../CustomWind.cginc"
-    #include "UnityCG.cginc"
-            
-
-    struct SpeedTreeVB
-    {
-        fixed4 vertex       : POSITION;
-        fixed4 tangent      : TANGENT;
-        fixed3 normal       : NORMAL;
-        fixed4 texcoord     : TEXCOORD0;
-        fixed4 color         : COLOR;
-        UNITY_VERTEX_INPUT_INSTANCE_ID
-    };
-
-
-    void OffsetSpeedTreeVertex(inout SpeedTreeVB data)
-    {
-        #if defined(GEOM_TYPE_LEAF)
-            data.vertex.xyz = WaveLeaf (data.vertex.xyz);
-        #endif
-        data.vertex.xyz = WaveBranch (data.vertex.xyz);
-    }
-
-    ENDCG
-    
     SubShader
     {
+        Tags { "RenderType"="Opaque" }
         Cull [_Cull]
-
-        CGPROGRAM
-
-        #pragma surface surf Lambert vertex:SpeedTreeVert fullforwardshadows nolightmap nodynlightmap nodirlightmap nometa nolppv noshadowmask interpolateview halfasview addshadow
-        #pragma fragmentoption ARB_precision_hint_fastest
-        
-        #pragma shader_feature GEOM_TYPE_BRANCH GEOM_TYPE_FROND GEOM_TYPE_LEAF GEOM_TYPE_MESH
-        #pragma shader_feature EFFECT_BUMP
-        #define USEFRAG
-        #include "SpeedTreeCommon_Custom.cginc"
-        
-        void SpeedTreeVert(inout SpeedTreeVB IN, out Input OUT)
-        {
-            UNITY_INITIALIZE_OUTPUT(Input, OUT);
-
-            OUT.mainTexUV = IN.texcoord.xy;
-            OUT.color = _Color;
-            OUT.color.rgb *= IN.color.r; // ambient occlusion factor
-            
-            fixed hueVariationAmount = frac(unity_ObjectToWorld[0].w + unity_ObjectToWorld[1].w + unity_ObjectToWorld[2].w);
-            hueVariationAmount += frac(IN.vertex.x + IN.normal.y + IN.normal.x) * 0.5 - 0.3;
-            OUT.HueVariationAmount = saturate(hueVariationAmount * _HueVariation.a);
-        
-            OffsetSpeedTreeVertex(IN);
-        }
-
-        void surf(Input IN, inout SurfaceOutput OUT)
-        {
-            SpeedTreeFrag(IN, OUT);    
-        }
-        ENDCG
-
-        Pass
-        {
-            Tags { "LightMode" = "ShadowCaster" }
-
+        Pass {
+            Name "FORWARD"
+            Tags { "LightMode" = "ForwardBase" }
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
             #pragma fragmentoption ARB_precision_hint_fastest
+            #pragma multi_compile_fog
+            #pragma multi_compile_instancing
+            #pragma multi_compile_fwdbase
             #pragma shader_feature GEOM_TYPE_BRANCH GEOM_TYPE_FROND GEOM_TYPE_LEAF GEOM_TYPE_MESH
+            #pragma shader_feature EFFECT_BUMP
+            #include "SpeedTreeCommon_Custom.cginc"
+            ENDCG
+        }
+        Pass {
+            Name "FORWARD"
+            Tags { "LightMode" = "ForwardAdd" }
+            ZWrite Off Blend One One
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma fragmentoption ARB_precision_hint_fastest
+            #pragma multi_compile_fog 
+            #pragma multi_compile_instancing
+            #pragma multi_compile_fwdadd_fullshadows
+            #pragma shader_feature GEOM_TYPE_BRANCH GEOM_TYPE_FROND GEOM_TYPE_LEAF GEOM_TYPE_MESH
+            #pragma shader_feature EFFECT_BUMP
+            #include "SpeedTreeCommon_Custom.cginc"
+            ENDCG
+        }
+        Pass
+        {
+
+            Name "ShadowCaster"
+            Tags { "LightMode" = "ShadowCaster" }
             
+            ZWrite On ZTest LEqual
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma multi_compile_instancing
+            #pragma fragmentoption ARB_precision_hint_fastest
+            #pragma shader_feature GEOM_TYPE_BRANCH GEOM_TYPE_FROND GEOM_TYPE_LEAF GEOM_TYPE_MESH
             #pragma multi_compile_shadowcaster
-
-            struct v2f
-            {
-                V2F_SHADOW_CASTER;
-                #ifdef SPEEDTREE_ALPHATEST
-                    fixed2 uv : TEXCOORD1;
-                #endif
-                UNITY_VERTEX_INPUT_INSTANCE_ID
-                UNITY_VERTEX_OUTPUT_STEREO
-            };
-
-            v2f vert(SpeedTreeVB v)
-            {
-                v2f o;
-                UNITY_SETUP_INSTANCE_ID(v);
-                UNITY_TRANSFER_INSTANCE_ID(v, o);
-                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-                #ifdef SPEEDTREE_ALPHATEST
-                    o.uv = v.texcoord.xy;
-                #endif
-                OffsetSpeedTreeVertex(v);
-                TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
-                return o;
-            }
-
-            fixed4 frag(v2f i) : SV_Target
-            {
-                UNITY_SETUP_INSTANCE_ID(i);
-                #ifdef SPEEDTREE_ALPHATEST
-                    clip(tex2D(_MainTex, i.uv).a * _Color.a - _Cutoff);
-                #endif
-                SHADOW_CASTER_FRAGMENT(i)
-            }
+            #define SHADOWCASTER
+            #include "SpeedTreeCommon_Custom.cginc"
             ENDCG
         }
     }

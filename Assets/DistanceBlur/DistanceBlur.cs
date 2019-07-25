@@ -10,12 +10,16 @@ public class DistanceBlur : MonoBehaviour {
     const int postFilterPass = 3;
     const int combinePass = 4;
     [Range(.1f, 20f)] public float bokehRadius = 5f;
-    [Range(0.1f, 100f)] public float startDistance = 10f;    
-    [Range(0.1f, 100f)] public float fadeRange = 3f;
+    [Range(0.1f, 500f)] public float startDistance = 10f;    
+    [Range(0.1f, 500f)] public float fadeRange = 3f;
     [Range(0.001f, 10)] public float fadeSteepness = 1;
 
     public bool smallKernel = true;
     public bool debugVisuals = false;
+
+    void OnEnable () {
+        GetComponent<Camera>().depthTextureMode = DepthTextureMode.None;// |= DepthTextureMode.Depth;
+    }
 	void OnRenderImage (RenderTexture source, RenderTexture destination) {
 		if (material == null) {
 			material = new Material(Shader.Find("Hidden/DistanceBlur"));

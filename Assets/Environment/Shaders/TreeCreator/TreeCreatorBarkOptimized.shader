@@ -3,7 +3,8 @@ Shader "Custom Environment/Tree/Tree Creator Bark Optimized" {
         _Color ("Main Color", Color) = (1,1,1,1)
         _MainTex ("Base (RGB) Alpha (A)", 2D) = "white" {}
         _BumpSpecMap ("Normalmap (GA) Spec (R)", 2D) = "bump" {}
-
+        _HueVariation ("Hue Variation", Color) = (1.0,0.5,0.0,0.1)
+        
 
         [Header(Bark Wind)]
         _Bark_Wind_Speed_Range ("Speed Range", Vector) = (.2, .2, 0, 0)
@@ -16,41 +17,52 @@ Shader "Custom Environment/Tree/Tree Creator Bark Optimized" {
     }
 
     SubShader {
-        CGPROGRAM
 
-        #pragma surface surf Lambert vertex:TreeVertBark fullforwardshadows nolightmap nodynlightmap nodirlightmap nometa nolppv noshadowmask interpolateview halfasview addshadow
-        #pragma fragmentoption ARB_precision_hint_fastest
-                    
-        #include "Lighting.cginc"
+        Pass {
+            Name "FORWARD"
+            Tags { "LightMode" = "ForwardBase" }
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma fragmentoption ARB_precision_hint_fastest
+            #pragma multi_compile_fog
+            #pragma multi_compile_instancing
+            #pragma multi_compile_fwdbase
 
-        #define TREE_WIND
-        #include "../CustomWind.cginc"
-
-
-        fixed4 _Color;
-
-        sampler2D _MainTex;
-        sampler2D _BumpSpecMap;
-        
-        struct Input {
-            fixed2 uv_MainTex;
-            fixed4 color : COLOR;
-        };
-
-        void TreeVertBark (inout appdata_full v)
-        {
-            v.vertex.xyz = WaveBranch (v.vertex.xyz);
-            v.color.rgb = _Color.rgb;
+            #define BARK
+            #include "TreeCreator.cginc"
+            ENDCG
+        }
+        Pass {
+            Name "FORWARD"
+            Tags { "LightMode" = "ForwardAdd" }
+            ZWrite Off Blend One One
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma fragmentoption ARB_precision_hint_fastest
+            #pragma multi_compile_fog 
+            #pragma multi_compile_instancing
+            #pragma multi_compile_fwdadd_fullshadows
+            #define BARK
+            #include "TreeCreator.cginc"
+            ENDCG
         }
 
-        void surf (Input IN, inout SurfaceOutput o) {
-            fixed4 c = tex2D(_MainTex, IN.uv_MainTex);
-            o.Albedo = c.rgb * IN.color.rgb * IN.color.a;
-            o.Alpha = c.a;
-            fixed4 norspc = tex2D (_BumpSpecMap, IN.uv_MainTex);
-            o.Specular = norspc.r;
-            o.Normal = UnpackNormalDXT5nm(norspc);
+        Pass {
+            Name "ShadowCaster"
+            Tags { "LightMode" = "ShadowCaster" }
+
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma fragmentoption ARB_precision_hint_fastest
+            #pragma multi_compile_shadowcaster
+            #pragma multi_compile_instancing
+            #define SHADOWCASTER
+            #define BARK
+            #include "TreeCreator.cginc"
+            ENDCG
         }
-        ENDCG
     }
 }

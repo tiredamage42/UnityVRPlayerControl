@@ -1,5 +1,3 @@
-// Unity built-in shader source. Copyright (c) 2016 Unity Technologies. MIT license (see license.txt)
-
 #ifndef ENVIRONMENT_INCLUDED
 #define ENVIRONMENT_INCLUDED
 
@@ -15,4 +13,4 @@ void AddHueVariation (inout fixed3 diffuseColor, fixed4 hueVariation) {
     diffuseColor = saturate(shiftedColor * ((maxBase/newMaxBase) * 0.5 + 0.5));
 }
 
-#endif // SPEEDTREE_COMMON_INCLUDED
+#endif // ENVIRONMENT_INCLUDED

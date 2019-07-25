@@ -2,25 +2,8 @@
 #ifndef PRECIPITATION_INCLUDED
 #define PRECIPITATION_INCLUDED
 
-
-// // VERTEX
-// struct VertexBuffer
-// {
-//     fixed4 vertex : POSITION;
-//     fixed3 uv : TEXCOORD0;
-//     UNITY_VERTEX_INPUT_INSTANCE_ID
-// };
-    
-// VertexBuffer vert(VertexBuffer v) { 
-//     return v; 
-// }
-
-
-// #include "UnityCG.cginc"
-#include "Lighting.cginc"
 #include "../Environment.cginc"
 #include "../GeometryShaderUtils.cginc"
-
 
 #define MOVE_COMPONENT y
 #define SECONDARY_COMPONENT_0 x
@@ -28,44 +11,26 @@
 
 #include "../MockParticles.cginc"
 
-void AddVertex (inout g2f OUT, inout TriangleStream<g2f> stream, fixed3 vertex, fixed2 uv, fixed hueVariation, fixed distFade, fixed3 diffuseLighting, fixed3 ambientLighting)
+void AddVertex (inout g2f OUT, inout TriangleStream<g2f> stream, fixed3 vertex, fixed2 uv, fixed hueVariation, fixed distFade)
 {        
     UNITY_INITIALIZE_OUTPUT(g2f, OUT);
-
-    // OUT.diffLighting.xyz = diffuseLighting;
-    // OUT.ambientLighting.xyz = ambientLighting;
-
-    OUT.uv = uv;
-    // OUT.diffLighting.a = uv.x;
-    // OUT.ambientLighting.a = uv.y;
-
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-    
+    OUT.uv.xy = uv;    
     OUT.pos = UnityObjectToClipPos(vertex);        
-    OUT.hueVariation_distFade = fixed2(hueVariation, distFade);
-
-#if defined( FORWARD_LIGHTING )
-    // Macro to send shadow & attenuation to the fragment shader.
-    // TRANSFER_VERTEX_TO_FRAGMENT(OUT, fixed4(vertex, 1));              
-    // UNITY_TRANSFER_FOG(OUT, OUT.pos);
-#endif
-
+    PACK_HUE_VARIATION_AND_FADE(OUT, hueVariation, distFade)
     stream.Append(OUT);
 }
 
-
-void DrawQuad (inout g2f OUT, inout TriangleStream<g2f> stream, fixed3 base, fixed3 top, fixed3 perpDir, fixed hueVariation, fixed distFade, fixed3 diffuseLighting, fixed3 ambientLighting) {
+void DrawQuad (inout g2f OUT, inout TriangleStream<g2f> stream, fixed3 base, fixed3 top, fixed3 perpDir, fixed hueVariation, fixed distFade) {
     
-    AddVertex (OUT, stream, base - perpDir, fixed2(0, 0), hueVariation, distFade, diffuseLighting, ambientLighting);
-    AddVertex (OUT, stream, base + perpDir, fixed2(1, 0), hueVariation, distFade, diffuseLighting, ambientLighting);        
-    AddVertex (OUT, stream, top - perpDir, fixed2(0, 1), hueVariation, distFade, diffuseLighting, ambientLighting);
-    AddVertex (OUT, stream, top + perpDir, fixed2(1, 1), hueVariation, distFade, diffuseLighting, ambientLighting);
-    
+    AddVertex (OUT, stream, base - perpDir, fixed2(0, 0), hueVariation, distFade);
+    AddVertex (OUT, stream, base + perpDir, fixed2(1, 0), hueVariation, distFade);
+    AddVertex (OUT, stream, top - perpDir, fixed2(0, 1), hueVariation, distFade);
+    AddVertex (OUT, stream, top + perpDir, fixed2(1, 1), hueVariation, distFade);
     stream.RestartStrip();
 }
 
 #if defined (BOTTOM_QUAD)
-
 [maxvertexcount(12)]
 void geom(point VertexBuffer IN[1], inout TriangleStream<g2f> stream)
 #else
@@ -74,15 +39,12 @@ void geom(point VertexBuffer IN[1], inout TriangleStream<g2f> stream)
 #endif
 
 {    
-
     UNITY_SETUP_INSTANCE_ID(IN[0]);
 
     VertexBuffer vertBuffer = IN[0];
-
     fixed2 uv = vertBuffer.uv.xy;
-    
     fixed3 vertex = vertBuffer.vertex.xyz;
-    
+
     fixed noiseSample1, noiseSample2, precipitationLevelFade;
     if (VertexBelowThreshold (vertex, uv, vertBuffer.uv.z, noiseSample1, noiseSample2, precipitationLevelFade)) {
         return;
@@ -106,8 +68,14 @@ void geom(point VertexBuffer IN[1], inout TriangleStream<g2f> stream)
 
     fixed3 baseObjectPos = fixed3(unity_ObjectToWorld[0].w, unity_ObjectToWorld[1].w, unity_ObjectToWorld[2].w);
     
-    fixed camDistance;
-    fixed distFade = CalculateDistanceFade (baseObjectPos + vertex, _CameraRange, camDistance);
+
+
+    CALCULATE_CAMERA_VARIABLES(baseObjectPos + vertex)
+
+    if (dot(CAMFWD, CAMDIR) < 0.5)
+        return;
+
+    fixed distFade = 1.0 - InverseLerp (_CameraRange.xy, CAMDIST);
 
     distFade *= precipitationLevelFade;
 
@@ -131,25 +99,17 @@ void geom(point VertexBuffer IN[1], inout TriangleStream<g2f> stream)
 #if defined (SPIN_QUAD)
     fixed a = simY + noiseSample2 + _Time.y * (1 + (noiseSample1 * 2 - 1));
     fixed3x3 spinMatrix = (fixed3x3)rotationMatrix(groundNorm, sin(a), cos(a));
+    quad1Perp = mul(spinMatrix, quad1Perp);
 #endif
 
     fixed randomHueFactor = (sin(noiseSample1 * (vertex.x + vertex.y * noiseSample2 + vertex.z + _Time.y * 2)) * .5 + .5);
     fixed hueVariation = saturate( randomHueFactor * _HueVariation.a);
 
-    fixed3 ambientLighting = 0;
-    fixed3 diffuseLighting = 0;//CalculateLighting(ambientLighting, vertex);
-    
-#if defined (SPIN_QUAD)
-    quad1Perp = mul(spinMatrix, quad1Perp);
-#endif
-
-
-    DrawQuad (OUT, stream, vertex, top, quad1Perp, hueVariation, distFade, diffuseLighting, ambientLighting);
+    DrawQuad (OUT, stream, vertex, top, quad1Perp, hueVariation, distFade);//, diffuseLighting, ambientLighting);
     
     fixed3x3 quad1Matrix = (fixed3x3)rotationMatrix(groundNorm, SIN90, COS90);
-    DrawQuad (OUT, stream, vertex, top, mul(quad1Matrix, quad1Perp), hueVariation, distFade, diffuseLighting, ambientLighting);
+    DrawQuad (OUT, stream, vertex, top, mul(quad1Matrix, quad1Perp), hueVariation, distFade);//, diffuseLighting, ambientLighting);
     
-
 #if defined (BOTTOM_QUAD)
         //Snow needs quad facing down to not look so much like a cross
 
@@ -173,7 +133,7 @@ void geom(point VertexBuffer IN[1], inout TriangleStream<g2f> stream)
         top += offsetB;
         vertex += offsetB;
 
-        DrawQuad (OUT, stream, vertex, top, mul(quad2Matrix, quad1Perp), hueVariation, distFade, diffuseLighting, ambientLighting);
+        DrawQuad (OUT, stream, vertex, top, mul(quad2Matrix, quad1Perp), hueVariation, distFade);//, diffuseLighting, ambientLighting);
 #endif
 }
 
