@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 453366}
   - component: {fileID: 20540928}
   - component: {fileID: 8724160026083465588}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Prop_Ship_A
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 481972}
   - component: {fileID: 3390172}
   - component: {fileID: 2323340}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Prop_Ship_A_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -169,7 +169,7 @@ GameObject:
   - component: {fileID: 427104}
   - component: {fileID: 3366198}
   - component: {fileID: 2370842}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Prop_Ship_A_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -246,7 +246,7 @@ GameObject:
   - component: {fileID: 470778}
   - component: {fileID: 3360456}
   - component: {fileID: 2386416}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Prop_Ship_A_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -323,7 +323,7 @@ GameObject:
   - component: {fileID: 464636}
   - component: {fileID: 3368166}
   - component: {fileID: 2321186}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Prop_Ship_A_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}

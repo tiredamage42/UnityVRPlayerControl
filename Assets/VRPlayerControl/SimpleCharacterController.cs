@@ -1,12 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SimpleCharacterController : MonoBehaviour
 {
-    
-
-    
     public float jumpSpeed = 5.0f;
     public float gravityModifier = 1.0f;
     public float maxGravityVelocity = 2;
@@ -19,11 +14,7 @@ public class SimpleCharacterController : MonoBehaviour
     public bool isGrounded;
     // [HideInInspector] 
     public float floorY = 0;
-    public bool isMoving {
-        get {
-            return inputMoveVector != Vector3.zero;
-        }
-    }
+    public bool isMoving { get { return inputMoveVector != Vector3.zero; } }
     Vector3 momentum;
     const float buffer = .1f;
     Vector3 inputMoveVector;
@@ -31,11 +22,9 @@ public class SimpleCharacterController : MonoBehaviour
     
 
     public void SetInputMoveVector(Vector3 inputMoveVector) {
-        this.inputMoveVector = inputMoveVector;
-        
+        this.inputMoveVector = inputMoveVector;    
     }
     
-
     void Awake ( ) {
         characterController = GetComponent<CharacterController>();
     }
@@ -54,12 +43,21 @@ public class SimpleCharacterController : MonoBehaviour
         
         bool wasGrounded = isGrounded;
         isGrounded = false;
+
+        float distCheck = buffer + (wasGrounded ? .25f : .05f);
         RaycastHit hit;
-        if (momentum.y <= 0 && Physics.Raycast(ray, out hit, buffer + (wasGrounded && (momentum.y <= 0) ? .25f : .05f), groundMask)) {
+        if (momentum.y <= 0 && Physics.Raycast(ray, out hit, distCheck, groundMask)) {
             isGrounded = true;
             momentum = Vector3.zero;
             momentum.y = -maxGravityVelocity;
             floorY = hit.point.y;
+        }
+        else {
+            if (wasGrounded) {
+                if (momentum.y < 0) {
+                    momentum.y = 0;
+                }
+            }
         }
     }
 
@@ -72,15 +70,12 @@ public class SimpleCharacterController : MonoBehaviour
             return hit.point;
         }
         return ray.origin;
-
     }
-
-
-    
 
     public void SetMomentum (Vector3 velocity) {
         momentum = velocity;
     }
+
     public void Jump () {
         momentum.y = jumpSpeed;
         Vector3 localVelocity = transform.InverseTransformDirection(characterController.velocity);
@@ -105,7 +100,6 @@ public class SimpleCharacterController : MonoBehaviour
 
     public void MoveCharacterController (float deltaTime, Transform relativeTransform=null) {
 
-
         Vector3 moveVector = inputMoveVector;
 
         if (!useRawMovement) {
@@ -125,7 +119,5 @@ public class SimpleCharacterController : MonoBehaviour
         characterController.Move( relativeTransform.TransformDirection( moveVector ) );
     
     }
-
-
 
 }

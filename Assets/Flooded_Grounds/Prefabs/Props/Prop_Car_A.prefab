@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3349444}
   - component: {fileID: 2314106}
   - component: {fileID: 6542796}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: lo_Prop_Car_A_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 3332226}
   - component: {fileID: 2335066}
   - component: {fileID: 6524942}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: lo_Prop_Car_A_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -193,7 +193,7 @@ GameObject:
   - component: {fileID: 477712}
   - component: {fileID: 20574888}
   - component: {fileID: 1695270740640572788}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Prop_Car_A
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -270,7 +270,7 @@ GameObject:
   - component: {fileID: 3378740}
   - component: {fileID: 2384436}
   - component: {fileID: 6506740}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: lo_Prop_Car_A_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

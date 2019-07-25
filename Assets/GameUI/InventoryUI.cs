@@ -2,25 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-// using VRPlayer;
-
 using GameBase;
 using SimpleUI;
 using InventorySystem;
-using InteractionSystem;
 
 namespace GameUI {
 
 
 public class InventoryUI : MonoBehaviour
 {
-    public enum UIType {
-        QuickInventory = 0,
-        FullInventory = 1,
-        QuickTrade = 2,
-        FullTrade = 3,
-    };
+    public enum UIType { QuickInventory = 0, FullInventory = 1, QuickTrade = 2, FullTrade = 3, };
 
     const int uiTypesCount = 4;
 
@@ -36,38 +27,13 @@ public class InventoryUI : MonoBehaviour
         return Type2UI(type).gameObject.activeInHierarchy;
     }
 
-    // public bool quickInventoryOpen { get { return quickInventory.gameObject.activeInHierarchy; } }
-    // public bool fullInventoryOpen { get { return fullInventory.gameObject.activeInHierarchy; } }
-
     public event System.Action<UIType, UIElementHolder> onUIOpen, onUIClose;
-
-    // Inventory primaryUIInventory, secondaryUIInventory;
-
-    // System.Func<int> getWorkingInventorySlot;
 
     const int maxInventories = 2; // need 2 for trade, cant think of a situation for any more
 
     SelectableElement[][] inventoryButtonsPerInventory = new SelectableElement[maxInventories][];
-    //  {
-    //     null, null
-    // };
     int[] currentPaginatedOffsets = new int[maxInventories];
-    // int currentPaginatedOffset;
-    // Inventory[] workingInventories = new Inventory[2];
-    // public int maxPerPageInventory = 16;
-
-    // int GetWorkingInventorySlot (UIType type) {
-    //     if (callbackToGetWorkingInventorySlot != null) {
-    //         return callbackToGetWorkingInventorySlot(type);
-    //         // System.Func<int> getWorkingInventorySlot = callbackToGetWorkingInventorySlot(type);
-    //         // if (getWorkingInventorySlot != null) {
-    //         //     return getWorkingInventorySlot();
-    //         // }
-    //     }
-    //     Debug.LogError(type.ToString() + " wasnt supplied callback to get working inventory slot, defaulting to -1");
-    //     return -1;
-    // }
-
+    
     Inventory currentLinkedInventory;
 
 
@@ -75,11 +41,7 @@ public class InventoryUI : MonoBehaviour
     public void SetAlternateSubmitCallback (System.Func<UIType, System.Func<Vector2Int>> callback) {
         callbackToGetAlternativeSubmit = callback;
     }
-    // System.Func<UIType, int> callbackToGetWorkingInventorySlot;
-    // public void SetGetWorkingInventorySlotCallback (System.Func<UIType, int> callback) {
-    //     callbackToGetWorkingInventorySlot = callback;
-    // }
-
+    
     bool CheckForAlternateCallback (UIType type) {
         if (callbackToGetAlternativeSubmit == null) {
             Debug.LogError("cant open " + type.ToString() + " UI, no callbackToGetAlternativeSubmit supplied");
@@ -96,9 +58,6 @@ public class InventoryUI : MonoBehaviour
 
         uiHolder.onSubmitEvent += onSubmit;
 
-        // // quick inventory doesnt need alternative inputs, just the one submit
-        // if (type != UIType.QuickInventory) {
-        // }
         uiHolder.alternativeSubmit += callbackToGetAlternativeSubmit(type);
         
         if (!isRadial) {
@@ -106,8 +65,6 @@ public class InventoryUI : MonoBehaviour
         }
     }
     void InitializeSingleInventoryUI (UIType type, bool isRadial, Inventory forInventory, Inventory linkedInventory, int maxButtons, System.Action<GameObject[], object[], Vector2Int> onSubmit) {
-        // if (type != UIType.QuickInventory) {
-        // }
         if (!CheckForAlternateCallback(type)) return;
         InitializeCallbacksForUIs (isRadial, type, onSubmit);        
         BeginShow(!isRadial, !isRadial, forInventory, linkedInventory, Type2UI(type), maxButtons, 0, 0);
@@ -133,11 +90,10 @@ public class InventoryUI : MonoBehaviour
         } 
         if (quickTradeInteractorID < 0 && quickInventoryInteractorID != throughID) {
             quickTradeInteractorID = throughID;
-            // Debug.LogError("wooo");
             InitializeSingleInventoryUI(UIType.QuickTrade, false, showInventory, inventory, maxQuickTradeButtons, OnQuickTradeSubmit);
         }
     }
-    public void OpenFullTradeUI (Inventory showInventory){//System.Func<int> getWorkingInventorySlot) {
+    public void OpenFullTradeUI (Inventory showInventory) {
         CloseAllUIs();
 
         UIType type = UIType.FullTrade;
@@ -181,14 +137,10 @@ public class InventoryUI : MonoBehaviour
 
         UIElementHolder Type2UI (UIType type) {
             switch(type) {
-                case UIType.QuickInventory:
-                    return quickInventory;
-                case UIType.FullInventory:
-                    return fullInventory;
-                case UIType.QuickTrade:
-                    return quickTrade;
-                case UIType.FullTrade:
-                    return fullTrade;
+                case UIType.QuickInventory: return quickInventory;
+                case UIType.FullInventory: return fullInventory;
+                case UIType.QuickTrade: return quickTrade;
+                case UIType.FullTrade: return fullTrade;
             }
             return null;
         }
@@ -206,15 +158,6 @@ public class InventoryUI : MonoBehaviour
                     Type2Close(t) ();
                 }
             }
-                
-                 
-            
-            // for (int i = 0; i < 4; i++) {
-            //     UIType t = (UIType)i;
-            //     if (IsOpen(t)) {
-            //         BeginClose(t, Type2UI(t));
-            //     }
-            // }
         }
 
         
@@ -226,24 +169,18 @@ public class InventoryUI : MonoBehaviour
             BeginClose(UIType.FullInventory, fullInventory);
         }
         public void CloseQuickTradeUI () {
-            // quickInventoryInteractorID = - 1;
             BeginClose(UIType.QuickTrade, quickTrade);
             quickTradeInteractorID = -1;
         }
         public void CloseFullTradeUI () {
-            Debug.LogError("closing full trade");
             BeginClose(UIType.FullTrade, fullTrade);
         }
         System.Action Type2Close (UIType type) {
             switch(type) {
-                case UIType.QuickInventory:
-                    return CloseQuickInventoryUI;
-                case UIType.FullInventory:
-                    return CloseFullInventoryUI;
-                case UIType.QuickTrade:
-                    return CloseQuickTradeUI;
-                case UIType.FullTrade:
-                    return CloseFullTradeUI;
+                case UIType.QuickInventory: return CloseQuickInventoryUI;
+                case UIType.FullInventory: return CloseFullInventoryUI;
+                case UIType.QuickTrade: return CloseQuickTradeUI;
+                case UIType.FullTrade: return CloseFullTradeUI;
             }
             return null;
         }
@@ -269,46 +206,29 @@ public class InventoryUI : MonoBehaviour
     public int quickTradeInteractorID=-1;
 
     void OnQuickTradeStart (Inventory mine, Inventory trader, int interactorID) {
-        Debug.LogError("wuick trade tart");
         OpenQuickTradeUI(trader, interactorID);
     }
 
     void OnQuickTradeEnd (Inventory mine, Inventory trader, int interactorID) {
         if (quickTradeInteractorID == interactorID) {
-            Debug.LogError("CLSIGN");
             CloseQuickTradeUI();
         }
-        // if (currentLinkedInventory == trader) {
-        // }
-        // else {
-        //     Debug.LogError("trying to end quick trade with " + trader.name + ", but we're already quick trading with " + currentLinkedInventory.name);
-        // }
+        
     }
     void OnTradeStart (Inventory mine, Inventory trader, int interactorID) {
         OpenFullTradeUI (trader);
         
     }
 
-    // void OnInspectStart (Interactor interactor, Interactable interactable) {
-
-    // }
-    // void OnInspectEnd (Interactor interactor, Interactable interactable) {
-
-    // }
 
         void OnEnable () {
         
-            // VRManager.onUISelection += OnUISelection;
-            // UIManager.onUISelect += OnUISelection;
-            
             GameManager.onPauseRoutineStart += OnGamePaused;    
 
             for (int i = 0; i < uiTypesCount; i++) {
                 Type2UI((UIType)i).onBaseCancel += Type2Close((UIType)i);
             }        
-            // quickInventory.onBaseCancel += CloseQuickInventory;
-            // normalInventory.onBaseCancel += CloseNormalInventory;
-
+            
             inventory.onStash += OnStash;
             inventory.onDrop += OnDrop;
             inventory.onEquip += OnEquip;
@@ -318,21 +238,10 @@ public class InventoryUI : MonoBehaviour
             inventory.onQuickTradeStart += OnQuickTradeStart;
             inventory.onQuickTradeEnd += OnQuickTradeEnd;
 
-
-
-
-
-            // GetComponent<Interactor>().onInspectStart += OnInspectStart;
-            // GetComponent<Interactor>().onInspectEnd += OnInspectEnd;
-
             
             for (int i = 0; i < uiTypesCount; i++) {
                UIManager.HideUI( Type2UI((UIType)i) );
             }
-            // UIManager.HideUI(quickInventory);
-            // UIManager.HideUI(normalInventory);
-            // UIManager.HideUI(quickTrade);
-            // UIManager.HideUI(normalTrade);
         }
         void OnDisable () {
             GameManager.onPauseRoutineStart -= OnGamePaused;
@@ -340,9 +249,6 @@ public class InventoryUI : MonoBehaviour
             for (int i = 0; i < uiTypesCount; i++) {
                 Type2UI((UIType)i).onBaseCancel -= Type2Close((UIType)i);
             }        
-            
-            // quickInventory.onBaseCancel -= CloseQuickInventory;
-            // normalInventory.onBaseCancel -= CloseNormalInventory;
             
             inventory.onStash -= OnStash;
             inventory.onDrop -= OnDrop;
@@ -352,10 +258,6 @@ public class InventoryUI : MonoBehaviour
             inventory.onTradeStart -= OnTradeStart;
             inventory.onQuickTradeStart -= OnQuickTradeStart;
             inventory.onQuickTradeEnd -= OnQuickTradeEnd;
-
-
-            // GetComponent<Interacto>().onInspectStart -= OnInspectStart;
-            // GetComponent<Interacto>().onInspectEnd -= OnInspectEnd;
         }
         void OnStash (Inventory inventory, ItemBehavior item, int count) {
             UIManager.ShowGameMessage("Stashed " + item.itemName + " ( x" + count+" )", 0);
@@ -502,15 +404,13 @@ public class InventoryUI : MonoBehaviour
                     //consume on selected inventory
                     else if (submitType.x == FULL_TRADE_CONSUME_ACTION) {
                         if (item != null) {
-
-                        // if (item.OnConsume(trader, GetWorkingInventorySlot(UIType.FullTrade))) {
                         
-                        int count = 1;
+                            int count = 1;
                     
-                        if (item.OnConsume(trader, count, submitType.y)){
-                        
-                            updateButtons = true;
-                        }
+                            if (item.OnConsume(trader, count, submitType.y)){
+                            
+                                updateButtons = true;
+                            }
                         }
                     }
                     //change working inventory
@@ -548,66 +448,6 @@ public class InventoryUI : MonoBehaviour
             element.customData = customData;
         }
 
-
-
-        // void UpdateNormalInventoryUIButtons () 
-        // {
-
-        //     // while (currentPageOffset > inventory.allInventory.Count - maxPerPageInventory) {
-        //     //     currentPageOffset--;
-        //     // }
-
-        //     normalInventoryUIButtons = normalInventory.GetAllElements(maxPerPageInventory);
-            
-        //     bool isAtEnd = currentPageOffset >= inventory.allInventory.Count - maxPerPageInventory;
-        //     bool isAtBeginning = currentPageOffset == 0;
-            
-        //     int start = isAtBeginning ? 0 : 1;
-        //     int end = isAtEnd ? maxPerPageInventory : maxPerPageInventory - 1;
-
-        //     for (int i = start ; i < end; i++) {
-        //         SelectableElement element = normalInventoryUIButtons[i];
-
-        //         int inventoryIndex = (i-start) + currentPageOffset;
-                
-        //         if (inventoryIndex < inventory.allInventory.Count) {
-        //             ItemBehavior inventoryItem = inventory.allInventory[inventoryIndex].item;
-        //             int count = inventory.allInventory[inventoryIndex].count;
-                    
-        //             string display = inventoryItem.itemName + " ( x"+count+" )";
-
-        //             MakeButton( element, display, new object[] { inventoryItem } );
-                    
-        //         }
-        //         else {
-        //             MakeButton( element, " Empty ", null );
-        //         }
-        //     }
-        //     if (!isAtBeginning) {
-        //         MakeButton(elementsList[0], " [ Page Up ] ", new object[]{"BACK"});
-        //     }
-        //     if (!isAtEnd) {
-        //         MakeButton(elementsList[maxPerPageInventory-1], " [ Page Down ] ", new object[]{"FWD"});
-        //     }
-        // }
-
-        
-        // void UpdateUnpaginatedUIButtons (UIElementHolder uiHolder, Inventory forInventory, Inventory linkedInventory, int maxButtons, int uiIndex) {
-        //     int allInventoryCount = forInventory.allInventory.Count;
-
-        //     if (inventoryButtonsPerInventory[uiIndex] == null)
-        //         inventoryButtonsPerInventory[uiIndex] = uiHolder.GetAllElements(maxButtons);
-
-        //     SelectableElement[] elements = inventoryButtonsPerInventory[uiIndex];
-        //     for (int i =0 ; i < maxButtons; i++) {
-        //         if (i < allInventoryCount)
-        //             MakeItemButton ( elements[i], forInventory.allInventory[i], forInventory, linkedInventory, uiIndex );
-        //         else 
-        //             MakeButton( elements[i], " Empty ", null );
-        //     }
-        // }
-
-
         void UpdateUIButtons (bool paginate, Inventory forInventory, Inventory linkedInventory, int maxButtons, int uiIndex, int otherIndex) 
         {
             
@@ -618,9 +458,6 @@ public class InventoryUI : MonoBehaviour
             int end = maxButtons;
             if (paginate) {
 
-                // while (currentPaginatedOffsets[uiIndex] > allInventoryCount - maxButtons) {
-                //     currentPaginatedOffsets[uiIndex]--;
-                // }
                 bool isAtEnd = currentPaginatedOffsets[uiIndex] >= allInventoryCount - maxButtons;
                 bool isAtBeginning = currentPaginatedOffsets[uiIndex] == 0;
 
@@ -698,9 +535,6 @@ public class InventoryUI : MonoBehaviour
             yield return new WaitForEndOfFrame();
             UIManager.SetSelection(selection);
         }
-
-        
-       
-    
-}
+   
+    }
 }
