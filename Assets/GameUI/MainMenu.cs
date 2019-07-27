@@ -1,9 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-// using Valve.VR;
-
-
+﻿using UnityEngine;
 using SimpleUI;
 using GameBase;
 
@@ -13,7 +8,6 @@ namespace GameUI {
     {
         public UIPage mainMenuBasePage;
 
-
         public void Quit()
         {
             GameManager.QuitApplication();
@@ -21,12 +15,10 @@ namespace GameUI {
 
         void OnEnable ()  {
             GameManager.onPauseRoutineEnd += OnPauseRoutineEnd;
-            // gameManager.onShowGameMessage += OnShowGameMessage;
             mainMenuBasePage.onBaseCancel += OnCancelMainMenuPage;
         }
         void OnDisable ()  {
             GameManager.onPauseRoutineEnd -= OnPauseRoutineEnd;
-            // gameManager.onShowGameMessage -= OnShowGameMessage;
             mainMenuBasePage.onBaseCancel -= OnCancelMainMenuPage;
             
         }
@@ -40,7 +32,6 @@ namespace GameUI {
                 UIManager.ShowUI (mainMenuBasePage, true, true);
             }
             else {
-
                 UIManager.HideUI (mainMenuBasePage);
             }
         }

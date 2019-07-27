@@ -9,70 +9,69 @@ using GameBase;
 
 namespace VRPlayer 
 {
+
 /*
-    allow multiple hand hovers on interactables
+
+    motion sickness avoid:
+
+        avoid repeated patterns in environment (checkerboard tiles, etc..)
+    
+        dont move camera wihtout player input
+
+        remove accelerations in movement
+
+        make 3d hud (so eyes dont have to refocus from 2d to 3d)
+
+        look up walk in place solutions :
+    
+            https://www.youtube.com/watch?v=IQ_jgnwHwFA
+            http://smirkingcat.software/ripmotion/
+            https://cubic9.com/Devel/OculusRift/BobbingBots_en/ 
+            
+            https://www.youtube.com/watch?v=Ti6kxSDTI8g (walking with hand movements (grab and drag))
+            (takes 3 frames to go up step)
+
+            follow redirected walking
+    
+            walkabout method:
+                reach edge, and hold button (blurs image and i guess stops tracking)
+                turn around in meatspace while camera stays
+
+        a decrease in FPS (frames per second) animation of camera motion to 10-15 FPS, 
+        while the world is rendered at a frequency of 90 Hz, may help. 
+        In this case, the brain does not recognize the movement as such and, 
+        therefore, dissonance is avoided.
+            
+        you could use this technique for jumping. Make the frame at the beginning, middle, and at the top part 
+        of the trajectory. And, instead of Dash Teleport, only use the starting, middle, and end 
+        positions in order to make the key animation frames, and just get rid of the rest.
+
+        darker colors (80/20) (dark/light)
+
+        "grab and turn" https://www.youtube.com/watch?v=oSP5sjg9TIs
+        maybe blur isntead of vignette
+
+        move really fast towards teleport point (tested and works i guess.) maybe up FOV (to give it a smear look)
+        (hsould take <= 100 ms, thats the time it takes for the brain to get sick)
+
+
+        amplified walking (move tracking space along with camera movement vector so meatspace steps go farther)
+        gain walking"
+        
+        rectangular area without gain, then add gain around it
+    
+        add nose (or simulated) in between eyes (static frame of reference helps motion sickness)
+        
+        xray transparent shader when camera clips trhoug object (character controller avoids this, but still should test out)
 */
 
-
-
-
-/*
-
-motion sickness avoid:
-
-    avoid repeated patterns in environment (checkerboard tiles, etc..)
-    
-    dont move camera wihtout player input
-
-    remove accelerations in movement
-
-    make 3d hud (so eyes dont have to refocus from 2d to 3d)
-
-    look up walk in place solutions 
-    
-    https://www.youtube.com/watch?v=IQ_jgnwHwFA
-    http://smirkingcat.software/ripmotion/
-    https://cubic9.com/Devel/OculusRift/BobbingBots_en/ 
-    
-    https://www.youtube.com/watch?v=Ti6kxSDTI8g (walking with hand movements (grab and drag))
-    (takes 3 frames to go up step)
-
-    follow redirected walking
-
+/*    
+    TODO:
     choose rotation when teleporting
 
     teleport grenade?
 
-    walkabout method:
-        reach edge, and hold button (blurs image and i guess stops tracking)
-        turn around in meatspace while camera stays
-
-    climb up walls, click and drag (done)
-
-    a decrease in FPS (frames per second) animation of camera motion to 10-15 FPS, 
-    while the world is rendered at a frequency of 90 Hz, may help. 
-    In this case, the brain does not recognize the movement as such and, 
-    therefore, dissonance is avoided.
-
-    you could use this technique for jumping. Make the frame at the beginning, middle, and at the top part 
-    of the trajectory. And, instead of Dash Teleport, only use the starting, middle, and end 
-    positions in order to make the key animation frames, and just get rid of the rest.
-
-    darker colors (80/20) (dark/light)
-
-    "grab and turn" https://www.youtube.com/watch?v=oSP5sjg9TIs
-    maybe blur isntead of vignette
-
-    move really fast towards teleport point (tested and works i guess.) maybe up FOV (to give it a smear look)
-    (hsould take <= 100 ms, thats the time it takes for the brain to get sick)
-
-    amplified walking (move tracking space along with camera movement vector so meatspace steps go farther)
-    gain walking"
-
-    rectangular area without gain, then add gain around it
-
-    xray transparent shader when camera clips trhoug object
-    add nose (or simulated) in between eyes (static frame of reference helps motion sickness)
+    raise FOV during teleport
 
 */
 
@@ -173,7 +172,7 @@ public class TouchpadLocomotion : MonoBehaviour
     public SteamVR_Action_Boolean climbAction;
 
 
-    public Color crouchVignetteColor = new Color(1, .5f, 0, 1);
+    // public Color crouchVignetteColor = new Color(1, .5f, 0, 1);
 
     public bool easyCrouch = true;
 
@@ -183,8 +182,8 @@ public class TouchpadLocomotion : MonoBehaviour
     // this doenst count the resizing offset
     // so the actual physical act of crouching wont be difficult for taller than
     // default height players
-    bool GetManualCrouching () {
-        return head.transform.localPosition.y / VRManager.playerRealLifeHeight <= crouchRatioThreshold;
+    bool GetManualCrouching (Transform head) {
+        return head.localPosition.y / Player.instance.realLifeHeight <= crouchRatioThreshold;
     }
 
     float currentCrouchLerp;
@@ -197,7 +196,7 @@ public class TouchpadLocomotion : MonoBehaviour
             currentCrouchLerp += deltaTime * (1.0f/crouchTime) * (target == 0 ? -1 : 1);
             currentCrouchLerp = Mathf.Clamp01(currentCrouchLerp);
             
-            float startHeight = VRManager.gamespaceHeight;
+            float startHeight = Player.instance.gamespaceHeight;
             float crouchOffsetTarget = (startHeight * crouchRatioThreshold) - startHeight;
 
             Player.instance.extraHeightOffset = Mathf.Lerp(0, crouchOffsetTarget, currentCrouchLerp); 
@@ -218,7 +217,7 @@ public class TouchpadLocomotion : MonoBehaviour
     // consisten heights between players / accessibility / crouching
     // this is done by offsetting the character controller capsules center and height
     // so the tracking origin can sit below or above the virtual game floor
-    void SetCharacterControllerHeight (){
+    void SetCharacterControllerHeight (Transform head){
         float radius = capsuleRadius;
         characterController.radius = radius;
 
@@ -256,14 +255,13 @@ public class TouchpadLocomotion : MonoBehaviour
         characterController.center = newCenter;        
     }
 
-    bool isCrouched;
+    [HideInInspector] public bool isCrouched;
     
-
     void CheckForJump (bool movementEnabled) {
         if (moveScript.isGrounded && movementEnabled) {
             if (jumpAction.GetStateDown(moveHand)) {
 
-                    Debug.LogError("jumped");
+                    // Debug.LogError("jumped");
                 if (!StandardizedVRInput.ActionOccupied(jumpAction, moveHand)) {
                     moveScript.Jump();
                 }
@@ -271,10 +269,10 @@ public class TouchpadLocomotion : MonoBehaviour
         }
     }
 
-    void CheckCrouched (float deltaTime) {
+    void CheckCrouched (float deltaTime, Transform head) {
         if (!easyCrouch) {
             Player.instance.extraHeightOffset = 0;
-            isCrouched = GetManualCrouching();
+            isCrouched = GetManualCrouching(head);
             return;
         }
 
@@ -293,7 +291,7 @@ public class TouchpadLocomotion : MonoBehaviour
     // any movement above this angle with forward movement cant run.
     const float runAngleThreshold = 45f;     
     
-    public Transform head;
+    // public Transform head;
     public float capsuleRadius = .25f;
     
 
@@ -302,20 +300,18 @@ public class TouchpadLocomotion : MonoBehaviour
     public SteamVR_Action_Vector2 moveAction;
     public SteamVR_Action_Boolean runAction, jumpAction, crouchAction;
     
-
-
     public SteamVR_Action_Boolean turnActionLeft, turnActionRight;
 
     public SteamVR_Input_Sources moveHand 
     {
         get {
-            return Player.instance.offHand;
+            return VRManager.instance.offHand;
         }
     }
     public SteamVR_Input_Sources turnHand
     {
         get {
-            return Player.instance.mainHand;
+            return VRManager.instance.mainHand;
         }
     }
     
@@ -340,17 +336,17 @@ public class TouchpadLocomotion : MonoBehaviour
     public float smoothTurnSpeed = 300;
 
     float fastTurnDegreesPerSecond { get { return turnDegrees / fastTurnTime; } }
-    int smoothTurnDirection;
+    [HideInInspector] public int smoothTurnDirection;
     float fastTurnTotalRotation = float.MaxValue;
-    bool fastTurnRight;
+    // bool fastTurnRight;
     float smoothTurnMultiplier;
 
-    [Header("Comfort Vignette")]
-    public float vignetteIntensity = 2.0f;
-    public float vignetteSpeed = 10;
-    public float vignetteMovementThreshold = 1;
-    VignettingVR vignette;
-    float currentVignetteIntensity;
+    // [Header("Comfort Vignette")]
+    // public float vignetteIntensity = 2.0f;
+    // public float vignetteSpeed = 10;
+    // public float vignetteMovementThreshold = 1;
+    // VignettingVR vignette;
+    // float currentVignetteIntensity;
 
 
 
@@ -359,50 +355,57 @@ public class TouchpadLocomotion : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         if (characterController == null) characterController = gameObject.AddComponent<CharacterController>();
         
-        vignette = head.GetComponentInChildren<VignettingVR>();
+        // vignette = head.GetComponentInChildren<VignettingVR>();
         moveScript = GetComponent<SimpleCharacterController>();
 
         // InitializeClimbableChecks();
     }
 
     void Update() {
-        InputUpdateLoop(Time.deltaTime);
+        InputUpdateLoop(VRManager.instance.hmdTransform, Time.deltaTime);
     }
     void FixedUpdate () {
         UpdateClimbs();
-        FixedUpdateLoop(Time.fixedDeltaTime);
+        FixedUpdateLoop(VRManager.instance.hmdTransform, Time.fixedDeltaTime);
     }
 
 
     
-    void HandleComfortVignetting (bool vignetteEnabled, float deltaTime) {
-        float targetIntensity = vignetteEnabled ? vignetteIntensity : 0.0f;
-        currentVignetteIntensity = Mathf.Lerp(currentVignetteIntensity, targetIntensity, deltaTime * vignetteSpeed);
+    // void HandleComfortVignetting (bool vignetteEnabled, float deltaTime) {
+    //     float targetIntensity = vignetteEnabled ? vignetteIntensity : 0.0f;
+    //     currentVignetteIntensity = Mathf.Lerp(currentVignetteIntensity, targetIntensity, deltaTime * vignetteSpeed);
 
-        vignette.SetIntensity( currentVignetteIntensity );
-        vignette.SetColor(isCrouched ? crouchVignetteColor : Color.black);
-    }
+    //     vignette.SetIntensity( currentVignetteIntensity );
+    //     vignette.SetColor(isCrouched ? crouchVignetteColor : Color.black);
+    // }
 
-    void DoInstantTurn (float degrees, bool toRight) {
+    void DoInstantTurn (Transform head, float degrees, bool toRight) {
         transform.RotateAround(head.position, Vector3.up, toRight ? degrees : -degrees);
     }
 
 
-    void DoFastTurn (bool toRight) {
-        fastTurnTotalRotation = 0;
-        fastTurnRight = toRight;
-    }
+    // void DoFastTurn (bool toRight) {
+    // void DoFastTurn () {
+    
+    //     fastTurnTotalRotation = 0;
+    //     // fastTurnRight = toRight;
+    // }
 
-    void HandleFastTurn (float targetDegrees, float degreesPerSecond, bool toRight, float deltaTime) {
+    void HandleFastTurn (Transform head, float targetDegrees, float degreesPerSecond, float deltaTime) {
+    // void HandleFastTurn (float targetDegrees, float degreesPerSecond, bool toRight, float deltaTime) {
+    
         //keep turning if we're not there yet
         if(Mathf.Abs(fastTurnTotalRotation) < targetDegrees) {   
-            float rotationAdd = degreesPerSecond * deltaTime * (toRight ? 1 : -1);
+            float rotationAdd = degreesPerSecond * deltaTime * smoothTurnDirection;//  (toRight ? 1 : -1);
             transform.RotateAround(head.position, Vector3.up, rotationAdd);
             fastTurnTotalRotation += rotationAdd;
         }
+        else {
+            smoothTurnDirection = 0;
+        }
     }
     
-    void HandleSmoothTurn (int turn, float deltaTime) {
+    void HandleSmoothTurn (Transform head, int turn, float deltaTime) {
         smoothTurnMultiplier = Mathf.Lerp(smoothTurnMultiplier, turn, deltaTime * smoothTurnSpeedAcceleration);
         if (smoothTurnMultiplier != 0) {
             transform.RotateAround(head.position, Vector3.up, smoothTurnMultiplier * smoothTurnSpeed * deltaTime);
@@ -410,8 +413,12 @@ public class TouchpadLocomotion : MonoBehaviour
     }
 
 
-    void HandleTurnInput (bool movementEnabled) {
-        smoothTurnDirection = 0;
+    void HandleTurnInput (Transform head, bool movementEnabled) {
+
+        if (turnType != TurnType.Fast) {
+
+            smoothTurnDirection = 0;
+        }
      
         if (!movementEnabled)
             return;
@@ -421,18 +428,24 @@ public class TouchpadLocomotion : MonoBehaviour
                 break;
             case TurnType.Instant:
                 if (turnActionLeft.GetStateDown(turnHand)) {
-                    DoInstantTurn(turnDegrees, false);
+                    DoInstantTurn(head, turnDegrees, false);
                 }
                 else if (turnActionRight.GetStateDown(turnHand)) {
-                    DoInstantTurn(turnDegrees, true);
+                    DoInstantTurn(head, turnDegrees, true);
                 }
                 break;
             case TurnType.Fast:            
                 if (turnActionLeft.GetStateDown(turnHand)) {
-                    DoFastTurn(false);
+                    smoothTurnDirection = -1;
+                    fastTurnTotalRotation = 0;
+        
+                    // DoFastTurn(false);
                 }
                 else if (turnActionRight.GetStateDown(turnHand)) {
-                    DoFastTurn(true);
+                    smoothTurnDirection = 1;
+                    fastTurnTotalRotation = 0;
+        
+                    // DoFastTurn(true);
                 }
                 break;
             case TurnType.Smooth:
@@ -488,45 +501,47 @@ public class TouchpadLocomotion : MonoBehaviour
         // return currentMoveVector;
     }
 
-    void HandleTurningUpdate(float deltaTime) {
+    void HandleTurningUpdate(Transform head, float deltaTime) {
         switch(turnType) {
             case TurnType.None: break;
             case TurnType.Instant: break;
             case TurnType.Fast:
-                HandleFastTurn(turnDegrees, fastTurnDegreesPerSecond, fastTurnRight, deltaTime);
+                // HandleFastTurn(turnDegrees, fastTurnDegreesPerSecond, fastTurnRight, deltaTime);
+                HandleFastTurn(head, turnDegrees, fastTurnDegreesPerSecond, deltaTime);
+                
                 break;
             case TurnType.Smooth:
-                HandleSmoothTurn (smoothTurnDirection, deltaTime);
+                HandleSmoothTurn (head, smoothTurnDirection, deltaTime);
                 break;
         }
     }
-    Vector2 currentMoveVector;
+    [HideInInspector] public Vector2 currentMoveVector;
         
      
 
-    void InputUpdateLoop (float deltaTime) {
-        CheckCrouched(deltaTime);
+    void InputUpdateLoop (Transform head, float deltaTime) {
+        CheckCrouched(deltaTime, head);
 
         bool movementEnabled = !GameManager.isPaused && !isClimbing;
         
         CheckForJump(movementEnabled && !VRUIInput.HandOccupied(moveHand)); // also when jump hand isnt hovering
 
-        HandleTurnInput(movementEnabled && !VRUIInput.HandOccupied(turnHand));
+        HandleTurnInput(head, movementEnabled && !VRUIInput.HandOccupied(turnHand));
         HandleMoveInput(movementEnabled && !VRUIInput.HandOccupied(moveHand));
         if (!isClimbing) {
             moveScript.SetInputMoveVector(new Vector3 (currentMoveVector.x, 0, currentMoveVector.y));
         }
 
-        bool enableComfortVignette = smoothTurnDirection != 0 || !moveScript.isGrounded || isCrouched;
-        if (!enableComfortVignette) {
-            enableComfortVignette = moveScript.isMoving && currentMoveVector.sqrMagnitude >= vignetteMovementThreshold * vignetteMovementThreshold;
-        }
-        HandleComfortVignetting( enableComfortVignette, deltaTime );
+        // bool enableComfortVignette = smoothTurnDirection != 0 || !moveScript.isGrounded || isCrouched;
+        // if (!enableComfortVignette) {
+        //     enableComfortVignette = moveScript.isMoving && currentMoveVector.sqrMagnitude >= vignetteMovementThreshold * vignetteMovementThreshold;
+        // }
+        // HandleComfortVignetting( enableComfortVignette, deltaTime );
     }
             
-        void FixedUpdateLoop (float deltaTime) {
-            HandleTurningUpdate(deltaTime);
-            SetCharacterControllerHeight ();
+        void FixedUpdateLoop (Transform head, float deltaTime) {
+            HandleTurningUpdate(head, deltaTime);
+            SetCharacterControllerHeight (head);
 
             if (VRManager.headsetIsOnPlayerHead) {
 

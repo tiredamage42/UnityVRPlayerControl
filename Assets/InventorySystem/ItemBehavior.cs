@@ -3,7 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+/*
+    recipe:
 
+
+        Composition[] requires
+
+        [SHOULD BE PERMANENT]
+        actorbuffs[] // to give xp for instance
+
+        Composition[] yields
+
+        
+ */
 
 
 /*
@@ -39,68 +51,87 @@ CONSUME ON STASH OPTION FOR ITEM MAYBE
 
 
 namespace InventorySystem {
-    [CreateAssetMenu()]
+    [CreateAssetMenu(menuName="Inventory System/Item Behavior")]
     public class ItemBehavior : ScriptableObject
     {
+        public string itemName;
         [Header("Set to false for utility items")]
         public bool keepOnStash = true;
+        
+        
         // -1 if set by where equipped from
                 // else equip point index (overwritten if quick equipped)
                 
-        public int equipSlot = -1;
-
-        [Header("Can one scene instance hold multiple of items")]
-        public bool stackable;
         public bool allowMultipleStashed = true;
-        public string itemName;
-        public Item[] scenePrefabVariations;
 
 
-        // cant be dropped from inventory accidentally
+        [Header("Cant be dropped from inventory accidentally")]
         public bool permanentStash;
         public int category;
-
-
-
-        public List<int> stashActions = new List<int> () {
-            1
-        };
-        public List<int> equipActions = new List<int> () {
-            0
-        };
-
-
-        public Inventory.EquipType equipType = Inventory.EquipType.Normal;
-        public bool hoverLockOnEquip = true;
-
-
-        // [Header("Stashing")]
-        // public Buffs onStashBuffs;
 
         // stash use logic needs to happen on scriptable objects
         // because runtime inventory slots only contain a refrence to the item behavior
         // (to prevent having multiple gameObjects of the same item in bloated inventories)
-        // public StashUseBehavior stashUseBehavior;
-        public StashedItem stashedItemBehavior;
-        
-
-        // [Header("Equipping")]
-        // public Buffs onEquipBuffs;
-        public TransformBehavior equipTransform;
+        public StashedItemBehavior[] stashedItemBehaviors;
 
         public float weight = 1;
         [Range(0,100)] public float value = 50;
 
         public ItemComposition[] composedOf;
 
+        
+        [Header("Scene Behavior")]
+        public bool canQuickEquip = true;
+        public Item[] scenePrefabVariations;
 
+        [Header("'Armor Slot', -1 for anything that isnt wearable")]
+        public int equipSlot = -1;
+
+        [Header("Can one scene instance hold multiple of items ?")]
+        public bool stackable;
+
+        public Inventory.EquipType equipType = Inventory.EquipType.Normal;
+        public bool hoverLockOnEquip = true;
+
+        public TransformBehavior equipTransform;
+
+        // public List<int> stashActions = new List<int> () {
+        //     1
+        // };
+        // public List<int> equipActions = new List<int> () {
+        //     0
+        // };
+
+
+
+
+        // [Header("Stashing")]
+        // public Buffs onStashBuffs;
+
+        // public StashUseBehavior stashUseBehavior;
+        // public StashedItem stashedItemBehavior;
+
+        
+
+        // [Header("Equipping")]
+        // public Buffs onEquipBuffs;
+
+        
+        /*
+            TODO: add multiplier values
+        */
         public bool OnConsume (Inventory inventory, int count, int slot)
         {
-            if (stashedItemBehavior != null) {
-                stashedItemBehavior.OnItemConsumed(inventory, this, count, slot);
-                return true;
+            bool hasBehaviors = stashedItemBehaviors.Length != 0;
+            for (int i = 0; i < stashedItemBehaviors.Length; i++) {
+                stashedItemBehaviors[i].OnItemConsumed(inventory, this, count, slot);
             }
-            return false;
+            return hasBehaviors;
+            // if (stashedItemBehavior != null) {
+            //     stashedItemBehavior.OnItemConsumed(inventory, this, count, slot);
+            //     return true;
+            // }
+            // return false;
         }
     }
 
@@ -165,16 +196,16 @@ gameMessage
 
  */
 
- [System.Serializable] public class ActorValue {
+//  [System.Serializable] public class ActorValue {
 
- }
+//  }
 
- [System.Serializable] public class Buff {
+//  [System.Serializable] public class Buff {
 
- }
+//  }
 
 
-    public class Buffs : ScriptableObject {
+//     public class Buffs : ScriptableObject {
 
-    }
+//     }
 }

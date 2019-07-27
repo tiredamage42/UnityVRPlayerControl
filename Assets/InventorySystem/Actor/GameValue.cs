@@ -1,19 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-
-
-
 namespace ActorSystem {
-
-
     [System.Serializable] public class GameValue
     {
         public enum GameValueComponent { BaseValue, BaseMinValue, BaseMaxValue, Value, MinValue, MaxValue };
         
         public string name;
         public float baseValue, baseMinValue=0, baseMaxValue=500;
+        public Vector2 initializationRange;
 
         public GameValue(string name, float baseValue, float baseMinValue, float baseMaxValue) {
             this.name = name;
@@ -60,24 +55,31 @@ namespace ActorSystem {
             return 0;
         }
 
-        GameValueModifier GetModifier (int senderKey, int modifierKey) {
+        GameValueModifier GetModifier (Vector3Int key) {// int senderKey, int buffKey, int modifierKey) {
             for (int i = 0; i < modifiers.Count; i++) {
-                //coming from the same buff holder
-                if (modifiers[i].senderKey == senderKey) { 
-                    //coming from the same buff
-                    if (modifiers[i].modifierKey == modifierKey) { 
-                        return modifiers[i];
-                    }
+                if (modifiers[i].key == key) {
+                    return modifiers[i];
                 }
+
+                // //coming from the same buff holder
+                // if (modifiers[i].senderKey == senderKey) { 
+                //     //coming from the same buff
+                //     if (modifiers[i].modifierKey == modifierKey) { 
+                //         return modifiers[i];
+                //     }
+                // }
             }
 
             return null;
         }
 
-        public void AddModifier (GameValueModifier modifier, int count, int senderKey, int modifierKey) {
+        public void AddModifier (GameValueModifier modifier, int count, int senderKey, int buffKey, int modifierKey) {
             //permanent modifiers
             if (modifier.modifyValueComponent == GameValueComponent.BaseValue) {
                 baseValue = modifier.Modify(baseValue);
+
+                //clamp the value
+                baseValue = Mathf.Clamp(baseValue, GetMinValue(), GetMaxValue());
                 return;
             }
             if (modifier.modifyValueComponent == GameValueComponent.BaseMinValue) {
@@ -88,29 +90,17 @@ namespace ActorSystem {
                 baseMaxValue = modifier.Modify(baseMaxValue);
                 return;
             }
-            
-            // if (modifier.isPermanent) {
-                // if (modifier.modifyComponent == GameValueComponent.Value) {
-                //     baseValue = modifier.Modify(baseValue);
-                // }
-                // if (modifier.modifyComponent == GameValueComponent.MinValue) {
-                //     baseMinValue = modifier.Modify(baseMinValue);
-                // }
-                // if (modifier.modifyComponent == GameValueComponent.MaxValue) {
-                //     baseMaxValue = modifier.Modify(baseMaxValue);
-                // }
-            // }
-            // else {
-                GameValueModifier existingModifier = GetModifier ( senderKey, modifierKey );
-                if (existingModifier != null) {
-                    existingModifier.count += count;
-                }
-                else {
-                    modifiers.Add(new GameValueModifier(modifier, count, senderKey, modifierKey));
-                }
-            // }
+            Vector3Int key = new Vector3Int(senderKey, buffKey, modifierKey);
+            GameValueModifier existingModifier = GetModifier ( key );//senderKey, buffKey, modifierKey );
+            if (existingModifier != null) {
+                existingModifier.count += count;
+            }
+            else {
+                modifiers.Add(new GameValueModifier(modifier, count, key));//senderKey, modifierKey));
+            }
+        
         }
-        public void RemoveModifier (GameValueModifier modifier, int count, int senderKey, int modifierKey) {
+        public void RemoveModifier (GameValueModifier modifier, int count, int senderKey, int buffKey, int modifierKey) {
             if (modifier.modifyValueComponent == GameValueComponent.BaseValue) return;
             if (modifier.modifyValueComponent == GameValueComponent.BaseMinValue) return;
             if (modifier.modifyValueComponent == GameValueComponent.BaseMaxValue) return;
@@ -119,7 +109,10 @@ namespace ActorSystem {
 
             // }
             // else {
-                GameValueModifier existingModifier = GetModifier ( senderKey, modifierKey );
+
+                Vector3Int key = new Vector3Int(senderKey, buffKey, modifierKey);
+            
+                GameValueModifier existingModifier = GetModifier ( key );//senderKey, buffKey, modifierKey );
                 if (existingModifier != null) {
                     existingModifier.count -= count;
                     if (existingModifier.count <= 0) {
@@ -134,9 +127,14 @@ namespace ActorSystem {
         public GameValueModifier () {
             count = 1;
         }
-        public GameValueModifier (GameValueModifier template, int count, int senderKey, int modifierKey) {
-            this.senderKey = senderKey;
-            this.modifierKey = modifierKey;
+        public GameValueModifier (GameValueModifier template, int count, 
+            Vector3Int key
+            // int senderKey, int modifierKey
+        
+        ) {
+            this.key = key;
+            // this.senderKey = senderKey;
+            // this.modifierKey = modifierKey;
             this.count = count;
 
             gameValueName = template.gameValueName;
@@ -145,7 +143,8 @@ namespace ActorSystem {
             modifyValue = template.modifyValue;
         }
             
-        [HideInInspector] public int senderKey, modifierKey;
+        // [HideInInspector] public int senderKey, modifierKey;
+        [HideInInspector] public Vector3Int key; //sender, buff, modifier
         [HideInInspector] public int count = 1;
 
         int getCount { get { return isStackable ? count : 1; } }

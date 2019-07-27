@@ -8,7 +8,7 @@ using Valve.VR;
 
 namespace VRPlayer {
 
-	[RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
+	// [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
     public class SceneChaperone : MonoBehaviour
     {
 		public static void SetTransform (Vector3 position, Quaternion rotation) {
@@ -77,8 +77,8 @@ namespace VRPlayer {
                 return _instance;
             }
         }
-        public GameObject playAreaPreviewCorner;
-		public GameObject playAreaPreviewSide;
+        // public GameObject playAreaPreviewCorner;
+		// public GameObject playAreaPreviewSide;
         // [HideInInspector] public Transform playAreaPreviewTransform;
 		// private Transform[] playAreaPreviewCorners;
 		// private Transform[] playAreaPreviewSides;
@@ -93,8 +93,8 @@ namespace VRPlayer {
             DontDestroyOnLoad( gameObject );
 
 
-            playAreaPreviewCorner.SetActive( false );
-			playAreaPreviewSide.SetActive( false );
+            // playAreaPreviewCorner.SetActive( false );
+			// playAreaPreviewSide.SetActive( false );
 
         }
 
@@ -103,7 +103,9 @@ namespace VRPlayer {
 			OnChaperoneInfoInitialized(); // In case it's already initialized
 
 
-			GetComponent<MeshRenderer>().enabled = true;// drawInGame;
+			// GetComponent<MeshRenderer>().enabled = true;// drawInGame;
+            gameObject.AddComponent<MeshRenderer>();//.enabled = true;// drawInGame;
+            gameObject.AddComponent<MeshFilter>();//.enabled = true;// drawInGame;
 
 			// No need to remain enabled at runtime.
 			// Anyone that wants to change properties at runtime
@@ -190,8 +192,7 @@ namespace VRPlayer {
         public float borderThickness = 0.15f;
         public Color color = Color.green;
 
-        [HideInInspector]
-        public Vector3[] vertices;
+        // [HideInInspector] public Vector3[] vertices;
 
         public static bool GetBounds(ref HmdQuad_t pRect)
         {
@@ -213,7 +214,7 @@ namespace VRPlayer {
 
             var corners = new HmdVector3_t[] { rect.vCorners0, rect.vCorners1, rect.vCorners2, rect.vCorners3 };
 
-            vertices = new Vector3[corners.Length * 2];
+            Vector3[] vertices = new Vector3[corners.Length * 2];
             for (int i = 0; i < corners.Length; i++)
             {
                 var c = corners[i];
@@ -285,7 +286,7 @@ namespace VRPlayer {
             mesh.triangles = triangles;
 
             var renderer = GetComponent<MeshRenderer>();
-            renderer.material = new Material(Shader.Find("Sprites/Default"));
+            renderer.sharedMaterial = new Material(Shader.Find("Sprites/Default"));
             renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             renderer.receiveShadows = false;

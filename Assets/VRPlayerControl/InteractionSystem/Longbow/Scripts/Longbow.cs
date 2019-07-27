@@ -107,7 +107,9 @@ namespace Valve.VR.InteractionSystem
 					// nocked = true;
                     StartNock( );//arrowHand );
 					
-					linkedInventory.GetComponent<Interactor>().HoverLock( null );// arrowhand.GetComponent<Interactable>() );
+
+					/// eehhhhh
+					linkedInventory.GetComponent<InteractionPoint>().HoverLock( null );// arrowhand.GetComponent<Interactable>() );
 					
 					arrowHand.currentArrow.transform.parent = nockTransform;
 					Util.ResetTransform( arrowHand.currentArrow.transform );
@@ -150,7 +152,9 @@ namespace Valve.VR.InteractionSystem
 					nocked = false;
                     ReleaseNock();
 
-					linkedInventory.GetComponent<Interactor>().HoverUnlock( null );//arrowhand.GetComponent<Interactable>() );
+
+//EHHHH
+					linkedInventory.GetComponent<InteractionPoint>().HoverUnlock( null );//arrowhand.GetComponent<Interactable>() );
 					
 				}
 
@@ -301,7 +305,7 @@ namespace Valve.VR.InteractionSystem
 				// Normalized current state of bow draw 0 - 1
 				float pullLerp = Util.RemapNumberClamped( nockToArrowHandLength, minPull, maxPull, 0f, 1f ); 
 
-				Vector3 arrowNockTransformToHeadset = ( ( Player.instance.hmdTransform.position + ( Vector3.down * 0.05f ) ) - arrowNockTransformParentPos ).normalized;
+				Vector3 arrowNockTransformToHeadset = ( ( VRManager.instance.hmdTransform.position + ( Vector3.down * 0.05f ) ) - arrowNockTransformParentPos ).normalized;
 				
 				// Use this line to lerp arrowHand nock position
 				Vector3 arrowHandPosition = ( arrowNockTransformParentPos + ( ( arrowNockTransformToHeadset * drawOffset ) * pullLerp ) ); 

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
-namespace CustomVegetation {
+namespace Environment.Grass {
 
     [CustomEditor(typeof(GrassDefenition))]
     public class GrassDefenitionEditor : Editor
@@ -12,12 +12,8 @@ namespace CustomVegetation {
 
         int maxAtlasSize = 4098;
 
-        static string normalShader = "Custom Environment/Grass/Grass";
-        static string shadowShader = "Custom Environment/Grass/ShadowPass";
-
         public override void OnInspectorGUI() 
         {
-            
             base.OnInspectorGUI();
 
             EditorGUILayout.Space();
@@ -26,33 +22,38 @@ namespace CustomVegetation {
             maxAtlasSize = EditorGUILayout.IntField("Max Atlas Size", maxAtlasSize);
 
             if (GUILayout.Button("Bake Atlases")) {
-                BakeGrassDef(grassDef, maxAtlasSize);
+                string directory = EditorUtility.SaveFolderPanel("Export Grass Atlases", "", "");//, "Terrain", "obj");
+                if (directory.Length != 0) {
+                    directory = directory.Substring(Application.dataPath.Length-6);
+            
+                    if (!directory.EndsWith("/"))
+                        directory += "/";
+
+                    grassDef.atlasedTexture = CreateAtlasAsset(directory, grassDef.name + "DiffuseAtlas");
+                    grassDef.atlasedNormal = CreateAtlasAsset(directory, grassDef.name + "BumpAtlas");
+
+                    AtlasPrototypes(grassDef.atlasedTexture, grassDef, false, maxAtlasSize);
+                    AtlasPrototypes(grassDef.atlasedNormal, grassDef, true, maxAtlasSize);
+                    
+                    EditorUtility.SetDirty(grassDef);
+                    EditorUtility.SetDirty(grassDef.atlasedTexture);
+                    EditorUtility.SetDirty(grassDef.atlasedNormal);
+
+                    AssetDatabase.SaveAssets();
+                }
+                else {
+                    Debug.Log("Cancelled Atlasing");
+                }
             }
         }
 
-        public static void BakeGrassDef (GrassDefenition grassDef, int maxAtlasSize) {
-            grassDef.atlasedTexture = AtlasPrototypes(grassDef.atlasedTexture, grassDef, false, maxAtlasSize);
-            grassDef.atlasedNormal = AtlasPrototypes(grassDef.atlasedNormal, grassDef, true, maxAtlasSize);
-            
-            if (grassDef.material == null) {
-                grassDef.material = new Material(Shader.Find(normalShader));
-            }
-            grassDef.material.SetTexture("_MainTex", grassDef.atlasedTexture);
-            grassDef.material.SetTexture("_BumpMap", grassDef.atlasedNormal);
-            
-            if (grassDef.shadowMaterial == null) {
-                grassDef.shadowMaterial = new Material(Shader.Find(shadowShader));
-            }
-            grassDef.shadowMaterial.SetTexture("_MainTex", grassDef.atlasedTexture);
-
-            EditorUtility.SetDirty(grassDef);
-            EditorUtility.SetDirty(grassDef.atlasedTexture);
-            EditorUtility.SetDirty(grassDef.atlasedNormal);
-            EditorUtility.SetDirty(grassDef.material);
-            EditorUtility.SetDirty(grassDef.shadowMaterial);
+        static Texture2D CreateAtlasAsset (string directory, string name) {
+            Texture2D atlas = new Texture2D(2, 2);
+            AssetDatabase.CreateAsset(atlas, directory + name + ".asset");
+            return atlas;
         }
 
-        static Texture2D AtlasPrototypes (Texture2D atlas, GrassDefenition grassDef, bool normals, int maxAtlasSize) {
+        static void AtlasPrototypes (Texture2D atlas, GrassDefenition grassDef, bool normals, int maxAtlasSize) {
             int l = grassDef.grassPrototypes.Length;
 
             Texture2D[] atlasTextures = new Texture2D[l];
@@ -60,24 +61,17 @@ namespace CustomVegetation {
             for (int i = 0; i < l; i++) {
                 atlasTextures[i] = normals ? grassDef.grassPrototypes[i].normal : grassDef.grassPrototypes[i].texture;
             }
-            
-            if (atlas == null) {
-                atlas = new Texture2D(2, 2);
-                AssetDatabase.CreateAsset(atlas, "Assets/" + (normals? "GrassNorm" : "Grass") + "Atlas.asset");
-            }
 
             Rect[] rects = atlas.PackTextures(atlasTextures, 0, maxAtlasSize, true);
             
-                for (int i = 0; i < l; i++) {
-                    if (normals) {
-                        grassDef.grassPrototypes[i].atlasUVBump = rects[i];
-                    }
-                    else {
-                        grassDef.grassPrototypes[i].atlasUVMain = rects[i];
-                    }
+            for (int i = 0; i < l; i++) {
+                if (normals) {
+                    grassDef.grassPrototypes[i].atlasUVBump = rects[i];
+                }
+                else {
+                    grassDef.grassPrototypes[i].atlasUVMain = rects[i];
+                }
             }
-        
-            return atlas;
         }
     }
 }

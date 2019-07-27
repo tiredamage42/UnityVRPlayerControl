@@ -25,13 +25,11 @@ public class VignettingVR : MonoBehaviour
     static int _vignetteViewportSpaceOffset = Shader.PropertyToID("_vignetteViewportSpaceOffset");
     static int _VignetteColor = Shader.PropertyToID("_VignetteColor");
     
-
-    private Material material;
-    [HideInInspector] public Shader m_Shader;
+    Material material;
     void Start()
     {
         currentCamera = GetComponent<Camera>();
-        material = new Material(m_Shader);
+        material = new Material(Shader.Find("Hidden/VignettingVR"));
         material.hideFlags = HideFlags.HideAndDontSave;
         viewportSpaceOffset = new Vector4[2];
         SetIntensity(0);
@@ -55,6 +53,7 @@ public class VignettingVR : MonoBehaviour
         
         // get world-space position as clip-space position 
         Vector4 viewportSpaceOffset =  worldToClipSpace.MultiplyPoint(vignetteCenterWorldSpace);
+        
         // convert clip-space [-1,1] to viewport space [0,1]. also negate the offset.
         viewportSpaceOffset = -NormalizeScreenSpaceCords(viewportSpaceOffset);
         return viewportSpaceOffset;
@@ -69,7 +68,6 @@ public class VignettingVR : MonoBehaviour
 
         // pass values to shader
         material.SetVectorArray(_vignetteViewportSpaceOffset, viewportSpaceOffset);
-                    
         material.SetColor(_VignetteColor, new Color(vignetteColor.r, vignetteColor.g, vignetteColor.b, vignettingIntensity));
         
         Graphics.Blit(source, destination, material);

@@ -51,7 +51,9 @@ namespace VRPlayer {
 
             baseTransform = new GameObject(name + "_ui_base").transform;
             transform.ResetAtParent(baseTransform);
-            hmdTransform = Player.instance.hmdTransform;
+
+
+            hmdTransform = VRManager.instance.hmdTransform;
 
         }
 

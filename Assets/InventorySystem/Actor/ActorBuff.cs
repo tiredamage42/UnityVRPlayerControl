@@ -1,12 +1,14 @@
 ﻿// using System.Collections;
 // using System.Collections.Generic;
-using UnityEngine;
+// using UnityEngine;
 
 namespace ActorSystem {
 
-    [CreateAssetMenu()]
-    public class ActorBuff : ScriptableObject
+    // [CreateAssetMenu()]
+    [System.Serializable]
+    public class ActorBuff //: ScriptableObject
     {
+        public GameValueCondition[] conditions;
         public GameValueModifier[] buffs;
     }
 

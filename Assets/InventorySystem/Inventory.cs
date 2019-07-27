@@ -182,7 +182,12 @@ public class Inventory : MonoBehaviour, IInteractable
 
     public bool allowQuickTrade;
 
-    public void OnInspectedStart (Interactor interactor) {
+
+    public void OnInteractableAvailabilityChange(bool available) {
+			
+    }
+		
+    public void OnInteractableInspectedStart (InteractionPoint interactor) {
         if (allowQuickTrade) {
             Inventory interactorInventory = interactor.GetComponentInParent<Inventory>();
             if (interactorInventory != null) {
@@ -191,7 +196,7 @@ public class Inventory : MonoBehaviour, IInteractable
         }
     }
 
-    public void OnInspectedEnd (Interactor interactor) {
+    public void OnInteractableInspectedEnd (InteractionPoint interactor) {
         if (allowQuickTrade) {
             Inventory interactorInventory = interactor.GetComponentInParent<Inventory>();
             if (interactorInventory != null) {
@@ -199,9 +204,9 @@ public class Inventory : MonoBehaviour, IInteractable
             }
         }
     }
-    public void OnInspectedUpdate (Interactor interactor) { }
+    public void OnInteractableInspectedUpdate (InteractionPoint interactor) { }
 
-    public void OnUsedStart (Interactor interactor, int useAction) {
+    public void OnInteractableUsedStart (InteractionPoint interactor, int useAction) {
         if (useAction == TRADE_ACTION) {
             Inventory interactorInventory = interactor.GetComponentInParent<Inventory>();
             if (interactorInventory != null) {
@@ -210,8 +215,8 @@ public class Inventory : MonoBehaviour, IInteractable
             }
         }
     }
-    public void OnUsedEnd (Interactor interactor, int useAction) { }
-    public void OnUsedUpdate (Interactor interactor, int useAction) { }
+    public void OnInteractableUsedEnd (InteractionPoint interactor, int useAction) { }
+    public void OnInteractableUsedUpdate (InteractionPoint interactor, int useAction) { }
 
     public event System.Action<Inventory, Inventory, int> onQuickTradeEnd, onTradeStart;
     public event System.Action<Inventory, Inventory, int> onQuickTradeStart;
@@ -245,7 +250,7 @@ public class Inventory : MonoBehaviour, IInteractable
             if (CanDropItem(item, out _, out _, false)) {
                 if (otherInventory.CanStashItem(item)) {
                     DropItem(item, count, false, i);
-                    otherInventory.StashItem(item, count);
+                    otherInventory.StashItem(item, count, -1);
                     didAnyTransfer = true;
                 }
             }
@@ -259,7 +264,7 @@ public class Inventory : MonoBehaviour, IInteractable
         if (CanDropItem(item, out itemIndex, out _, false)) {
             if (otherInventory.CanStashItem(item)) {
                 DropItem(item, count, false, itemIndex);
-                otherInventory.StashItem(item, count);
+                otherInventory.StashItem(item, count, -1);
                 return true;
             }
         }
@@ -303,13 +308,13 @@ public class Inventory : MonoBehaviour, IInteractable
     }
 
 
-
+    //maybe switch these to interaction system (stash and trade will be secondary/terciary action....)
     // when used BY inventory
-    public int GRAB_ACTION = 0;
-    public int STASH_ACTION = 1;
+    public const int GRAB_ACTION = 0;
+    public const int STASH_ACTION = 1;
     
     //when used ON inventory
-    public int TRADE_ACTION = 2;
+    public const int TRADE_ACTION = 2;
 
 
     public void OnUseStart (int equipSlot, int useIndex) {
@@ -323,8 +328,8 @@ public class Inventory : MonoBehaviour, IInteractable
         if (equippedSlots[equipSlot] != null) {
             equippedSlots[equipSlot].sceneItem.OnEquippedUseStart(this, useIndex);
         }
-
     }
+
     public void OnUseEnd (int equipSlot, int useIndex) {
         if (equipSlot < 0 || equipSlot >= equippedSlots.Length) {
             Debug.LogError("Equip slot " + equipSlot + " is out of range on inventory " + name);
@@ -336,8 +341,11 @@ public class Inventory : MonoBehaviour, IInteractable
         if (slot != null) {
             bool isQuickEquipped = false;
             if (slot.isQuickEquipped) {
-                if (slot.item.equipActions.Contains(useIndex)) {
-                    Debug.LogError("unequipping quick");
+
+                if (useIndex == GRAB_ACTION) {
+                // if (slot.item.equipActions.Contains(useIndex)) {
+
+                    // Debug.LogError("unequipping quick");
                     UnequipItem(equipSlot, true);
                     isQuickEquipped = true;
                 }
@@ -520,7 +528,7 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
         public Vector3 dropLocalPoint = new Vector3 (0,1,1);
 
 
-        public void StashItem(ItemBehavior itemBehavior, int count) {
+        public void StashItem(ItemBehavior itemBehavior, int count, int equipSlot) {
             //check if it's already in inventory
             InventorySlot slotInInventory = null;
 
@@ -549,22 +557,26 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
                 }
             }
 
-            if (itemBehavior.stashedItemBehavior != null) {
-                itemBehavior.stashedItemBehavior.OnItemStashed(this, itemBehavior, count);
+            for (int i = 0; i < itemBehavior.stashedItemBehaviors.Length; i++) {
+                itemBehavior.stashedItemBehaviors[i].OnItemStashed(this, itemBehavior, count, equipSlot, equipSlot != -1);
             }
+
+            // if (itemBehavior.stashedItemBehavior != null) {
+            //     itemBehavior.stashedItemBehavior.OnItemStashed(this, itemBehavior, count);
+            // }
 
             if (onStash != null) {
                 onStash(this, itemBehavior, count);
             }
         }
 
-        public void StashItem(Item item)
+        public void StashItem(Item item, int equipSlot)
         {
             ItemBehavior itemBehavior = item.itemBehavior;
 
             if (CanStashItem(itemBehavior)) {
 
-                StashItem(itemBehavior, itemBehavior.stackable ? item.itemCount : 1);
+                StashItem(itemBehavior, itemBehavior.stackable ? item.itemCount : 1, equipSlot);
 
                 //disable the scene item (frees it up for pool)
                 item.gameObject.SetActive(false);
@@ -579,7 +591,7 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
         }
         public void AddInventory (List<InventorySlot> slots) {
             for (int i =0 ; i < slots.Count; i++) {
-                StashItem(slots[i].item, slots[i].count);
+                StashItem(slots[i].item, slots[i].count, -1);
             }
         }
 
@@ -623,8 +635,11 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
                 }
                 
                 // remove buffs
-                if (itemBehavior.stashedItemBehavior != null) {
-                    itemBehavior.stashedItemBehavior.OnItemDropped(this, itemBehavior, count);   
+                // if (itemBehavior.stashedItemBehavior != null) {
+                //     itemBehavior.stashedItemBehavior.OnItemDropped(this, itemBehavior, count);   
+                // }
+                for (int i = 0; i < itemBehavior.stashedItemBehaviors.Length; i++) {
+                    itemBehavior.stashedItemBehaviors[i].OnItemDropped(this, itemBehavior, count);
                 }
 
 
@@ -688,7 +703,9 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
                     Debug.LogError("Scene item :: " + sceneItem.name + " is already quick equipped to " + sceneItem.linkedInventory.name + " cant quick equip to "+ name);
                     return;
                 }
+
                 for (int i = 0; i < equippedSlots.Length; i++) {
+
                     if (equippedSlots[i] != null && equippedSlots[i].sceneItem == sceneItem) {
                         //already equipped scene item here
                         if (i == equipSlot) return;
@@ -713,7 +730,10 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
                     equippedSlots[oldIndex] = null;
                 }
 
-                equipPoints[equipSlot].GetComponent<Interactor>().HoverLock(null);
+
+
+
+                equipPoints[equipSlot].GetComponent<InteractionPoint>().HoverLock(null);
 
             }
             else {
@@ -811,7 +831,7 @@ public bool ItemIsEquipped (int slotIndex, Item item) {
             
             InventorySlot slot = equippedSlots[slotIndex];
             equippedSlots[slotIndex] = null;
-            equipPoints[slotIndex].GetComponent<Interactor>().HoverUnlock(null);
+            equipPoints[slotIndex].GetComponent<InteractionPoint>().HoverUnlock(null);
 
             slot.sceneItem.linkedInventory = null;
             slot.sceneItem.myEquipPoint = null;

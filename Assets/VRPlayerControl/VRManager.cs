@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System.Collections;
+
 using Valve.VR;
 
 
@@ -7,10 +9,9 @@ using GameBase;
 using _GAME_MANAGER_TYPE_ = GameBase.GameManager;
 
 namespace VRPlayer{
+
     
     /*
-        add this to the same game object as any normal game manager
-
         acts as an interface to whatever game manager 
         for vr components
 
@@ -39,19 +40,19 @@ namespace VRPlayer{
         }
         public static Transform trackingOrigin {
             get {
-                return Player.instance.trackingOriginTransform;
+                return Player.instance.transform;//trackingOriginTransform;
             }
         }
-        public static float playerRealLifeHeight {
-            get {
-                return Player.instance.realLifeHeight;
-            }
-        }
-        public static float gamespaceHeight {
-            get {
-                return Player.instance.gamespaceHeight;
-            }
-        }
+        // public static float playerRealLifeHeight {
+        //     get {
+        //         return Player.instance.realLifeHeight;
+        //     }
+        // }
+        // public static float gamespaceHeight {
+        //     get {
+        //         return Player.instance.gamespaceHeight;
+        //     }
+        // }
 
         public static int Hand2Int(SteamVR_Input_Sources hand) {
             if (hand == SteamVR_Input_Sources.RightHand) 
@@ -98,8 +99,13 @@ namespace VRPlayer{
         // public static bool gamePaused { get { return GameBase.GameManager.isPaused; } }
         public static event System.Action<bool> onGamePaused;
 
+
+        public float lodBias = 10;
+		
+
     
         void OnEnable () {
+            
             GameManager.onPauseRoutineStart += OnPauseRoutineStart;
             GameManager.onPauseRoutineEnd += OnPauseRoutineEnd;
 
@@ -214,10 +220,92 @@ namespace VRPlayer{
 
         void Awake () {
             pauseFog = new FogComponent(true, Color.black, FogMode.Exponential, 1, 0, 0);   
+
+
+			/*
+                QualitySettings.lodBias = 3.8;
+
+                the main camera that renders in editor has FOV at 60d, 
+                while the VR device FOV is 90d. 
+
+                LODBias1 * (tan(FOV2/2)/tan(FOV1/2)) where:
+                LODBias1 is the LODBias for the first camera you are coming from (in this case main camera)
+                FOV1 is the FOV for the first camera (again main camera) in radians.
+                FOV2 is the FOV for the second camera (in this case Daydream) in radians.
+
+                For main camera we have FOV1 = 60 degrees = pi/3 radians, LODBias = 2
+                For the Daydream camera we have FOV2 = 90 degrees = pi/2 radians
+
+                So: 2 * (tan(pi/2/2)/tan(pi/3/2)) = 
+                2 * (tan(pi/4)/tan(pi/6)) = ~3.46
+            */
+            QualitySettings.lodBias = lodBias;
+
         }
-        void Start () {
-            hmdCamera = Player.instance.hmdTransform.GetComponent<Camera>();
+        // void Start () {
+        //     hmdCamera = Player.instance.hmdTransform.GetComponent<Camera>();
+        // }
+        IEnumerator Start()
+		{
+			// _instance = this;
+			QualitySettings.vSyncCount = 0;
+            hmdCamera = hmdTransform.GetComponent<Camera>();
+
+            while (SteamVR.initializedState == SteamVR.InitializedStates.None || SteamVR.initializedState == SteamVR.InitializedStates.Initializing)
+                yield return null;
+
+			if ( SteamVR.instance == null )
+				Debug.LogError("there was a problem initializing steam vr");
+
+        
         }
+
+        public Transform trackingOriginTransform { get { return Player.instance.transform; } }
+		public Transform hmdTransform;
+
+
+        public static Transform hmd_Transform {
+            get {
+                return instance.hmdTransform;
+            }
+        }
+        static VRManager _instance;
+		public static VRManager instance {
+			get {
+				if ( _instance == null )
+					_instance = FindObjectOfType<VRManager>();
+				return _instance;
+			}
+		}
+
+
+
+        
+[Tooltip("World scale around the player")]
+		[Range(.1f, 10)] public float worldScale = 1.0f;
+
+        public SteamVR_Input_Sources mainHand;
+		public SteamVR_Input_Sources offHand { get { return VRManager.OtherHand(mainHand); } }
+		public SteamVR_Action_Boolean pauseAction;
+
+
+        
+        void Update()
+        {
+            if (SteamVR.initializedState != SteamVR.InitializedStates.InitializeSuccess)
+                return;
+
+			if (pauseAction.GetStateDown(offHand)) {
+                GameManager.TogglePause();
+            }
+		
+			UpdateWorldScale();        
+        }
+        void UpdateWorldScale () {
+        trackingOriginTransform.localScale = Vector3.one * (1.0f/worldScale);
+    }
+
+
 
         void OnPauseRoutineStart (bool isPaused, float routineTime) {
             
@@ -259,7 +347,6 @@ namespace VRPlayer{
             for (int i = 0; i < allLights.Length;i++) {
                 allLights[i].enabled = false;
             }
-
         }
         void EnableAllLights () {
             for (int i = 0; i < allLights.Length;i++) {
@@ -271,7 +358,7 @@ namespace VRPlayer{
             BuildPauseRoomLightIfNull ();
 
             pauseLight.gameObject.SetActive(true);
-            pauseLight.transform.position = Player.instance.hmdTransform.position + Vector3.up;
+            pauseLight.transform.position = hmdTransform.position + Vector3.up;
             pauseLight.color = pauseLightColor;
             pauseLight.intensity = pauseLightIntensity;
             pauseLight.range = pauseLightRange;
@@ -288,8 +375,6 @@ namespace VRPlayer{
 
             }
         }
-
-
 
         public void ShowTextHints ( GameObject[] data )
 		{
@@ -317,12 +402,6 @@ namespace VRPlayer{
         public void RecalibrateRealLifeHeight (GameObject[] data) {
             Player.instance.RecalibrateRealLifeHeight();
         }
-
-        
-
-
-        
-        
     }
 }
 

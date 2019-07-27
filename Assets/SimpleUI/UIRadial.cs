@@ -35,44 +35,51 @@ namespace SimpleUI{
             base.UpdateElementHolder();
             backGroundRect.sizeDelta = new Vector2(backgroundSize, backgroundSize);
             backGroundOverlayRect.sizeDelta = new Vector2(backgroundSize, backgroundSize);
-            float sliceAngle = this.sliceAngle;
-            float radialAmount = 1f/allElements.Count;
-            float radialAngle = sliceAngle*.5f;
-            Quaternion elementInsidesLocalRotation = Quaternion.Euler(0, 0, radialAngle);
             
 
-            Vector3 flairSize = Vector3.one * this.flairSize;
-            Vector3 insideSize = Vector3.one * this.insideSize;
-            Vector3 textLocalPos = new Vector3(0,textOffset,0);
+            if (allElements.Count > 0) {
+
+                float sliceAngle = this.sliceAngle;
+                float radialAmount = 1f/allElements.Count;
+                float radialAngle = sliceAngle*.5f;
+                Quaternion elementInsidesLocalRotation = Quaternion.Euler(0, 0, radialAngle);
+
+
+                Vector3 flairSize = Vector3.one * this.flairSize;
+                Vector3 insideSize = Vector3.one * this.insideSize;
+                Vector3 textLocalPos = new Vector3(0,textOffset,0);
             
+                for (int i = 0; i < allElements.Count; i++) {
 
-            for (int i = 0; i < allElements.Count; i++) {
+                    UIRadialElement element = allElements[i] as UIRadialElement;
+                    float elementAngle = -i * sliceAngle;
 
-                UIRadialElement element = allElements[i] as UIRadialElement;
-                float elementAngle = -i * sliceAngle;
+                    element.transform.localRotation = Quaternion.Euler(0,0,elementAngle);
 
-                element.transform.localRotation = Quaternion.Euler(0,0,elementAngle);
+                    for (int x =0 ; x < element.images.Length; x++) {
+                        element.images[x].fillAmount = radialAmount;
+                    }
 
-                for (int x =0 ; x < element.images.Length; x++) {
-                    element.images[x].fillAmount = radialAmount;
-                }
+                    element.mainImageTransform.localRotation = elementInsidesLocalRotation;
+                    element.selectFlairTransform.localRotation = elementInsidesLocalRotation;
 
-                element.mainImageTransform.localRotation = elementInsidesLocalRotation;
-                element.selectFlairTransform.localRotation = elementInsidesLocalRotation;
+                    // element.UpdateLayout(1f/allElements.Count, sliceAngle, -i * sliceAngle);
 
-                // element.UpdateLayout(1f/allElements.Count, sliceAngle, -i * sliceAngle);
-
-                element.selectFlairTransform.localScale = flairSize;
-                element.mainImageTransform.localScale = insideSize;
+                    element.selectFlairTransform.localScale = flairSize;
+                    element.mainImageTransform.localScale = insideSize;
 
 
-                UIText t = element.uiText;
-                if (element.hasText) {
-                    element.uiText.transform.localRotation = Quaternion.Euler(0,0,-elementAngle);
-                    element.uiText.SetAnchor(elementAngle < -180f ? TextAnchor.MiddleRight : TextAnchor.MiddleLeft);
-                    element.uiText.transform.localPosition = textLocalPos;
+                    UIText t = element.uiText;
+                    if (element.hasText) {
+                        element.uiText.transform.localRotation = Quaternion.Euler(0,0,-elementAngle);
+                        element.uiText.SetAnchor(elementAngle < -180f ? TextAnchor.MiddleRight : TextAnchor.MiddleLeft);
+                        element.uiText.transform.localPosition = textLocalPos;
+                    }
                 }
             }
+
+            
+
         }
         
         

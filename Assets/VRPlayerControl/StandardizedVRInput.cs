@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Valve.VR;
 
-using Valve.VR.InteractionSystem;
+using Valve.VR;
 
 namespace VRPlayer {
 
@@ -27,11 +26,11 @@ namespace VRPlayer {
         void Update()
         {
             if (headsetOnHead.GetStateDown(SteamVR_Input_Sources.Head)) {
-                Debug.Log("<b>SteamVR Interaction System</b> Headset placed on head");
+                // Debug.Log("<b>SteamVR Interaction System</b> Headset placed on head");
                 headsetIsOnPlayerHead = true;
             }
             else if (headsetOnHead.GetStateUp(SteamVR_Input_Sources.Head)) {
-                Debug.Log("<b>SteamVR Interaction System</b> Headset removed");
+                // Debug.Log("<b>SteamVR Interaction System</b> Headset removed");
                 headsetIsOnPlayerHead = false;
             }
             else if (headsetOnHead.GetState(SteamVR_Input_Sources.Head)) {
@@ -95,8 +94,6 @@ namespace VRPlayer {
             PlayControllerLayoutHintRoutine(debugRoutine);
         }
 
-
-
         static StandardizedVRInput _instance;
         public static StandardizedVRInput instance {
             get {
@@ -144,30 +141,20 @@ namespace VRPlayer {
         //     return null;
         // }
         public InputType Action2InputType(SteamVR_Action action) {
-                    if (action ==  TriggerButton)
-                return InputType.TriggerButton;
-                    if (action ==   TriggerAxis)
-                return InputType.TriggerAxis;
-                
-                    if (action ==   TrackpadButton)
-                return InputType.TrackpadButton;
-                    if (action ==   TrackpadAxis)
-                return InputType.TrackpadAxis;
-                
-                    if (action ==   DpadUp)
-                return InputType.DpadUp;
-                    if (action == DpadDown)
-                return InputType.DpadDown;
-                    if (action ==   DpadLeft)
-                return InputType.DpadLeft;
-                    if (action ==   DpadRight)
-                return InputType.DpadRight;
-                
-                    if (action ==   MenuButton)
-                return InputType.MenuButton;
-                    if (action ==   SideButton)
-                return InputType.SideButton;
-             
+            if (action == TriggerButton) return InputType.TriggerButton;
+            if (action == TriggerAxis) return InputType.TriggerAxis;
+
+            if (action == TrackpadButton) return InputType.TrackpadButton;
+            if (action == TrackpadAxis) return InputType.TrackpadAxis;
+
+            if (action == DpadUp) return InputType.DpadUp;
+            if (action == DpadDown) return InputType.DpadDown;
+            if (action == DpadLeft) return InputType.DpadLeft;
+            if (action == DpadRight) return InputType.DpadRight;
+
+            if (action == MenuButton) return InputType.MenuButton;
+            if (action == SideButton) return InputType.SideButton;
+
             return InputType.TriggerButton;
         }
 
@@ -191,7 +178,6 @@ namespace VRPlayer {
             hapticAction.Execute(0, duration, frequency, amplitude, hand);
         }
 
-
         public void HideHint(SteamVR_Input_Sources hand, SteamVR_Action action)
         {
             VRPlayer.UI.VRControllerHintsUI.HideHint(Action2InputType(action), hand);
@@ -201,8 +187,6 @@ namespace VRPlayer {
         {
             VRPlayer.UI.VRControllerHintsUI.ShowHint(Action2InputType(action), hand, text);
         }
-
-
 
         IEnumerator HintRoutine (ControllerLayoutHintRoutine routine) {
             Player player = Player.instance;
@@ -227,7 +211,6 @@ namespace VRPlayer {
 
         public void StopHintRoutine () {
             if (currentHintRoutine != null) {
-
                 StopCoroutine(currentHintRoutine);
                 currentHintRoutine = null;
             }
@@ -235,9 +218,7 @@ namespace VRPlayer {
         }
 
         public void PlayControllerLayoutHintRoutine (ControllerLayoutHintRoutine routine) {
-
             currentHintRoutine = StartCoroutine(HintRoutine(routine));
-            
         }
     }
 

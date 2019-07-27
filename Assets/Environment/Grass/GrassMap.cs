@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CustomVegetation {
+namespace Environment.Grass {
 
-    [CreateAssetMenu()]
+    [CreateAssetMenu(menuName="Environment/Grass/GrassMap")]
     public class GrassMap : ScriptableObject
     {
         [System.Serializable] public class Batch {
@@ -17,15 +17,9 @@ namespace CustomVegetation {
             }
         }
 
-        public float batchSize;
-        public List<Batch> batches = new List<Batch>();
+        public GrassDefenition grassDef;
 
-        public void InitializeMap (float batchSize) {
-            this.batchSize = batchSize;
-            batches.Clear();
-        }
-        public void AddGrassBatch (Vector2 centerPosition, Mesh mesh) {
-            batches.Add(new Batch (centerPosition, mesh));
-        }
+        [HideInInspector] public float batchSize;
+        [HideInInspector] public List<Batch> batches = new List<Batch>();
     }
 }

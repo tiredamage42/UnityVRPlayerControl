@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using System;
 
 [ExecuteInEditMode, ImageEffectAllowedInSceneView]
 public class DistanceBlur : MonoBehaviour {
-	[NonSerialized] Material material;
+	[System.NonSerialized] Material material;
 	const int cocPass = 0;
     const int preFilterPass = 1;
     const int bokehPass = 2;
@@ -18,7 +17,7 @@ public class DistanceBlur : MonoBehaviour {
     public bool debugVisuals = false;
 
     void OnEnable () {
-        GetComponent<Camera>().depthTextureMode = DepthTextureMode.None;// |= DepthTextureMode.Depth;
+        // GetComponent<Camera>().depthTextureMode = DepthTextureMode.None;// |= DepthTextureMode.Depth;
     }
 	void OnRenderImage (RenderTexture source, RenderTexture destination) {
 		if (material == null) {

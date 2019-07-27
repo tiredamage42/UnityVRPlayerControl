@@ -6,10 +6,6 @@ using UnityEditor;
 public abstract class EnvironmentParticlesEditor : Editor
 {
     
-
-
-
-
     protected abstract Mesh MakeMesh ();
 
 

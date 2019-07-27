@@ -13,10 +13,10 @@ namespace InventorySystem {
         [Header("In Game Days, -1 for no respawn")]
         public float respawnRate = 3.0f;
         Inventory inventory;
-
-        public bool respawnDebug;
-
         public Actor actorValuesToUse;
+
+        
+        public bool respawnDebug;
         
         void Awake () {
             inventory = GetComponent<Inventory>();

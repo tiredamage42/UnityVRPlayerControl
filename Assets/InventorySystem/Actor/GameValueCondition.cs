@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿// using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -63,22 +63,17 @@ namespace ActorSystem {
             }
 
             float value = gameValue.GetValue(component);
-            
+
             if (condition == ConditionCheck.Equals)
                 return value == valueCheck;
-
             else if (condition == ConditionCheck.LessThan)
                 return value < valueCheck;
-            
             else if (condition == ConditionCheck.GreaterThan)
                 return value > valueCheck;
-            
             else if (condition == ConditionCheck.LessThanEqualTo)
                 return value <= valueCheck;
-            
             else if (condition == ConditionCheck.GreaterThanEqualTo)
                 return value >= valueCheck;
-
             return trueIfNoValue;
         }
     }

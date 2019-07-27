@@ -16,6 +16,10 @@ namespace Valve.VR.InteractionSystem.Sample
 	[RequireComponent( typeof( Interactable ) )]
 	public class InteractableExample : MonoBehaviour, ISceneItem, IInteractable
     {
+		public void OnInteractableAvailabilityChange(bool available) {
+            
+        }
+        
 
 		public void OnEquippedUseStart(Inventory inventory, int useIndex) {}
         public void OnEquippedUseEnd(Inventory inventory, int useIndex) {}
@@ -35,18 +39,18 @@ namespace Valve.VR.InteractionSystem.Sample
 			generalText.text = string.Format("Attached: {0} :: Time: {1:F2}", inventory.name, (Time.time - attachTime));
 		}
 					
-		public void OnInspectedStart(Interactor interactor) {
+		public void OnInteractableInspectedStart(InteractionPoint interactor) {
 			generalText.text = "Hovering hand: " + interactor.name;
 
 		}
-        public void OnInspectedEnd(Interactor interactor){
+        public void OnInteractableInspectedEnd(InteractionPoint interactor){
 			generalText.text = "No Hand Hovering";
 		}
 
-        public void OnInspectedUpdate(Interactor interactor){
+        public void OnInteractableInspectedUpdate(InteractionPoint interactor){
 
 		}
-        public void OnUsedStart(Interactor interactor, int useIndex){
+        public void OnInteractableUsedStart(InteractionPoint interactor, int useIndex){
 
 			// Save our position/rotation so that we can restore it when we detach
 			oldPosition = transform.position;
@@ -60,7 +64,7 @@ namespace Valve.VR.InteractionSystem.Sample
 			// hand.AttachObject(gameObject, attachmentFlags);
 		}
 
-        public void OnUsedEnd(Interactor interactor, int useIndex){
+        public void OnInteractableUsedEnd(InteractionPoint interactor, int useIndex){
 			
 
 			// hand.DetachObject(gameObject);
@@ -73,7 +77,7 @@ namespace Valve.VR.InteractionSystem.Sample
 			transform.rotation = oldRotation;
 		}
 			
-        public void OnUsedUpdate(Interactor interactor, int useIndex){
+        public void OnInteractableUsedUpdate(InteractionPoint interactor, int useIndex){
 
 		}
 

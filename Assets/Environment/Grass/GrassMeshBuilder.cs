@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace CustomVegetation {
+namespace Environment.Grass {
     public class GrassMeshBuilder {
-        public const int maxVerts = 65534;
-
+        
         const int uvCount = 5;
 
         // vertex = pos
@@ -78,7 +77,7 @@ namespace CustomVegetation {
             indicies.Add(instances);
             instances++;
 
-            if (instances >= maxVerts) {
+            if (instances >= MeshUtils.MeshUtils.maxVerts) {
                 return BakeToMesh();
             }
             return null;

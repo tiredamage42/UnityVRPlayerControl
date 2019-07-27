@@ -4,44 +4,48 @@ using UnityEngine;
 namespace InteractionSystem {
     public class TaggerInteractable : MonoBehaviour, IInteractable
     {
+        public void OnInteractableAvailabilityChange(bool available) {
+			
+		}
+		
         public int useActionToUse = 0;
-        void AddTags (Interactor interactor, List<string> tags) {
+        void AddTags (InteractionPoint interactor, List<string> tags) {
             if (tags.Count > 0) {
                 interactor.AddInteractionTags(tags);
             }
         }
 
-        void RemoveTags (Interactor interactor, List<string> tags) {
+        void RemoveTags (InteractionPoint interactor, List<string> tags) {
             if (tags.Count > 0) {
                 interactor.RemoveInteractionTags(tags);
             }
         }
 
-        public void OnInspectedStart(Interactor interactor) {
+        public void OnInteractableInspectedStart(InteractionPoint interactor) {
             lastInteractor = interactor;
             AddTags(interactor, inspectTags);
         }
-        public void OnInspectedEnd(Interactor interactor) {
+        public void OnInteractableInspectedEnd(InteractionPoint interactor) {
             lastInteractor = null;
             RemoveTags(interactor, inspectTags);
         }
-        public void OnUsedStart(Interactor interactor, int useIndex) {
+        public void OnInteractableUsedStart(InteractionPoint interactor, int useIndex) {
             if (useActionToUse == useIndex) {
                 AddTags(interactor, useTags);
             }
         }
-        public void OnUsedEnd(Interactor interactor, int useIndex) {
+        public void OnInteractableUsedEnd(InteractionPoint interactor, int useIndex) {
             if (useActionToUse == useIndex) {
                 RemoveTags(interactor, useTags);
             }
         }
 
-        public void OnInspectedUpdate(Interactor interactor) {}
-        public void OnUsedUpdate(Interactor interactor, int useIndex) {}
+        public void OnInteractableInspectedUpdate(InteractionPoint interactor) {}
+        public void OnInteractableUsedUpdate(InteractionPoint interactor, int useIndex) {}
 
         public List<string> inspectTags, useTags;
 
-        Interactor lastInteractor;
+        InteractionPoint lastInteractor;
 
         void OnDisable () {
             UntagLastInteractor();

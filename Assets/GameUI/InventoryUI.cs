@@ -212,12 +212,11 @@ public class InventoryUI : MonoBehaviour
     void OnQuickTradeEnd (Inventory mine, Inventory trader, int interactorID) {
         if (quickTradeInteractorID == interactorID) {
             CloseQuickTradeUI();
-        }
-        
+        }   
     }
+
     void OnTradeStart (Inventory mine, Inventory trader, int interactorID) {
         OpenFullTradeUI (trader);
-        
     }
 
 
@@ -243,6 +242,8 @@ public class InventoryUI : MonoBehaviour
                UIManager.HideUI( Type2UI((UIType)i) );
             }
         }
+
+
         void OnDisable () {
             GameManager.onPauseRoutineStart -= OnGamePaused;
 
@@ -259,6 +260,8 @@ public class InventoryUI : MonoBehaviour
             inventory.onQuickTradeStart -= OnQuickTradeStart;
             inventory.onQuickTradeEnd -= OnQuickTradeEnd;
         }
+
+        
         void OnStash (Inventory inventory, ItemBehavior item, int count) {
             UIManager.ShowGameMessage("Stashed " + item.itemName + " ( x" + count+" )", 0);
         }

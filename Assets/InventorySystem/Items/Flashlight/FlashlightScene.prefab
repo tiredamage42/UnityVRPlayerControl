@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4378572462826122257}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.255, z: -0}
+  m_LocalPosition: {x: 0, y: 0.084, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6509559213888893406}
@@ -42,8 +42,8 @@ Light:
   serializedVersion: 8
   m_Type: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2
-  m_Range: 15
+  m_Intensity: 1
+  m_Range: 25
   m_SpotAngle: 60
   m_CookieSize: 10
   m_Shadows:
@@ -64,7 +64,7 @@ Light:
   m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
-  m_BounceIntensity: 1
+  m_BounceIntensity: 0
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
@@ -84,6 +84,7 @@ GameObject:
   - component: {fileID: 1710243302552063718}
   - component: {fileID: 4886987698000625243}
   - component: {fileID: 1878902102}
+  - component: {fileID: 8078523109565441705}
   m_Layer: 0
   m_Name: FlashlightScene
   m_TagString: Untagged
@@ -142,7 +143,7 @@ MonoBehaviour:
   handFollowTransform: 0
   setRangeOfMotionOnPickup: -1
   usePose: 1
-  poseName: Anim2
+  poseName: TriggerHoldFingerTop
   poseInfluence: 1
 --- !u!114 &6731844837837039086
 MonoBehaviour:
@@ -156,6 +157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c3b341f10b1243f0a847df7d82bb19d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lightColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!54 &1710243302552063718
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -201,10 +203,8 @@ MonoBehaviour:
   actionNames:
   - Use
   onlyProximityHover: 0
-  isAvailable: 1
+  available: 1
   useType: 0
-  highlightOnHover: 1
-  hideHighlight: []
   onUseStart:
     m_PersistentCalls:
       m_Calls: []
@@ -235,6 +235,25 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
+  onAvailabilityChange:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: InteractionSystem.InteractableAvailabilityEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+--- !u!114 &8078523109565441705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7877459934682501253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: febe6797aba6345fc98e3f74b3fa9904, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashInteractable: 1
+  highlightOnHover: 1
 --- !u!1001 &7126453193330772509
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -302,7 +321,8 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.25
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 95139158103427248, guid: e3109ccf9db0f54408d5c02b496761c1, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e3109ccf9db0f54408d5c02b496761c1, type: 3}
 --- !u!4 &7127225832475221845 stripped
 Transform:

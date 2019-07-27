@@ -1,15 +1,14 @@
 ﻿using UnityEngine;
 
-namespace RenderTools {
+namespace Environment.DetailsAndBillboards {
 
-    [CreateAssetMenu()] public class DetailMap : ScriptableObject {
+    [CreateAssetMenu(menuName="Environment/Details And Billboards/Detail Map")] 
+    public class DetailMap : ScriptableObject {
 		[System.Serializable] public struct Detail {
 			public int defenitionIndex;
 			public Vector3 worldPosition;
-
             public Vector3 scale;
             public Quaternion rotation;
-			
             public Detail (int defenitionIndex, Vector3 worldPosition, Vector3 scale, Quaternion rotation) {
                 this.defenitionIndex = defenitionIndex;
                 this.worldPosition = worldPosition;

@@ -36,7 +36,7 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 		private Transform lookAtJointTransform;
 		private new Animation animation;
 		private Text titleText;
-		private Player player;
+		// private Player player;
 		private Vector3 lookAtPosition = Vector3.zero;
 		private int tintColorID = 0;
 		private Color tintColor = Color.clear;
@@ -78,7 +78,7 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 
 		void Start()
 		{
-			player = Player.instance;
+			// player = Player.instance;
 		}
 
 
@@ -87,11 +87,11 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 
 			if ( Application.isPlaying )
 			{
-				if (Player.instance != null) {
+				if (VRManager.instance != null) {
 
-					lookAtPosition.x = player.hmdTransform.position.x;
+					lookAtPosition.x = VRManager.instance.hmdTransform.position.x;
 					lookAtPosition.y = lookAtJointTransform.position.y;
-					lookAtPosition.z = player.hmdTransform.position.z;
+					lookAtPosition.z = VRManager.instance.hmdTransform.position.z;
 
 					lookAtJointTransform.LookAt( lookAtPosition );
 				}

@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 
-namespace RenderTools {
-	[CreateAssetMenu()] public class DetailDefenition : ScriptableObject {
+namespace Environment.DetailsAndBillboards {
+	[CreateAssetMenu(menuName="Environment/Details And Billboards/Detail Defenition")] 
+	public class DetailDefenition : ScriptableObject {
 		[System.Serializable] public class LODInfo {
 			public Mesh mesh;
 			public Material[] materials;

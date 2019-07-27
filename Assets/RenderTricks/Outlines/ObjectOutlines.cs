@@ -184,14 +184,17 @@ namespace RenderTricks {
         }
 
         public void UnHighlightRenderers(List<Renderer> renderers) {
-            for (int i = 0; i < renderers.Count; i++) {
-                UnHighlightRenderer(renderers[i]);
-            }
+            for (int i = 0; i < renderers.Count; i++) UnHighlightRenderer(renderers[i]);
         }
         public void HighlightRenderers(List<Renderer> renderers, int highlightGroupIndex) {
-            for (int i = 0; i < renderers.Count; i++) {
-                HighlightRenderer(renderers[i], highlightGroupIndex);
-            }
+            for (int i = 0; i < renderers.Count; i++) HighlightRenderer(renderers[i], highlightGroupIndex);
+            enabled = true;
+        }
+        public void UnHighlightRenderers(Renderer[] renderers) {
+            for (int i = 0; i < renderers.Length; i++) UnHighlightRenderer(renderers[i]);
+        }
+        public void HighlightRenderers(Renderer[] renderers, int highlightGroupIndex) {
+            for (int i = 0; i < renderers.Length; i++) HighlightRenderer(renderers[i], highlightGroupIndex);
             enabled = true;
         }
 
@@ -234,13 +237,25 @@ namespace RenderTricks {
             instance.UnHighlightRenderer(renderer);
         }
         public static void Highlight_Renderers (List<Renderer> renderers, int highlightGroupIndex) {
-        if (instance == null) return;
-        instance.HighlightRenderers(renderers, highlightGroupIndex);
+            if (instance == null) return;
+            instance.HighlightRenderers(renderers, highlightGroupIndex);
         }
         public static void UnHighlight_Renderers(List<Renderer> renderers) {
             if (instance == null) return;
             instance.UnHighlightRenderers(renderers);
         }
+        public static void Highlight_Renderers (Renderer[] renderers, int highlightGroupIndex) {
+            if (instance == null) return;
+            instance.HighlightRenderers(renderers, highlightGroupIndex);
+        }
+        public static void UnHighlight_Renderers(Renderer[] renderers) {
+            if (instance == null) return;
+            instance.UnHighlightRenderers(renderers);
+        }
+        
+        
+        
+        
         public static void AddHighlightGroup (Color color, SortingType sortingType) {
             if (instance == null) return;
             instance.highlightGroups.Add(new HighlightGroup(color, sortingType));

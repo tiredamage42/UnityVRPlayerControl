@@ -10,9 +10,9 @@ public class SimpleCharacterController : MonoBehaviour
     public float ungroundedSpeedMultiplier = .25f;
     // [HideInInspector] 
     public bool useRawMovement;
-    // [HideInInspector] 
+    [HideInInspector] 
     public bool isGrounded;
-    // [HideInInspector] 
+    [HideInInspector] 
     public float floorY = 0;
     public bool isMoving { get { return inputMoveVector != Vector3.zero; } }
     Vector3 momentum;

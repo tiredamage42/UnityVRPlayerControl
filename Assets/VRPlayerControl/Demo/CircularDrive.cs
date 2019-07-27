@@ -17,13 +17,16 @@ namespace GameBase//Valve.VR.InteractionSystem
 	[RequireComponent( typeof( Interactable ) )]
 	public class CircularDrive : MonoBehaviour, IInteractable
 	{
+		public void OnInteractableAvailabilityChange(bool available) {
+			
+		}
 		
-		public void OnInspectedStart(Interactor interactor) {
+		public void OnInteractableInspectedStart(InteractionPoint interactor) {
 
 			
 
 		}
-        public void OnInspectedEnd(Interactor interactor){
+        public void OnInteractableInspectedEnd(InteractionPoint interactor){
 			if ( driving)// && hand )
 			{
              	// StartCoroutine( HapticPulses( hand, 1.0f, 10 ) );
@@ -32,10 +35,10 @@ namespace GameBase//Valve.VR.InteractionSystem
 			driving = false;
 			handHoverLocked = null;
 		}
-        public void OnInspectedUpdate(Interactor interactor){
+        public void OnInteractableInspectedUpdate(InteractionPoint interactor){
 
 		}
-        public void OnUsedStart(Interactor interactor, int useIndex){
+        public void OnInteractableUsedStart(InteractionPoint interactor, int useIndex){
 			if (!isBeingGrabbed)
             {
 				isBeingGrabbed = true;
@@ -54,7 +57,7 @@ namespace GameBase//Valve.VR.InteractionSystem
 			}
 		}
 
-        public void OnUsedEnd(Interactor interactor, int useIndex) {
+        public void OnInteractableUsedEnd(InteractionPoint interactor, int useIndex) {
 
 			if (isBeingGrabbed)
 			{
@@ -71,7 +74,7 @@ namespace GameBase//Valve.VR.InteractionSystem
             }
 			
 		}
-        public void OnUsedUpdate(Interactor interactor, int useIndex){
+        public void OnInteractableUsedUpdate(InteractionPoint interactor, int useIndex){
 			if ( driving )
 			
 			{
@@ -170,7 +173,7 @@ namespace GameBase//Valve.VR.InteractionSystem
 		private Vector3 frozenHandWorldPos = new Vector3( 0.0f, 0.0f, 0.0f );
 		private Vector2 frozenSqDistanceMinMaxThreshold = new Vector2( 0.0f, 0.0f );
 
-		private Interactor handHoverLocked = null;
+		private InteractionPoint handHoverLocked = null;
 
         private Interactable interactable;
 

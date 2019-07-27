@@ -67,7 +67,6 @@
         Pass { // 1 bokehPass
 			CGPROGRAM
 				#if defined(BOKEH_KERNEL_SMALL)
-				
                 // From https://github.com/Unity-Technologies/PostProcessing/
 				// blob/v2/PostProcessing/Shaders/Builtins/DiskKernels.hlsl
 				static const int kernelSampleCount = 16;
@@ -149,13 +148,6 @@
 			ENDCG
 		}
 
-        /*
-        The postfilter pass will perform a small Gaussian blur 
-        while staying at the same resolution, 
-        by using a box filter with a half-texel offset. 
-        This leads to overlapping samples, creating a 3×3 kernel 
-        known as a tent filter.
-        */
         Pass { // 2 postFilterPass (blur bokeh)
 			CGPROGRAM
 				half4 FragmentProgram (Interpolators i) : SV_Target {

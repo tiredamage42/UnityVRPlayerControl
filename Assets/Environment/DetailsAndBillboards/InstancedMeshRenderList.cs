@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Rendering;
-namespace RenderTools {
+namespace Environment.DetailsAndBillboards {
     
     public class InstancedMeshRenderList {
         const int maxRender = 1023;
@@ -52,7 +52,7 @@ namespace RenderTools {
             int stack = 0;
             
             while (c > 0) {
-                DrawMesh (mesh, materials, instances[stack], Mathf.Min(count, maxRender), shadows, receiveShadows);
+                DrawMesh (mesh, materials, instances[stack], Mathf.Min(c, maxRender), shadows, receiveShadows);
                 c -= maxRender;
                 stack++;
                 if (stack >= maxStack) {

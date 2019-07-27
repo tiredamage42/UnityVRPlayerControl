@@ -12,14 +12,19 @@ namespace GameBase//Valve.VR.InteractionSystem
     public class HoverButton : MonoBehaviour, IInteractable
     {
         public int useActionIndex = 0;
+
+
+        public void OnInteractableAvailabilityChange(bool available) {
+            
+        }
         
-		public void OnInspectedStart(Interactor interactor) {
+		public void OnInteractableInspectedStart(InteractionPoint interactor) {
 
 		}
-        public void OnInspectedEnd(Interactor interactor){
+        public void OnInteractableInspectedEnd(InteractionPoint interactor){
 
 		}
-        public void OnInspectedUpdate(Interactor interactor){
+        public void OnInteractableInspectedUpdate(InteractionPoint interactor){
             hovering = true;
             // lastHoveredHand = hand;
             lastInspector = interactor;
@@ -49,16 +54,16 @@ namespace GameBase//Valve.VR.InteractionSystem
             movingPart.localPosition = Vector3.Lerp(startPosition, endPosition, lerp);
 
             InvokeEvents(wasEngaged, engaged);
-
 		}
-        public void OnUsedStart(Interactor interactor, int useIndex){
+
+        public void OnInteractableUsedStart(InteractionPoint interactor, int useIndex){
             Debug.LogError("hover button use start");
 		}
 
-        public void OnUsedEnd(Interactor interactor, int useIndex){
+        public void OnInteractableUsedEnd(InteractionPoint interactor, int useIndex){
 			
 		}
-        public void OnUsedUpdate(Interactor interactor, int useIndex){
+        public void OnInteractableUsedUpdate(InteractionPoint interactor, int useIndex){
 
 		}
 
@@ -83,7 +88,7 @@ namespace GameBase//Valve.VR.InteractionSystem
         Vector3 handEnteredPosition;
 
         bool hovering;
-        Interactor lastInspector;
+        InteractionPoint lastInspector;
 
         void Awake () {
             interactable = GetComponent<Interactable>();

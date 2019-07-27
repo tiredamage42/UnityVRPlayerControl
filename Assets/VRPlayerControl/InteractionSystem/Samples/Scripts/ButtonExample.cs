@@ -5,25 +5,28 @@ namespace Valve.VR.InteractionSystem.Sample
 {
     public class ButtonExample : MonoBehaviour, IInteractable
     {
+        public void OnInteractableAvailabilityChange(bool available) {
+            
+        }
+        
 
         
-		public void OnInspectedStart(Interactor interactor) {
+		public void OnInteractableInspectedStart(InteractionPoint interactor) {
 
 		}
-        public void OnInspectedEnd(Interactor interactor){
+        public void OnInteractableInspectedEnd(InteractionPoint interactor){
 
 		}
-        public void OnInspectedUpdate(Interactor interactor){
+        public void OnInteractableInspectedUpdate(InteractionPoint interactor){
 
 		}
-        public void OnUsedStart(Interactor interactor, int useIndex){
-            Debug.LogError("planting");
+        public void OnInteractableUsedStart(InteractionPoint interactor, int useIndex){
             StartCoroutine(DoPlant());
 		}
-        public void OnUsedEnd(Interactor interactor, int useIndex){
+        public void OnInteractableUsedEnd(InteractionPoint interactor, int useIndex){
 			
 		}
-        public void OnUsedUpdate(Interactor interactor, int useIndex){
+        public void OnInteractableUsedUpdate(InteractionPoint interactor, int useIndex){
 
 		}
 

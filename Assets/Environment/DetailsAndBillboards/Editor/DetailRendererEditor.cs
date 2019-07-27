@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace RenderTools {
+namespace Environment.DetailsAndBillboards {
 
     [CustomEditor(typeof(DetailRenderer))]
     public class DetailRendererEditor : Editor
@@ -13,53 +13,49 @@ namespace RenderTools {
             renderer = target as DetailRenderer;
         }
 
-
         DetailDefenition defenitionToBake;
-        string assetName;
-
+        
         public override void OnInspectorGUI() {
             base.OnInspectorGUI();
 
-
-
             EditorGUILayout.Space();
+            // EditorGUILayout.Space();
+
+            // EditorGUILayout.LabelField("Billboard Baking :: ");
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField("Billboard Baking :: ");
-EditorGUILayout.Space();
-
-            defenitionToBake = (DetailDefenition)EditorGUILayout.ObjectField("Detail Defenition To Bake", defenitionToBake, typeof(DetailDefenition), false);
+            EditorGUILayout.BeginHorizontal();
+            defenitionToBake = (DetailDefenition)EditorGUILayout.ObjectField(defenitionToBake, typeof(DetailDefenition), false);
+            GUI.enabled = defenitionToBake != null;
             
-            if (defenitionToBake != null) {
-
-                assetName = EditorGUILayout.TextField("Mesh Asset Name", assetName);
-                bool stringEmpty = string.IsNullOrEmpty(assetName) || string.IsNullOrWhiteSpace(assetName);
-                GUI.enabled = !stringEmpty;
-            
-                if (GUILayout.Button("Create Billboard Map Mesh")) {
-                    Mesh mesh = BakeBillboards(defenitionToBake);                    
-                    AssetDatabase.CreateAsset(mesh, "Assets/" + assetName + ".asset");
-                    AssetDatabase.SaveAssets();
-                    EditorUtility.FocusProjectWindow();
-                    Selection.activeObject = mesh;
-
-                    defenitionToBake = null;
+            if (GUILayout.Button("Create Billboard Map Mesh", EditorStyles.miniButton)) {
+                var path = EditorUtility.SaveFilePanelInProject("Billboard Map Mesh", defenitionToBake.name + "_BBMap.asset", "asset", "");
+                if (path.Length != 0)
+                {
+                    Mesh mesh = BakeBillboards(defenitionToBake);    
+                    if (mesh != null) {
+                        AssetDatabase.CreateAsset(mesh, path);//"Assets/" + assetName + ".asset");
+                        AssetDatabase.SaveAssets();
+                        EditorUtility.FocusProjectWindow();
+                        Selection.activeObject = mesh;
+                    }                
                 }
-                GUI.enabled = true;
-                if (stringEmpty){
-                    EditorGUILayout.HelpBox("Specity an asset name...", MessageType.Warning);
-                }
+                defenitionToBake = null;
             }
+            
+            GUI.enabled = true;
+            EditorGUILayout.EndHorizontal();
+            // if (defenitionToBake != null) {
 
+            // }
         }
-
-        
 
         public Mesh BakeBillboards (DetailDefenition detail) {
             if (renderer.detailMap == null) {
-                Debug.Log("no detail map to bake billboards");
+                Debug.LogWarning("Renderer has no detail map to bake billboards");
                 return null;
             }
+
             int bbIndex = -1;
             for (int i = 0; i < detail.lods.Length; i++) {
                 if (detail.lods[i].isBillboard) {
@@ -72,24 +68,23 @@ EditorGUILayout.Space();
                 return null;
             }
 
-            if (detail.lods[bbIndex].billboardAsset == null) {
+            BillboardAsset billboardAsset = detail.lods[bbIndex].billboardAsset;
+
+            if (billboardAsset == null) {
                 Debug.Log(detail.name + " billboard lod doesnt have billboard asset... need use case for later");
             }
 
+            float billboardBaseWidth = billboardAsset.width;
+            float billboardBaseHeight = billboardAsset.height;
+            float billboardBaseBottom = billboardAsset.bottom;
 
+            // Debug.Log("Billboard info: width " + billboardBaseWidth + " / height " + billboardBaseHeight + " / bottom " + billboardBaseBottom);
 
-            float billboardBaseWidth = detail.lods[bbIndex].billboardAsset.width;
-            float billboardBaseHeight = detail.lods[bbIndex].billboardAsset.height;
-            float billboardBaseBottom = detail.lods[bbIndex].billboardAsset.bottom;
-
-            Debug.Log("Billboard info: width " + billboardBaseWidth + " / height " + billboardBaseHeight + " / bottom " + billboardBaseBottom);
-
-            Vector4[] bbTexcoords = detail.lods[bbIndex].billboardAsset.GetImageTexCoords();
+            Vector4[] bbTexcoords = billboardAsset.GetImageTexCoords();
 
             // vertex = pos
             // texcoord0 = billboardUVs
             // texcoord1 = width, height, bottom, scale
-
             
             List<int> indicies = new List<int>();        
             List<Vector3> vertexPositions = new List<Vector3>();
@@ -98,19 +93,16 @@ EditorGUILayout.Space();
                 uvs.Add(new List<Vector4>(0));
             }
 
-
             int instances = 0;
-            int maxVerts = CustomVegetation.GrassMeshBuilder.maxVerts;
-            
             
             for (int i = 0; i < renderer.detailMap.details.Length; i++) {
                 DetailMap.Detail d = renderer.detailMap.details[i];
 
-                DetailDefenition detailDef = renderer.allDefenitions[Mathf.Min(d.defenitionIndex, renderer.allDefenitions.Length-1)];
-                if (detailDef != detail) {
+                int defIndex = Mathf.Min(d.defenitionIndex, renderer.allDefenitions.Length-1);
+                if (renderer.allDefenitions[defIndex] != detail) {
                     continue;
                 }
-
+                
                 Vector3 worldPos = d.worldPosition;
                 Vector3 scale = d.scale;
 
@@ -122,7 +114,7 @@ EditorGUILayout.Space();
                 indicies.Add(instances);
                 instances++;
 
-                if (instances >= maxVerts) {
+                if (instances >= MeshUtils.MeshUtils.maxVerts) {
                     Debug.LogWarning("too many trees for mesh...");
                     return null;
                 }
@@ -134,15 +126,13 @@ EditorGUILayout.Space();
             Mesh mesh = new Mesh ();
             mesh.SetVertices(vertexPositions);
             mesh.SetIndices(indicies.ToArray(), MeshTopology.Points, 0);
-            
             for (int i = 0; i < uvs.Count; i++) {
                 mesh.SetUVs(i, uvs[i]);
             }
 
             mesh.RecalculateBounds();
-
-            Debug.Log("made mesh with " + instances + " vertices");
-
+            
+            Debug.Log("made Billboard map mesh with " + instances + " vertices");
             return mesh;
         }
     }

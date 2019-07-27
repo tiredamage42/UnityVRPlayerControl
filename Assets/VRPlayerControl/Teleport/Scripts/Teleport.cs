@@ -48,11 +48,12 @@ namespace VRPlayer
 		public float arcDistance = 10.0f;
 
 
-		[Header( "Audio Sources" )]
-		public AudioSource pointerAudioSource;
-		public AudioSource loopingAudioSource;
-		public AudioSource headAudioSource;
-		public AudioSource reticleAudioSource;
+		AudioSource loopSource, oneShotSource;
+		// [Header( "Audio Sources" )]
+		// public AudioSource pointerAudioSource;
+		// public AudioSource loopingAudioSource;
+		// public AudioSource headAudioSource;
+		// public AudioSource reticleAudioSource;
 
 		[Header( "Sounds" )]
 		public AudioClip teleportSound;
@@ -94,7 +95,7 @@ namespace VRPlayer
 		private float invalidReticleMinScaleDistance = 0.4f;
 		private float invalidReticleMaxScaleDistance = 2.0f;
 		
-		private float loopingAudioMaxVolume = 0.0f;
+		// private float loopingAudioMaxVolume = 0.0f;
 
 		
 		private Vector3 startingFeetOffset = Vector3.zero;
@@ -139,11 +140,26 @@ namespace VRPlayer
 			teleportArc = GetComponent<TeleportArc>();
 			teleportArc.traceLayerMask = traceLayerMask;
 
-			loopingAudioMaxVolume = loopingAudioSource.volume;
+			// loopingAudioMaxVolume = loopingAudioSource.volume;
 
 			float invalidReticleStartingScale = invalidReticleTransform.localScale.x;
 			invalidReticleMinScale *= invalidReticleStartingScale;
 			invalidReticleMaxScale *= invalidReticleStartingScale;
+
+
+			loopSource = gameObject.AddComponent<AudioSource>();
+			oneShotSource = gameObject.AddComponent<AudioSource>();
+			
+			
+			loopSource.loop = true;
+			oneShotSource.loop = false;
+
+			loopSource.spatialBlend = 0;
+			oneShotSource.spatialBlend = 0;
+
+			loopSource.volume = 1;
+			oneShotSource.volume = 1;
+
 		}
 
 
@@ -279,7 +295,7 @@ namespace VRPlayer
 			Vector3 pointerDir = pointerStartTransform.forward;
 			bool hitSomething = false;
 			
-			Vector3 playerFeetOffset = Player.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
+			Vector3 playerFeetOffset = VRManager.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
 
 			Vector3 arcVelocity = pointerDir * arcDistance;
 
@@ -287,7 +303,7 @@ namespace VRPlayer
 
 			//Check pointer angle
 			float dotUp = Vector3.Dot( pointerDir, Vector3.up );
-			float dotForward = Vector3.Dot( pointerDir, Player.instance.hmdTransform.forward );
+			float dotForward = Vector3.Dot( pointerDir, VRManager.instance.hmdTransform.forward );
 			bool pointerAtBadAngle = false;
 			if ( ( dotForward > 0 && dotUp > 0.75f ) || ( dotForward < 0.0f && dotUp > 0.5f ) )
 			{
@@ -412,7 +428,7 @@ namespace VRPlayer
 			invalidReticleTransform.position = pointerEnd;
 			
 			
-			reticleAudioSource.transform.position = pointedAtPosition;
+			// reticleAudioSource.transform.position = pointedAtPosition;
 
 			pointerLineRenderer.SetPosition( 0, pointerStart );
 			pointerLineRenderer.SetPosition( 1, pointerEnd );
@@ -425,7 +441,7 @@ namespace VRPlayer
 			reticle.rotation = Quaternion.Slerp( reticle.rotation, targetRotation, 0.1f );
 
 			//Scale the invalid reticle based on the distance from the player
-			float distanceFromPlayer = Vector3.Distance( pointerEnd, Player.instance.hmdTransform.position );
+			float distanceFromPlayer = Vector3.Distance( pointerEnd, VRManager.instance.hmdTransform.position );
 			float invalidReticleCurrentScale = Mathf.Lerp(invalidReticleMinScale, invalidReticleMaxScale, Mathf.InverseLerp(invalidReticleMinScaleDistance, invalidReticleMaxScaleDistance, distanceFromPlayer)); 
 			reticle.transform.localScale = Vector3.one * invalidReticleCurrentScale;
 
@@ -444,8 +460,10 @@ namespace VRPlayer
 			if ( isPointing )
 			{
 				//Stop looping sound
-				loopingAudioSource.Stop();
-				PlayAudioClip( pointerAudioSource, pointerStopSound );
+				loopSource.Stop();
+				PlayAudioClip(oneShotSource, pointerStopSound);
+				// loopingAudioSource.Stop();
+				// PlayAudioClip( pointerAudioSource, pointerStopSound );
 			}
 			teleportPointerObject.SetActive( false );
 
@@ -479,7 +497,9 @@ namespace VRPlayer
 				visible = true;
 				meshFading = true;
 
-				teleportPointerObject.SetActive( false );
+				// teleportPointerObject.SetActive( false );
+				teleportPointerObject.SetActive( true );
+				
 				teleportArc.Show();
 
 				foreach ( TeleportPoint teleportMarker in teleportMarkers )
@@ -491,14 +511,16 @@ namespace VRPlayer
 					}
 				}
 
-				startingFeetOffset = Player.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
+				startingFeetOffset = VRManager.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
 				movedFeetFarEnough = false;
 
+				loopSource.clip = pointerLoopSound;
+				loopSource.Play();
 
-				loopingAudioSource.clip = pointerLoopSound;
-				loopingAudioSource.loop = true;
-				loopingAudioSource.Play();
-				loopingAudioSource.volume = 0.0f;
+				// loopingAudioSource.clip = pointerLoopSound;
+				// loopingAudioSource.loop = true;
+				// loopingAudioSource.Play();
+				// loopingAudioSource.volume = 0.0f;
 			}
 
 
@@ -510,7 +532,8 @@ namespace VRPlayer
 
 			if ( visible  )
 			{
-				PlayAudioClip( pointerAudioSource, pointerStartSound );
+				// PlayAudioClip( pointerAudioSource, pointerStartSound );
+				PlayAudioClip( oneShotSource, pointerStartSound );
 			}
 
 				Hand pointerHand = teleportHandClass;
@@ -518,11 +541,11 @@ namespace VRPlayer
 				pointerStartTransform = pointerHand.transform;
 
 
-				pointerAudioSource.transform.SetParent( pointerStartTransform );
-				pointerAudioSource.transform.localPosition = Vector3.zero;
+				// pointerAudioSource.transform.SetParent( pointerStartTransform );
+				// pointerAudioSource.transform.localPosition = Vector3.zero;
 
-				loopingAudioSource.transform.SetParent( pointerStartTransform );
-				loopingAudioSource.transform.localPosition = Vector3.zero;
+				// loopingAudioSource.transform.SetParent( pointerStartTransform );
+				// loopingAudioSource.transform.localPosition = Vector3.zero;
 			
 		}
 
@@ -621,7 +644,7 @@ namespace VRPlayer
 
 
 
-				Player.instance.trackingOriginTransform.position = Vector3.Lerp(teleportStartPosition, targetPos, teleportLerp);
+				VRManager.instance.trackingOriginTransform.position = Vector3.Lerp(teleportStartPosition, targetPos, teleportLerp);
 
 
 
@@ -651,7 +674,7 @@ namespace VRPlayer
 
 				if (fastTeleport) {
 					doFade = false;
-					teleportStartPosition = Player.instance.trackingOriginTransform.position;
+					teleportStartPosition = VRManager.instance.trackingOriginTransform.position;
 					teleportLerp = 0;
 
 					Player.instance.GetComponent<CharacterController>().enabled = false;
@@ -664,9 +687,10 @@ namespace VRPlayer
 				SteamVR_Fade.Start( Color.black, currentFadeTime );
 			}
 
-			headAudioSource.transform.SetParent( Player.instance.hmdTransform );
-			headAudioSource.transform.localPosition = Vector3.zero;
-			PlayAudioClip( headAudioSource, teleportSound );
+			// headAudioSource.transform.SetParent( VRManager.instance.hmdTransform );
+			// headAudioSource.transform.localPosition = Vector3.zero;
+			// PlayAudioClip( headAudioSource, teleportSound );
+			PlayAudioClip( oneShotSource, teleportSound );
 
 			if (doFade) {
 
@@ -702,10 +726,10 @@ namespace VRPlayer
 			// Player.instance.trackingOriginTransform.position = (teleportPosition + playerFeetOffset) + Vector3.up * Player.instance.totalHeightOffset;			
 
 
-			Player.instance.trackingOriginTransform.position = GetNewPlayAreaPosition(teleportPosition);
+			VRManager.instance.trackingOriginTransform.position = GetNewPlayAreaPosition(teleportPosition);
 		}
 		Vector3 GetNewPlayAreaPosition (Vector3 teleportPosition) {
-			Vector3 playerFeetOffset = Player.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
+			Vector3 playerFeetOffset = VRManager.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
 			return (teleportPosition + playerFeetOffset) + Vector3.up * Player.instance.totalHeightOffset;
 		}
 
@@ -726,15 +750,20 @@ namespace VRPlayer
 					prevPointedAtPosition = pointedAtPosition;
 					PlayPointerHaptic( !hitTeleportMarker.locked );
 
-					PlayAudioClip( reticleAudioSource, goodHighlightSound );
+					// PlayAudioClip( reticleAudioSource, goodHighlightSound );
 
-					loopingAudioSource.volume = loopingAudioMaxVolume;
+					// loopingAudioSource.volume = loopingAudioMaxVolume;
+
+					PlayAudioClip( oneShotSource, goodHighlightSound );
+
 				}
 				else if ( pointedAtTeleportMarker != null )
 				{
-					PlayAudioClip( reticleAudioSource, badHighlightSound );
+					// PlayAudioClip( reticleAudioSource, badHighlightSound );
 
-					loopingAudioSource.volume = 0.0f;
+					// loopingAudioSource.volume = 0.0f;
+
+					PlayAudioClip( oneShotSource, badHighlightSound );
 				}
 			}
 			else if ( hitTeleportMarker != null ) //Pointing at the same teleport marker

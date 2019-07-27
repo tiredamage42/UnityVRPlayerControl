@@ -211,6 +211,20 @@
     color.rgb += albedo * _LightColor0.rgb * (atten * max (0, dot (normal, LIGHTDIR_NAME)))
 
 
+#if defined(_EMISSION) && !defined(UNITY_PASS_FORWARDADD)
+
+    // same as Unity variables to keep consistensy...
+
+    fixed4 _EmissionColor;
+    #define ADD_EMISSION_LIGHTING(color) color.rgb += _EmissionColor.rgb;
+#else
+    #define ADD_EMISSION_LIGHTING(color)            
+#endif
+
+
+
+
+
 #ifndef UNITY_PASS_FORWARDADD
     #ifdef VERTEX_LIGHTS
         // SH/ambient and vertex lights // Approximated illumination from non-important point lights
@@ -281,6 +295,7 @@
     CALCULATE_LIGHT_DIRECTION(i, wPos) \
     ADD_LAMBERT_LIGHTING(i, color, albedo, wNorm); \
     ADD_AMBIENT_LIGHTING(i, color, albedo, wNorm); \
+    ADD_EMISSION_LIGHTING(color) \
     APPLY_FOG(fogCoord, color); \
     return color;
 

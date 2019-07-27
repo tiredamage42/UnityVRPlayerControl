@@ -63,14 +63,11 @@ namespace VRPlayer{
 
         public SteamVR_Action_Boolean submitButton;
         public SteamVR_Action_Boolean cancelButton;      
-        [Header(".15f is a good setting when\nstandalone input module has 60 actions per second")]  
-        public float deltaThresholdForScroll = .15f;
         
-        static SteamVR_Action_Vector2 selectionAxis {
-            get {
-                return StandardizedVRInput.instance.TrackpadAxis;
-            }
-        }
+        [Tooltip(".15f is a good setting when\nstandalone input module has 60 actions per second")]  
+        // public float deltaThresholdForScroll = .15f;
+        public Vector2 deltaThresholdForScroll = new Vector2(.15f, .15f);
+        static SteamVR_Action_Vector2 selectionAxis { get { return StandardizedVRInput.instance.TrackpadAxis; } }
         static SteamVR_Input_Sources lastUsedUIHand = SteamVR_Input_Sources.Any;
         static SteamVR_Input_Sources currentUIHand = SteamVR_Input_Sources.Any;
 
@@ -95,7 +92,7 @@ namespace VRPlayer{
             float delta = currentAxis[axisIndex] - lastAxis[axisIndex];
             float returnAxis = 0;
 
-            if (delta != 0 && Mathf.Abs(delta) >= deltaThresholdForScroll) {
+            if (delta != 0 && Mathf.Abs(delta) >= deltaThresholdForScroll[axisIndex]) {
                 if (lastAxis[axisIndex] == 0 || currentAxis[axisIndex] == 0) {
                     if (lastAxis[axisIndex] == 0) {
                         // Debug.LogError("on scroll start");

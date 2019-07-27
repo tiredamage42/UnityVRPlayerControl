@@ -133,45 +133,58 @@ gameMessage
 
             InitializeListeners();
         }
-
-        public void OnInspectedStart(Interactor interactor) {}
-        public void OnInspectedEnd(Interactor interactor) {}
-        public void OnInspectedUpdate(Interactor interactor) {}
-        public void OnUsedStart(Interactor interactor, int useIndex) {
-            bool wasStashed = false;
+        
+        public void OnInteractableAvailabilityChange(bool available) {
+			
+		}
+		
+        public void OnInteractableInspectedStart(InteractionPoint interactor) {}
+        public void OnInteractableInspectedEnd(InteractionPoint interactor) {}
+        public void OnInteractableInspectedUpdate(InteractionPoint interactor) {}
+        public void OnInteractableUsedStart(InteractionPoint interactor, int useIndex) {
+            // bool wasStashed = false;
             Inventory inventory = interactor.GetComponentInParent<Inventory>();
 
-            if (itemBehavior.stashActions.Contains(useIndex)) {
+
+
+            if (useIndex == Inventory.STASH_ACTION) {
+            // if (itemBehavior.stashActions.Contains(useIndex)) {
                 if (inventory.CanStashItem(this.itemBehavior)) {
-                    inventory.StashItem(this);
-                    wasStashed = true;
+                    inventory.StashItem(this, interactor.interactorID);
+                    // wasStashed = true;
+                }
+            }
+
+            else if (useIndex == Inventory.GRAB_ACTION) {
+                if (itemBehavior.canQuickEquip) {
+                    inventory.EquipItem(itemBehavior, interactor.interactorID, this );
                 }
             }
                     
 
-            if (itemBehavior.equipActions.Contains(useIndex)) {
+            // if (itemBehavior.equipActions.Contains(useIndex)) {
                 
-                // if we stashed it, equip normally, else just quick equip this one
-                // equip slot negative one because slot is driven by inventory's
-                // last set equip index
+            //     // if we stashed it, equip normally, else just quick equip this one
+            //     // equip slot negative one because slot is driven by inventory's
+            //     // last set equip index
 
                 
-                // -1 if set by where equipped from
-                // else equip point index (overwritten if quick equipped)
-                int equipSlot = itemBehavior.equipSlot;
+            //     // -1 if set by where equipped from
+            //     // else equip point index (overwritten if quick equipped)
+            //     int equipSlot = itemBehavior.equipSlot;
                 
-                //quick equipped in manually set slot
-                if (!wasStashed) {
-                    equipSlot = -1;
-                }
-                inventory.EquipItem(itemBehavior, equipSlot, wasStashed ? null : this );
-            }
-
-        }
-        public void OnUsedEnd(Interactor interactor, int useIndex) {
+            //     //quick equipped in manually set slot
+            //     if (!wasStashed) {
+            //         equipSlot = -1;
+            //     }
+            //     inventory.EquipItem(itemBehavior, equipSlot, wasStashed ? null : this );
+            // }
 
         }
-        public void OnUsedUpdate(Interactor interactor, int useIndex) {
+        public void OnInteractableUsedEnd(InteractionPoint interactor, int useIndex) {
+
+        }
+        public void OnInteractableUsedUpdate(InteractionPoint interactor, int useIndex) {
 
         }
 
@@ -212,7 +225,9 @@ gameMessage
         
         public void OnEquipped (Inventory inventory) {
             // this.parentInventory = inventory;
-            interactable.isAvailable = false;
+            // interactable.isAvailable = false;
+
+            interactable.SetAvailable(false);
 
 
             SetItemColliderLayers();
@@ -227,7 +242,9 @@ gameMessage
         }
         public void OnUnequipped (Inventory inventory) {
             // this.parentInventory = null;
-            interactable.isAvailable = true;
+            // interactable.isAvailable = true;
+
+            interactable.SetAvailable(true);
 
             ResetItemColliderLayers();
 

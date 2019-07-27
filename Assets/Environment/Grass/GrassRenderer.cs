@@ -3,14 +3,11 @@ using UnityEngine.Rendering;
 
 using EnvironmentTools;
 
-namespace CustomVegetation {
+namespace Environment.Grass {
 
     [ExecuteInEditMode]
     public class GrassRenderer : GridHandler
     {
-        // [Range(0,1)] public float stormAmount = 1.0f;
-
-
         [Header("Grass Wind")]
         public Vector2 windSpeed_range = new Vector2(1,1);
         public Vector2 windFrequency_range = new Vector2(1,1);
@@ -20,11 +17,8 @@ namespace CustomVegetation {
         [Header("Grass Rendering")]
         public Vector2 cameraFadeRange = new Vector2(25, 35);
         public int worldGridRenderDistance = 2;
-        public GrassDefenition grassDef;
         public GrassMap grassMap;
         bool[] renderMask;
-
-
 
         protected override float GetGridSize() {
             return WorldGrid.instance.gridSize;
@@ -34,44 +28,57 @@ namespace CustomVegetation {
         }
 
 
-        protected override void Update()
-        {
-            base.Update();
-            
+        void SetWindAndRenderSettings () {
             Shader.SetGlobalVector("_PCGRASS_CAMERA_RANGE", new Vector4(cameraFadeRange.x, cameraFadeRange.y, 0, 0));
-            
-            // Shader.SetGlobalFloat("_ENVIRONMENT_STORM", stormAmount);
-
             Shader.SetGlobalVector("_PCGRASS_WIND_SPEED_FREQUENCY_RANGES", new Vector4(windSpeed_range.x, windSpeed_range.y, windFrequency_range.x, windFrequency_range.y));
             Shader.SetGlobalVector("_PCGRASS_WIND_SCALE_MIN", new Vector4(windScale_min.x, windScale_min.y, windScale_min.z, 0));
             Shader.SetGlobalVector("_PCGRASS_WIND_SCALE_MAX", new Vector4(windScale_max.x, windScale_max.y, windScale_max.z, 0));
 
-            // Shader.SetGlobalVector("_PCGRASS_WINDSETTINGS", new Vector4(windSpeed, windFrequency, windScale, 0));
+        }
 
 
-            // if (!Application.isPlaying) {
-            //     Vector3 cameraPos = transform.position;
+        protected override void Update()
+        {
+            base.Update();
 
-                
-            //     UpdateRenderMask(WorldGrid.GetGrid(cameraPos), cameraPos, WorldGrid.instance.cellSize);
-            // }
-
+            #if UNITY_EDITOR
+            SetWindAndRenderSettings();
+            #endif
+            
             RenderGrassMap();            
         }
 
+        static string normalShader = "Custom Environment/Grass/Grass";
+        static string shadowShader = "Custom Environment/Grass/ShadowPass";
+
+        
+        [System.NonSerialized] Material grassMaterial, shadowMaterial;
+        void BuildMaterialIfNull(ref Material material, string shader) {
+            if (material == null) {
+                material = new Material(Shader.Find(shader));
+                material.hideFlags = HideFlags.HideAndDontSave;
+            }
+        }
+        void BuildMaterialsIfNull () {
+            BuildMaterialIfNull(ref grassMaterial, normalShader);
+            BuildMaterialIfNull(ref shadowMaterial, shadowShader);
+        }
+            
         protected override void OnEnable () {
             base.OnEnable();
-            CheckForRenderMaskInitialize();
 
-            // if (Application.isPlaying) {
-            //     WorldGrid.instance.onPlayerGridChange += UpdateRenderMask;
-            // }
-        }
-        void OnDisable () {
-            // if (Application.isPlaying) {
-            //     if (WorldGrid.instance != null)
-            //         WorldGrid.instance.onPlayerGridChange -= UpdateRenderMask;	
-            // }
+            BuildMaterialsIfNull();
+
+            SetWindAndRenderSettings();
+            
+            if (CheckErrored())
+                return;
+
+            grassMaterial.SetTexture("_MainTex", grassMap.grassDef.atlasedTexture);
+            grassMaterial.SetTexture("_BumpMap", grassMap.grassDef.atlasedNormal);
+            shadowMaterial.SetTexture("_MainTex", grassMap.grassDef.atlasedTexture);
+            
+            CheckForRenderMaskInitialize();
         }
         
         bool CheckErrored () {
@@ -79,7 +86,7 @@ namespace CustomVegetation {
                 Debug.LogWarning("Needs Grass Map");
                 return true;
             }
-            if (grassDef == null) {
+            if (grassMap.grassDef == null) {
                 Debug.LogWarning("Needs Grass Defenition");
                 return true;
             }
@@ -90,6 +97,7 @@ namespace CustomVegetation {
             if (CheckErrored())
                 return;
             
+        
             if (renderMask == null) {
                 renderMask = new bool[0];
             }
@@ -153,8 +161,8 @@ namespace CustomVegetation {
 
                 2 - the shadow casting grass without movement
             */
-            DrawMesh (mesh, grassDef.material, ShadowCastingMode.Off, true);
-            DrawMesh (mesh, grassDef.shadowMaterial, ShadowCastingMode.ShadowsOnly, false);
+            DrawMesh (mesh, grassMaterial, ShadowCastingMode.Off, true);
+            DrawMesh (mesh, shadowMaterial, ShadowCastingMode.ShadowsOnly, false);
         }
 
     }
