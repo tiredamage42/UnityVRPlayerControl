@@ -71,11 +71,11 @@ public class InventoryUI : MonoBehaviour
         BroadcastUIOpen(type);
     }
 
-    public int quickInventoryInteractorID=-1;
+    [HideInInspector] public int QI_EquipPointID=-1;
 
     public void OpenQuickInventoryUI (int throughID){
-        if (quickInventoryInteractorID < 0 && quickTradeInteractorID != throughID) {        
-            quickInventoryInteractorID = throughID;
+        if (QI_EquipPointID < 0 && quickTradeInteractorID != throughID) {        
+            QI_EquipPointID = throughID;
             InitializeSingleInventoryUI(UIType.QuickInventory, true, inventory, null, inventory.favoritesCount, OnQuickInventorySubmit);
         }
     }
@@ -88,7 +88,7 @@ public class InventoryUI : MonoBehaviour
         if (IsOpen(UIType.FullInventory) || IsOpen(UIType.FullTrade)) {
             return;
         } 
-        if (quickTradeInteractorID < 0 && quickInventoryInteractorID != throughID) {
+        if (quickTradeInteractorID < 0 && QI_EquipPointID != throughID) {
             quickTradeInteractorID = throughID;
             InitializeSingleInventoryUI(UIType.QuickTrade, false, showInventory, inventory, maxQuickTradeButtons, OnQuickTradeSubmit);
         }
@@ -163,7 +163,7 @@ public class InventoryUI : MonoBehaviour
         
         public void CloseQuickInventoryUI () {
             BeginClose(UIType.QuickInventory, quickInventory);
-            quickInventoryInteractorID = - 1;
+            QI_EquipPointID = - 1;
         }
         public void CloseFullInventoryUI () {
             BeginClose(UIType.FullInventory, fullInventory);

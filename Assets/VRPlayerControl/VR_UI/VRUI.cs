@@ -80,8 +80,6 @@ namespace VRPlayer {
                 return;
             if (inventoryUI.IsOpen(InventoryUI.UIType.QuickInventory)) 
                 return;
-
-
             
 			if (Player.instance.handsTogether) {
 
@@ -109,7 +107,6 @@ namespace VRPlayer {
         [Space]
         [Header("UI ACTIONS")]
         [Space]
-        
         [Header("Quick Inventory")]
         public SteamVR_Action_Boolean QUICK_INVENTORY_CONSUME_ACTION;
         
@@ -132,10 +129,8 @@ namespace VRPlayer {
 
         Vector2Int GetAlternativeSubmitsQI () {
                     
-            SteamVR_Input_Sources hand = VRManager.Int2Hand( inventoryUI.quickInventoryInteractorID );
-            // SteamVR_Input_Sources hand = VRUIInput.GetUIHand();
-            if (QUICK_INVENTORY_CONSUME_ACTION.GetStateDown(hand)) {
-                return new Vector2Int(InventoryUI.QUICK_INVENTORY_CONSUME_ACTION, inventoryUI.quickInventoryInteractorID);//VRManager.Hand2Int(hand));
+            if (QUICK_INVENTORY_CONSUME_ACTION.GetStateDown(VRManager.Int2Hand( inventoryUI.QI_EquipPointID ))) {
+                return new Vector2Int(InventoryUI.QUICK_INVENTORY_CONSUME_ACTION, inventoryUI.QI_EquipPointID);//VRManager.Hand2Int(hand));
             }
             
             return new Vector2Int(-1, 1);
@@ -229,13 +224,12 @@ namespace VRPlayer {
             switch (type) {
                 // quick inventory
                 case InventoryUI.UIType.QuickInventory:
-                    hand = VRManager.Int2Hand( inventoryUI.quickInventoryInteractorID );
+                    hand = VRManager.Int2Hand( inventoryUI.QI_EquipPointID );
 
                     StandardizedVRInput.MarkActionOccupied(QUICK_INVENTORY_CONSUME_ACTION, VRUIInput.GetUIHand());
                     StandardizedVRInput.instance.ShowHint(hand, QUICK_INVENTORY_CONSUME_ACTION, "Use");    
 
                     TransformBehavior.AdjustTransform(uiHolder.baseObject.transform, Player.instance.GetHand(hand).transform, quickInventoryEquip, 0);
-                
                     VRUIInput.SetUIHand(hand);
                     break;
                 // full inventory
