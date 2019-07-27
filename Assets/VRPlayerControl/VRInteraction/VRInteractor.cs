@@ -17,11 +17,11 @@ namespace VRPlayer {
         LineRenderer[] interactRays;
 
         void Awake () {
-            BuildLineRenderers();
         }
         void Start () {
             GetInteractionPoints();
             UpdateInteractorReferenceTransform();
+            BuildLineRenderers();
         }
 
         void GetInteractionPoints () {
@@ -61,7 +61,7 @@ namespace VRPlayer {
 
             interactRays = new LineRenderer[2];
             for (int i = 0; i < interactionPoints.Length; i++) {
-                interactRays[i] = gameObject.AddComponent<LineRenderer>();
+                interactRays[i] = interactionPoints[i].gameObject.AddComponent<LineRenderer>();
                 interactRays[i].sharedMaterial = interactionShowMaterial;
             }
         }

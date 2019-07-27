@@ -20,7 +20,10 @@ namespace VRPlayer.Locomotion {
             locomotionScript = GetComponent<TouchpadLocomotion>();
             moveScript = GetComponent<SimpleCharacterController>();
             
-            vignette = VRManager.instance.GetComponentInChildren<VignettingVR>();
+        }
+        void Start () {
+
+            vignette = VRManager.instance.hmdTransform.GetComponentInChildren<VignettingVR>();
         }
         
 
