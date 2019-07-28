@@ -13,9 +13,7 @@ namespace InventorySystem {
         public ItemComposition[] requires;
         public ItemComposition[] yields;
         
-        
-
-
+    
         public override void OnItemStashed (Inventory inventory, ItemBehavior item, int count, int equipSlot, bool manual) {
             
         }

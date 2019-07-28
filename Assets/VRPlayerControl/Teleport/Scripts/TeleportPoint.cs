@@ -5,11 +5,8 @@ using UnityEngine.UI;
 using UnityEditor;
 #endif
 
-// using Valve.VR.InteractionSystem;
-
-namespace VRPlayer// Valve.VR.InteractionSystem
+namespace VRPlayer
 {
-	//-------------------------------------------------------------------------
 	public class TeleportPoint : MonoBehaviour// TeleportMarkerBase
 	{
 		public enum TeleportPointType
@@ -27,21 +24,20 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 		public Color titleLockedColor;
 		
 		//Private data
-		private bool gotReleventComponents = false;
-		private MeshRenderer markerMesh;
-		private MeshRenderer switchSceneIcon;
-		private MeshRenderer moveLocationIcon;
-		private MeshRenderer lockedIcon;
-		private MeshRenderer pointIcon;
-		private Transform lookAtJointTransform;
-		private new Animation animation;
-		private Text titleText;
-		// private Player player;
-		private Vector3 lookAtPosition = Vector3.zero;
-		private int tintColorID = 0;
-		private Color tintColor = Color.clear;
-		private Color titleColor = Color.clear;
-		private float fullTitleAlpha = 0.0f;
+		bool gotReleventComponents = false;
+		MeshRenderer markerMesh;
+		MeshRenderer switchSceneIcon;
+		MeshRenderer moveLocationIcon;
+		MeshRenderer lockedIcon;
+		MeshRenderer pointIcon;
+		Transform lookAtJointTransform;
+		new Animation animation;
+		Text titleText;
+		Vector3 lookAtPosition = Vector3.zero;
+		// int tintColorID = 0;
+		Color tintColor = Color.clear;
+		Color titleColor = Color.clear;
+		float fullTitleAlpha = 0.0f;
 
 		//Constants
 		private const string switchSceneAnimation = "switch_scenes_idle";
@@ -49,24 +45,13 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 		private const string lockedAnimation = "locked_idle";
 
 
-		//-------------------------------------------------
-		// public override bool showReticle
-		// {
-		// 	get
-		// 	{
-		// 		return false;
-		// 	}
-		// }
-
-
-		//-------------------------------------------------
 		void Awake()
 		{
 			GetRelevantComponents();
 
 			animation = GetComponent<Animation>();
 
-			tintColorID = Shader.PropertyToID( "_TintColor" );
+			// tintColorID = Shader.PropertyToID( "_TintColor" );
 
 			moveLocationIcon.gameObject.SetActive( false );
 			switchSceneIcon.gameObject.SetActive( false );
@@ -74,13 +59,6 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 
 			UpdateVisuals();
 		}
-
-
-		void Start()
-		{
-			// player = Player.instance;
-		}
-
 
 		void Update()
 		{
@@ -98,8 +76,6 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 			}
 		}
 
-
-		//-------------------------------------------------
 		public bool ShouldActivate( Vector3 playerPosition )
 		{
 			return ( Vector3.Distance( transform.position, playerPosition ) > 1.0f );
@@ -112,9 +88,6 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 			UpdateVisuals();
 		}
 	
-
-
-		//-------------------------------------------------
 		public void Highlight( bool highlight )
 		{
 			if ( !locked )
@@ -141,8 +114,6 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 			}
 		}
 
-
-		//-------------------------------------------------
 		public void UpdateVisuals()
 		{
 			if ( !gotReleventComponents )
@@ -188,37 +159,33 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 		}
 
 
-		//-------------------------------------------------
-		public void SetAlpha( float tintAlpha, float alphaPercent )
-		{
-			tintColor = markerMesh.material.GetColor( tintColorID );
-			tintColor.a = tintAlpha;
+		// public void SetAlpha( float tintAlpha, float alphaPercent )
+		// {
+		// 	tintColor = markerMesh.material.GetColor( tintColorID );
+		// 	tintColor.a = tintAlpha;
 
-			markerMesh.material.SetColor( tintColorID, tintColor );
-			switchSceneIcon.material.SetColor( tintColorID, tintColor );
-			moveLocationIcon.material.SetColor( tintColorID, tintColor );
-			lockedIcon.material.SetColor( tintColorID, tintColor );
+		// 	markerMesh.material.SetColor( tintColorID, tintColor );
+		// 	switchSceneIcon.material.SetColor( tintColorID, tintColor );
+		// 	moveLocationIcon.material.SetColor( tintColorID, tintColor );
+		// 	lockedIcon.material.SetColor( tintColorID, tintColor );
 
-			titleColor.a = fullTitleAlpha * alphaPercent;
-			titleText.color = titleColor;
-		}
+		// 	titleColor.a = fullTitleAlpha * alphaPercent;
+		// 	titleText.color = titleColor;
+		// }
 
 
-		//-------------------------------------------------
 		public void SetMeshMaterials( Material material, Color textColor )
 		{
-			markerMesh.material = material;
-			switchSceneIcon.material = material;
-			moveLocationIcon.material = material;
-			lockedIcon.material = material;
+			markerMesh.sharedMaterial = material;
+			switchSceneIcon.sharedMaterial = material;
+			moveLocationIcon.sharedMaterial = material;
+			lockedIcon.sharedMaterial = material;
 
 			titleColor = textColor;
 			fullTitleAlpha = textColor.a;
 			titleText.color = titleColor;
 		}
 
-
-		//-------------------------------------------------
 		public void TeleportToScene()
 		{
 			if ( !string.IsNullOrEmpty( switchToScene ) )
@@ -231,8 +198,6 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 			}
 		}
 
-
-		//-------------------------------------------------
 		public void GetRelevantComponents()
 		{
 			markerMesh = transform.Find( "teleport_marker_mesh" ).GetComponent<MeshRenderer>();
@@ -246,8 +211,6 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 			gotReleventComponents = true;
 		}
 
-
-		//-------------------------------------------------
 		public void ReleaseRelevantComponents()
 		{
 			markerMesh = null;
@@ -259,7 +222,8 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 		}
 
 
-		//-------------------------------------------------
+
+#if UNITY_EDITOR
 		public void UpdateVisualsInEditor()
 		{
 			if ( Application.isPlaying )
@@ -311,6 +275,9 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 
 			ReleaseRelevantComponents();
 		}
+
+
+#endif
 	}
 
 
@@ -319,7 +286,6 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 	[CustomEditor( typeof( TeleportPoint ) )]
 	public class TeleportPointEditor : Editor
 	{
-		//-------------------------------------------------
 		void OnEnable()
 		{
 			if ( Selection.activeTransform )
@@ -330,8 +296,6 @@ namespace VRPlayer// Valve.VR.InteractionSystem
 			}
 		}
 
-
-		//-------------------------------------------------
 		public override void OnInspectorGUI()
 		{
 			DrawDefaultInspector();

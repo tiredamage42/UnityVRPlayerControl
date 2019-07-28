@@ -160,6 +160,8 @@ EditorGUILayout.Space();
         
         allElements = GetAllInstances<PrefabPainterElement>();
 
+        Debug.Log(allElements.Length);
+
         elementNames = new string[allElements.Length];
 
         for (int i =0 ; i< allElements.Length; i++) {

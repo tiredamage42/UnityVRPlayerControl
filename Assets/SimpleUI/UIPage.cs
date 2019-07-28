@@ -43,10 +43,14 @@ namespace SimpleUI {
         }
 
         public string pageTitleText = "Window Title";
-        public int lineHeight = 10;
-        public int width = 64;
+        // public int lineHeight = 10;
+        public float lineHeight = 10;
+        
+        public float width = 64;
 
         public TextAnchor textAlignment;
+
+        [Range(0,1)] public float textOffset = 0;
 
 
         public void SetSize (int width, int lineHeight) {
@@ -80,14 +84,14 @@ namespace SimpleUI {
                         textRect.pivot = new Vector2(0.5f, 0.5f);
                     }
                     else if (textAlignment == TextAnchor.MiddleRight || textAlignment == TextAnchor.LowerRight || textAlignment == TextAnchor.UpperRight  ) {
-                        textRect.anchorMin = new Vector2(1, 0.5f);
-                        textRect.anchorMax = new Vector2(1, 0.5f);
-                        textRect.pivot = new Vector2(1, 0.5f);
+                        textRect.anchorMin = new Vector2(1-textOffset, 0.5f);
+                        textRect.anchorMax = new Vector2(1-textOffset, 0.5f);
+                        textRect.pivot = new Vector2(1-textOffset, 0.5f);
                     }
                     else if (textAlignment == TextAnchor.MiddleLeft || textAlignment == TextAnchor.LowerLeft || textAlignment == TextAnchor.UpperLeft  ) {
-                        textRect.anchorMin = new Vector2(0, 0.5f);
-                        textRect.anchorMax = new Vector2(0, 0.5f);
-                        textRect.pivot = new Vector2(0, 0.5f);
+                        textRect.anchorMin = new Vector2(0 + textOffset, 0.5f);
+                        textRect.anchorMax = new Vector2(0 + textOffset, 0.5f);
+                        textRect.pivot = new Vector2(0 + textOffset, 0.5f);
                     }
                 }
                 

@@ -63,11 +63,12 @@ namespace InventorySystem {
 
             Vector3 localPosition;
             Quaternion localRotation;
+            Vector3 localScale;
 
-            TransformBehavior.GetValues(equippedSlot.item.equipTransform, equipID, out localPosition, out localRotation);
+            TransformBehavior.GetValues(equippedSlot.item.equipTransform, equipID, out localPosition, out localRotation, out localScale);
 
-            Vector3 targetItemPosition = transform.TransformPoint(localPosition);
             
+            Vector3 targetItemPosition = transform.TransformPoint(localPosition);
             Vector3 positionDelta = (targetItemPosition - equippedSlot.sceneItem.rigidbody.position);
             velocityTarget = (positionDelta * VelocityMagic * Time.deltaTime);
 

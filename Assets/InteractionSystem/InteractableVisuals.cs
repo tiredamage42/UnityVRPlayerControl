@@ -50,7 +50,7 @@ namespace InteractionSystem {
             }
         }
 
-        public bool flashInteractable;
+        public bool flashInteractable = true;
         
         [Tooltip("Set whether or not you want this interactible to highlight when hovering over it")]
         public bool highlightOnHover = true;

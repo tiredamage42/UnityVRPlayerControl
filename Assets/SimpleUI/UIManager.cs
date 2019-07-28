@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 
 using StandaloneInputModule = SimpleUI.StandaloneInputModule;
-using _GAME_MANAGER_TYPE_ = GameBase.GameManager;
+// using _GAME_MANAGER_TYPE_ = GameBase.GameManager;
 
 namespace SimpleUI {
     // [RequireComponent(typeof(StandaloneInputModule))]
@@ -20,15 +20,15 @@ namespace SimpleUI {
 
         }
 
-        static _GAME_MANAGER_TYPE_ _gameManager;
-        static _GAME_MANAGER_TYPE_ gameManager {
-            get {
-                if (_gameManager == null) {
-                    _gameManager = GameObject.FindObjectOfType<_GAME_MANAGER_TYPE_>();
-                }
-                return _gameManager;
-            }
-        }
+        // static _GAME_MANAGER_TYPE_ _gameManager;
+        // static _GAME_MANAGER_TYPE_ gameManager {
+        //     get {
+        //         if (_gameManager == null) {
+        //             _gameManager = GameObject.FindObjectOfType<_GAME_MANAGER_TYPE_>();
+        //         }
+        //         return _gameManager;
+        //     }
+        // }
         static StandaloneInputModule _inputModule;
         public static StandaloneInputModule inputModule {
             get {
@@ -70,7 +70,7 @@ namespace SimpleUI {
         //     gameManager.TogglePause();
         // }
 
-        public static event System.Action<string, int> onShowGameMessage;
+        // public static event System.Action<string, int> onShowGameMessage;
         // void OnShowGameMessage (string message, int key) {
             
         //     if (onShowGameMessage != null) {
@@ -78,16 +78,16 @@ namespace SimpleUI {
         //     }
         // }
         // public event System.Action<string, int> onShowGameMessage;
-        public static void ShowGameMessage (string message, int key) {
+        // public static void ShowGameMessage (string message, int key) {
 
-            if (onShowGameMessage != null) {
-                onShowGameMessage(message, key);
-            }
-        }
-        public static void ShowGameMessage (string message) {
-            ShowGameMessage(message, 0);
+        //     if (onShowGameMessage != null) {
+        //         onShowGameMessage(message, key);
+        //     }
+        // }
+        // public static void ShowGameMessage (string message) {
+        //     ShowGameMessage(message, 0);
             
-        }
+        // }
 
 
 
@@ -256,6 +256,12 @@ namespace SimpleUI {
         }
         static GameObject GetUIObj (UIElementHolder uiObject) {
             return uiObject.baseObject != null ? uiObject.baseObject : uiObject.gameObject;
+        }
+
+
+
+        public static bool AnyUIOpen() {
+            return instance.shownUIsWithInput.Count != 0;
         }
         
         public static void ShowUI(UIElementHolder uiObject, bool needsInput, bool tryRepeat) {

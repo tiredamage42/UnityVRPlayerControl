@@ -94,6 +94,23 @@ public class Inventory : MonoBehaviour, IInteractable
 
 
 
+    public event System.Action<Inventory, int, Inventory, string> onInventoryManagementInitiate;
+
+    public void InitiateInventoryManagement (string context, int equipID, Inventory secondaryInventory) {
+        if (onInventoryManagementInitiate != null) {
+            onInventoryManagementInitiate(this, equipID, secondaryInventory, context);
+        }
+    }
+    
+
+        
+
+
+
+
+
+
+
 
 
 

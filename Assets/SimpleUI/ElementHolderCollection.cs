@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 
 namespace SimpleUI{
-
+    [ExecuteInEditMode]
     public class ElementHolderCollection : UIElementHolder
     {
 

@@ -9,11 +9,11 @@ namespace SimpleUI{
     public class UIRadial : UIElementHolder
     {
         
-        public float textOffset = .8f;
 
+        public float textOffset = .8f;
         public float backgroundSize = 1;
-        public float insideSize = .9f;
-        public float flairSize = 1.1f;
+        public float selectInsideSize = .9f;
+        public float selectFlairSize = 1.1f;
 
         Transform _radialElementsParent;
         Transform radialElementsParent {
@@ -45,8 +45,8 @@ namespace SimpleUI{
                 Quaternion elementInsidesLocalRotation = Quaternion.Euler(0, 0, radialAngle);
 
 
-                Vector3 flairSize = Vector3.one * this.flairSize;
-                Vector3 insideSize = Vector3.one * this.insideSize;
+                Vector3 selectFlairSize = Vector3.one * this.selectFlairSize;
+                Vector3 selectInsideSize = Vector3.one * this.selectInsideSize;
                 Vector3 textLocalPos = new Vector3(0,textOffset,0);
             
                 for (int i = 0; i < allElements.Count; i++) {
@@ -65,14 +65,19 @@ namespace SimpleUI{
 
                     // element.UpdateLayout(1f/allElements.Count, sliceAngle, -i * sliceAngle);
 
-                    element.selectFlairTransform.localScale = flairSize;
-                    element.mainImageTransform.localScale = insideSize;
+                    element.selectFlairTransform.localScale = selectFlairSize;
+                    element.mainImageTransform.localScale = selectInsideSize;
 
 
                     UIText t = element.uiText;
                     if (element.hasText) {
                         element.uiText.transform.localRotation = Quaternion.Euler(0,0,-elementAngle);
-                        element.uiText.SetAnchor(elementAngle < -180f ? TextAnchor.MiddleRight : TextAnchor.MiddleLeft);
+                        if (elementAngle == 0 || elementAngle == -180) {
+                            element.uiText.SetAnchor(TextAnchor.MiddleCenter);
+                        }
+                        else {
+                            element.uiText.SetAnchor(elementAngle < -180f ? TextAnchor.MiddleRight : TextAnchor.MiddleLeft);
+                        }
                         element.uiText.transform.localPosition = textLocalPos;
                     }
                 }

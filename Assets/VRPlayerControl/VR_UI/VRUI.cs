@@ -10,21 +10,36 @@ using GameUI;
 using GameBase;
 
 
+/*
+
+    interactable:
+        lootable (for ammo chests, tradeable inventories, etc...)
+            linked_inventory
+        
+
+        inventoryManager: (eg: crafting table)
+            used category = -1 (negative values in item categories are hidden)
+            on use: displays inventory ui
+
+
+*/
+
+
 namespace VRPlayer {
 
     public class VRUI : MonoBehaviour
     {
         void Start()
         {
-            SetUpMessageCenter();
+            // SetUpMessageCenter();
         }
 
         void Update()
         {
             
-            SetUpMessageCenter();
+            // SetUpMessageCenter();
 
-            UpdateQuickInventory();
+            // UpdateQuickInventory();
             UpdateNormalInventory();
         }
 
@@ -37,7 +52,7 @@ namespace VRPlayer {
             GameManager.onPauseRoutineStart += OnGamePaused;
             
             UIManager.onUISelect += OnUISelection;
-            UIManager.onShowGameMessage += OnShowGameMessage;
+            // UIManager.onShowGameMessage += OnShowGameMessage;
 
             inventoryUI = Player.instance.GetComponent<InventoryUI>();
             inventoryUI.onUIClose += OnInventoryUIClose;
@@ -52,47 +67,47 @@ namespace VRPlayer {
             GameManager.onPauseRoutineStart -= OnGamePaused;
 
             UIManager.onUISelect -= OnUISelection;
-            UIManager.onShowGameMessage -= OnShowGameMessage;
+            // UIManager.onShowGameMessage -= OnShowGameMessage;
 
         }
 
 
 
-        bool CheckHandForWristRadialOpen (SteamVR_Input_Sources hand) {
-			if (quickInventoryToggle.GetStateDown(hand)) {
-                Debug.LogError("YO");
-				inventoryUI.OpenQuickInventoryUI(VRManager.Hand2Int(hand));
+        // bool CheckHandForWristRadialOpen (SteamVR_Input_Sources hand) {
+		// 	if (quickInventoryToggle.GetStateDown(hand)) {
+        //         // Debug.LogError("YO");
+		// 		inventoryUI.OpenQuickInventoryUI(VRManager.Hand2Int(hand));
                 
-                // VRUIInput.SetUIHand(hand);
-                // TransformBehavior.AdjustTransform(inventoryUI.quickInventory.baseObject.transform, Player.instance.GetHand(hand).transform, quickInventoryEquip, 0);
+        //         // VRUIInput.SetUIHand(hand);
+        //         // TransformBehavior.AdjustTransform(inventoryUI.quickInventory.baseObject.transform, Player.instance.GetHand(hand).transform, quickInventoryEquip, 0);
 
-				return true;
-			}
-			return false;
-		}
-        void UpdateQuickInventory () {
-            if (GameManager.isPaused) 
-                return;
+		// 		return true;
+		// 	}
+		// 	return false;
+		// }
+        // void UpdateQuickInventory () {
+        //     if (GameManager.isPaused) 
+        //         return;
             
-            if (inventoryUI.IsOpen(InventoryUI.UIType.FullInventory)) 
-                return;
-            if (inventoryUI.IsOpen(InventoryUI.UIType.FullTrade)) 
-                return;
-            if (inventoryUI.IsOpen(InventoryUI.UIType.QuickInventory)) 
-                return;
+        //     if (inventoryUI.IsOpen(InventoryUI.UIType.FullInventory)) 
+        //         return;
+        //     if (inventoryUI.IsOpen(InventoryUI.UIType.FullTrade)) 
+        //         return;
+        //     if (inventoryUI.IsOpen(InventoryUI.UIType.QuickInventory)) 
+        //         return;
             
-			if (Player.instance.handsTogether) {
+		// 	if (Player.instance.handsTogether) {
 
-                StandardizedVRInput.MarkActionOccupied(quickInventoryToggle, SteamVR_Input_Sources.Any);
+        //         StandardizedVRInput.MarkActionOccupied(quickInventoryToggle, SteamVR_Input_Sources.Any);
 
-                if (!CheckHandForWristRadialOpen(SteamVR_Input_Sources.LeftHand)) {
-                    CheckHandForWristRadialOpen(SteamVR_Input_Sources.RightHand);
-                }
-            }
-            else {
-                StandardizedVRInput.MarkActionUnoccupied(quickInventoryToggle);
-            }   
-        } 
+        //         if (!CheckHandForWristRadialOpen(SteamVR_Input_Sources.LeftHand)) {
+        //             CheckHandForWristRadialOpen(SteamVR_Input_Sources.RightHand);
+        //         }
+        //     }
+        //     else {
+        //         StandardizedVRInput.MarkActionUnoccupied(quickInventoryToggle);
+        //     }   
+        // } 
      
 
         // [Header("Main Menu")]
@@ -101,14 +116,16 @@ namespace VRPlayer {
         // [Space]
 
         [Header("Inventory")]
-        public SteamVR_Action_Boolean quickInventoryToggle, fullInventoryToggle;
+        // public SteamVR_Action_Boolean quickInventoryToggle, fullInventoryToggle;
+        public SteamVR_Action_Boolean fullInventoryToggle;
+        
         public SteamVR_Input_Sources inventoryToggleHand = SteamVR_Input_Sources.RightHand;
         
         [Space]
         [Header("UI ACTIONS")]
         [Space]
-        [Header("Quick Inventory")]
-        public SteamVR_Action_Boolean QUICK_INVENTORY_CONSUME_ACTION;
+        // [Header("Quick Inventory")]
+        // public SteamVR_Action_Boolean QUICK_INVENTORY_CONSUME_ACTION;
         
         [Header("Full Inventory")]
         public SteamVR_Action_Boolean FULL_INVENTORY_CONSUME_ACTION;
@@ -127,16 +144,16 @@ namespace VRPlayer {
         
 
 
-        Vector2Int GetAlternativeSubmitsQI () {
+        // Vector2Int GetAlternativeSubmitsQI () {
                     
-            if (QUICK_INVENTORY_CONSUME_ACTION.GetStateDown(VRManager.Int2Hand( inventoryUI.QI_EquipPointID ))) {
-                return new Vector2Int(InventoryUI.QUICK_INVENTORY_CONSUME_ACTION, inventoryUI.QI_EquipPointID);//VRManager.Hand2Int(hand));
-            }
+        //     if (QUICK_INVENTORY_CONSUME_ACTION.GetStateDown(VRManager.Int2Hand( inventoryUI.QI_EquipPointID ))) {
+        //         return new Vector2Int(InventoryUI.QUICK_INVENTORY_CONSUME_ACTION, inventoryUI.QI_EquipPointID);//VRManager.Hand2Int(hand));
+        //     }
             
-            return new Vector2Int(-1, 1);
+        //     return new Vector2Int(-1, 1);
             
         
-        }
+        // }
         Vector2Int GetAlternativeSubmitsFI () {
             if (FULL_INVENTORY_DROP_ACTION.GetStateDown(SteamVR_Input_Sources.Any)) {
                         // VRUIInput.SetUIHand(SteamVR_Input_Sources.Any);
@@ -200,8 +217,8 @@ namespace VRPlayer {
         System.Func<Vector2Int> GetAlternativeSubmits (InventoryUI.UIType type) {
             switch (type) {
                 // quick inventory
-                case InventoryUI.UIType.QuickInventory:
-                    return GetAlternativeSubmitsQI;
+                // case InventoryUI.UIType.QuickInventory:
+                //     return GetAlternativeSubmitsQI;
                     
                 // full inventory
                 case InventoryUI.UIType.FullInventory:
@@ -223,15 +240,15 @@ namespace VRPlayer {
             SteamVR_Input_Sources hand;
             switch (type) {
                 // quick inventory
-                case InventoryUI.UIType.QuickInventory:
-                    hand = VRManager.Int2Hand( inventoryUI.QI_EquipPointID );
+                // case InventoryUI.UIType.QuickInventory:
+                //     hand = VRManager.Int2Hand( inventoryUI.QI_EquipPointID );
 
-                    StandardizedVRInput.MarkActionOccupied(QUICK_INVENTORY_CONSUME_ACTION, VRUIInput.GetUIHand());
-                    StandardizedVRInput.instance.ShowHint(hand, QUICK_INVENTORY_CONSUME_ACTION, "Use");    
+                //     StandardizedVRInput.MarkActionOccupied(QUICK_INVENTORY_CONSUME_ACTION, VRUIInput.GetUIHand());
+                //     StandardizedVRInput.instance.ShowHint(hand, QUICK_INVENTORY_CONSUME_ACTION, "Use");    
 
-                    TransformBehavior.AdjustTransform(uiHolder.baseObject.transform, Player.instance.GetHand(hand).transform, quickInventoryEquip, 0);
-                    VRUIInput.SetUIHand(hand);
-                    break;
+                //     TransformBehavior.AdjustTransform(uiHolder.baseObject.transform, Player.instance.GetHand(hand).transform, quickInventoryEquip, 0);
+                //     VRUIInput.SetUIHand(hand);
+                //     break;
                 // full inventory
                 case InventoryUI.UIType.FullInventory:
                     StandardizedVRInput.MarkActionOccupied(FULL_INVENTORY_CONSUME_ACTION, SteamVR_Input_Sources.Any);
@@ -278,13 +295,21 @@ namespace VRPlayer {
                     break;
             }
         }
+
+
+
+
+
+
+
+
         void OnInventoryUIClose(InventoryUI.UIType type, UIElementHolder uiHolder) {
             switch (type) {
                 // quick inventory
-                case InventoryUI.UIType.QuickInventory:
-                    StandardizedVRInput.MarkActionUnoccupied(QUICK_INVENTORY_CONSUME_ACTION);
-                    StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, QUICK_INVENTORY_CONSUME_ACTION);
-                    break;
+                // case InventoryUI.UIType.QuickInventory:
+                //     StandardizedVRInput.MarkActionUnoccupied(QUICK_INVENTORY_CONSUME_ACTION);
+                //     StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, QUICK_INVENTORY_CONSUME_ACTION);
+                //     break;
                 // full inventory
                 case InventoryUI.UIType.FullInventory:
                     StandardizedVRInput.MarkActionUnoccupied(FULL_INVENTORY_CONSUME_ACTION);
@@ -333,23 +358,27 @@ namespace VRPlayer {
             }
         } 
 
-        public SteamVR_Input_Sources messagesHand = SteamVR_Input_Sources.LeftHand;
-        public TransformBehavior messagesEquip;
-        public TransformBehavior quickInventoryEquip, quickTradeEquip;
-        public UIMessageCenter messageCenter;
+        // public TransformBehavior quickInventoryEquip, quickTradeEquip;
+        public TransformBehavior quickTradeEquip;
 
-        void SetUpMessageCenter () {
-            Transform handTransform = Player.instance.GetHand(messagesHand).transform;
-            TransformBehavior.AdjustTransform(messageCenter.transform, handTransform, messagesEquip, 0);
-        }
+
+
+        // public SteamVR_Input_Sources messagesHand = SteamVR_Input_Sources.LeftHand;
+        // public TransformBehavior messagesEquip;
+        // public UIMessageCenter messageCenter;
+
+        // void SetUpMessageCenter () {
+        //     Transform handTransform = Player.instance.GetHand(messagesHand).transform;
+        //     TransformBehavior.AdjustTransform(messageCenter.transform, handTransform, messagesEquip, 0);
+        // }
         
         void OnUISelection (GameObject[] data, object[] customData) {
             // float duration,  float frequency, float amplitude
             StandardizedVRInput.instance.TriggerHapticPulse( VRUIInput.GetUIHand (), .1f, 1.0f, 1.0f );   
         }
-        void OnShowGameMessage (string message, int key) {            
-            StandardizedVRInput.instance.TriggerHapticPulse( messagesHand, .1f, 1.0f, 1.0f );   
-        }
+        // void OnShowGameMessage (string message, int key) {            
+        //     StandardizedVRInput.instance.TriggerHapticPulse( messagesHand, .1f, 1.0f, 1.0f );   
+        // }
 
         void OnGamePaused(bool isPaused, float routineTime) {
             if (isPaused) {

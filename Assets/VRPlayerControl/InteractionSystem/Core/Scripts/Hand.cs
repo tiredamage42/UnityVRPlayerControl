@@ -184,7 +184,9 @@ namespace VRPlayer
                 // if (vr_item.skeletonPoser != null && skeleton != null) {
                 
                     // Debug.LogError("blendign to poser");
-                    skeleton.BlendToPoser(vr_item.poseName, vr_item.poseInfluence, blendToPoseTime);
+                    // skeleton.BlendToPoser(vr_item.poseName, vr_item.poseInfluence, blendToPoseTime);
+                    // skeleton.BlendToPoser(vr_item.poseToUse, vr_item.poseInfluence, blendToPoseTime);
+                    skeleton.BlendToPoser(vr_item.poseToUse, 1, blendToPoseTime);
                 // }
 
             }
@@ -647,7 +649,7 @@ namespace VRPlayer
 
             mainRenderModel = renderModelInstance.GetComponent<RenderModel>();
 
-            mainRenderModel.SetPoser(GetComponent<SteamVR_Skeleton_PoserCustom>());
+            mainRenderModel.SetPoser(GetComponent<HandPoser>());
 
             if (hadOldRendermodel) {
                 Debug.Log("setting skeletal range of motion");

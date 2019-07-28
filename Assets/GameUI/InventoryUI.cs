@@ -11,12 +11,15 @@ namespace GameUI {
 
 public class InventoryUI : MonoBehaviour
 {
-    public enum UIType { QuickInventory = 0, FullInventory = 1, QuickTrade = 2, FullTrade = 3, };
+    public enum UIType { 
+        // QuickInventory = 0, 
+        FullInventory = 1, QuickTrade = 2, FullTrade = 3, };
 
     const int uiTypesCount = 4;
 
     public Inventory inventory;
-    public UIElementHolder quickInventory, fullInventory;
+    // public UIElementHolder quickInventory, fullInventory;
+    public UIElementHolder fullInventory;
     
     public UIElementHolder quickTrade, fullTrade;
 
@@ -71,14 +74,14 @@ public class InventoryUI : MonoBehaviour
         BroadcastUIOpen(type);
     }
 
-    [HideInInspector] public int QI_EquipPointID=-1;
+    // [HideInInspector] public int QI_EquipPointID=-1;
 
-    public void OpenQuickInventoryUI (int throughID){
-        if (QI_EquipPointID < 0 && quickTradeInteractorID != throughID) {        
-            QI_EquipPointID = throughID;
-            InitializeSingleInventoryUI(UIType.QuickInventory, true, inventory, null, inventory.favoritesCount, OnQuickInventorySubmit);
-        }
-    }
+    // public void OpenQuickInventoryUI (int throughID){
+    //     if (QI_EquipPointID < 0 && quickTradeInteractorID != throughID) {        
+    //         QI_EquipPointID = throughID;
+    //         InitializeSingleInventoryUI(UIType.QuickInventory, true, inventory, null, inventory.favoritesCount, OnQuickInventorySubmit);
+    //     }
+    // }
     public void OpenFullInventoryUI (){
         CloseAllUIs();
         
@@ -88,7 +91,8 @@ public class InventoryUI : MonoBehaviour
         if (IsOpen(UIType.FullInventory) || IsOpen(UIType.FullTrade)) {
             return;
         } 
-        if (quickTradeInteractorID < 0 && QI_EquipPointID != throughID) {
+
+        if (quickTradeInteractorID < 0 && quickTradeInteractorID != throughID) {
             quickTradeInteractorID = throughID;
             InitializeSingleInventoryUI(UIType.QuickTrade, false, showInventory, inventory, maxQuickTradeButtons, OnQuickTradeSubmit);
         }
@@ -137,7 +141,7 @@ public class InventoryUI : MonoBehaviour
 
         UIElementHolder Type2UI (UIType type) {
             switch(type) {
-                case UIType.QuickInventory: return quickInventory;
+                // case UIType.QuickInventory: return quickInventory;
                 case UIType.FullInventory: return fullInventory;
                 case UIType.QuickTrade: return quickTrade;
                 case UIType.FullTrade: return fullTrade;
@@ -161,10 +165,10 @@ public class InventoryUI : MonoBehaviour
         }
 
         
-        public void CloseQuickInventoryUI () {
-            BeginClose(UIType.QuickInventory, quickInventory);
-            QI_EquipPointID = - 1;
-        }
+        // public void CloseQuickInventoryUI () {
+        //     BeginClose(UIType.QuickInventory, quickInventory);
+        //     QI_EquipPointID = - 1;
+        // }
         public void CloseFullInventoryUI () {
             BeginClose(UIType.FullInventory, fullInventory);
         }
@@ -177,7 +181,7 @@ public class InventoryUI : MonoBehaviour
         }
         System.Action Type2Close (UIType type) {
             switch(type) {
-                case UIType.QuickInventory: return CloseQuickInventoryUI;
+                // case UIType.QuickInventory: return CloseQuickInventoryUI;
                 case UIType.FullInventory: return CloseFullInventoryUI;
                 case UIType.QuickTrade: return CloseQuickTradeUI;
                 case UIType.FullTrade: return CloseFullTradeUI;
@@ -263,10 +267,12 @@ public class InventoryUI : MonoBehaviour
 
         
         void OnStash (Inventory inventory, ItemBehavior item, int count) {
-            UIManager.ShowGameMessage("Stashed " + item.itemName + " ( x" + count+" )", 0);
+            // UIManager.ShowGameMessage("Stashed " + item.itemName + " ( x" + count+" )", 0);
+            GetComponent<GameMessageInbox>().ShowMessage("Stashed " + item.itemName + " ( x" + count+" )");//, 0);
         }
         void OnDrop (Inventory inventory, ItemBehavior item, int count) {
-            UIManager.ShowGameMessage("Dropped " + item.itemName + " ( x" + count+" )", 0);
+            // UIManager.ShowGameMessage("Dropped " + item.itemName + " ( x" + count+" )", 0);
+            GetComponent<GameMessageInbox>().ShowMessage("Dropped " + item.itemName + " ( x" + count+" )");//, 0);
         }
         void OnEquip (Inventory inventory, Item item, int slot, bool quickEquip) {
             // UIManager.ShowGameMessage("Equipped " + item.itemBehavior.itemName + " to slot " + slot + (quickEquip ? "*quick*" : ""), 0);
@@ -277,7 +283,7 @@ public class InventoryUI : MonoBehaviour
 
         
         
-        public const int QUICK_INVENTORY_CONSUME_ACTION = 0;
+        // public const int QUICK_INVENTORY_CONSUME_ACTION = 0;
         public const int FULL_INVENTORY_CONSUME_ACTION = 0;
         public const int FULL_INVENTORY_DROP_ACTION = 1;
         public const int FULL_INVENTORY_FAVORITE_ACTION = 2;
@@ -291,17 +297,17 @@ public class InventoryUI : MonoBehaviour
         public const int FULL_TRADE_CONSUME_ACTION = 2;
         
 
-        void OnQuickInventorySubmit (GameObject[] data, object[] customData, Vector2Int submitType) {
-			if (customData != null) {
-                ItemBehavior item = customData[0] as ItemBehavior;
-                if (item) {
-                    int count = 1;
-                    // item.OnConsume((Inventory)customData[1], GetWorkingInventorySlot(UIType.QuickInventory));
-                    item.OnConsume((Inventory)customData[1], count, submitType.y);
-                }
-            }
-            CloseQuickInventoryUI();
-		}
+        // void OnQuickInventorySubmit (GameObject[] data, object[] customData, Vector2Int submitType) {
+		// 	if (customData != null) {
+        //         ItemBehavior item = customData[0] as ItemBehavior;
+        //         if (item) {
+        //             int count = 1;
+        //             // item.OnConsume((Inventory)customData[1], GetWorkingInventorySlot(UIType.QuickInventory));
+        //             item.OnConsume((Inventory)customData[1], count, submitType.y);
+        //         }
+        //     }
+        //     CloseQuickInventoryUI();
+		// }
 
         
         

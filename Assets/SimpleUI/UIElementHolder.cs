@@ -28,7 +28,7 @@ namespace SimpleUI {
         
         public bool needsDefaultSelection = true;
         public float textScale = 0.125f;
-        public float scale = 0.01f;
+        // public float scale = 0.01f;
 
 
         public UIElementHolder[] subHolders;
@@ -259,6 +259,9 @@ namespace SimpleUI {
 
         public virtual void UpdateElementHolder () {
             if (subHolders != null && subHolders.Length > 0) {
+                    for (int i = 0; i < subHolders.Length; i++) {
+                        subHolders[i].textScale = textScale;
+                    }
                     return;
                 }
                 
@@ -270,7 +273,7 @@ namespace SimpleUI {
             // }
             backGround.color = UIManager.instance.mainDarkColor;
             backGroundOverlay.color = UIManager.instance.mainLightColor;
-            transform.localScale = Vector3.one * scale;
+            // transform.localScale = Vector3.one * scale;
 
             for (int i = 0; i < allElements.Count; i++) {
                 UIText t = allElements[i].uiText;

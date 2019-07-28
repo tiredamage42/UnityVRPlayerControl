@@ -1,25 +1,39 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace SimpleUI {
 
-/*
-    used for keeping ui image color consistent
-*/
+    /*
+        used for keeping ui image color consistent
+    */
 
-[ExecuteInEditMode]
-public class UIImage : MonoBehaviour
-{
-    public bool useDark;
-    void OnEnable () {
-        GetComponent<Image>().color = useDark ? UIManager.instance.mainDarkColor : UIManager.instance.mainLightColor;
+    [ExecuteInEditMode][RequireComponent(typeof(Image))]
+    public class UIImage : MonoBehaviour
+    {
+        public bool useDark;
 
+        Image image;
+        
+        void GetImage () {
+            if (image == null)
+                image = GetComponent<Image>();
+        }
+
+        void SetImageColor () {
+            GetImage();
+            if (image != null) {
+                image.color = useDark ? UIManager.instance.mainDarkColor : UIManager.instance.mainLightColor;
+            }
+        }
+
+        void Update () {
+    #if UNITY_EDITOR
+            SetImageColor();
+    #endif
+        }
+
+        void OnEnable () {
+            SetImageColor();
+        }    
     }
-
-
-
-    
-}
 }

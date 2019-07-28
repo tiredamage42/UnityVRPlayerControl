@@ -26,8 +26,12 @@ namespace VRPlayer {
         
         [Space]
         public bool usePose = true;
-        public string poseName;
-        [Range(0,1)] public float poseInfluence = 1;
+
+        [HideInInspector] public SteamVR_Skeleton_Pose poseToUse;
+
+        // public string poseName;
+        
+        // [Range(0,1)] public float poseInfluence = 1;
         // [HideInInspector] public SteamVR_Skeleton_HandMask poseMask = new SteamVR_Skeleton_HandMask();
 
         // [HideInInspector] public SteamVR_Skeleton_Poser skeletonPoser;

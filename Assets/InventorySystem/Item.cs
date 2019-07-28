@@ -6,7 +6,6 @@ using InteractionSystem;
 
 namespace InventorySystem {
 
-    
 
 /*
 
@@ -27,10 +26,6 @@ for environment block:
     can only equip with unarmed hand, can still stash though
     
 health
-
-
-
-
 
 
 OnUseStashed <- called from inventory
@@ -145,9 +140,8 @@ gameMessage
             // bool wasStashed = false;
             Inventory inventory = interactor.GetComponentInParent<Inventory>();
 
-
-
-            if (useIndex == Inventory.STASH_ACTION) {
+            
+            if (useIndex == Inventory.STASH_ACTION || (useIndex == Inventory.GRAB_ACTION && !this.itemBehavior.canQuickEquip)) {
             // if (itemBehavior.stashActions.Contains(useIndex)) {
                 if (inventory.CanStashItem(this.itemBehavior)) {
                     inventory.StashItem(this, interactor.interactorID);
