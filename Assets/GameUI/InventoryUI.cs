@@ -228,7 +228,7 @@ public class InventoryUI : MonoBehaviour
         
             GameManager.onPauseRoutineStart += OnGamePaused;    
 
-            for (int i = 0; i < uiTypesCount; i++) {
+            for (int i = 1; i < uiTypesCount; i++) {
                 Type2UI((UIType)i).onBaseCancel += Type2Close((UIType)i);
             }        
             
@@ -242,7 +242,7 @@ public class InventoryUI : MonoBehaviour
             inventory.onQuickTradeEnd += OnQuickTradeEnd;
 
             
-            for (int i = 0; i < uiTypesCount; i++) {
+            for (int i = 1; i < uiTypesCount; i++) {
                UIManager.HideUI( Type2UI((UIType)i) );
             }
         }
@@ -251,7 +251,7 @@ public class InventoryUI : MonoBehaviour
         void OnDisable () {
             GameManager.onPauseRoutineStart -= OnGamePaused;
 
-            for (int i = 0; i < uiTypesCount; i++) {
+            for (int i = 1; i < uiTypesCount; i++) {
                 Type2UI((UIType)i).onBaseCancel -= Type2Close((UIType)i);
             }        
             

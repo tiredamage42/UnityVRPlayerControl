@@ -143,8 +143,7 @@ MonoBehaviour:
   handFollowTransform: 0
   setRangeOfMotionOnPickup: -1
   usePose: 1
-  poseName: TriggerHoldFingerTop
-  poseInfluence: 1
+  poseToUse: {fileID: 11400000, guid: 51373f35dc917fd46801b1771471345e, type: 2}
 --- !u!114 &6731844837837039086
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -261,10 +260,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6509559213888893406}
     m_Modifications:
-    - target: {fileID: 1275266641364890, guid: e3109ccf9db0f54408d5c02b496761c1, type: 3}
-      propertyPath: m_Name
-      value: flashlight
-      objectReference: {fileID: 0}
     - target: {fileID: 4153173015106888, guid: e3109ccf9db0f54408d5c02b496761c1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -321,8 +316,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.25
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 95139158103427248, guid: e3109ccf9db0f54408d5c02b496761c1, type: 3}
+    - target: {fileID: 1275266641364890, guid: e3109ccf9db0f54408d5c02b496761c1, type: 3}
+      propertyPath: m_Name
+      value: flashlight
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e3109ccf9db0f54408d5c02b496761c1, type: 3}
 --- !u!4 &7127225832475221845 stripped
 Transform:

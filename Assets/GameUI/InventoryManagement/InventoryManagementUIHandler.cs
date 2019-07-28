@@ -80,8 +80,11 @@ namespace GameUI {
             string myContext = GetInventoryManagementContext();
             if (context2UIHandler.ContainsKey(myContext)) {
                 isDuplicate = true;
+                Debug.Log("duplicat found of " + myContext);
+
                 return;
             }
+            Debug.Log("adding " + myContext);;
             context2UIHandler.Add(myContext, this);
         }
 
@@ -91,11 +94,16 @@ namespace GameUI {
         }
 
         void Awake () {
-            GetLinkedInventory();
-            AddToDictionary();
+            // Debug.Log("adding to dictionary");
+            // // GetLinkedInventory();
+            // // AddToDictionary();
         }
 
         protected virtual void OnEnable () {
+             Debug.Log("adding to dictionary");
+            GetLinkedInventory();
+            AddToDictionary();
+
             if (!isDuplicate) {
                 linkedInventory.onInventoryManagementInitiate += _OnInventoryManagementInitiate;
                 mainUIElement.onBaseCancel += OnEndInventoryManagementInternal;

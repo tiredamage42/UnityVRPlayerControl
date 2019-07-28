@@ -35,6 +35,8 @@ namespace VRPlayer.UI {
 
 
             leftHand = leftHandHints.GetComponentsInChildren<ControllerHintUIElement>();
+            Debug.LogError(leftHand.Length);;
+            
             for (int i = 0; i < leftHand.Length; i++) {
                 VRControllerHint vrHint = leftHand[i].GetComponent<VRControllerHint>();
                 action2hintLeft.Add(vrHint.action, leftHand[i]);
@@ -47,6 +49,7 @@ namespace VRPlayer.UI {
                 }
             }
             rightHand = rightHandHints.GetComponentsInChildren<ControllerHintUIElement>();
+            Debug.LogError(rightHand.Length);;
             for (int i = 0; i < rightHand.Length; i++) {
                 VRControllerHint vrHint = rightHand[i].GetComponent<VRControllerHint>();
                 action2hintRight.Add(vrHint.action, rightHand[i]);
@@ -106,7 +109,10 @@ namespace VRPlayer.UI {
 
         
         public static void ShowHint (StandardizedVRInput.InputType action, SteamVR_Input_Sources forHand, string text) {
-            
+            if (!action2hintLeft.ContainsKey(action) || !action2hintLeft.ContainsKey(action)) {
+                Debug.LogError("no key for action " + action);
+                return;
+            }
             if (forHand == SteamVR_Input_Sources.Any) {
                 action2hintLeft[action].Show(text);
                 action2hintRight[action].Show(text);
@@ -119,6 +125,11 @@ namespace VRPlayer.UI {
             }
         }
         public static void HideHint (StandardizedVRInput.InputType action, SteamVR_Input_Sources forHand) {
+            if (!action2hintLeft.ContainsKey(action) || !action2hintLeft.ContainsKey(action)) {
+                Debug.LogError("no key for action " + action);
+                return;
+            }
+            
             if (forHand == SteamVR_Input_Sources.Any) {
                 action2hintLeft[action].Hide();
                 action2hintRight[action].Hide();

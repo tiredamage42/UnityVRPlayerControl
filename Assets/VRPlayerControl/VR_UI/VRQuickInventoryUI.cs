@@ -17,24 +17,33 @@ namespace VRPlayer.UI
 
         // bool subscribed;
 
-        protected virtual void Start () {
-            myUIHandler = (T)InventoryManagementUIHandler.GetHandler(ContextKey());
-            myUIHandler.SetUIInputCallback(_GetUISubmits);
+        // protected virtual void Start () {
+        //     // myUIHandler = (T)InventoryManagementUIHandler.GetHandler(ContextKey());
+        //     myUIHandler.SetUIInputCallback(_GetUISubmits);
 
             
-            // subscribed = true;
+        //     // subscribed = true;
 
-        }
+        // }
         System.Func<Vector2Int> _GetUISubmits () {
             return GetUISubmits;
         }
 
         protected abstract Vector2Int GetUISubmits();
-        
-        protected virtual void OnEnable () {
+
+        protected virtual void Start () {
+            myUIHandler = (T)InventoryManagementUIHandler.GetHandler(ContextKey());
+            myUIHandler.SetUIInputCallback(_GetUISubmits);
             
             myUIHandler.onUIClose += OnUIClose;
             myUIHandler.onUIOpen += OnUIOpen;
+        }
+        
+        protected virtual void OnEnable () {
+            // myUIHandler = (T)InventoryManagementUIHandler.GetHandler(ContextKey());
+            
+            // myUIHandler.onUIClose += OnUIClose;
+            // myUIHandler.onUIOpen += OnUIOpen;
         }
         protected virtual void OnDisable () {
             

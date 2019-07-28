@@ -177,10 +177,11 @@ namespace VRPlayer //Valve.VR
                 for (int i =0 ; i < blendingBehaviours.Length; i++) {
                     blendingBehaviours[i].SetValue(i == 0 ? 1 : 0, false);
                 }
+                Debug.LogError("pose defaut or null " + pose);
                 // pose = defualtPose;
+                return true;
             }
-            return true;
-
+            Debug.LogError("setting pose " + pose.name);
 
             PoseBlendingBehaviour topPoseBlend = blendingBehaviours[2];
             PoseBlendingBehaviour lowerBlend = blendingBehaviours[1];
@@ -202,6 +203,7 @@ namespace VRPlayer //Valve.VR
             blendingBehaviours[1].SetValue(0, false);
             
             blendingBehaviours[2].SetValue(0, true);
+
             blendingBehaviours[2].SetValue(1, false);
             blendPoses[2].SetPose(pose);
 
@@ -434,8 +436,8 @@ namespace VRPlayer //Valve.VR
                 // if disabled or very low influence, skip for perf
 
                 // float t = blending.targetBehaviour.influence * blending.GetValue();
-                // float t = behaviourIndex == 0 ? 1 : blending.GetValue();
-                float t = blending.GetValue();
+                float t = behaviourIndex == 0 ? 1 : blending.GetValue();
+                // float t = blending.GetValue();
 
 
 

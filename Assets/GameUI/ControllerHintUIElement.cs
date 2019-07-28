@@ -14,6 +14,9 @@ namespace VRPlayer.UI {
 
         void Awake () {
             UpdateTextValues();
+        }
+        void Start () {
+
             if (Application.isPlaying) {
                 Hide();
             }
@@ -38,7 +41,7 @@ namespace VRPlayer.UI {
         }
         
         public void Hide () {
-            Debug.Log("hiding");
+            // Debug.Log("hiding");
             gameObject.SetActive(false);
         }
         public void Show (string message) {
