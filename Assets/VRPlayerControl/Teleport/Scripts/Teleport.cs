@@ -23,7 +23,7 @@ namespace VRPlayer
         public LayerMask traceLayerMask;
 		public Texture2D teleportPointTexture;
 		
-		[System.NonSerialized] Material _pointVisibleMaterial;
+		[System.NonSerialized] Material _pointVisibleMaterial, _invalidMaterial;
 		[System.NonSerialized] Material _pointLockedMaterial;
 		[System.NonSerialized] Material _pointHighlightedMaterial;
 
@@ -52,6 +52,13 @@ namespace VRPlayer
 				if (_pointHighlightedMaterial == null) 
 					_pointHighlightedMaterial = MakeMaterial(highlightedColor);
 				return _pointHighlightedMaterial;
+			}
+		}
+		public Material invalidMaterial {
+			get {
+				if (_invalidMaterial == null) 
+					_invalidMaterial = MakeMaterial(invalidColor);
+				return _invalidMaterial;
 			}
 		}
 
@@ -136,6 +143,10 @@ namespace VRPlayer
 		
 			teleportArc = GetComponent<TeleportArc>();
 			teleportArc.traceLayerMask = traceLayerMask;
+			teleportArc.material = pointHighlightedMaterial;
+
+			destinationReticleTransform.GetComponent<MeshRenderer>().sharedMaterial = pointHighlightedMaterial;
+			invalidReticleTransform.GetComponentInChildren<MeshRenderer>().sharedMaterial = invalidMaterial;
 
 			
 			float invalidReticleStartingScale = invalidReticleTransform.localScale.x;

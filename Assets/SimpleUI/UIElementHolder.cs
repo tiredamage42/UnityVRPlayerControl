@@ -40,8 +40,11 @@ namespace SimpleUI {
         public UIElementHolder[] subHolders;
 
         void InitializeSubHolders () {
-            for (int i =0 ; i < subHolders.Length; i++) {
+            if (subHolders != null) {
+
+            for (int i = 0 ; i < subHolders.Length; i++) {
                 subHolders[i].parentHolder = this;
+            }
             }
         }
 

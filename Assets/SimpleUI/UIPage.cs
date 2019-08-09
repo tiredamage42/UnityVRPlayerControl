@@ -43,6 +43,16 @@ namespace SimpleUI {
 
         public UIPageParameters parameters = new UIPageParameters();
 
+        protected override void OnEnable() {
+            if (parameters == null) {
+                parameters = new UIPageParameters();
+            }
+            base.OnEnable();
+
+                
+            
+        }
+
 
 
         
@@ -54,6 +64,7 @@ namespace SimpleUI {
         UIText pageTitle {
             get {
                 if (_pageTitle == null) _pageTitle = transform.GetChild(0).GetComponent<UIText>();
+                if (_pageTitle == null) Debug.LogError("no page title on " + name);
                 return _pageTitle;
             }
         }

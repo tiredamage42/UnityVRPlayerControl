@@ -504,8 +504,8 @@ namespace VRPlayer {
 
                 VRMenu vrm = g.AddComponent<VRMenu>();
                 vrm.matchXRotation = false;
-                vrm.angleThreshold = 15;
-                vrm.followSpeed = 15;
+                vrm.angleThreshold = 45;
+                vrm.followSpeed = 5;
                 vrm.followBehavior = followBehavior;
             }
 
@@ -537,8 +537,8 @@ namespace VRPlayer {
             newValueTracker.baseObject = canvasObject.gameObject;
             
             RectTransform newTrackerRect = newValueTracker.GetComponent<RectTransform>();
-            SetParent(newTrackerRect, canvasObject);
             SetAnchor(newTrackerRect, new Vector2(.5f, .5f));
+            SetParent(newTrackerRect, canvasObject);
             
             return newValueTracker;
         }
@@ -559,8 +559,8 @@ namespace VRPlayer {
                 newRadial.parameters = radialParameters;
                 
                 RectTransform newPageRect = newRadial.GetComponent<RectTransform>();
-                SetParent(newPageRect, canvasObject);
                 SetAnchor(newPageRect, new Vector2(.5f, .5f));
+                SetParent(newPageRect, canvasObject);
 
                 returnElement = newRadial;
 
@@ -575,24 +575,26 @@ namespace VRPlayer {
                 if (textPanelParams != null) {
 
                     RectTransform childRect = new GameObject(pageParameters.pageTitleText+"_holder").AddComponent<RectTransform>();
-
+                    childRect.sizeDelta = Vector2.one;
+                    SetAnchor(childRect, new Vector2(.5f, 1f));
                     SetParent(childRect, canvasObject);
                 
-                    SetAnchor(childRect, new Vector2(.5f, .5f));
     
+                    SetAnchor(newPageRect, new Vector2(.5f, 1f));
                     SetParent(newPageRect, childRect, new Vector3(-(pageParameters.width*.5f), 0, 0));
-                                        
+        
                     UITextPanel textPanel = GameObject.Instantiate( UIManager.instance.textPanelPrefab );
                     RectTransform newPanelRect = textPanel.GetComponent<RectTransform>();
+                    SetAnchor(newPanelRect, new Vector2(.5f, 1f));
                     SetParent(newPanelRect, childRect, new Vector3((pageParameters.width*.5f), -pageParameters.lineHeight, 0));
-                    
+    
                     textPanel.parameters = textPanelParams;
                     newPage.textPanel = textPanel;
                 }
                 else {
 
-                    SetParent(newPageRect, canvasObject);
                     SetAnchor(newPageRect, new Vector2(.5f, 1f));
+                    SetParent(newPageRect, canvasObject);
                     
                 }
                 returnElement = newPage;

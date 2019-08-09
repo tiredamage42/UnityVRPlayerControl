@@ -56,7 +56,15 @@ MonoBehaviour:
     type: 3}
   pagePrefab: {fileID: 5216722850633688028, guid: b8cd3d39a02b3450da2dd77de5d445a1,
     type: 3}
+  radialPrefab: {fileID: 5205179763256309693, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
+    type: 3}
+  textPanelPrefab: {fileID: 6725307235909370130, guid: 073328b8c6fb4432f869d1b8a1ee5786,
+    type: 3}
   messagePrefab: {fileID: 6070794106359091924, guid: 4f2226d96024744fa96fe3dcf676031b,
+    type: 3}
+  valueTrackerHorizontalPrefab: {fileID: 7820511064186041775, guid: d7565b25dac3a4196b9c2fd1bd1e5a36,
+    type: 3}
+  valueTrackerVerticalPrefab: {fileID: 5854501275588539811, guid: f8c91e07ab45f45f482109f9e5e11440,
     type: 3}
 --- !u!1 &2452292221489131804
 GameObject:

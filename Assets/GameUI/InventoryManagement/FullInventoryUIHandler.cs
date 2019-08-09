@@ -14,12 +14,14 @@ namespace GameUI {
         public override string ContextKey() { return "FullInventory"; }
 
         protected override void OnUISelect (GameObject[] data, object[] customData) {
-            
-            Inventory.InventorySlot slot;
-            Inventory forInventory, linkedInventory;
-            int uiIndex, otherUIIndex;
-            UnpackButtonData (customData, out slot, out forInventory, out linkedInventory, out uiIndex, out otherUIIndex);
-            uiObject.textPanel.SetText(slot.item.itemDescription);
+            if (customData != null) {
+                Inventory.InventorySlot slot;
+                Inventory forInventory, linkedInventory;
+                int uiIndex, otherUIIndex;
+                UnpackButtonData (customData, out slot, out forInventory, out linkedInventory, out uiIndex, out otherUIIndex);
+                if (slot != null)
+                    uiObject.textPanel.SetText(slot.item.itemDescription);
+            }
             
         }
 
