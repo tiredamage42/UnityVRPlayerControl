@@ -18,14 +18,9 @@ namespace VRPlayer
         public SteamVR_Action_Boolean teleportAction;
 		public SteamVR_Input_Sources teleportHand = SteamVR_Input_Sources.LeftHand;
 
-		Hand teleportHandClass {
-			get {
-				return Player.instance.GetHand(teleportHand);
-			}
-		}
+		Hand teleportHandClass { get { return Player.instance.GetHand(teleportHand); } }
 
         public LayerMask traceLayerMask;
-
 		public Texture2D teleportPointTexture;
 		
 		[System.NonSerialized] Material _pointVisibleMaterial;
@@ -40,31 +35,25 @@ namespace VRPlayer
 			
 		public Material pointVisibleMaterial {
 			get {
-				if (_pointVisibleMaterial == null) {
+				if (_pointVisibleMaterial == null)
 					_pointVisibleMaterial = MakeMaterial(visibleColor);
-				}
 				return _pointVisibleMaterial;
 			}
 		}
 		public Material pointLockedMaterial {
 			get {
-				if (_pointLockedMaterial == null) {
+				if (_pointLockedMaterial == null)
 					_pointLockedMaterial = MakeMaterial(lockedColor);
-				}
 				return _pointLockedMaterial;
 			}
 		}
 		public Material pointHighlightedMaterial {
 			get {
-				if (_pointHighlightedMaterial == null) {
+				if (_pointHighlightedMaterial == null) 
 					_pointHighlightedMaterial = MakeMaterial(highlightedColor);
-				}
 				return _pointHighlightedMaterial;
 			}
 		}
-
-
-		// public Material pointerInvalidMaterial;
 
 		// invalid (255, 34, 57, 128)
 		// highlighted (115, 234, 116, 128)
@@ -85,21 +74,10 @@ namespace VRPlayer
 			m.SetTexture(mainTexID, teleportPointTexture);
 			return m;
 		}
-		// void InitializeMaterials () {
-		// 	Shader shader = Shader.Find("Valve/VR/Highlight");
-		// 	pointVisibleMaterial = MakeMaterial(shader, visibleColor, tintColorID);
-		// 	pointHighlightedMaterial = MakeMaterial(shader, highlightedColor, tintColorID);
-		// 	pointLockedMaterial = MakeMaterial(shader, lockedColor, tintColorID);
-		// }
 		
-
 		public Transform destinationReticleTransform;
 		public Transform invalidReticleTransform;
 
-		
-		// public Color pointerValidColor;
-		// public Color pointerInvalidColor;
-		// public Color pointerLockedColor;
 		public bool showPlayAreaMarker = true;
 		public float teleportFadeTime = 0.1f;
 		public float arcDistance = 10.0f;
@@ -177,17 +155,11 @@ namespace VRPlayer
 
 			loopSource.volume = 1;
 			oneShotSource.volume = 1;
-
-			// InitializeMaterials();
-
 		}
 
-
-		//-------------------------------------------------
 		void Start()
         {
             teleportMarkers = GameObject.FindObjectsOfType<TeleportPoint>();
-
 			HidePointer();
 		}
 
@@ -220,16 +192,13 @@ namespace VRPlayer
 			}
 
 			if ( !visible && teleportNewlyPressed )
-			
 			{
-				//Begin showing the pointer
 				ShowPointer( );
 			}
 			else if ( visible )
 			{
 				if ( !teleportNewlyPressed && !teleportAction.GetState(teleportHand) )
 				{
-					//Hide the pointer
 					HidePointer();
 				}
 			}
@@ -285,9 +254,9 @@ namespace VRPlayer
 
 			validAreaTargeted = false;
 
-			Vector3 pointerStart = teleportHandClass.transform.position;// pointerStartTransform.position;
+			Vector3 pointerStart = teleportHandClass.transform.position;
 			Vector3 pointerEnd;
-			Vector3 pointerDir = teleportHandClass.transform.forward;// pointerStartTransform.forward;
+			Vector3 pointerDir = teleportHandClass.transform.forward;
 			bool hitSomething = false;
 			
 			Vector3 playerFeetOffset = VRManager.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
@@ -314,7 +283,6 @@ namespace VRPlayer
 				hitTeleportMarker = hitInfo.collider.GetComponentInParent<TeleportPoint>();
 			}
 
-
 			if ( pointerAtBadAngle )
 			{
 				hitTeleportMarker = null;
@@ -322,20 +290,13 @@ namespace VRPlayer
 
 			HighlightSelected( hitTeleportMarker );
 
-
 			if ( hitTeleportMarker != null ) //Hit a teleport marker
 			{
-				if ( hitTeleportMarker.locked )
-				{
-					
-					// teleportArc.SetColor( pointerLockedColor );					
-				}
-				else
+				if ( !hitTeleportMarker.locked )
 				{
 					validAreaTargeted = true;
-					// teleportArc.SetColor( pointerValidColor );
 				}
-
+				
 				ActivateReticles (false, false);//, true);
 				
 				pointedAtTeleportMarker = hitTeleportMarker;
@@ -345,7 +306,6 @@ namespace VRPlayer
 			}
 			else //Hit neither
 			{
-
 				Vector3 normalToUse = Vector3.up;
 				float angle = 0;
 
@@ -356,9 +316,8 @@ namespace VRPlayer
 				
 				validAreaTargeted = !pointerAtBadAngle && hitSomething && (angle <= maxGroundAngle); // not locked area
 
-				ActivateReticles (validAreaTargeted, !validAreaTargeted && !pointerAtBadAngle);//, !pointerAtBadAngle);
-				// teleportArc.SetColor( validAreaTargeted ? pointerValidColor : pointerInvalidColor );
-
+				ActivateReticles (validAreaTargeted, !validAreaTargeted && !pointerAtBadAngle);
+				
 				pointedAtTeleportMarker = null;
 
 				if ( hitSomething )
@@ -380,13 +339,7 @@ namespace VRPlayer
 				pointedAtPosition = pointerEnd;
 			}
 
-
-			// 	tintColor = markerMesh.material.GetColor( tintColorID );
-		
-			// teleportArc.SetColor( validAreaTargeted ? pointHighlightedMaterial.GetColor(tintColorID) : pointerInvalidMaterial.GetColor(tintColorID) );
-
 			teleportArc.SetColor( validAreaTargeted ? highlightedColor : invalidColor );
-
 
 			ShowPlayArea(validAreaTargeted, playerFeetOffset, pointedAtPosition);
 			
@@ -566,8 +519,9 @@ namespace VRPlayer
 					teleportLerp = 0;
 					Player.instance.GetComponent<CharacterController>().enabled = false;
 				}
-
 			}
+			
+
 			if (doFade) {
 
 				SteamVR_Fade.Start( Color.clear, 0 );

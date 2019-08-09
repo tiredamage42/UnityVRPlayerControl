@@ -5,8 +5,6 @@ namespace VRPlayer.UI {
     [ExecuteInEditMode]
     public class ControllerHintUIElement : MonoBehaviour
     {
-
-
         [HideInInspector] public UIText text;
         public float textScale = .005f;
         public Vector3 textOffset = new Vector3(0,-.7f,0);
@@ -16,7 +14,6 @@ namespace VRPlayer.UI {
             UpdateTextValues();
         }
         void Start () {
-
             if (Application.isPlaying) {
                 Hide();
             }
@@ -41,7 +38,6 @@ namespace VRPlayer.UI {
         }
         
         public void Hide () {
-            // Debug.Log("hiding");
             gameObject.SetActive(false);
         }
         public void Show (string message) {

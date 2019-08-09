@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6704095862675926450}
   - component: {fileID: 6704095862675926461}
   m_Layer: 5
-  m_Name: GameMessages
+  m_Name: GameMessagesVR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,7 +74,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_UiScaleMode: 0
-  m_ReferencePixelsPerUnit: 0.25
+  m_ReferencePixelsPerUnit: 1
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
   m_ScreenMatchMode: 0
@@ -112,13 +112,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7eb8602a41a2429ab0a98e3e2bf138c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  key: 0
   textAnchor: 3
   elementMoveSpeed: 5
   width: 2
   textScale: 0.0015
   textMargin: 0.05
-  scale: 0.15
   duration: 1
   fadeIn: 0.25
   fadeOut: 0.25
@@ -131,7 +129,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6704095862675926460}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1dab1aef045f24a169063e81459835ff, type: 3}
   m_Name: 

@@ -13,12 +13,12 @@ namespace VRPlayer {
         public SteamVR_ActionSet activateActionSetOnAttach;
 
         [Tooltip("Hide the whole hand on attachment and show on detach")]
-        public bool hideHandOnAttach = true;
+        public bool hideHandOnAttach;
 
         // [Tooltip("The integer in the animator to trigger on pickup. 0 for none")]
         // public int handAnimationOnPickup = 0;
         [Tooltip("Should the rendered hand lock on to and follow the object")]
-        public bool handFollowTransform = true;
+        public bool handFollowTransform;
 
 
         [Tooltip("The range of motion to set on the skeleton. None for no change.")]

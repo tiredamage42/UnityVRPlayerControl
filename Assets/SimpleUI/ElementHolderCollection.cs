@@ -1,24 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-
+﻿using UnityEngine;
 
 namespace SimpleUI{
-    [ExecuteInEditMode]
-    public class ElementHolderCollection : UIElementHolder
+    [ExecuteInEditMode] public class ElementHolderCollection : UIElementHolder
     {
 
-        protected override Image Background() {
-            return null;
-        }
-        protected override Image BackgroundOverlay() {
-            return null;
-        }
-        protected override SelectableElement ElementPrefab() {
-            return null;
-        }
         
-        
+        protected override Transform ElementsParent() { return null; }
+        protected override SelectableElement ElementPrefab() { return null; }
     }
 }

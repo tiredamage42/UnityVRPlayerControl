@@ -1,22 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace EnvironmentTools {
-	
 
 	[ExecuteInEditMode]
 	public class WorldGridPlayer : MonoBehaviour {
 		void OnEnable () {
-            WorldGrid.playerCamera = this;
-			// LocationCuller.cameras.Add(this);
-
+            	WorldGrid.playerCamera = this;
 		}
 		void OnDisable () {
-            if (WorldGrid.playerCamera == this)
-			    WorldGrid.playerCamera = null;
-			
-            // LocationCuller.cameras.Remove(this);
+			if (WorldGrid.playerCamera == this)
+				WorldGrid.playerCamera = null;
 		}
 	}
 }

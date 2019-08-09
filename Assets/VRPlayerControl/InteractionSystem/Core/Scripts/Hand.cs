@@ -17,7 +17,7 @@ namespace VRPlayer
         [HideInInspector] public VelocityEstimator velocityEstimator;
 
 
-        void OnGamePaused (bool isPaused) {
+        void OnGamePaused (bool isPaused, float routineTime) {
             if (isPaused) {
                 ShowController(true);
             }
@@ -28,7 +28,7 @@ namespace VRPlayer
 
         void AdditionalInitialization () {
             velocityEstimator = GetComponent<VelocityEstimator>();
-            VRManager.onGamePaused += OnGamePaused;
+            VRManager.onPauseRoutineStart += OnGamePaused;
         }
 
         public SteamVR_Input_Sources handType;
@@ -152,7 +152,7 @@ namespace VRPlayer
 
             if (quickEquipped) {
 
-                if (item.itemBehavior.equipType != Inventory.EquipType.Static && item.rigidbody != null) {
+                if (item.itemBehavior.equipType != InventoryEqupping.EquipType.Static && item.rigidbody != null) {
                     GetComponent<VelocityEstimator>().BeginEstimatingVelocity();
                 }
             }
@@ -202,7 +202,7 @@ namespace VRPlayer
 
             if (quickEquipped) {
 
-                if (item.itemBehavior.equipType != Inventory.EquipType.Static) {
+                if (item.itemBehavior.equipType != InventoryEqupping.EquipType.Static) {
                     Rigidbody rigidbody = item.rigidbody;
                     if (rigidbody != null) {
 
@@ -259,7 +259,7 @@ namespace VRPlayer
                 // int otherHandEquipIndex = VRManager.Hand2Int(VRManager.OtherHand(handType));
                 // int otherHandEquipIndex = 1-GetComponent<EquipPoint>().equipSlotOnBase;
                 // if (inventory.otherInventory.equippedItem == null || inventory.otherInventory.equippedItem.item.GetComponent<VRItemAddon>().activateActionSetOnAttach != vr_item.activateActionSetOnAttach)
-                if (inventory.equippedSlots[otherHandEquipIndex] == null || inventory.equippedSlots[otherHandEquipIndex].sceneItem.GetComponent<VRItemAddon>().activateActionSetOnAttach != vr_item.activateActionSetOnAttach)
+                if (inventory.GetComponent<InventoryEqupping>().equippedSlots[otherHandEquipIndex] == null || inventory.GetComponent<InventoryEqupping>().equippedSlots[otherHandEquipIndex].sceneItem.GetComponent<VRItemAddon>().activateActionSetOnAttach != vr_item.activateActionSetOnAttach)
                 
                 {
                     vr_item.activateActionSetOnAttach.Deactivate(handType);
@@ -372,54 +372,54 @@ namespace VRPlayer
         }
 
        
-        private void UpdateDebugText()
-        {
-                if (debugText == null)
-                {
-                    debugText = new GameObject("_debug_text").AddComponent<TextMesh>();
-                    debugText.fontSize = 120;
-                    debugText.characterSize = 0.001f;
-                    debugText.transform.parent = transform;
+        // private void UpdateDebugText()
+        // {
+        //         if (debugText == null)
+        //         {
+        //             debugText = new GameObject("_debug_text").AddComponent<TextMesh>();
+        //             debugText.fontSize = 120;
+        //             debugText.characterSize = 0.001f;
+        //             debugText.transform.parent = transform;
 
-                    debugText.transform.localRotation = Quaternion.Euler(90.0f, 0.0f, 0.0f);
-                }
+        //             debugText.transform.localRotation = Quaternion.Euler(90.0f, 0.0f, 0.0f);
+        //         }
 
-                if (handType == SteamVR_Input_Sources.RightHand)
-                {
-                    debugText.transform.localPosition = new Vector3(-0.05f, 0.0f, 0.0f);
-                    debugText.alignment = TextAlignment.Right;
-                    debugText.anchor = TextAnchor.UpperRight;
-                }
-                else
-                {
-                    debugText.transform.localPosition = new Vector3(0.05f, 0.0f, 0.0f);
-                    debugText.alignment = TextAlignment.Left;
-                    debugText.anchor = TextAnchor.UpperLeft;
-                }
+        //         if (handType == SteamVR_Input_Sources.RightHand)
+        //         {
+        //             debugText.transform.localPosition = new Vector3(-0.05f, 0.0f, 0.0f);
+        //             debugText.alignment = TextAlignment.Right;
+        //             debugText.anchor = TextAnchor.UpperRight;
+        //         }
+        //         else
+        //         {
+        //             debugText.transform.localPosition = new Vector3(0.05f, 0.0f, 0.0f);
+        //             debugText.alignment = TextAlignment.Left;
+        //             debugText.anchor = TextAnchor.UpperLeft;
+        //         }
 
-                debugText.text = string.Format(
-                    "Hovering: {0}\n" +
-                    "Hover Lock: {1}\n" +
-                    "Attached: {2}\n" +
-                    "Type: {3}\n",
-                    (interactor.hoveringInteractable ? interactor.hoveringInteractable.gameObject.name : "null"),
-                    interactor.hoverLocked,
+        //         debugText.text = string.Format(
+        //             "Hovering: {0}\n" +
+        //             "Hover Lock: {1}\n" +
+        //             "Attached: {2}\n" +
+        //             "Type: {3}\n",
+        //             (interactor.hoveringInteractable ? interactor.hoveringInteractable.gameObject.name : "null"),
+        //             interactor.hoverLocked,
 
-                    // (inventory.equippedItem != null ? inventory.equippedItem.item.name : "null"),
-                    (inventory.equippedSlots[myEquipIndex] != null ? inventory.equippedSlots[myEquipIndex].item.itemName : "null"),
+        //             // (inventory.equippedItem != null ? inventory.equippedItem.item.name : "null"),
+        //             (inventory.GetComponent<InventoryEqupping>().equippedSlots[myEquipIndex] != null ? inventory.equippedSlots[myEquipIndex].item.itemName : "null"),
                     
-                    handType.ToString());
+        //             handType.ToString());
            
-        }
+        // }
 
 
         protected virtual void OnEnable()
         {
          
             Inventory inventory = Player.instance.GetComponent<Inventory>();
-            inventory.onEquip += OnItemEquipped;
-            inventory.onUnequip += OnItemUnequipped;
-            inventory.onEquipUpdate += OnEquippedUpdate;
+            inventory.GetComponent<InventoryEqupping>().onEquip += OnItemEquipped;
+            inventory.GetComponent<InventoryEqupping>().onUnequip += OnItemUnequipped;
+            inventory.GetComponent<InventoryEqupping>().onEquipUpdate += OnEquippedUpdate;
 
             InteractionPoint interactor = GetComponent<InteractionPoint>();
             interactor.onInspectUpdate += OnInspectUpdate;
@@ -434,9 +434,9 @@ namespace VRPlayer
 
             
             Inventory inventory = Player.instance.GetComponent<Inventory>();
-            inventory.onEquip -= OnItemEquipped;
-            inventory.onUnequip -= OnItemUnequipped;
-            inventory.onEquipUpdate -= OnEquippedUpdate;
+            inventory.GetComponent<InventoryEqupping>().onEquip -= OnItemEquipped;
+            inventory.GetComponent<InventoryEqupping>().onUnequip -= OnItemUnequipped;
+            inventory.GetComponent<InventoryEqupping>().onEquipUpdate -= OnEquippedUpdate;
 
             InteractionPoint interactor = GetComponent<InteractionPoint>();
             interactor.onInspectUpdate -= OnInspectUpdate;
@@ -481,8 +481,32 @@ namespace VRPlayer
 
         bool canQuickEquip {
             get {
-                return inventory.equippedSlots[myEquipIndex] == null;
+                return inventory.GetComponent<InventoryEqupping>().equippedSlots[myEquipIndex] == null;
             }
+        }
+
+
+
+        void ControlInteractorAndEquipper (SteamVR_Action_Boolean action, int actionKey, InteractionPoint interactor, bool interactorAllowed, InventoryEqupping equipper) {
+            bool useDown = action.GetStateDown(handType);
+            bool useUp = action.GetStateUp(handType);
+            bool useHeld = action.GetState(handType);
+                
+            if (useDown) {
+                StandardizedVRInput.instance.HideHint(handType, action);
+                if (interactorAllowed) interactor.OnUseStart(actionKey);
+                equipper.OnUseStart(myEquipIndex, actionKey);
+            }
+            if (useUp) {
+                if (interactorAllowed) interactor.OnUseEnd(actionKey);
+                equipper.OnUseEnd(myEquipIndex, actionKey);
+            }
+            if (useHeld) {
+                if (interactorAllowed) interactor.OnUseUpdate(actionKey);
+                equipper.OnUseUpdate(myEquipIndex, actionKey);
+            }         
+
+
         }
 
             
@@ -490,98 +514,15 @@ namespace VRPlayer
 
         protected virtual void Update()
         {
-            // UpdateDebugText();
-
             bool handOccupied = VRUIInput.HandOccupied(handType);
-
-            bool useDown = !handOccupied && useAction.GetStateDown(handType);
-            bool useUp = !handOccupied && useAction.GetStateUp(handType);
-            bool useHeld = !handOccupied && useAction.GetState(handType);
-                
-            if (useDown) {
-                StandardizedVRInput.instance.HideHint(handType, useAction);
-                // inventory.SetMainEquipPointIndex(myEquipIndex);
-
-                if (canQuickEquip) {
-                    interactor.OnUseStart(Inventory.GRAB_ACTION);
-                }
-
-                inventory.OnUseStart(myEquipIndex, Inventory.GRAB_ACTION);
-                // inventory.SetMainEquipPointIndex(-1);
-            }
-            if (useUp) {
-                // inventory.SetMainEquipPointIndex(myEquipIndex);
-
-                if (canQuickEquip) {
-                    interactor.OnUseEnd(Inventory.GRAB_ACTION);
-                }
-                
-                inventory.OnUseEnd(myEquipIndex, Inventory.GRAB_ACTION);
-                // inventory.SetMainEquipPointIndex(-1);
-            }
-            if (useHeld) {
-                // inventory.SetMainEquipPointIndex(myEquipIndex);
-                
-                if (canQuickEquip) {
-                    interactor.OnUseUpdate(Inventory.GRAB_ACTION);
-                }
-
-                inventory.OnUseUpdate(myEquipIndex, Inventory.GRAB_ACTION);
-                // inventory.SetMainEquipPointIndex(-1);
-            }         
+            if (handOccupied)
+                return;
 
 
-
-            useDown = !handOccupied && stashAction.GetStateDown(handType);
-            useUp = !handOccupied && stashAction.GetStateUp(handType);
-            useHeld = !handOccupied && stashAction.GetState(handType);
-                
-            if (useDown) {
-                StandardizedVRInput.instance.HideHint(handType, stashAction);
-                // inventory.SetMainEquipPointIndex(myEquipIndex);
-                interactor.OnUseStart(Inventory.STASH_ACTION);
-                inventory.OnUseStart(myEquipIndex, Inventory.STASH_ACTION);
-                // inventory.SetMainEquipPointIndex(-1);
-            }
-            if (useUp) {
-                // inventory.SetMainEquipPointIndex(myEquipIndex);
-                interactor.OnUseEnd(Inventory.STASH_ACTION);
-                inventory.OnUseEnd(myEquipIndex, Inventory.STASH_ACTION);
-                // inventory.SetMainEquipPointIndex(-1);
-            }
-            if (useHeld) {
-                // inventory.SetMainEquipPointIndex(myEquipIndex);
-                interactor.OnUseUpdate(Inventory.STASH_ACTION);
-                inventory.OnUseUpdate(myEquipIndex, Inventory.STASH_ACTION);
-                // inventory.SetMainEquipPointIndex(-1);
-            }
-
-
-
-            
-            useDown = !handOccupied && dropAction.GetStateDown(handType);
-            useUp = !handOccupied && dropAction.GetStateUp(handType);
-            useHeld = !handOccupied && dropAction.GetState(handType);
-                
-            if (useDown) {
-                StandardizedVRInput.instance.HideHint(handType, dropAction);
-                // inventory.SetMainEquipPointIndex(myEquipIndex);
-                interactor.OnUseStart(Inventory.TRADE_ACTION);
-                inventory.OnUseStart(myEquipIndex, Inventory.TRADE_ACTION);
-                // inventory.SetMainEquipPointIndex(-1);
-            }
-            if (useUp) {
-                // inventory.SetMainEquipPointIndex(myEquipIndex);
-                interactor.OnUseEnd(Inventory.TRADE_ACTION);
-                inventory.OnUseEnd(myEquipIndex, Inventory.TRADE_ACTION);
-                // inventory.SetMainEquipPointIndex(-1);
-            }
-            if (useHeld) {
-                // inventory.SetMainEquipPointIndex(myEquipIndex);
-                interactor.OnUseUpdate(Inventory.TRADE_ACTION);
-                inventory.OnUseUpdate(myEquipIndex, Inventory.TRADE_ACTION);
-                // inventory.SetMainEquipPointIndex(-1);
-            }           
+            ControlInteractorAndEquipper (useAction, Inventory.GRAB_ACTION, interactor, canQuickEquip, inventory.GetComponent<InventoryEqupping>());
+            ControlInteractorAndEquipper (stashAction, Inventory.STASH_ACTION, interactor, true, inventory.GetComponent<InventoryEqupping>());
+            ControlInteractorAndEquipper (dropAction, Inventory.TRADE_ACTION, interactor, true, inventory.GetComponent<InventoryEqupping>());
+                    
         }
 
         protected virtual void OnEquippedUpdate( Inventory inventory, Item item, int slotIndex, bool quickEquipped )

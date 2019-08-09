@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7325171166673772051}
   - component: {fileID: 7325171166673772048}
   - component: {fileID: 7325171166673772049}
-  - component: {fileID: 3319089471766535424}
+  - component: {fileID: 4156403610041847957}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -119,7 +119,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &3319089471766535424
+--- !u!114 &4156403610041847957
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -128,11 +128,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7325171166673772055}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18407c31fdb7e4fd2bfb37f2ba8c329b, type: 3}
+  m_Script: {fileID: 11500000, guid: aa287429e7fe54a0fba39e3e51a09820, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   selected: 0
   elementText: 
+  selectInvertsTextColor: 1
   destination: {fileID: 0}
   parentHolder: {fileID: 0}
   hasText: 1

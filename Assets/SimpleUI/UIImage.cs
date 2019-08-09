@@ -11,26 +11,21 @@ namespace SimpleUI {
     public class UIImage : MonoBehaviour
     {
         public bool useDark;
-
         Image image;
         
         void GetImage () {
-            if (image == null)
-                image = GetComponent<Image>();
+            if (image == null) image = GetComponent<Image>();
         }
-
         void SetImageColor () {
             GetImage();
-            if (image != null) {
-                image.color = useDark ? UIManager.instance.mainDarkColor : UIManager.instance.mainLightColor;
-            }
+            if (image != null) image.color = useDark ? UIManager.instance.mainDarkColor : UIManager.instance.mainLightColor;
         }
 
-        void Update () {
     #if UNITY_EDITOR
+        void Update () {
             SetImageColor();
-    #endif
         }
+    #endif
 
         void OnEnable () {
             SetImageColor();

@@ -15,11 +15,14 @@ namespace GameUI {
 
         void OnEnable ()  {
             GameManager.onPauseRoutineEnd += OnPauseRoutineEnd;
-            mainMenuBasePage.onBaseCancel += OnCancelMainMenuPage;
+
+
+            mainMenuBasePage.onBaseCancel = OnCancelMainMenuPage;
+            // mainMenuBasePage.onBaseCancel += OnCancelMainMenuPage;
         }
         void OnDisable ()  {
             GameManager.onPauseRoutineEnd -= OnPauseRoutineEnd;
-            mainMenuBasePage.onBaseCancel -= OnCancelMainMenuPage;
+            // mainMenuBasePage.onBaseCancel -= OnCancelMainMenuPage;
             
         }
 

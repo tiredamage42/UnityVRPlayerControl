@@ -1,20 +1,31 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+#if UNITY_EDITOR
+    using UnityEditor;
+#endif
+
 namespace ActorSystem {
     [System.Serializable] public class GameValue
     {
         public enum GameValueComponent { BaseValue, BaseMinValue, BaseMaxValue, Value, MinValue, MaxValue };
+
+
+        
         
         public string name;
-        public float baseValue, baseMinValue=0, baseMaxValue=500;
+        [HideInInspector] public float baseValue;
+        // public float baseMinValue=0, baseMaxValue=500;
+        public Vector2 baseMinMax = new Vector2(0,500);
+        
         public Vector2 initializationRange;
 
-        public GameValue(string name, float baseValue, float baseMinValue, float baseMaxValue) {
+        public GameValue(string name, float baseValue, Vector2 baseMinMax){// float baseMinValue, float baseMaxValue) {
             this.name = name;
             this.baseValue = baseValue;
-            this.baseMinValue = baseMinValue;
-            this.baseMaxValue = baseMaxValue;
+            this.baseMinMax = baseMinMax;
+            // this.baseMinValue = baseMinValue;
+            // this.baseMaxValue = baseMaxValue;
         }
 
         //not using a dictionary in order to keep thses serializable by unity
@@ -32,10 +43,10 @@ namespace ActorSystem {
             return GetValue (GameValueComponent.Value, baseValue, GetMinValue(), GetMaxValue());
         }
         public float GetMinValue () {
-            return GetValue(GameValueComponent.MinValue, baseMinValue);
+            return GetValue(GameValueComponent.MinValue, baseMinMax.x);// baseMinValue);
         }
         public float GetMaxValue () {
-            return GetValue(GameValueComponent.MaxValue, baseMaxValue);
+            return GetValue(GameValueComponent.MaxValue, baseMinMax.y);// baseMaxValue);
         }
         public float GetValue (GameValueComponent checkType) {
             switch (checkType) {
@@ -48,9 +59,14 @@ namespace ActorSystem {
                 case GameValueComponent.BaseValue:
                     return baseValue;
                 case GameValueComponent.BaseMinValue:
-                    return baseMinValue;
+                    return baseMinMax.x;
                 case GameValueComponent.BaseMaxValue:
-                    return baseMaxValue;
+                    return baseMinMax.y;
+
+                // case GameValueComponent.BaseMinValue:
+                //     return baseMinValue;
+                // case GameValueComponent.BaseMaxValue:
+                //     return baseMaxValue;
             }
             return 0;
         }
@@ -73,33 +89,106 @@ namespace ActorSystem {
             return null;
         }
 
+
+
+        // delta, current, min, max
+        event System.Action<float, float, float, float> onValueChange;
+        public void AddChangeListener (System.Action<float, float, float, float> listener) {
+            onValueChange += listener;
+        }
+        public void RemoveChangeListener (System.Action<float, float, float, float> listener) {
+            onValueChange -= listener;
+        }
+
+
+        void ClampBaseValue (float minVal, float maxVal) {
+
+        }
+
         public void AddModifier (GameValueModifier modifier, int count, int senderKey, int buffKey, int modifierKey) {
+            
             //permanent modifiers
             if (modifier.modifyValueComponent == GameValueComponent.BaseValue) {
+                float origValue = GetValue();
+                float minVal = GetMinValue();
+                float maxVal = GetMaxValue();
+                                
                 baseValue = modifier.Modify(baseValue);
+                
+                //clamp the base value
+                baseValue = Mathf.Clamp(baseValue, minVal, maxVal);
 
-                //clamp the value
-                baseValue = Mathf.Clamp(baseValue, GetMinValue(), GetMaxValue());
+                if (onValueChange != null) {
+                    // delta, current, min, max
+                    float newVal = GetValue();
+                    onValueChange(newVal - origValue, newVal, minVal, maxVal);
+                }
                 return;
             }
+
+
             if (modifier.modifyValueComponent == GameValueComponent.BaseMinValue) {
-                baseMinValue = modifier.Modify(baseMinValue);
+                float origValue = GetValue();
+                float maxVal = GetMaxValue();
+                                
+                baseMinMax.x = modifier.Modify(baseMinMax.x);
+                float minVal = GetMinValue();
+                
+                //clamp the base value
+                baseValue = Mathf.Clamp(baseValue, minVal, maxVal);
+
+                if (onValueChange != null) {
+                    // delta, current, min, max
+                    float newVal = GetValue();
+                    onValueChange(newVal - origValue, newVal, minVal, maxVal);
+                }
+                
                 return;
             }
             if (modifier.modifyValueComponent == GameValueComponent.BaseMaxValue) {
-                baseMaxValue = modifier.Modify(baseMaxValue);
+
+                float origValue = GetValue();
+                float minVal = GetMinValue();
+                baseMinMax.y = modifier.Modify(baseMinMax.y);
+                float maxVal = GetMaxValue();
+
+
+                //clamp the base value
+                baseValue = Mathf.Clamp(baseValue, minVal, maxVal);
+
+                if (onValueChange != null) {
+                    // delta, current, min, max
+                    float newVal = GetValue();
+                    onValueChange(newVal - origValue, newVal, minVal, maxVal);
+                }
+                
+                
                 return;
             }
-            Vector3Int key = new Vector3Int(senderKey, buffKey, modifierKey);
-            GameValueModifier existingModifier = GetModifier ( key );//senderKey, buffKey, modifierKey );
-            if (existingModifier != null) {
-                existingModifier.count += count;
+
+
+            {
+                float origValue = GetValue();
+
+                Vector3Int key = new Vector3Int(senderKey, buffKey, modifierKey);
+                GameValueModifier existingModifier = GetModifier ( key );//senderKey, buffKey, modifierKey );
+                if (existingModifier != null) {
+                    existingModifier.count += count;
+                }
+                else {
+                    modifiers.Add(new GameValueModifier(modifier, count, key));//senderKey, modifierKey));
+                }
+
+                if (onValueChange != null) {
+                    // delta, current, min, max
+                    float newVal = GetValue();
+                    onValueChange(newVal - origValue, newVal, GetMinValue(), GetMaxValue());
+                }
             }
-            else {
-                modifiers.Add(new GameValueModifier(modifier, count, key));//senderKey, modifierKey));
-            }
-        
         }
+
+
+
         public void RemoveModifier (GameValueModifier modifier, int count, int senderKey, int buffKey, int modifierKey) {
             if (modifier.modifyValueComponent == GameValueComponent.BaseValue) return;
             if (modifier.modifyValueComponent == GameValueComponent.BaseMinValue) return;
@@ -110,19 +199,35 @@ namespace ActorSystem {
             // }
             // else {
 
+
+
+
                 Vector3Int key = new Vector3Int(senderKey, buffKey, modifierKey);
             
                 GameValueModifier existingModifier = GetModifier ( key );//senderKey, buffKey, modifierKey );
                 if (existingModifier != null) {
+                    float origValue = GetValue();
+                    
                     existingModifier.count -= count;
                     if (existingModifier.count <= 0) {
                         modifiers.Remove(existingModifier);
                     }
+
+
+                    if (onValueChange != null) {
+                        // delta, current, min, max
+                        float newVal = GetValue();
+                        onValueChange(newVal - origValue, newVal, GetMinValue(), GetMaxValue());
+                    }
+
                 }
             // }
         }
     }
     [System.Serializable] public class GameValueModifier {
+        [DisplayedArray(new float[] {0,0,0,.1f}, false)] 
+        public GameValueConditionArray conditions;
+        
 
         public GameValueModifier () {
             count = 1;
@@ -146,13 +251,13 @@ namespace ActorSystem {
         // [HideInInspector] public int senderKey, modifierKey;
         [HideInInspector] public Vector3Int key; //sender, buff, modifier
         [HideInInspector] public int count = 1;
-
         int getCount { get { return isStackable ? count : 1; } }
 
-        public bool isStackable;
-        public string gameValueName;
 
-        [Header("Base Value modifiers are permanent")]
+        public bool isStackable;
+        public string gameValueName = "Game Value Name";
+
+        // [Header("Base Value modifiers are permanent")]
         public GameValue.GameValueComponent modifyValueComponent;
         
         public enum ModifyBehavior { Set, Add, Multiply };
@@ -190,9 +295,6 @@ namespace ActorSystem {
             }
         }
 
-
-                
-
         // Set | Add | Multiply
 
         // Base | Max     
@@ -208,10 +310,88 @@ namespace ActorSystem {
         //     )
 
         // gameMessage 
-
-
-
-
     }
+#if UNITY_EDITOR
+
+    [CustomPropertyDrawer(typeof(GameValueModifier))]
+    public class GameValueModifierDrawer : PropertyDrawer
+    {
+        // Draw the property inside the given rect
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            // Using BeginProperty / EndProperty on the parent property means that
+            // prefab override logic works on the entire property.
+            EditorGUI.BeginProperty(position, label, property);
+
+            float offset = 0;
+
+            float x = position.x;
+
+            int i = 0;
+
+            float[] widths = new float[] {
+                60,
+                125,
+                90,
+                80, 
+                60, 
+                15,
+            };
+
+                
+            var amountRect = new Rect(x, position.y, widths[i], EditorGUIUtility.singleLineHeight);
+            x += widths[i]-offset;
+            i++;
+
+            EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("modifyBehavior"), GUIContent.none);
+            
+            amountRect = new Rect(x, position.y, widths[i], EditorGUIUtility.singleLineHeight);
+            x+= widths[i]-offset;
+            i++;
+            
+            SerializedProperty p = property.FindPropertyRelative("gameValueName");
+            string s = p.stringValue;
+            if (string.IsNullOrEmpty(s) || string.IsNullOrWhiteSpace(s)) {
+                p.stringValue = "Game Value Name";
+            }
+
+            EditorGUI.PropertyField(amountRect, p, GUIContent.none);
+            
+            amountRect = new Rect(x, position.y, widths[i], EditorGUIUtility.singleLineHeight);
+            x+= widths[i]-offset;
+            i++;
+            
+            EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("modifyValueComponent"), GUIContent.none);
+            
+            amountRect = new Rect(x, position.y, widths[i], EditorGUIUtility.singleLineHeight);
+            x+= widths[i]-offset;
+            i++;
+            
+            EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("modifyValue"), GUIContent.none);
+            
+            amountRect = new Rect(x, position.y, widths[i], EditorGUIUtility.singleLineHeight);
+            x+= widths[i]-offset;
+            i++;
+            
+            EditorGUI.LabelField(amountRect, "Stackable:");
+            
+            amountRect = new Rect(x, position.y, widths[i], EditorGUIUtility.singleLineHeight);
+            EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("isStackable"), GUIContent.none);
+            
+
+            // amountRect = new Rect(position.x + 16, position.y + EditorGUIUtility.singleLineHeight, position.width, (EditorGUI.GetPropertyHeight(property.FindPropertyRelative("conditions"), true)));
+            amountRect = new Rect(position.x + 16, position.y + EditorGUIUtility.singleLineHeight, position.width, (EditorGUI.GetPropertyHeight(property.FindPropertyRelative("conditions"), true)));
+            
+            EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("conditions"), new GUIContent("Conditions"));
+            
+            EditorGUI.EndProperty();
+        }
+
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            return EditorGUIUtility.singleLineHeight + (EditorGUI.GetPropertyHeight(property.FindPropertyRelative("conditions"), true));
+        }
+    }
+#endif
 
 }

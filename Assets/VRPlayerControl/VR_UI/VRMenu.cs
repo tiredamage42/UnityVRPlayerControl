@@ -10,29 +10,35 @@ namespace VRPlayer {
         public float angleThreshold = 45;
         public bool matchXRotation;
         public float followSpeed = 5;
-        public Vector3 offset = new Vector3(0,0.5f,1);
+        // public Vector3 offset = new Vector3(0,0.5f,1);
+        // public Vector3 menuScale = Vector3.one;
         Transform baseTransform, hmdTransform;
+        public TransformBehavior followBehavior;
+
 
         Vector3 rotationTarget, lastRotationFWD = Vector3.forward;
 
         private void OnEnable() {
-                lastRotationFWD = hmdTransform.forward;
-                rotationTarget = hmdTransform.rotation.eulerAngles;
-                rotationTarget.z = 0;
-                
-                if (!matchXRotation)
-                    rotationTarget.x = 0;
-                
+            lastRotationFWD = hmdTransform.forward;
+            rotationTarget = hmdTransform.rotation.eulerAngles;
+            rotationTarget.z = 0;
+            
+            if (!matchXRotation)
+                rotationTarget.x = 0;
         }
 
         void FollowCameraPosition (float deltaTime) {
-            transform.localPosition = offset;
+
+
+            TransformBehavior.AdjustTransform(transform, baseTransform, followBehavior, 0);
+            // transform.localScale = menuScale;
+            // transform.localPosition = offset;
+
             
             baseTransform.position = Vector3.Lerp(baseTransform.position, hmdTransform.position, deltaTime * followSpeed);
 
             // Vector3 targetRot = baseTransform.rotation.eulerAngles;
             if (Vector3.Angle(hmdTransform.forward, lastRotationFWD) > angleThreshold) {
-                //Vector3 
                 lastRotationFWD = hmdTransform.forward;
                 rotationTarget = hmdTransform.rotation.eulerAngles;
                 rotationTarget.z = 0;
@@ -52,12 +58,9 @@ namespace VRPlayer {
             baseTransform = new GameObject(name + "_ui_base").transform;
             transform.ResetAtParent(baseTransform);
 
-
             hmdTransform = VRManager.instance.hmdTransform;
-
         }
 
-        // Update is called once per frame
         void Update()
         {
             FollowCameraPosition (Time.deltaTime);

@@ -1,11 +1,7 @@
-﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
-
+﻿
 using System;
-// using System.Collections;
 using UnityEngine;
 using Valve.VR;
-
-// using System.Linq;
 
 namespace Valve.VR
 {
@@ -19,19 +15,15 @@ namespace Valve.VR
 
         public SteamVR_Skeleton_Pose_Hand GetHand(int hand)
         {
-            if (hand == leftHandInputSource)
-                return leftHand;
-            else if (hand == rightHandInputSource)
-                return rightHand;
+            if (hand == leftHandInputSource) return leftHand;
+            else if (hand == rightHandInputSource) return rightHand;
             return null;
         }
 
         public SteamVR_Skeleton_Pose_Hand GetHand(SteamVR_Input_Sources hand)
         {
-            if (hand == SteamVR_Input_Sources.LeftHand)
-                return leftHand;
-            else if (hand == SteamVR_Input_Sources.RightHand)
-                return rightHand;
+            if (hand == SteamVR_Input_Sources.LeftHand) return leftHand;
+            else if (hand == SteamVR_Input_Sources.RightHand) return rightHand;
             return null;
         }
     }
@@ -46,30 +38,6 @@ namespace Valve.VR
         public SteamVR_Skeleton_FingerExtensionTypes middleFingerMovementType = SteamVR_Skeleton_FingerExtensionTypes.Static;
         public SteamVR_Skeleton_FingerExtensionTypes ringFingerMovementType = SteamVR_Skeleton_FingerExtensionTypes.Static;
         public SteamVR_Skeleton_FingerExtensionTypes pinkyFingerMovementType = SteamVR_Skeleton_FingerExtensionTypes.Static;
-
-        // /// <summary>
-        // /// Get extension type for a particular finger. Thumb is 0, Index is 1, etc.
-        // /// </summary>
-        // public SteamVR_Skeleton_FingerExtensionTypes GetFingerExtensionType(int finger)
-        // {
-        //     if (finger == 0)
-        //         return thumbFingerMovementType;
-        //     if (finger == 1)
-        //         return indexFingerMovementType;
-        //     if (finger == 2)
-        //         return middleFingerMovementType;
-        //     if (finger == 3)
-        //         return ringFingerMovementType;
-        //     if (finger == 4)
-        //         return pinkyFingerMovementType;
-
-        //     //default to static
-        //     Debug.LogWarning("Finger not in range!");
-        //     return SteamVR_Skeleton_FingerExtensionTypes.Static;
-        // }
-
-        // public bool ignoreRootPoseData = true;
-        // public bool ignoreWristPoseData = true;
 
         public Vector3 position;
         public Quaternion rotation;
@@ -88,56 +56,18 @@ namespace Valve.VR
 
             switch (fingerIndex)
             {
-                case SteamVR_Skeleton_FingerIndexes.thumb:
-                    return thumbFingerMovementType;
-
-                case SteamVR_Skeleton_FingerIndexes.index:
-                    return indexFingerMovementType;
-
-                case SteamVR_Skeleton_FingerIndexes.middle:
-                    return middleFingerMovementType;
-
-                case SteamVR_Skeleton_FingerIndexes.ring:
-                    return ringFingerMovementType;
-
-                case SteamVR_Skeleton_FingerIndexes.pinky:
-                    return pinkyFingerMovementType;
+                case SteamVR_Skeleton_FingerIndexes.thumb: return thumbFingerMovementType;
+                case SteamVR_Skeleton_FingerIndexes.index: return indexFingerMovementType;
+                case SteamVR_Skeleton_FingerIndexes.middle: return middleFingerMovementType;
+                case SteamVR_Skeleton_FingerIndexes.ring: return ringFingerMovementType;
+                case SteamVR_Skeleton_FingerIndexes.pinky: return pinkyFingerMovementType;
             }
 
             return SteamVR_Skeleton_FingerExtensionTypes.Static;
         }
     }
 
-    public enum SteamVR_Skeleton_FingerExtensionTypes
-    {
-        Static,
-        Free,
-        Extend,
-        Contract,
+    public enum SteamVR_Skeleton_FingerExtensionTypes { 
+        Static, Free, Extend, Contract,
     }
-
-    // public class SteamVR_Skeleton_FingerExtensionTypeLists
-    // {
-    //     private SteamVR_Skeleton_FingerExtensionTypes[] _enumList;
-    //     public SteamVR_Skeleton_FingerExtensionTypes[] enumList
-    //     {
-    //         get
-    //         {
-    //             if (_enumList == null)
-    //                 _enumList = (SteamVR_Skeleton_FingerExtensionTypes[])System.Enum.GetValues(typeof(SteamVR_Skeleton_FingerExtensionTypes));
-    //             return _enumList;
-    //         }
-    //     }
-
-    //     private string[] _stringList;
-    //     public string[] stringList
-    //     {
-    //         get
-    //         {
-    //             if (_stringList == null)
-    //                 _stringList = enumList.Select(element => element.ToString()).ToArray();
-    //             return _stringList;
-    //         }
-    //     }
-    // }
 }

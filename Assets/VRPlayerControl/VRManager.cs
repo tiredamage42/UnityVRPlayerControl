@@ -9,6 +9,125 @@ using GameBase;
 using _GAME_MANAGER_TYPE_ = GameBase.GameManager;
 
 namespace VRPlayer{
+    /*
+
+
+    ADD TO CONDITIONAL CHECKS:
+        contains keywords
+        self values, supplied values
+
+    Add TO MODIFIERS:
+        incoming change multipliers
+
+    perks examples:
+
+
+        weapon types:
+            
+            melee
+            pistol
+            rifle
+            shotgun
+            etc...
+
+
+
+        game modifiers for values checked against actor:
+
+        modify outer value (string valueType, string valueName, float baseValue) {
+            
+            foreach mod in valueMods[valueType][valueName]
+                baseValue = mod.modify(baseValue);
+        }
+
+
+        for instance armor perk adds modifier:
+            valueMods["Armor"]["Armor"] = new gamemodifier(multiply base by 1.5);
+
+        rifle damage + 20% perk:
+            valueMods["Rifle"]["Damage"] = new gamemodifier(multiply base by 1.2);
+
+
+
+        damage modifier perks:
+
+            rifle do 15 more damage:
+
+
+
+
+        animal friend
+
+            consider threat on ai check:
+                if hostiles contains(actor)
+                    
+                    return true (so player can trigger hostile on teammates dynamically)
+                    forgivness period for each hostile on same team (after a couple in game days)
+
+                    or when hostile dead.
+
+                    when forgiveness happens (if not dead and on same or non hostile faction, possible start relationship stats)
+                    based on actors personality values, nice guy will forgive easily, stern people will require favors to better build relationship...
+
+
+                else
+
+                    is threat = check faction table for threat
+
+                    then any:
+
+
+                        is threat = considerThreatModifier(our values, actor values, is threat)
+                            on already faction threat:
+                                return 
+                                    gamevalue: "Perk_AnimalFriend" <= 0 
+
+                            on faction threat denied:
+                                no onditionals = return already is threat
+
+
+
+
+
+
+
+
+        stats page:
+
+            value tracker panel:
+                health, ap, thirst, hunger
+
+
+            inventory:
+                item pages and description panel
+
+            
+            perks:
+
+                option 1: 
+                    perks are game value
+
+                    perk table is actor value template
+
+                    foreach perk in perk table:
+                        button for each level (flag ones already had... game value > i for each level)
+
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    */
 
     
     /*
@@ -40,20 +159,10 @@ namespace VRPlayer{
         }
         public static Transform trackingOrigin {
             get {
-                return Player.instance.transform;//trackingOriginTransform;
+                return Player.instance.transform;
             }
         }
-        // public static float playerRealLifeHeight {
-        //     get {
-        //         return Player.instance.realLifeHeight;
-        //     }
-        // }
-        // public static float gamespaceHeight {
-        //     get {
-        //         return Player.instance.gamespaceHeight;
-        //     }
-        // }
-
+        
         public static int Hand2Int(SteamVR_Input_Sources hand) {
             if (hand == SteamVR_Input_Sources.RightHand) 
                 return 0;
@@ -97,121 +206,17 @@ namespace VRPlayer{
         }
 
         // public static bool gamePaused { get { return GameBase.GameManager.isPaused; } }
-        public static event System.Action<bool> onGamePaused;
+        public static event System.Action<bool, float> onPauseRoutineStart, onPauseRoutineEnd;
 
 
         public float lodBias = 10;
 		
 
     
-        void OnEnable () {
-            
-            GameManager.onPauseRoutineStart += OnPauseRoutineStart;
-            GameManager.onPauseRoutineEnd += OnPauseRoutineEnd;
-
-            // gameManager.onUISelect += OnUISelection;
-            // gameManager.onUISubmit += OnUISubmit;
-
-            // gameManager.onShowGameMessage += OnShowGameMessage;
-        }
-
-
-
-
-
-
-        void OnDisable () {
-            GameManager.onPauseRoutineStart -= OnPauseRoutineStart;
-            GameManager.onPauseRoutineEnd -= OnPauseRoutineEnd;
-
-            // gameManager.onUISelect -= OnUISelection;
-            // gameManager.onUISubmit -= OnUISubmit;
-
-            // gameManager.onShowGameMessage -= OnShowGameMessage;
-            
-        }
-        // public static void ToggleGamePause () {
-        //     gameManager.TogglePause();
-        // }
-
-
-
-        
-
-        // public static event System.Action<string, int> onShowGameMessage;
-        // void OnShowGameMessage (string message, int key) {
-            
-        //     if (onShowGameMessage != null) {
-        //         // Debug.LogError("callingbakc on show message");
-        //         onShowGameMessage (message, key);
-        //     }
-        // }
-        
-// public static void ShowGameMessage (string message) {
-//     ShowGameMessage(message, 0);
-// }
-        // public static void ShowGameMessage (string message, int key) {
-        //     gameManager.ShowGameMessage(message, key);
-        // }
-
-
-        // public static event System.Action<GameObject[], object[]> onUISelection, onUISubmit;
-        // void OnUISelection (GameObject[] data, object[] customData) {
-        //     if (onUISelection != null) {
-        //         // Debug.LogError("callign back on ui selectin");
-        //         onUISelection (data, customData);
-        //     }
-        // }
-        // void OnUISubmit (GameObject[] data, object[] customData) {
-        //     if (onUISubmit != null) {
-        //         onUISubmit (data, customData);
-        //     }
-        // }
         
         
-
-        struct FogComponent {
-
-            Color fogColor;
-            float startDistance, endDistance, density;
-            bool useFog;
-            FogMode fogMode;
-
-            public void SetFog () {
-                RenderSettings.fog = useFog;
-                RenderSettings.fogColor = fogColor;
-                RenderSettings.fogMode = fogMode;
-                RenderSettings.fogDensity = density;
-                RenderSettings.fogStartDistance = startDistance;
-                RenderSettings.fogEndDistance = endDistance;
-            }
-
-            public FogComponent(bool useFog, Color32 color, FogMode fogMode, float density, float startDistance, float endDistance) {
-                this.useFog = useFog;
-                this.fogColor = color;
-                this.fogMode = fogMode;
-                this.density = density;
-                this.startDistance = startDistance;
-                this.endDistance = endDistance;
-            }
-            public FogComponent (bool e) : this (
-                RenderSettings.fog, RenderSettings.fogColor, RenderSettings.fogMode, RenderSettings.fogDensity, RenderSettings.fogStartDistance, RenderSettings.fogEndDistance
-            ) { }
-        }
-
-        public float pauseLightRange = 5;
-        public float pauseLightIntensity = 1;
-        public Color pauseLightColor = Color.white;
-
-
-
-        CameraClearFlags lastClearFlags;
-        Camera hmdCamera;
-        Color lastClearColor;
-        FogComponent pauseFog, lastFog;
-        Light pauseLight;
-        Light[] allLights;
-
+        
+        
 
 
         
@@ -219,8 +224,7 @@ namespace VRPlayer{
 
 
         void Awake () {
-            pauseFog = new FogComponent(true, Color.black, FogMode.Exponential, 1, 0, 0);   
-
+            
 
 			/*
                 QualitySettings.lodBias = 3.8;
@@ -249,8 +253,7 @@ namespace VRPlayer{
 		{
 			// _instance = this;
 			QualitySettings.vSyncCount = 0;
-            hmdCamera = hmdTransform.GetComponent<Camera>();
-
+            
             while (SteamVR.initializedState == SteamVR.InitializedStates.None || SteamVR.initializedState == SteamVR.InitializedStates.Initializing)
                 yield return null;
 
@@ -281,7 +284,7 @@ namespace VRPlayer{
 
 
         
-[Tooltip("World scale around the player")]
+        [Tooltip("World scale around the player")]
 		[Range(.1f, 10)] public float worldScale = 1.0f;
 
         public SteamVR_Input_Sources mainHand;
@@ -304,77 +307,32 @@ namespace VRPlayer{
         void UpdateWorldScale () {
         trackingOriginTransform.localScale = Vector3.one * (1.0f/worldScale);
     }
+    void OnEnable () {
+            GameManager.onPauseRoutineStart += OnPauseRoutineStart;
+            GameManager.onPauseRoutineEnd += OnPauseRoutineEnd;
+        }
+
+        void OnDisable () {
+            GameManager.onPauseRoutineStart -= OnPauseRoutineStart;
+            GameManager.onPauseRoutineEnd -= OnPauseRoutineEnd;
+        }
 
 
-
-        void OnPauseRoutineStart (bool isPaused, float routineTime) {
+    void OnPauseRoutineStart (bool isPaused, float routineTime) {
             
-            SteamVR_Fade.Start( Color.clear, 0 );
-            SteamVR_Fade.Start( Color.black, routineTime );
-
-            if (onGamePaused != null) {
-                onGamePaused(isPaused);
+           
+            if (onPauseRoutineStart != null) {
+                onPauseRoutineStart(isPaused, routineTime);
             }
         }
         void OnPauseRoutineEnd (bool isPaused, float routineTime) {
-            SteamVR_Fade.Start( Color.clear, routineTime );
-            if (!isPaused){
-                hmdCamera.clearFlags = lastClearFlags;
-                hmdCamera.backgroundColor = lastClearColor;
-                
-                lastFog.SetFog();
-                EnableAllLights();
-                DisablePauseRoomLight();
-            }
-            else {
-                lastClearFlags = hmdCamera.clearFlags;
-                lastClearColor = hmdCamera.backgroundColor;
-
-                hmdCamera.clearFlags = CameraClearFlags.SolidColor;
-                hmdCamera.backgroundColor = Color.black;
-
-                lastFog = new FogComponent(true);
-                pauseFog.SetFog();
-
-                DisableAllLights();
-                EnablePauseRoomLight();
+            if (onPauseRoutineEnd != null) {
+                onPauseRoutineEnd(isPaused, routineTime);
             }
         }
 
 
-        void DisableAllLights () {
-            allLights = GameObject.FindObjectsOfType<Light>();
-            for (int i = 0; i < allLights.Length;i++) {
-                allLights[i].enabled = false;
-            }
-        }
-        void EnableAllLights () {
-            for (int i = 0; i < allLights.Length;i++) {
-                allLights[i].enabled = true;
-            }
-        }
 
-        void EnablePauseRoomLight () {
-            BuildPauseRoomLightIfNull ();
-
-            pauseLight.gameObject.SetActive(true);
-            pauseLight.transform.position = hmdTransform.position + Vector3.up;
-            pauseLight.color = pauseLightColor;
-            pauseLight.intensity = pauseLightIntensity;
-            pauseLight.range = pauseLightRange;
-        }
-        void DisablePauseRoomLight () {
-            pauseLight.gameObject.SetActive(false);
-        }
-        void BuildPauseRoomLightIfNull () {
-            if (pauseLight == null) {
-                GameObject lightGO = new GameObject("pauseSceneLight");
-                pauseLight = lightGO.AddComponent<Light>();
-                pauseLight.type = LightType.Point;
-                pauseLight.shadows = LightShadows.None;
-
-            }
-        }
 
         public void ShowTextHints ( GameObject[] data )
 		{

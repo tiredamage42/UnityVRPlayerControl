@@ -24,7 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2452292220456764287}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -50,11 +50,11 @@ MonoBehaviour:
   mainDarkColor:
     serializedVersion: 2
     rgba: 3749983798
-  buttonPrefab: {fileID: 3319089471766535424, guid: 863e571ed57764067863224b2c8cb64e,
+  buttonPrefab: {fileID: 4156403610041847957, guid: 863e571ed57764067863224b2c8cb64e,
+    type: 3}
+  radialElementPrefab: {fileID: 8826569598863012957, guid: 70338709aead241deb2b66cada626e44,
     type: 3}
   pagePrefab: {fileID: 5216722850633688028, guid: b8cd3d39a02b3450da2dd77de5d445a1,
-    type: 3}
-  radialElementPrefab: {fileID: 7584500880978958273, guid: 70338709aead241deb2b66cada626e44,
     type: 3}
   messagePrefab: {fileID: 6070794106359091924, guid: 4f2226d96024744fa96fe3dcf676031b,
     type: 3}

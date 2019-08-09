@@ -9,8 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: wall01b
   m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: _NORMALMAP _PARALLAXMAP
-  m_LightmapFlags: 5
+  m_ShaderKeywords: _EMISSION _NORMALMAP _PARALLAXMAP
+  m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -71,7 +71,9 @@ Material:
     - _DstBlend: 0
     - _EmissionScaleUI: 0
     - _ExtrudeHeight: 0.05
+    - _GlossMapScale: 1
     - _Glossiness: 0.155
+    - _GlossyReflections: 1
     - _LightmapShading: 0.37307692
     - _Metallic: 0
     - _Mode: 0
@@ -85,6 +87,8 @@ Material:
     - _ShadingStrength: 0
     - _ShadowSmoothing: 2.478654
     - _Shininess: 0.5024539
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
     - _WAVELENGTH: 1

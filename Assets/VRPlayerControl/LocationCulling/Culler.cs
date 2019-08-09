@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider))]
 public class Culler : MonoBehaviour
@@ -39,8 +37,5 @@ public class Culler : MonoBehaviour
         Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, transform.localScale);
         Gizmos.DrawCube(box.center, box.size);
         Gizmos.matrix = oldMatrix;
-    }
-
-    
-    
+    }   
 }

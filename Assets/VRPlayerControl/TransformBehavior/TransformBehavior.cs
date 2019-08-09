@@ -9,6 +9,7 @@
             public Vector3 position, rotation, scale = Vector3.one;
         }
         public TransformSetting[] transformSettings;
+        public bool useScale;
 
 
         public static void SetValues (TransformBehavior equipBehavior, int settingIndex, Transform transform)
@@ -89,11 +90,13 @@
                 // transform.localPosition = transformSettings[settingIndex].position;
                 
                 transform.localRotation = Quaternion.Euler(transformSettings[settingIndex].rotation);
-                transform.localScale = transformSettings[settingIndex].scale;
+                if (useScale) {
 
-                if (transform.localScale == Vector3.zero) {
-                    Debug.LogWarning(name + " has scale of zero, setting to one");
-                    transform.localScale = Vector3.one;
+                    transform.localScale = transformSettings[settingIndex].scale;
+                    if (transform.localScale == Vector3.zero) {
+                        Debug.LogWarning(name + " has scale of zero, setting to one");
+                        transform.localScale = Vector3.one;
+                    }
                 }
                 
             }

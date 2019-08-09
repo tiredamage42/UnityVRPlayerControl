@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 
 namespace ActorSystem {
 
@@ -45,7 +49,10 @@ namespace ActorSystem {
             return met;
         }
 
-        public enum ConditionCheck { Equals, LessThan, GreaterThan, LessThanEqualTo, GreaterThanEqualTo };
+        public enum ConditionCheck { 
+            Equals = 0, LessThan = 1, GreaterThan = 2, LessThanEqualTo = 3, GreaterThanEqualTo = 4 
+        };
+        
         public enum ConditionLink { And, Or }
         public bool trueIfNoValue = true;
         public string gameValueName;
@@ -77,5 +84,92 @@ namespace ActorSystem {
             return trueIfNoValue;
         }
     }
+
+    [System.Serializable] public class GameValueConditionArray : NeatArrayWrapper<GameValueCondition> { }
+        
+
+
+#if UNITY_EDITOR
+    [CustomPropertyDrawer(typeof(GameValueCondition))]
+    public class GameValueConditionDrawer : PropertyDrawer
+    {
+        // Draw the property inside the given rect
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            // Using BeginProperty / EndProperty on the parent property means that
+            // prefab override logic works on the entire property.
+            EditorGUI.BeginProperty(position, label, property);
+
+            float offset = 0;//30;
+
+
+            float[] widths = new float[] {
+                125,
+                90,
+                40,
+                80, 
+                70, 
+                20, 
+                50
+            };
+
+            float x = position.x;
+
+            int i = 0;
+                
+            var amountRect = new Rect(x, position.y, widths[i], EditorGUIUtility.singleLineHeight);
+            x += widths[i]-offset;
+            i++;
+            SerializedProperty p = property.FindPropertyRelative("gameValueName");
+            string s = p.stringValue;
+            if (string.IsNullOrEmpty(s) || string.IsNullOrWhiteSpace(s)) {
+                p.stringValue = "Game Value Name";
+            }
+            EditorGUI.PropertyField(amountRect, p, GUIContent.none);
+            
+            
+            amountRect = new Rect(x, position.y, widths[i], EditorGUIUtility.singleLineHeight);
+            x+= widths[i]-offset;
+            i++;
+            EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("component"), GUIContent.none);
+
+
+            SerializedProperty condition = property.FindPropertyRelative("condition");
+            amountRect = new Rect(x, position.y, widths[i], EditorGUIUtility.singleLineHeight);
+            x+= widths[i]-offset;
+            i++;
+            condition.enumValueIndex = EditorGUI.Popup (amountRect, condition.enumValueIndex, new string[] { " = ", " < ", " > ", " <= ", " >= " });
+
+            amountRect = new Rect(x, position.y, widths[i], EditorGUIUtility.singleLineHeight);
+            x+= widths[i]-offset;
+            i++;
+            EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("valueCheck"), GUIContent.none);
+
+            amountRect = new Rect(x, position.y, widths[i], EditorGUIUtility.singleLineHeight);
+            x+= widths[i]-offset;
+            i++;
+            EditorGUI.LabelField(amountRect, "True If Null:");
+            
+            amountRect = new Rect(x, position.y, widths[i], EditorGUIUtility.singleLineHeight);
+            x += widths[i];//-offset;
+            i++;
+            
+            EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("trueIfNoValue"), GUIContent.none);
+
+            amountRect = new Rect(x, position.y, widths[i], EditorGUIUtility.singleLineHeight);
+            EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("link"), GUIContent.none);
+            
+            EditorGUI.EndProperty();
+        }
+
+
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            return EditorGUIUtility.singleLineHeight;// * 3;// * 6;
+            // return base.GetPropertyHeight(property, label);
+            // return EditorGUI.GetPropertyHeight(property, label);
+        }
+    }
+#endif
 
 }

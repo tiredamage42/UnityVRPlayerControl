@@ -16,8 +16,12 @@ namespace InventorySystem {
         public override void OnItemStashed (Inventory inventory, ItemBehavior item, int count, int equipSlot, bool manual) {
             
             if (equipOnManualStash && manual) {
-                if (!inventory.ItemIsEquipped(equipSlot, item)) {
-                    inventory.EquipItem(item, equipSlot, null);
+                InventoryEqupping ie = inventory.GetComponent<InventoryEqupping>();
+                if (ie != null) {
+                    if (!ie.ItemIsEquipped(equipSlot, item)) {
+                        ie.EquipItem(item, equipSlot, null);
+                    }
+
                 }
             }
         }
@@ -26,12 +30,16 @@ namespace InventorySystem {
         }
         public override void OnItemConsumed (Inventory inventory, ItemBehavior item, int count, int equipSlot) {
             if (equipOnConsume) {
+                InventoryEqupping ie = inventory.GetComponent<InventoryEqupping>();
+                if (ie != null) {
+                
                 // Debug.LogError("Equipping on consume");
-                if (inventory.ItemIsEquipped(equipSlot, item)) {
-                    inventory.UnequipItem(equipSlot, false);
+                if (ie.ItemIsEquipped(equipSlot, item)) {
+                    ie.UnequipItem(equipSlot, false);
                 }
                 else {
-                    inventory.EquipItem(item, equipSlot, null);
+                    ie.EquipItem(item, equipSlot, null);
+                }
                 }
             }
         }

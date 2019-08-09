@@ -33,7 +33,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _GroundAltitude: -0.1
-    - _GroundFade: 10
+    - _GroundFade: 0
     - _HorizonFade: 0.006
     - _NebulaExponent: 2
     m_Colors: []

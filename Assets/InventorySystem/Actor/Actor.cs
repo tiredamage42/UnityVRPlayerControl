@@ -77,7 +77,7 @@ namespace ActorSystem {
             CheckForTemplate();
         }
 
-        GameValue GetGameValueByName (string name) {
+        public GameValue GetGameValue (string name) {
             if (gameValuesDictionary.ContainsKey(name)) {
                 return gameValuesDictionary[name];
             }
@@ -90,15 +90,18 @@ namespace ActorSystem {
             return null;
         }
 
-        public void AddBuffs (ActorBuff buff, int count, int senderKey, int buffKey, bool assertPermanent) {
+        public void AddBuffs (GameValueModifier[] buffs, int count, int senderKey, int buffKey, bool assertPermanent) {
+        
+        // public void AddBuffs (ActorBuff buff, int count, int senderKey, int buffKey, bool assertPermanent) {
             //check Conditional 
-            if (GameValueCondition.ConditionsMet (buff.conditions, gameValuesDictionary)) {
+            // if (GameValueCondition.ConditionsMet (buff.conditions, gameValuesDictionary)) 
+            {
+                // GameValueModifier[] buffs = buff.buffs;
+                for (int i =0 ; i < buffs.Length; i++) {
 
-                for (int i =0 ; i < buff.buffs.Length; i++) {
 
 
-
-                    GameValueModifier mod = buff.buffs[i];
+                    GameValueModifier mod = buffs[i];
 
                     if (assertPermanent && (
                         mod.modifyValueComponent == GameValue.GameValueComponent.Value ||
@@ -110,19 +113,27 @@ namespace ActorSystem {
                         
                         continue;
                     }
-                
-                    GameValue gameValue = GetGameValueByName(mod.gameValueName);
-                    if (gameValue != null) {
-                        gameValue.AddModifier(mod, count, senderKey, buffKey, i);
+
+                    if (GameValueCondition.ConditionsMet (mod.conditions, gameValuesDictionary)) {
+
+
+                        GameValue gameValue = GetGameValue(mod.gameValueName);
+                        if (gameValue != null) {
+                            gameValue.AddModifier(mod, count, senderKey, buffKey, i);
+                        }
                     }
                 }
             }
         }
-        public void RemoveBuffs (ActorBuff buff, int count, int senderKey, int buffKey) {
-            for (int i =0 ; i < buff.buffs.Length; i++) {
-                GameValue gameValue = GetGameValueByName(buff.buffs[i].gameValueName);
+        // public void RemoveBuffs (ActorBuff buff, int count, int senderKey, int buffKey) {
+        public void RemoveBuffs (GameValueModifier[] buffs, int count, int senderKey, int buffKey) {
+        
+            // GameValueModifier[] buffs = buff.buffs;
+                
+            for (int i =0 ; i < buffs.Length; i++) {
+                GameValue gameValue = GetGameValue(buffs[i].gameValueName);
                 if (gameValue != null) {
-                    gameValue.RemoveModifier(buff.buffs[i], count, senderKey, buffKey, i);
+                    gameValue.RemoveModifier(buffs[i], count, senderKey, buffKey, i);
                 }
             }
         }

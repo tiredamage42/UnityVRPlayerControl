@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-// [RequireComponent(typeof(BoxCollider))]
+﻿using UnityEngine;
 public class RoomCuller : Culler
 {
     void OnTriggerExit (Collider other) {

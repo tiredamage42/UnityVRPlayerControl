@@ -11,13 +11,13 @@ GameObject:
   - component: {fileID: 400000}
   - component: {fileID: 3300000}
   - component: {fileID: 2300000}
-  - component: {fileID: 9500000}
   - component: {fileID: 7734560975707055604}
   - component: {fileID: 2254190725673238483}
   - component: {fileID: 5193788755516185972}
   - component: {fileID: 339710186966149287}
   - component: {fileID: 6956708727925341585}
   - component: {fileID: 5107106082444260924}
+  - component: {fileID: 1515771960}
   m_Layer: 0
   m_Name: ammobox_4
   m_TagString: Untagged
@@ -35,7 +35,8 @@ Transform:
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -3.5051692, y: 0, z: -5.6285377}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 7199342512281983013}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -90.00001, y: 0, z: 0}
@@ -84,25 +85,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!95 &9500000
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100000}
-  m_Enabled: 0
-  m_Avatar: {fileID: 9000000, guid: deb8633dd78507847b3efdc3f83b9b7e, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 1
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &7734560975707055604
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,41 +102,6 @@ MonoBehaviour:
   onlyProximityHover: 0
   available: 1
   useType: 0
-  onUseStart:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  onUseUpdate:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  onUseEnd:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: InteractionSystem.InteractableUseEvent, Assembly-CSharp, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  onInspectStart:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  onInspectUpdate:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  onInspectEnd:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: InteractionSystem.InteractableInspectEvent, Assembly-CSharp, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  onAvailabilityChange:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: InteractionSystem.InteractableAvailabilityEvent, Assembly-CSharp,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!65 &2254190725673238483
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -196,10 +143,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d21a68a8c4cdc42059085a92e59b7e83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allowQuickTrade: 0
-  equipPoints: []
-  favoritesCount: 0
+  autoScrapCategories: 
+  favoriteAbleCategories: 000000000100000002000000
+  favoritesMaxCount: 8
   allInventory: []
+  favorites: []
   dropLocalPoint: {x: 0, y: 1, z: 1}
 --- !u!114 &6956708727925341585
 MonoBehaviour:
@@ -231,3 +179,74 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flashInteractable: 1
   highlightOnHover: 1
+  flashRenderers: []
+--- !u!114 &1515771960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4188a44d9426f43c99929690e247bf4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  linkedInventory: {fileID: 0}
+--- !u!1 &8621264501825505838
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7199342512281983013}
+  - component: {fileID: 6055324039684196980}
+  - component: {fileID: 1990345055604948398}
+  m_Layer: 0
+  m_Name: InteractableTrigger (39)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7199342512281983013
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8621264501825505838}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 400000}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6055324039684196980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8621264501825505838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1863d409d31f44e95ad19f5d9f4272ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!65 &1990345055604948398
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8621264501825505838}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.9124198, y: 0.6672505, z: 0.40464127}
+  m_Center: {x: 0, y: 0, z: 0}

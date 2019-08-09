@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /*
     recipe:
@@ -38,26 +40,17 @@ CONSUME ON STASH OPTION FOR ITEM MAYBE
  */
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 namespace InventorySystem {
     [CreateAssetMenu(menuName="Inventory System/Item Behavior")]
     public class ItemBehavior : ScriptableObject
     {
         public string itemName;
+
+        [TextArea]
+        public string itemDescription = "No Description Available...";
+        
         [Header("Set to false for utility items")]
         public bool keepOnStash = true;
-        
         
         // -1 if set by where equipped from
                 // else equip point index (overwritten if quick equipped)
@@ -67,6 +60,7 @@ namespace InventorySystem {
 
         [Header("Cant be dropped from inventory accidentally")]
         public bool permanentStash;
+
         public int category;
 
         // stash use logic needs to happen on scriptable objects
@@ -77,7 +71,8 @@ namespace InventorySystem {
         public float weight = 1;
         [Range(0,100)] public float value = 50;
 
-        public ItemComposition[] composedOf;
+        [DisplayedArray(new float[] {0,0,0,.25f}, false)] 
+        public ItemCompositionArray composedOf;
 
         
         [Header("Scene Behavior")]
@@ -90,7 +85,7 @@ namespace InventorySystem {
         [Header("Can one scene instance hold multiple of items ?")]
         public bool stackable;
 
-        public Inventory.EquipType equipType = Inventory.EquipType.Normal;
+        public InventoryEqupping.EquipType equipType = InventoryEqupping.EquipType.Normal;
         public bool hoverLockOnEquip = true;
 
         public TransformBehavior equipTransform;
@@ -127,11 +122,6 @@ namespace InventorySystem {
                 stashedItemBehaviors[i].OnItemConsumed(inventory, this, count, slot);
             }
             return hasBehaviors;
-            // if (stashedItemBehavior != null) {
-            //     stashedItemBehavior.OnItemConsumed(inventory, this, count, slot);
-            //     return true;
-            // }
-            // return false;
         }
     }
 
@@ -140,37 +130,54 @@ namespace InventorySystem {
         public int amount = 1;
     }
 
-
-
-    // public abstract class StashUseBehavior : ScriptableObject {
-    //     public void OnStashedUse (Inventory inventory, ItemBehavior item, int useAction, int slotIndex, int affectingCount, Inventory secondaryInventory) {
-    //         if (useAction == Inventory.UI_DROP_ACTION) {
-    //             inventory.DropItem(item, affectingCount, true);
-    //         }
-    //         else if (useAction == Inventory.UI_TRADE_ACTION) {
-    //             inventory.DropItem(item, affectingCount, false);
-    //             secondaryInventory.StashItem(item, affectingCount);
-    //         }
-    //         else {
-    //             _OnStashedUse ( inventory, item, useAction, slotIndex, affectingCount, secondaryInventory);
-    //         }
-
-    //     }
-    //     protected abstract void _OnStashedUse (Inventory inventory, ItemBehavior item, int useAction, int slotIndex, int affectingCount, Inventory secondaryInventory);
-    // }
+[System.Serializable] public class ItemCompositionArray : NeatArrayWrapper<ItemComposition> { }
         
-        
-// [CreateAssetMenu()]
     
-    // public class ConsumableStashUseBehavior : StashUseBehavior {
-    //     public Buffs consumeBuffs;
-    //     public override void OnStashedUse (Inventory inventory, Inventory.InventorySlot slot, int useAction) {
-            
-    //         inventory.GetComponent<Actor>().GiveBuffs(consumeBuffs);
-    //         // inventory.EquipItem(slot.item);
+    #if UNITY_EDITOR
 
-    //     }
-    // }
+[CustomPropertyDrawer(typeof(ItemComposition))]
+public class GameValueConditionDrawer : PropertyDrawer
+{
+    // Draw the property inside the given rect
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    {
+        // Using BeginProperty / EndProperty on the parent property means that
+        // prefab override logic works on the entire property.
+        EditorGUI.BeginProperty(position, label, property);
+
+        float offset = -5;
+
+        float x = position.x;
+            
+        var amountRect = new Rect(x, position.y, 175, EditorGUIUtility.singleLineHeight);
+        x += 175-offset;
+
+        InventorySystemEditorUtils.itemSelector.Draw(amountRect, property.FindPropertyRelative("item"), GUIContent.none);
+        // EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("item"), GUIContent.none);
+        
+        amountRect = new Rect(x, position.y, 50, EditorGUIUtility.singleLineHeight);
+        x+= 50-offset;
+        EditorGUI.LabelField(amountRect, "Amount:");
+
+        amountRect = new Rect(x, position.y, 135, EditorGUIUtility.singleLineHeight);
+        x+= 135-offset;
+        EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("amount"), GUIContent.none);
+
+
+
+            
+        EditorGUI.EndProperty();
+    }
+
+
+    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+    {
+        return EditorGUIUtility.singleLineHeight;
+    }
+}
+#endif
+
+
 /*
 
 

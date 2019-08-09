@@ -242,9 +242,9 @@ namespace Valve.VR.InteractionSystem
 
 		private void FindArrowHand(Inventory inventory)
 		{
-			for (int i =0 ; i< inventory.equippedSlots.Length; i++) {
-				if (inventory.equippedSlots[i] != null) {
-					arrowHand = inventory.equippedSlots[i].sceneItem.GetComponent<ArrowHand>();
+			for (int i =0 ; i< inventory.GetComponent<InventoryEqupping>().equippedSlots.Length; i++) {
+				if (inventory.GetComponent<InventoryEqupping>().equippedSlots[i] != null) {
+					arrowHand = inventory.GetComponent<InventoryEqupping>().equippedSlots[i].sceneItem.GetComponent<ArrowHand>();
 					if (arrowHand != null) {
 						return;
 					}
@@ -626,17 +626,17 @@ namespace Valve.VR.InteractionSystem
 			if ( parentInventory != null)// && parentInventory.otherInventory.equippedItem != null)
 			
 			{
-				for (int i =0 ; i < parentInventory.equippedSlots.Length; i++) {
-					if (parentInventory.equippedSlots[i] != null) {
+				for (int i =0 ; i < parentInventory.GetComponent<InventoryEqupping>().equippedSlots.Length; i++) {
+					if (parentInventory.GetComponent<InventoryEqupping>().equippedSlots[i] != null) {
 
 						// GameObject otherHandCurrentAttached = parentInventory.otherInventory.equippedItem.item.gameObject;
-						GameObject otherHandCurrentAttached = parentInventory.equippedSlots[i].sceneItem.gameObject;
+						GameObject otherHandCurrentAttached = parentInventory.GetComponent<InventoryEqupping>().equippedSlots[i].sceneItem.gameObject;
 						
 						if ( otherHandCurrentAttached.GetComponent<ItemPackageReference>() != null )
 						{
 							if ( otherHandCurrentAttached.GetComponent<ItemPackageReference>().itemPackage == arrowHandItemPackage )
 							{
-								parentInventory.UnequipItem(i, false);
+								parentInventory.GetComponent<InventoryEqupping>().UnequipItem(i, false);
 								// parentInventory.otherInventory.UnequipItem( otherHandCurrentAttached.GetComponent<Item>() );
 							}
 						}

@@ -7,7 +7,7 @@ using Valve.VR;
 using UnityEditor;
 namespace VRPlayer {
 
-    [CustomEditor(typeof(VRItemAddon))]
+    [CustomEditor(typeof(VRItemAddon))][CanEditMultipleObjects]
 
     public class VRItemEditor : Editor
     {
@@ -21,13 +21,15 @@ namespace VRPlayer {
 
         SerializedProperty usePoseProp;
 
-        HandPoseSelector handPoseSelector;
+        AssetSelector<SteamVR_Skeleton_Pose> handPoseSelector;
+
+        
 
 
         void OnEnable () {
             // FindAllPoses();
             usePoseProp = serializedObject.FindProperty("poseToUse");
-            handPoseSelector = new HandPoseSelector();
+            handPoseSelector = new AssetSelector<SteamVR_Skeleton_Pose>();
         }
         public override void OnInspectorGUI () {
             base.OnInspectorGUI () ;

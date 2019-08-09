@@ -321,9 +321,9 @@ namespace Valve.VR.InteractionSystem
 		private ItemPackage GetAttachedItemPackage( Inventory inventory )
 		{
 
-			for (int i = 0; i < inventory.equippedSlots.Length; i++){
-				if (inventory.equippedSlots[i] != null) {
-					ItemPackageReference packageReference = inventory.equippedSlots[i].sceneItem.GetComponent<ItemPackageReference>();
+			for (int i = 0; i < inventory.GetComponent<InventoryEqupping>().equippedSlots.Length; i++){
+				if (inventory.GetComponent<InventoryEqupping>().equippedSlots[i] != null) {
+					ItemPackageReference packageReference = inventory.GetComponent<InventoryEqupping>().equippedSlots[i].sceneItem.GetComponent<ItemPackageReference>();
 					if ( packageReference == null ) // verify the item in the hand is matchable
 					{
 						continue;
@@ -445,15 +445,15 @@ namespace Valve.VR.InteractionSystem
 
 
 
-			for (int i =0 ; i < inventory.equippedSlots.Length; i++) {
-				if (inventory.equippedSlots[i] != null) {
-					ItemPackageReference packageReference = inventory.equippedSlots[i].sceneItem.GetComponent<ItemPackageReference>();
+			for (int i =0 ; i < inventory.GetComponent<InventoryEqupping>().equippedSlots.Length; i++) {
+				if (inventory.GetComponent<InventoryEqupping>().equippedSlots[i] != null) {
+					ItemPackageReference packageReference = inventory.GetComponent<InventoryEqupping>().equippedSlots[i].sceneItem.GetComponent<ItemPackageReference>();
 					if ( packageReference != null )
 					{
 						ItemPackage attachedObjectItemPackage = packageReference.itemPackage;
 						if ( ( attachedObjectItemPackage != null ) && ( attachedObjectItemPackage == package ) )
 						{
-							inventory.UnequipItem(i, false);
+							inventory.GetComponent<InventoryEqupping>().UnequipItem(i, false);
 						}
 					}
 				}
@@ -494,14 +494,14 @@ namespace Valve.VR.InteractionSystem
 		{
 
 
-			for (int i =0 ; i < inventory.equippedSlots.Length; i++) {
-				if (inventory.equippedSlots[i] != null) {
-					ItemPackageReference packageReference = inventory.equippedSlots[i].sceneItem.GetComponent<ItemPackageReference>();
+			for (int i =0 ; i < inventory.GetComponent<InventoryEqupping>().equippedSlots.Length; i++) {
+				if (inventory.GetComponent<InventoryEqupping>().equippedSlots[i] != null) {
+					ItemPackageReference packageReference = inventory.GetComponent<InventoryEqupping>().equippedSlots[i].sceneItem.GetComponent<ItemPackageReference>();
 					if ( packageReference != null )
 					{
 						if ( packageReference.itemPackage.packageType == packageType )
 						{
-							inventory.UnequipItem(i, false);
+							inventory.GetComponent<InventoryEqupping>().UnequipItem(i, false);
 						}
 					}
 				}
@@ -591,7 +591,7 @@ namespace Valve.VR.InteractionSystem
 
 			//dont quick equip
 			Item sceneItem = spawnedItem.GetComponent<Item>();
-			inventory.EquipItem(sceneItem.itemBehavior, interactorID, null);// sceneItem.itemBehavior.equipSlot, null);
+			inventory.GetComponent<InventoryEqupping>().EquipItem(sceneItem.itemBehavior, interactorID, null);// sceneItem.itemBehavior.equipSlot, null);
 			// inventory.SwitchMainUsedEquipPoint();
 
 
@@ -611,7 +611,7 @@ namespace Valve.VR.InteractionSystem
 				sceneItem = otherHandObjectToAttach.GetComponent<Item>();
 				//dont quick equip
 				// otherInventory.
-				inventory.EquipItem(sceneItem.itemBehavior, 1-interactorID, null);//sceneItem.itemBehavior.equipSlot, null);
+				inventory.GetComponent<InventoryEqupping>().EquipItem(sceneItem.itemBehavior, 1-interactorID, null);//sceneItem.itemBehavior.equipSlot, null);
 
 
 			}

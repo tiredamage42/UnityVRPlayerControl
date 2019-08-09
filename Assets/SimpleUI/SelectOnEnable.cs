@@ -6,37 +6,38 @@ namespace SimpleUI {
     public class SelectOnEnable : MonoBehaviour
     {
         bool hasSelected;
-        
-        EventSystem _eventSystem;
-        EventSystem eventSystem {
-            get {
-                if (_eventSystem == null) {
-                    _eventSystem = GameObject.FindObjectOfType<EventSystem>();
-                }
-                return _eventSystem;
-            }
-        }
+        // EventSystem _eventSystem;
+        // EventSystem eventSystem {
+        //     get {
+        //         InitializeEventSystemReference();
+        //         return _eventSystem;
+        //     }
+        // }
         public GameObject toSelect;
 
+        // void InitializeEventSystemReference () {
+        //     if (_eventSystem == null) _eventSystem = GameObject.FindObjectOfType<EventSystem>();
+        // }
+
         void OnDisable () {
-            hasSelected = false;
-            eventSystem.SetSelectedGameObject(null);
+            if (hasSelected) {
+                hasSelected = false;
+                UIManager.SetSelection(null);
+            }
         }
 
-        void Awake () {
-            // eventSystem = GameObject.FindObjectOfType<EventSystem>();
-            // Debug.LogError("found eent syste " + eventSystem);
-        }
+        // void Awake () {
+        //     InitializeEventSystemReference();
+        // }
         
-        // Update is called once per frame
         void Update()
         {
             if (!hasSelected){
                 // Debug.LogError("selected :: " + toSelect.name+ " on " + name);
-                eventSystem.SetSelectedGameObject(toSelect);
+             
+                UIManager.SetSelection(toSelect);
                 hasSelected = true;
             }
-            
         }
     }
 }

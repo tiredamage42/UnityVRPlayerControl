@@ -15,10 +15,6 @@ namespace VRPlayer
 	
 	public class Player : MonoBehaviour
 	{
-		// public SteamVR_Input_Sources mainHand;
-		// public SteamVR_Input_Sources offHand { get { return VRManager.OtherHand(mainHand); } }
-		// public SteamVR_Action_Boolean pauseAction;
-
 		public float handsTogetherThreshold = .25f;
 		[HideInInspector] public bool handsTogether;
 
@@ -36,10 +32,6 @@ namespace VRPlayer
 		[Tooltip("How tall the player should be in game when resizing")]
 		public float defaultPlayerHeight = 1.8f;
 
-		// [Tooltip("World scale around the player")]
-		// [Range(.1f, 10)] public float worldScale = 1.0f;
-
-		
 		// any extra height offset to add to the player (crouching or prone, etc...)
 		[HideInInspector] public float extraHeightOffset;
 
@@ -100,11 +92,6 @@ namespace VRPlayer
 				return extraHeightOffset + resizePlayerOffset;
 			}
 		}
-		
-    // void UpdateWorldScale () {
-    //     transform.localScale = Vector3.one * (1.0f/worldScale);
-    // }
-
 
 		void CheckForInitialScaling () {
 
@@ -113,9 +100,6 @@ namespace VRPlayer
 			}
 			recalibrateHeight = false;
 		}
-
-		// public Transform trackingOriginTransform { get { return transform; } }
-		// public Transform hmdTransform;
 
 		[Tooltip( "List Hands *RIGHT FIRST*" )]
 		public Hand[] hands;
@@ -153,18 +137,6 @@ namespace VRPlayer
 		}
 
 
-		// IEnumerator Start()
-		// {
-		// 	_instance = this;
-		// 	QualitySettings.vSyncCount = 0;
-
-        //     while (SteamVR.initializedState == SteamVR.InitializedStates.None || SteamVR.initializedState == SteamVR.InitializedStates.Initializing)
-        //         yield return null;
-
-		// 	if ( SteamVR.instance == null )
-		// 		Debug.LogError("there was a problem initializing steam vr");
-        // }
-
         void Update()
         {
             // if (SteamVR.initializedState != SteamVR.InitializedStates.InitializeSuccess)
@@ -174,11 +146,6 @@ namespace VRPlayer
 			
 			handsTogether = Vector3.SqrMagnitude(hands[0].transform.position - hands[1].transform.position) <= (handsTogetherThreshold * handsTogetherThreshold);
 			
-			// if (pauseAction.GetStateDown(offHand)) {
-            //     GameManager.TogglePause();
-            // }
-		
-			// UpdateWorldScale();        
         }
 	}
 }

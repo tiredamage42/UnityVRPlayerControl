@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 using RenderTricks;
@@ -23,7 +22,6 @@ namespace InteractionSystem {
 
         static Dictionary<Material, Material> nonFlash2Flash = new Dictionary<Material, Material>();
         static Dictionary<Material, Material> flash2NonFlash = new Dictionary<Material, Material>();
-
 
         static void SubmitMaterial (Material material, EmissionFlasher interactableEmissionFlasher) {
             if (!nonFlash2Flash.ContainsKey(material)) {
@@ -55,22 +53,27 @@ namespace InteractionSystem {
         [Tooltip("Set whether or not you want this interactible to highlight when hovering over it")]
         public bool highlightOnHover = true;
         
-        // public string materialEmissionKey = "_EMISSION";
 
+        public Renderer[] flashRenderers;
         Renderer[] renderers;
         Interactable interactable;
         bool isHighlighted;
 
-
         void Awake () {
             interactable = GetComponent<Interactable>();
-            renderers = GetComponentsInChildren<Renderer>();
+
+            if (flashRenderers == null || flashRenderers.Length == 0) {
+                renderers = GetComponentsInChildren<Renderer>();
+            }
+            else {
+                renderers = flashRenderers;
+            }
+
             InitializeMaterialsFlasher();
         }
 
         void SubmitForHighlight () {
             if (!isHighlighted) {
-                //Debug.Log("Highlighting " + name + " on hover");
                 ObjectOutlines.Highlight_Renderers( renderers, 0 );
                 isHighlighted = true;
             }
@@ -126,31 +129,16 @@ namespace InteractionSystem {
             }
         }
 
-
-
         public void OnInteractableInspectedStart (InteractionPoint interactor) {
             if (highlightOnHover) {
                 SubmitForHighlight();
             }
         }
-        
-        
 
-        public void OnInteractableInspectedEnd(InteractionPoint interactor) {
-
-        }
-        public void OnInteractableInspectedUpdate(InteractionPoint interactor) {
-
-        }
-        public void OnInteractableUsedStart(InteractionPoint interactor, int useIndex) {
-
-        }
-        public void OnInteractableUsedEnd(InteractionPoint interactor, int useIndex) {
-
-        }
-        public void OnInteractableUsedUpdate(InteractionPoint interactor, int useIndex) {
-
-        }
-
+        public void OnInteractableInspectedEnd(InteractionPoint interactor) { }
+        public void OnInteractableInspectedUpdate(InteractionPoint interactor) { }
+        public void OnInteractableUsedStart(InteractionPoint interactor, int useIndex) { }
+        public void OnInteractableUsedEnd(InteractionPoint interactor, int useIndex) { }
+        public void OnInteractableUsedUpdate(InteractionPoint interactor, int useIndex) { }
     }
 }

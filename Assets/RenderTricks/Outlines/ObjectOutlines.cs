@@ -150,8 +150,8 @@ namespace RenderTricks {
             
             public Color highlightColor = Color.red;
             public SortingType sortingType;
-            public List<Renderer> renderers = new List<Renderer>();
-            public List<int> originalLayers = new List<int>();
+            [HideInInspector] public List<Renderer> renderers = new List<Renderer>();
+            [HideInInspector] public List<int> originalLayers = new List<int>();
             
             public void Clean () {
                 for (int i = renderers.Count -1; i >= 0; i--) {

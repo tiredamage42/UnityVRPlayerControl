@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -8,27 +6,21 @@ using UnityEngine.Events;
 
 namespace SimpleUI {
 
-    [System.Serializable]
-    public class UIButtonClickWData : UnityEvent<GameObject[]>
+    [System.Serializable] public class UIButtonClickWData : UnityEvent<GameObject[]> {}
+    [ExecuteInEditMode] public class SelectableElement : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmitHandler
     {
-    }
-    
-    public abstract class SelectableElement : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmitHandler
-    {
-
         public bool selected;
         public string elementText;
+        public bool selectInvertsTextColor;
 
         public UIElementHolder destination;
         [HideInInspector] public UIElementHolder parentHolder;
-
-
         [HideInInspector] public bool hasText = true;
 
         UIText _text;
         public UIText uiText {
             get {
-                if (_text == null && hasText) {
+                if (hasText && _text == null) {
                     _text = GetComponentInChildren<UIText>();
                     if (_text == null) {
                         hasText = false;
@@ -40,198 +32,101 @@ namespace SimpleUI {
         RectTransform _rect;
         public RectTransform rectTransform {
             get {
-                if (_rect == null) {
-                    _rect = GetComponent<RectTransform>();
-                }
+                if (_rect == null) _rect = GetComponent<RectTransform>();
                 return _rect;
             }
         }
-        RectTransform _textRect;
-        public RectTransform UITextRectTransform {
+
+        bool hasRuntimeSubmitCallback {
             get {
-                if (_textRect == null && hasText) {
-                    UIText t = uiText;
-
-                    if (hasText) {
-
-                        _textRect = uiText.GetComponent<RectTransform>();
-                    }
-                }
-                return _textRect;
+                return parentHolder.runtimeSubmitHandler != null;
             }
         }
-
+        
         public GameObject[] data;
         public object[] customData;
         public UIButtonClickWData onClick;
         
-
-        // public System.Action<object[]> onClickWCustomData;
-        // public System.Action<GameObject[], object[]> onSubmit, onSelect;
-    
-    // public System.Action onSelect;
-    // public System.Action<SelectableElement> onSubmit;
-    
-
-
-    protected virtual void OnEnable () {
-        _UpdateElement();
-    }
-    protected virtual void OnDisable() {
-        // selected = false;
-    }
-
-
-    
-
+        void OnEnable () {
+            UpdateElement();
+        }
+        void OnDisable() {
+            // selected = false;
+        }
         
-    //Do this when the selectable UI object is selected.
-    public void OnSelect(BaseEventData eventData)
-    {
-        // Debug.Log("Selected " + name);
-        selected = true;
-        OnSelect();
-        _UpdateElement();
+        //Do this when the selectable UI object is selected.
+        public void OnSelect(BaseEventData eventData)
+        {
+            // Debug.Log("Selected " + name);
+            selected = true;
+            UpdateElement();
+            parentHolder.BroadcastSelectEvent(data, customData);
+        }
 
-
-
-        if (parentHolder.onSelectToUse != null) {
-            parentHolder.onSelectToUse(data, customData);
+        void Update () {
+            if (!Application.isPlaying) return;
+            if (!selected) return;
+            if (!hasRuntimeSubmitCallback) return;
+            
+            Vector2Int alternativeSubmit = parentHolder.runtimeSubmitHandler();
+            if (alternativeSubmit.x >= 0) {
+                DoSubmit(alternativeSubmit);
+            }
         }
 
 
-        // if (onSelect != null) {
-        //     onSelect(data, customData);
-        // }
-    }
+        void DoSubmit (Vector2Int submitAction) {
+            // Debug.Log("Submitted on " + name);
+            
+            if (onClick != null) {
+                onClick.Invoke(data);
+            }
 
-    void Update () {
-        if (Application.isPlaying) {
-            if (parentHolder.needsInput) {
-                if (selected) {
+            parentHolder.BroadcastSubmitEvent(data, customData, submitAction);
 
+            // trigger other ui holder active (page switching...)
+            if (destination != null) {
+                destination.gameObject.SetActive(true);
 
-                    if (parentHolder.getAlternativeSubmitToUse != null) {
-                        Vector2Int alternativeSubmit = parentHolder.getAlternativeSubmitToUse();
-                        if (alternativeSubmit.x >= 0) {
-                            // if (alternativeSubmit == 0) {
-                            //     Debug.LogError("dont use action 0 for alternative ui submit, it's already used internally");
-                            // }
-                            // else {
-                            
-                                DoSubmit(alternativeSubmit);
-                            // }
-                        }
-                    }
+                if (!destination.isBase) {
+                    destination.parentHolder = parentHolder;
+                }
+                parentHolder.gameObject.SetActive(false);
+            }
+        }
+
+        public void OnSubmit(BaseEventData eventData)
+        {
+            if (hasRuntimeSubmitCallback) return;
+         
+            DoSubmit(Vector2Int.zero);
+        }
+
+        public void OnDeselect(BaseEventData data)
+        {
+            selected = false;
+            UpdateElement();
+        }
+
+        Image _mainImage;
+        public Image mainImage {
+            get {
+                if (_mainImage == null) _mainImage = GetComponent<Image>();
+                return _mainImage;
+            }
+        }   
+        
+        public void UpdateElement () {
+            mainImage.color = selected ? UIManager.instance.mainLightColor : (Color32)Color.clear;
+
+            gameObject.name = elementText + "_Button";
+            if (hasText) {
+                uiText.SetText(elementText);
+                if (selectInvertsTextColor) {
+                    uiText.invert = selected;
+                    uiText.UpdateColors();
                 }
             }
         }
-    }
-
-
-    void DoSubmit (Vector2Int submitAction) {
-        // Debug.Log("Submitted on " + name);
-        
-        if (onClick != null) {
-            onClick.Invoke(data);
-        }
-
-        if (parentHolder.onSubmitToUse != null) {
-            Debug.LogError("herereree");
-            parentHolder.onSubmitToUse(data, customData, submitAction);
-        }
-
-        // if (onSubmit != null) {
-        //     onSubmit(data, customData);
-        // }
-        // if (onClickWCustomData != null) {
-        //     onClickWCustomData(customData);
-        // }
-
-        if (destination != null) {
-            destination.gameObject.SetActive(true);
-
-            if (!destination.isBase) {
-                destination.parentHolder = parentHolder;
-            }
-            parentHolder.gameObject.SetActive(false);
-        }
-
-        OnSubmit();
-
-        // if (onSubmit != null) {
-        //     onSubmit(this);
-        // }
-
-    }
-
-    public void OnSubmit(BaseEventData eventData)
-    {
-        if (parentHolder.getAlternativeSubmitToUse != null) {
-            return;
-        }
-
-
-        DoSubmit(Vector2Int.zero);
-        Debug.Log("Submitted on " + name);
-        
-        // if (onClick != null) {
-        //     onClick.Invoke(data);
-        // }
-
-        // if (parentHolder.onSubmitToUse != null) {
-        //     parentHolder.onSubmitToUse(data, customData);
-        // }
-
-        // // if (onSubmit != null) {
-        // //     onSubmit(data, customData);
-        // // }
-        // // if (onClickWCustomData != null) {
-        // //     onClickWCustomData(customData);
-        // // }
-
-        // if (destination != null) {
-        //     destination.gameObject.SetActive(true);
-
-        //     if (!destination.isBase) {
-        //         destination.parentHolder = parentHolder;
-        //     }
-        //     parentHolder.gameObject.SetActive(false);
-        // }
-
-        // OnSubmit();
-
-        // // if (onSubmit != null) {
-        // //     onSubmit(this);
-        // // }
-    }
-    public void OnDeselect(BaseEventData data)
-    {
-        selected = false;
-        OnDeselect();
-        _UpdateElement();
-    }
-
-
-    public void _UpdateElement () {
-        if (hasText) {
-            uiText.SetText(elementText);
-        }
-        UpdateElement();
-    }
-    
-
-    protected abstract void UpdateElement ();
-
-        protected abstract void OnSelect ();
-
-        protected abstract void OnDeselect ();
-protected abstract void OnSubmit ();
-
-        
-
-
-
-
     }
 }

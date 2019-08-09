@@ -7,7 +7,6 @@ using UnityEditor;
 namespace InventorySystem {
 
     [CustomEditor(typeof(Item))]
-    
     [CanEditMultipleObjects]
     public class ItemEditor : Editor
     {   
@@ -40,4 +39,25 @@ namespace InventorySystem {
 
         }
     }
+
+
+
+    [CustomEditor(typeof(ItemBehavior))]
+    [CanEditMultipleObjects]
+    public class ItemBehaviorEditor : Editor
+    {   
+        void OnEnable () {
+            InventorySystemEditorUtils.UpdateItemSelector();
+        }
+    }
+
+    [CustomEditor(typeof(CraftingRecipeBehavior))]
+    [CanEditMultipleObjects]
+    public class CraftingRecipeBehaviorEditor : Editor
+    {   
+        void OnEnable () {
+            InventorySystemEditorUtils.UpdateItemSelector();
+        }
+    }
+    
 }

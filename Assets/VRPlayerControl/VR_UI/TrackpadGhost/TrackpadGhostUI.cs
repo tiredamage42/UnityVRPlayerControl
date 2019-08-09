@@ -23,7 +23,10 @@ namespace VRPlayer.UI {
             }
             if (axisShowRect != null) {
                 float halfShow = showSize * .5f;
-                Vector2 a = new Vector2(Mathf.Clamp((axis.x * .5f + .5f), halfShow, 1-halfShow), Mathf.Clamp((axis.y * .5f + .5f), halfShow, 1-halfShow));
+                Vector2 a = new Vector2(
+                    Mathf.Clamp((axis.x * .5f + .5f), halfShow, 1-halfShow), 
+                    Mathf.Clamp((axis.y * .5f + .5f), halfShow, 1-halfShow)
+                );
                 axisShowRect.anchorMin = a;
                 axisShowRect.anchorMax = a;
 #if UNITY_EDITOR

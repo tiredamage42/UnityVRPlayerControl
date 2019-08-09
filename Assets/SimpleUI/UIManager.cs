@@ -5,30 +5,14 @@ using UnityEngine.EventSystems;
 
 
 using StandaloneInputModule = SimpleUI.StandaloneInputModule;
-// using _GAME_MANAGER_TYPE_ = GameBase.GameManager;
 
 namespace SimpleUI {
     // [RequireComponent(typeof(StandaloneInputModule))]
     public class UIManager : MonoBehaviour
     {
-
         public static void SetSelection(GameObject selection) {
-            // // inputModule.GetComponent<EventSystem>().currentSelectedGameObject	=null;
-            // inputModule.GetComponent<EventSystem>().SetSelectedGameObject(null);
-
             inputModule.GetComponent<EventSystem>().SetSelectedGameObject(selection);
-
         }
-
-        // static _GAME_MANAGER_TYPE_ _gameManager;
-        // static _GAME_MANAGER_TYPE_ gameManager {
-        //     get {
-        //         if (_gameManager == null) {
-        //             _gameManager = GameObject.FindObjectOfType<_GAME_MANAGER_TYPE_>();
-        //         }
-        //         return _gameManager;
-        //     }
-        // }
         static StandaloneInputModule _inputModule;
         public static StandaloneInputModule inputModule {
             get {
@@ -39,85 +23,15 @@ namespace SimpleUI {
             }
         }
 
-
-        // public UIPage mainMenuBasePage;
-
         void Awake () {
-            // uiInputModule = GetComponent<StandaloneInputModule>();
             _i = this;
         }
 
         void Start() {
             inputModule.gameObject.SetActive(false);
         }
-
-
-
-        void OnEnable ()  {
-            // gameManager.onPauseRoutineEnd += OnPauseRoutineEnd;
-            // gameManager.onShowGameMessage += OnShowGameMessage;
-            // mainMenuBasePage.onBaseCancel += OnCancelMainMenuPage;
-        }
-        void OnDisable ()  {
-            // gameManager.onPauseRoutineEnd -= OnPauseRoutineEnd;
-            // gameManager.onShowGameMessage -= OnShowGameMessage;
-            // mainMenuBasePage.onBaseCancel -= OnCancelMainMenuPage;
-            
-        }
-
         
-        // public static void ToggleGamePause () {
-        //     gameManager.TogglePause();
-        // }
 
-        // public static event System.Action<string, int> onShowGameMessage;
-        // void OnShowGameMessage (string message, int key) {
-            
-        //     if (onShowGameMessage != null) {
-        //         onShowGameMessage (message, key);
-        //     }
-        // }
-        // public event System.Action<string, int> onShowGameMessage;
-        // public static void ShowGameMessage (string message, int key) {
-
-        //     if (onShowGameMessage != null) {
-        //         onShowGameMessage(message, key);
-        //     }
-        // }
-        // public static void ShowGameMessage (string message) {
-        //     ShowGameMessage(message, 0);
-            
-        // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // void OnCancelMainMenuPage () {
-        //     gameManager.TogglePause();
-        // }
-
-        // void OnPauseRoutineEnd(bool isPaused, float routineTime) {
-        //     if (isPaused) {
-        //         UIManager.ShowUI (mainMenuBasePage, true, true);
-        //     }
-        //     else
-        //         UIManager.HideUI (mainMenuBasePage);
-
-        // }
 
         public static BaseInput input {
             get {
@@ -129,7 +43,6 @@ namespace SimpleUI {
                 return inputModule.GetInput();
             }
         }
-        // static StandaloneInputModule uiInputModule;
         public static string verticalAxis { get { return inputModule.verticalAxis; } }
         public static string horizontalAxis { get { return inputModule.horizontalAxis; } }
         public static string cancelButton { get { return inputModule.cancelButton; } }
@@ -156,10 +69,13 @@ namespace SimpleUI {
 
         public Color32 mainLightColor = Color.red, mainDarkColor = Color.blue;
 
-        public UIButton buttonPrefab;
+        public SelectableElement buttonPrefab, radialElementPrefab;
         public UIPage pagePrefab;
-        public UIRadialElement radialElementPrefab;
+        public UIRadial radialPrefab;
+        public UITextPanel textPanelPrefab;
         public UIMessageElement messagePrefab;
+        public UIValueTracker valueTrackerHorizontalPrefab, valueTrackerVerticalPrefab;
+
 
         static System.Func<Vector2> getSelectionAxis;
         public static void OverrideSelectionAxis (System.Func<Vector2> getAxis) {
@@ -180,138 +96,95 @@ namespace SimpleUI {
 
         HashSet<GameObject> shownUIsWithInput = new HashSet<GameObject>();
 
-        // public static event System.Action<UIElementHolder> onUIShow;
-
-
         static IEnumerator _ShowUI (GameObject uiObject, UIElementHolder uiObjectC, bool needsInput, bool tryRepeat) {
             if (needsInput) {
-                
                 inputModule.gameObject.SetActive(true);
+                instance.shownUIsWithInput.Add(uiObject);
             }
             
             uiObject.SetActive(true);
-
+            
             // for some reason, layout groups need to be enabled and disabled a few times
             // to show correctly
-            if (needsInput) {
-                instance.shownUIsWithInput.Add(uiObject);
-                
-                // inputModule.gameObject.SetActive(true);
-            }
-
             if (tryRepeat) {
-                yield return null;
-                uiObject.SetActive(false);
-                yield return null;
-                uiObject.SetActive(true);
-                yield return null;
-                uiObject.SetActive(false);
-                yield return null;
-                uiObject.SetActive(true);
+                yield return null; uiObject.SetActive(false);
+                yield return null; uiObject.SetActive(true);
+                yield return null; uiObject.SetActive(false);
+                yield return null; uiObject.SetActive(true);
             }
                             
-
-            // else {
-            //     instance.gameObject.SetActive(false);
-            // }
-
             //  Debug.LogError("adding callbacks");
-            // foreach (var d in gameManager.GetUISelectInvocations()) {
-                if (onUISelect != null) {
+            if (onUISelect != null) {
+                foreach (var d in onUISelect.GetInvocationList()) {
+                    uiObjectC.SubscribeToSelectEvent((System.Action<GameObject[], object[]>)d);
+                }
+            }
 
-                foreach (var d in GetUISelectInvocations()) {
-                
-                    uiObjectC.onSelectEvent += (System.Action<GameObject[], object[]>)d;
-                }
-                }
-            // foreach (var d in gameManager.GetUISubmitInvocations()) {
             if (onUISubmit != null) {
-
-                foreach (var d in GetUISubmitInvocations()) {
-                
-                    uiObjectC.onSubmitEvent += (System.Action<GameObject[], object[], Vector2Int>)d;
+                foreach (var d in onUISubmit.GetInvocationList()) {
+                    uiObjectC.SubscribeToSubmitEvent((System.Action<GameObject[], object[], Vector2Int>)d);
                 }
             }
         }
 
-        public static event System.Action<GameObject[], object[]> onUISelect;//, onUISubmit;
+        public static event System.Action<GameObject[], object[]> onUISelect;
         public static event System.Action<GameObject[], object[], Vector2Int> onUISubmit;
         
-        public static System.Delegate[] GetUISelectInvocations () {
-            return onUISelect.GetInvocationList();
-        }
-        public static System.Delegate[] GetUISubmitInvocations () {
-            return onUISubmit.GetInvocationList();
-        }
-
-
-           
-
+        
         static void ShowUI (GameObject uiObject, UIElementHolder uiObjectC, bool needsInput, bool tryRepeat) {
-            //set active so we can call coroutines on it
-            // instance.gameObject.SetActive(true);
-                
+            //set active so we can call coroutines on it    
             instance.StartCoroutine(_ShowUI(uiObject, uiObjectC, needsInput, tryRepeat));
-            
         }
+            
         static GameObject GetUIObj (UIElementHolder uiObject) {
             return uiObject.baseObject != null ? uiObject.baseObject : uiObject.gameObject;
         }
 
 
 
-        public static bool AnyUIOpen() {
-            return instance.shownUIsWithInput.Count != 0;
+        static bool uiOpenCheck;
+        public static event System.Action<int> onUIOpenCheck;
+        public static void DeclareUIOpen () {
+            uiOpenCheck = true;
         }
+        public static bool AnyUIOpen(int data) {
+            uiOpenCheck = false;
+            if (onUIOpenCheck!=null) {
+                onUIOpenCheck(data);
+            }
+            return uiOpenCheck;
+        }
+            
+        // public static bool AnyUIOpen() {
+        //     return instance.shownUIsWithInput.Count != 0;
+        // }
         
         public static void ShowUI(UIElementHolder uiObject, bool needsInput, bool tryRepeat) {
             ShowUI(GetUIObj(uiObject), uiObject, needsInput, tryRepeat);
-            
-            // Debug.LogError("adding callbacks");
-            // foreach (var d in gameManager.GetUISelectInvocations()) {
-            //     uiObject.onSelectEvent += (System.Action<GameObject[], object[]>)d;
-            // }
-            // foreach (var d in gameManager.GetUISubmitInvocations()) {
-            //     uiObject.onSubmitEvent += (System.Action<GameObject[], object[]>)d;
-            // }
-
-            // if (onUIShow != null) {
-            //     onUIShow(uiObject);
-            // }
         }
 
         public static void HideUI (UIElementHolder uiObject) {
-            // GameObject objToUse = GetUIObj(uiObject);
             HideUI(GetUIObj(uiObject));
             uiObject.RemoveAllEvents();
         }
+        static void HideUI (GameObject baseUIObject) {
+            if (instance.shownUIsWithInput.Contains(baseUIObject)) {
+                instance.shownUIsWithInput.Remove(baseUIObject);
+            }
+            baseUIObject.SetActive(false);
+        }
 
+
+        // remove input module control in late update, so we dont use inputs
+        // the same frame they're closing
         void LateUpdate () {
             if (inputModule.gameObject.activeSelf) {
 
                 if (instance.shownUIsWithInput.Count == 0) {
 
-
                     inputModule.gameObject.SetActive(false);
-                    // instance.gameObject.SetActive(false);
                 }
             }
-
-        }
-
-        static void HideUI (GameObject uiObject) {
-            if (instance.shownUIsWithInput.Contains(uiObject)) {
-                instance.shownUIsWithInput.Remove(uiObject);
-                if (instance.shownUIsWithInput.Count == 0) {
-
-
-                    // inputModule.gameObject.SetActive(false);
-                    // instance.gameObject.SetActive(false);
-                }
-            }
-            uiObject.SetActive(false);
-        }
+        }   
     }
-
 }
-

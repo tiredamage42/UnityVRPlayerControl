@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4460107285677693887}
   - component: {fileID: 4460107285677693888}
   - component: {fileID: 4460107285677693889}
+  - component: {fileID: 3097259948511983945}
   m_Layer: 5
   m_Name: ButtonPanelOverlay
   m_TagString: Untagged
@@ -89,10 +90,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 3
-    m_Right: 3
-    m_Top: 3
-    m_Bottom: 3
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
   m_ChildAlignment: 1
   m_Spacing: 0
   m_ChildForceExpandWidth: 0
@@ -113,6 +114,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 1
   m_VerticalFit: 1
+--- !u!114 &3097259948511983945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4460107285677693891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0749e31bcb934e8697696272e4b7b21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useDark: 0
 --- !u!1 &4460107285757595262
 GameObject:
   m_ObjectHideFlags: 0
@@ -141,7 +155,7 @@ RectTransform:
   m_GameObject: {fileID: 4460107285757595262}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4460107285783983218}
   - {fileID: 4460107286679315886}
@@ -188,16 +202,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 045919c1e6f0d4685970161b1506e52c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textScale: 0.005
   baseObject: {fileID: 0}
-  needsDefaultSelection: 1
-  textScale: 0.125
-  scale: 0.01
+  textPanel: {fileID: 0}
   parentHolder: {fileID: 0}
   isBase: 0
-  pageTitleText: Window Title
-  lineHeight: 10
-  width: 64
-  textAlignment: 0
+  subHolders: []
+  parameters:
+    pageTitleText: Window Title
+    lineHeight: 0.5
+    width: 4
+    textAlignment: 3
+    textOffset: 0.05
 --- !u!114 &7574123744170017057
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -205,7 +221,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4460107285757595262}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fa3bc69d892af467bb88fe4a74b57c96, type: 3}
   m_Name: 
@@ -319,6 +335,7 @@ GameObject:
   - component: {fileID: 4460107286679315883}
   - component: {fileID: 4460107286679315884}
   - component: {fileID: 4460107286679315885}
+  - component: {fileID: 2412180549626505253}
   m_Layer: 5
   m_Name: ButtonPanel
   m_TagString: Untagged
@@ -420,3 +437,16 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
+--- !u!114 &2412180549626505253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4460107286679315887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0749e31bcb934e8697696272e4b7b21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useDark: 1

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace InventorySystem {
     
     public class EquipPoint : MonoBehaviour {
-        public Inventory baseInventory;
+        public InventoryEqupping baseInventory;
         public int equipID;
 
 
@@ -27,21 +27,21 @@ namespace InventorySystem {
                 return;
             }
 
-            Inventory.InventorySlot slot = baseInventory.equippedSlots[equipID]; 
+            InventoryEqupping.EquipSlot slot = baseInventory.equippedSlots[equipID]; 
             if (slot != null) {
-                ItemBehavior item = slot.item;
+                ItemBehavior item = slot.sceneItem.itemBehavior;
 
-                if (item.equipType == Inventory.EquipType.Physics) {        
+                if (item.equipType == InventoryEqupping.EquipType.Physics) {        
                     UpdateAttachedVelocity(slot);
                 }
-                else if (item.equipType == Inventory.EquipType.Normal) {
+                else if (item.equipType == InventoryEqupping.EquipType.Normal) {
                     TransformBehavior.AdjustTransform(slot.sceneItem.transform, transform, item.equipTransform, equipID);
                 }
             }
         }
 
 
-        void UpdateAttachedVelocity(Inventory.InventorySlot equippedSlot)
+        void UpdateAttachedVelocity(InventoryEqupping.EquipSlot equippedSlot)
         {
             Vector3 velocityTarget, angularTarget;
             if (GetUpdatedEquippedVelocities(equippedSlot, out velocityTarget, out angularTarget))
@@ -56,7 +56,7 @@ namespace InventorySystem {
             }
         }
 
-        bool GetUpdatedEquippedVelocities(Inventory.InventorySlot equippedSlot, out Vector3 velocityTarget, out Vector3 angularTarget)
+        bool GetUpdatedEquippedVelocities(InventoryEqupping.EquipSlot equippedSlot, out Vector3 velocityTarget, out Vector3 angularTarget)
         {
             bool realNumbers = false;
 
@@ -65,7 +65,7 @@ namespace InventorySystem {
             Quaternion localRotation;
             Vector3 localScale;
 
-            TransformBehavior.GetValues(equippedSlot.item.equipTransform, equipID, out localPosition, out localRotation, out localScale);
+            TransformBehavior.GetValues(equippedSlot.sceneItem.itemBehavior.equipTransform, equipID, out localPosition, out localRotation, out localScale);
 
             
             Vector3 targetItemPosition = transform.TransformPoint(localPosition);

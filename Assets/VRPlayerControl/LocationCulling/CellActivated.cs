@@ -1,19 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace EnvironmentTools {
-	// public class LocationCulled : MonoBehaviour {
-	// 	[HideInInspector] public LocationCuller parentCuller;
-	// }
-    public class CellActivated : MonoBehaviour {
+	public class CellActivated : MonoBehaviour {
 
-		// void Awake () {
-			// WorldGrid.RegisterCellObject(this);
-		// }
-
-
-
+		
 		bool subscribed;
 		Vector2Int myGrid;
 		public int activateCellDistance = 2;

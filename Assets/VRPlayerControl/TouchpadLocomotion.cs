@@ -165,15 +165,7 @@ public class TouchpadLocomotion : MonoBehaviour
 
     Vector3 previousHandPosition;
         
-
-    
-
-
     public SteamVR_Action_Boolean climbAction;
-
-
-    // public Color crouchVignetteColor = new Color(1, .5f, 0, 1);
-
     public bool easyCrouch = true;
 
     // 1.0f / 1.8f = crouch height of 1 for default height of 1.8
@@ -260,8 +252,6 @@ public class TouchpadLocomotion : MonoBehaviour
     void CheckForJump (bool movementEnabled) {
         if (moveScript.isGrounded && movementEnabled) {
             if (jumpAction.GetStateDown(moveHand)) {
-
-                    // Debug.LogError("jumped");
                 if (!StandardizedVRInput.ActionOccupied(jumpAction, moveHand)) {
                     moveScript.Jump();
                 }
@@ -290,8 +280,6 @@ public class TouchpadLocomotion : MonoBehaviour
 
     // any movement above this angle with forward movement cant run.
     const float runAngleThreshold = 45f;     
-    
-    // public Transform head;
     public float capsuleRadius = .25f;
     
 
@@ -341,24 +329,12 @@ public class TouchpadLocomotion : MonoBehaviour
     // bool fastTurnRight;
     float smoothTurnMultiplier;
 
-    // [Header("Comfort Vignette")]
-    // public float vignetteIntensity = 2.0f;
-    // public float vignetteSpeed = 10;
-    // public float vignetteMovementThreshold = 1;
-    // VignettingVR vignette;
-    // float currentVignetteIntensity;
-
-
-
     void Awake () {
 
         characterController = GetComponent<CharacterController>();
         if (characterController == null) characterController = gameObject.AddComponent<CharacterController>();
         
-        // vignette = head.GetComponentInChildren<VignettingVR>();
         moveScript = GetComponent<SimpleCharacterController>();
-
-        // InitializeClimbableChecks();
     }
 
     void Update() {
@@ -369,30 +345,11 @@ public class TouchpadLocomotion : MonoBehaviour
         FixedUpdateLoop(VRManager.instance.hmdTransform, Time.fixedDeltaTime);
     }
 
-
-    
-    // void HandleComfortVignetting (bool vignetteEnabled, float deltaTime) {
-    //     float targetIntensity = vignetteEnabled ? vignetteIntensity : 0.0f;
-    //     currentVignetteIntensity = Mathf.Lerp(currentVignetteIntensity, targetIntensity, deltaTime * vignetteSpeed);
-
-    //     vignette.SetIntensity( currentVignetteIntensity );
-    //     vignette.SetColor(isCrouched ? crouchVignetteColor : Color.black);
-    // }
-
     void DoInstantTurn (Transform head, float degrees, bool toRight) {
         transform.RotateAround(head.position, Vector3.up, toRight ? degrees : -degrees);
     }
 
-
-    // void DoFastTurn (bool toRight) {
-    // void DoFastTurn () {
-    
-    //     fastTurnTotalRotation = 0;
-    //     // fastTurnRight = toRight;
-    // }
-
     void HandleFastTurn (Transform head, float targetDegrees, float degreesPerSecond, float deltaTime) {
-    // void HandleFastTurn (float targetDegrees, float degreesPerSecond, bool toRight, float deltaTime) {
     
         //keep turning if we're not there yet
         if(Mathf.Abs(fastTurnTotalRotation) < targetDegrees) {   
@@ -438,14 +395,10 @@ public class TouchpadLocomotion : MonoBehaviour
                 if (turnActionLeft.GetStateDown(turnHand)) {
                     smoothTurnDirection = -1;
                     fastTurnTotalRotation = 0;
-        
-                    // DoFastTurn(false);
                 }
                 else if (turnActionRight.GetStateDown(turnHand)) {
                     smoothTurnDirection = 1;
                     fastTurnTotalRotation = 0;
-        
-                    // DoFastTurn(true);
                 }
                 break;
             case TurnType.Smooth:
@@ -498,7 +451,6 @@ public class TouchpadLocomotion : MonoBehaviour
             }
             currentMoveVector = currentMoveVector * maxSpeed * (isRunning ? runMultiplier : 1);
         }
-        // return currentMoveVector;
     }
 
     void HandleTurningUpdate(Transform head, float deltaTime) {
@@ -506,9 +458,7 @@ public class TouchpadLocomotion : MonoBehaviour
             case TurnType.None: break;
             case TurnType.Instant: break;
             case TurnType.Fast:
-                // HandleFastTurn(turnDegrees, fastTurnDegreesPerSecond, fastTurnRight, deltaTime);
                 HandleFastTurn(head, turnDegrees, fastTurnDegreesPerSecond, deltaTime);
-                
                 break;
             case TurnType.Smooth:
                 HandleSmoothTurn (head, smoothTurnDirection, deltaTime);
@@ -531,12 +481,6 @@ public class TouchpadLocomotion : MonoBehaviour
         if (!isClimbing) {
             moveScript.SetInputMoveVector(new Vector3 (currentMoveVector.x, 0, currentMoveVector.y));
         }
-
-        // bool enableComfortVignette = smoothTurnDirection != 0 || !moveScript.isGrounded || isCrouched;
-        // if (!enableComfortVignette) {
-        //     enableComfortVignette = moveScript.isMoving && currentMoveVector.sqrMagnitude >= vignetteMovementThreshold * vignetteMovementThreshold;
-        // }
-        // HandleComfortVignetting( enableComfortVignette, deltaTime );
     }
             
         void FixedUpdateLoop (Transform head, float deltaTime) {

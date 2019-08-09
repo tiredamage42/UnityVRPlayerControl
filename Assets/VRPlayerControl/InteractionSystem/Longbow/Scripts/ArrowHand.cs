@@ -401,9 +401,9 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void FindBow(Inventory inventory)
 		{
-			for (int i =0 ; i< inventory.equippedSlots.Length; i++) {
-				if (inventory.equippedSlots[i] != null) {
-					bow = inventory.equippedSlots[i].sceneItem.GetComponent<Longbow>();
+			for (int i =0 ; i< inventory.GetComponent<InventoryEqupping>().equippedSlots.Length; i++) {
+				if (inventory.GetComponent<InventoryEqupping>().equippedSlots[i] != null) {
+					bow = inventory.GetComponent<InventoryEqupping>().equippedSlots[i].sceneItem.GetComponent<Longbow>();
 					if (bow != null) {
 						return;
 					}

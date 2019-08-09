@@ -12,21 +12,12 @@ public class InteractionPoint : MonoBehaviour
         
         public int interactorID = 0;
 
-        // public bool usePositionCheck = true;
-        // public float positionRadius = .1f;
-        // public bool useRayCheck = true;
-        // public float rayCheckDistance = 1f;
         
         public Interactor baseInteractor;
         [HideInInspector] public Vector3 lastInteractionPoint;
         
 
-        bool getGodModeInteractor {
-            get {
-                return baseInteractor.godModeInteractor;
-            }
-        }
-
+        
 
         void Awake () {
             overlappingColliders = new Collider[ColliderArraySize];
@@ -89,15 +80,20 @@ public class InteractionPoint : MonoBehaviour
             Ray ray = new Ray(origin, direction);
             RaycastHit hit;
             //maybe raycast all
-            if (Physics.Raycast(ray, out hit, distance, baseInteractor.hoverLayerMask)) {
+            if (Physics.Raycast(ray, out hit, distance, Interactable.interactTriggerMask, QueryTriggerInteraction.Collide)){// baseInteractor.hoverLayerMask)) {
                 
                 hitPos = hit.point;
+                InteractableElement c = hit.collider.GetComponent<InteractableElement>();
+                if (c == null)
+                    return;
 
-                Interactable contacting = hit.collider.GetComponentInParent<Interactable>();
+                Interactable contacting = c.interactable;
+                // Interactable contacting = hit.collider.GetComponentInParent<Interactable>();
+
                 if (contacting == null || !contacting.available)
                     return;
 
-                if (contacting.onlyProximityHover && !getGodModeInteractor)
+                if (contacting.onlyProximityHover && !baseInteractor.godModeInteractor)
                     return;
                 
                 closestInteractable = contacting;
@@ -115,7 +111,7 @@ public class InteractionPoint : MonoBehaviour
                 overlappingColliders[i] = null;
             }
 
-            int numColliding = Physics.OverlapSphereNonAlloc(hoverPosition, hoverRadius, overlappingColliders, baseInteractor.hoverLayerMask.value);
+            int numColliding = Physics.OverlapSphereNonAlloc(hoverPosition, hoverRadius, overlappingColliders, Interactable.interactTriggerMask, QueryTriggerInteraction.Collide);// baseInteractor.hoverLayerMask.value);
 
             if (numColliding == ColliderArraySize)
                 Debug.LogWarning("<b>[SteamVR Interaction]</b> This hand is overlapping the max number of colliders: " + ColliderArraySize + ". Some collisions may be missed. Increase ColliderArraySize on Hand.cs");
@@ -123,7 +119,13 @@ public class InteractionPoint : MonoBehaviour
             // Pick the closest hovering
             for (int colliderIndex = 0; colliderIndex < numColliding; colliderIndex++)
             {
-                Interactable contacting = overlappingColliders[colliderIndex].GetComponentInParent<Interactable>();
+                InteractableElement c = overlappingColliders[colliderIndex].GetComponent<InteractableElement>();
+                if (c == null)
+                    continue;
+
+                Interactable contacting = c.interactable;
+                
+                // Interactable contacting = overlappingColliders[colliderIndex].GetComponentInParent<Interactable>();
 
                 // Yeah, it's null, skip
                 if (contacting == null || !contacting.available)

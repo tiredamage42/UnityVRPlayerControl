@@ -1,15 +1,14 @@
-﻿// using System.Collections;
-// using System.Collections.Generic;
-// using UnityEngine;
-
+﻿
 namespace ActorSystem {
 
-    // [CreateAssetMenu()]
-    [System.Serializable]
-    public class ActorBuff //: ScriptableObject
-    {
-        public GameValueCondition[] conditions;
-        public GameValueModifier[] buffs;
-    }
+    // [System.Serializable]
+    // public class ActorBuff 
+    // {
+    //     // [System.Serializable] public class GVMArray : NeatArrayWrapper<GameValueModifier> { }
+
+    //     // // [DisplayedArray] public GameValueConditionArray conditions;
+    //     // [DisplayedArray] public GVMArray buffs;
+        
+    // }
 
 }

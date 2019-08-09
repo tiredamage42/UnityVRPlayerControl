@@ -68,13 +68,9 @@ gameMessage
 
  */
 
-
-
- /*
- 
+/*
     scene representation of the item
- 
-  */
+*/
 
     public class Item : MonoBehaviour, IInteractable
     {
@@ -109,6 +105,8 @@ gameMessage
                     itemPoolsPerPrefab.Add(instanceID, new HashSet<Item>(){ sceneItem });
                 }
             }
+
+            sceneItem.itemBehavior = itemBehavior;
             return sceneItem;
         }
 
@@ -149,10 +147,13 @@ gameMessage
                 }
             }
 
-            else if (useIndex == Inventory.GRAB_ACTION) {
-                if (itemBehavior.canQuickEquip) {
-                    inventory.EquipItem(itemBehavior, interactor.interactorID, this );
-                }
+            else if (useIndex == Inventory.GRAB_ACTION && itemBehavior.canQuickEquip) {
+                
+                InventoryEqupping ie = inventory.GetComponent<InventoryEqupping>();
+                if (ie != null)
+                    ie.EquipItem(itemBehavior, interactor.interactorID, this );
+
+                
             }
                     
 
@@ -307,12 +308,12 @@ gameMessage
             listeners.Add(listener);
         }
 
-        void OnDestroy()
-        {
-            if (linkedInventory != null)
-            {
-                linkedInventory.UnequipItem(this, false);//, false);
-            }
-        }
+        // void OnDestroy()
+        // {
+        //     if (linkedInventory != null)
+        //     {
+        //         linkedInventory.UnequipItem(this, false);//, false);
+        //     }
+        // }
     }
 }
