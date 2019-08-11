@@ -8,12 +8,18 @@ using UnityEditor;
 
 using UnityEditorInternal;
 using UnityEditor.AnimatedValues;
+using System;
+using System.Linq;
 
 public class AssetSelector<T> where T : UnityEngine.Object{
     T[] allAssets;
     string[] allAssetNames;
+    System.Func<T, string> predicate;
+    Func<T,int> orderPredicate;
 
-    public AssetSelector () {
+    public AssetSelector (System.Func<T, string> predicate, System.Func<T, int> orderPredicate) {
+        this.predicate = predicate;
+        this.orderPredicate = orderPredicate;
         UpdateAssetReferences();
     }
 
@@ -23,14 +29,21 @@ public class AssetSelector<T> where T : UnityEngine.Object{
 
 
     void FindAllAssets () {
-        allAssets = FindAssetsByType().ToArray();
+        allAssets = FindAssetsByType(orderPredicate).ToArray();
         allAssetNames = new string[allAssets.Length];
         for (int i = 0; i < allAssets.Length; i++) {
-            allAssetNames[i] = allAssets[i].name;
+
+            if (predicate != null) {
+                allAssetNames[i] = predicate(allAssets[i]);
+
+            }
+            else {
+                allAssetNames[i] = allAssets[i].name;
+            }
         }
     }
 
-    public static List<T> FindAssetsByType() //where T : UnityEngine.Object
+    public static IEnumerable<T> FindAssetsByType(System.Func<T, int> orderPredicate) //where T : UnityEngine.Object
     {
         List<T> assets = new List<T>();
         string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(T)));
@@ -42,6 +55,9 @@ public class AssetSelector<T> where T : UnityEngine.Object{
             {
                 assets.Add(asset);
             }
+        }
+        if (orderPredicate != null) {
+            return assets.OrderBy(orderPredicate);
         }
         return assets;
     }
@@ -88,137 +104,88 @@ public class AssetSelector<T> where T : UnityEngine.Object{
 
         int selected = EditorGUILayout.Popup (gui, activeIndex, allAssetNames);
         
-        if (selected < 0)
-            return null;
+        if (selected < 0) return null;
             
         return allAssets[selected];
-
     }
 }
 
-
+public static class EditorTools {
+    const int buttonWidth = 16;
+    public static float DrawIndent (int level, float startX) {
+        return startX + buttonWidth * level;
+    }           
+}
 
 // This is not an editor script. The property attribute class should be placed in a regular script file.
-public class DisplayedArrayAttribute : PropertyAttribute
+public class DisplayedArrayAttribute : PropertyAttribute { }
+[CustomPropertyDrawer(typeof(DisplayedArrayAttribute))] public class DisplayedArrayAttributeDrawer : PropertyDrawer
 {
-    public float[] rgba;
-    public bool useSpacing;
-    public DisplayedArrayAttribute(float[] rgba, bool useSpacing=false)
-    {
-        this.rgba = rgba;
-        this.useSpacing = useSpacing;
-    }
-}
-
-
-
-
-//Now that you have the attribute, you need to make a PropertyDrawer that draws properties that have that attribute. 
-// The drawer must extend the PropertyDrawer class, and it must have a CustomPropertyDrawer attribute 
-//to tell it which attribute it's a drawer for. Here's an example using IMGUI:
-
-// The property drawer class should be placed in an editor script, inside a folder called Editor.
-
-[CustomPropertyDrawer(typeof(DisplayedArrayAttribute))]
-
-public class DisplayedArrayAttributeDrawer : PropertyDrawer
-{
-
     static readonly Color32 deleteColor = new Color32(200,75,75,255);
     static readonly Color32 addColor = new Color32(75,200,75,255);
 
-
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-
-        float singleLine = EditorGUIUtility.singleLineHeight;
-
-        DisplayedArrayAttribute att = attribute as DisplayedArrayAttribute;
-        Color boxColor = new Color( att.rgba[0], att.rgba[1], att.rgba[2], att.rgba[3]);
-        bool useSpacing = att.useSpacing;
-
         EditorGUI.BeginProperty(position, label, property);
-
-        property = property.FindPropertyRelative("list");
-
-        // float indenting = 32;
-
-        float indentOffset = 0;// indenting * EditorGUI.indentLevel;
-
-        GUI.backgroundColor = boxColor;
-        GUI.Box( new Rect(position.x + (indentOffset-5), position.y, position.width, position.height),"");
-        GUI.backgroundColor = Color.white;
-
-        int arraySize = property.arraySize;
-        // float y = position.y;
-        float y = position.y + (arraySize == 0 ? 0 : singleLine * .25f);
-
-
-        float labelWidth = GUI.skin.label.CalcSize(label).x;
-        EditorGUI.LabelField(new Rect(position.x, y, labelWidth, singleLine), label, EditorStyles.miniButtonLeft);
         
-        float buttonWidth = 32;
+        float singleLine = EditorGUIUtility.singleLineHeight;
+        property = property.FindPropertyRelative("list");
+        
+        float _x = EditorTools.DrawIndent(EditorGUI.indentLevel, position.x);
+        float y = position.y;
+
+        float labelWidth = EditorStyles.label.CalcSize(label).x;
+        GUI.Label(new Rect(_x, y, labelWidth, singleLine), label);
+        
+        float buttonWidth = 12;
         GUI.backgroundColor = addColor;
-        if (GUI.Button(new Rect(position.x + labelWidth, y, buttonWidth, singleLine), "+", EditorStyles.miniButtonRight)) {
+        if (GUI.Button(new Rect(_x + labelWidth, y, buttonWidth, buttonWidth), "", EditorStyles.miniButton)) {
             property.InsertArrayElementAtIndex(property.arraySize);
         }
         GUI.backgroundColor = Color.white;
 
-        // EditorGUI.indentLevel++;
         
-
-        // indentOffset = indenting * EditorGUI.indentLevel;
-
-
-        buttonWidth = 12;
-        float yOffset = arraySize == 0 || !useSpacing ? 0 : (singleLine * .5f);
-        y += singleLine + yOffset;// (arraySize == 0 ? 0 : singleLine * .5f);
+        int arraySize = property.arraySize;
+        float h = EditorGUIUtility.singleLineHeight * (arraySize == 0 ? 1 : 1.25f);
+        for (int i = 0; i < arraySize; i++) h += EditorGUI.GetPropertyHeight(property.GetArrayElementAtIndex(i), true);
+        
+        GUI.backgroundColor = new Color(0,0,0,.1f);
+        GUI.Box( new Rect(_x, y, position.width, h ),"");
+        GUI.backgroundColor = Color.white;
+        
+        y += singleLine;
 
         int indexToDelete = -1;
+
+        EditorGUI.indentLevel ++;
         for (int i = 0; i < arraySize; i++) {
-            
+
             GUI.backgroundColor = deleteColor;
-            if (GUI.Button(new Rect(position.x + ((indentOffset)), y, buttonWidth, buttonWidth), "", EditorStyles.miniButton)) {
-                indexToDelete = i;
-            }   
+            if (GUI.Button(new Rect(EditorTools.DrawIndent(EditorGUI.indentLevel, position.x), y, buttonWidth, buttonWidth), "", EditorStyles.miniButton)) indexToDelete = i;
             GUI.backgroundColor = Color.white;
 
             SerializedProperty p = property.GetArrayElementAtIndex(i);
             
             EditorGUI.PropertyField(new Rect(position.x + buttonWidth + 5, y, position.width, singleLine), p);
-            y += EditorGUI.GetPropertyHeight(p, true) + yOffset;
-
+            y += EditorGUI.GetPropertyHeight(p, true);
         }
+        EditorGUI.indentLevel--;
 
-        // EditorGUI.indentLevel--;
-        if (indexToDelete != -1) {
-            property.DeleteArrayElementAtIndex(indexToDelete);
-        }
-
+        if (indexToDelete != -1) property.DeleteArrayElementAtIndex(indexToDelete);
+        
         EditorGUI.EndProperty();
      }
      
-     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-     {
-         float singleLine = EditorGUIUtility.singleLineHeight;
-        property = property.FindPropertyRelative("list");
-
-        bool useSpacing = (attribute as DisplayedArrayAttribute).useSpacing;
-
-        int arraySize = property.arraySize;
-
-        float yOffset = arraySize == 0 || !useSpacing ? 0 : (singleLine * .5f);
-
-        float elementsHeight = 0;
-        elementsHeight += singleLine + yOffset;
-         for (int i = 0; i < property.arraySize; i++) {
-             elementsHeight += EditorGUI.GetPropertyHeight(property.GetArrayElementAtIndex(i), true) + yOffset;
-         }
-         return elementsHeight + (arraySize == 0 ? 0 : EditorGUIUtility.singleLineHeight * (useSpacing ? .25f : .5f));
-     }
+    public override float GetPropertyHeight(SerializedProperty prop, GUIContent label)
+    {
+        prop = prop.FindPropertyRelative("list");
+        int arraySize = prop.arraySize;
+        float h = EditorGUIUtility.singleLineHeight * (arraySize == 0 ? 1 : 1.5f);
+        for (int i = 0; i < arraySize; i++) 
+            h += EditorGUI.GetPropertyHeight(prop.GetArrayElementAtIndex(i), true);
+        return h;
+    }
 }
-
-
 #endif
 
     public class NeatArrayWrapper<T> {

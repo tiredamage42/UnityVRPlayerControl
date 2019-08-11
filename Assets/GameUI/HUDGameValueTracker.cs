@@ -30,11 +30,11 @@ namespace GameUI {
                 uiObject.SetText(gameValueName);
 
                 GameValue gv = actor.GetGameValue(gameValueName);
-                if (gv != null) UpdateUIObject(0, gv.GetValue(), gv.GetMinValue(), gv.GetMaxValue());
+                if (gv != null) UpdateUIObject(0, gv.GetValue(), gv.GetMinValue(), gv.GetMaxValue(), null);
             }
         }
 
-        void UpdateUIObject (float delta, float newValue, float min, float max) {
+        void UpdateUIObject (float delta, float newValue, float min, float max, string msg) {
             if (uiObject != null) uiObject.SetValue(Mathf.InverseLerp(min, max, newValue));
         }
     }

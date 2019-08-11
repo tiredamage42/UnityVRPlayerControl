@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ActorSystem;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -71,8 +72,7 @@ namespace InventorySystem {
         public float weight = 1;
         [Range(0,100)] public float value = 50;
 
-        [DisplayedArray(new float[] {0,0,0,.25f}, false)] 
-        public ItemCompositionArray composedOf;
+        [DisplayedArray] public ItemCompositionArray composedOf;
 
         
         [Header("Scene Behavior")]
@@ -90,27 +90,6 @@ namespace InventorySystem {
 
         public TransformBehavior equipTransform;
 
-        // public List<int> stashActions = new List<int> () {
-        //     1
-        // };
-        // public List<int> equipActions = new List<int> () {
-        //     0
-        // };
-
-
-
-
-        // [Header("Stashing")]
-        // public Buffs onStashBuffs;
-
-        // public StashUseBehavior stashUseBehavior;
-        // public StashedItem stashedItemBehavior;
-
-        
-
-        // [Header("Equipping")]
-        // public Buffs onEquipBuffs;
-
         
         /*
             TODO: add multiplier values
@@ -125,56 +104,61 @@ namespace InventorySystem {
         }
     }
 
-    [System.Serializable] public class ItemComposition {
+    [System.Serializable] public class Item_Composition {
         public ItemBehavior item;
         public int amount = 1;
-    }
+        [DisplayedArray] public GameValueConditionArray conditions;
 
-[System.Serializable] public class ItemCompositionArray : NeatArrayWrapper<ItemComposition> { }
+        public Item_Composition () {
+            amount = 1;
+        }
+    }
         
-    
+    [System.Serializable] public class ItemCompositionArray : NeatArrayWrapper<Item_Composition> { }
+        
     #if UNITY_EDITOR
-
-[CustomPropertyDrawer(typeof(ItemComposition))]
-public class GameValueConditionDrawer : PropertyDrawer
-{
-    // Draw the property inside the given rect
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    [CustomPropertyDrawer(typeof(Item_Composition))] public class ItemCompositionDrawer : PropertyDrawer
     {
-        // Using BeginProperty / EndProperty on the parent property means that
-        // prefab override logic works on the entire property.
-        EditorGUI.BeginProperty(position, label, property);
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            float singleLine = EditorGUIUtility.singleLineHeight;
+            EditorGUI.BeginProperty(position, label, property);
 
-        float offset = -5;
+            float offset = -5;
 
-        float x = position.x;
+            int oldIndent = EditorGUI.indentLevel;
+            EditorGUI.indentLevel = 0;
+            float x = EditorTools.DrawIndent (oldIndent, position.x);
+                
+            InventorySystemEditorUtils.itemSelector.Draw(new Rect(x, position.y, 175, singleLine), property.FindPropertyRelative("item"), GUIContent.none);
+            x += 175-offset;
             
-        var amountRect = new Rect(x, position.y, 175, EditorGUIUtility.singleLineHeight);
-        x += 175-offset;
-
-        InventorySystemEditorUtils.itemSelector.Draw(amountRect, property.FindPropertyRelative("item"), GUIContent.none);
-        // EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("item"), GUIContent.none);
-        
-        amountRect = new Rect(x, position.y, 50, EditorGUIUtility.singleLineHeight);
-        x+= 50-offset;
-        EditorGUI.LabelField(amountRect, "Amount:");
-
-        amountRect = new Rect(x, position.y, 135, EditorGUIUtility.singleLineHeight);
-        x+= 135-offset;
-        EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("amount"), GUIContent.none);
-
-
-
+            EditorGUI.LabelField(new Rect(x, position.y, 50, singleLine), "Amount:");
+            x+= 50-offset;
             
-        EditorGUI.EndProperty();
-    }
+            EditorGUI.PropertyField(new Rect(x, position.y, 135, singleLine), property.FindPropertyRelative("amount"), GUIContent.none);
+            
 
 
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-    {
-        return EditorGUIUtility.singleLineHeight;
+            EditorGUI.indentLevel = oldIndent + 1;
+            SerializedProperty conditionsProp = property.FindPropertyRelative("conditions");
+            EditorGUI.PropertyField(new Rect(position.x, position.y + singleLine, position.width, (EditorGUI.GetPropertyHeight(conditionsProp, true))), conditionsProp, new GUIContent("Conditions"));
+            EditorGUI.indentLevel = oldIndent;
+         
+                
+            EditorGUI.EndProperty();
+        }
+
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            return EditorGUIUtility.singleLineHeight + (EditorGUI.GetPropertyHeight(property.FindPropertyRelative("conditions"), true));
+        }
+
+        // public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        // {
+        //     return EditorGUIUtility.singleLineHeight;
+        // }
     }
-}
 #endif
 
 

@@ -4,24 +4,26 @@ namespace ActorSystem {
 
     [CreateAssetMenu()]
     public class GameValueTemplate : ScriptableObject {
-        public GameValue[] gameValueTemplates;
 
-        public GameValue[] GetTemplateInstance () {
-            int l = gameValueTemplates.Length;
-            GameValue[] newValues = new GameValue[l];
+        [DisplayedArray] public GameValueArray gameValueTemplates;
+        // public GameValue[] gameValueTemplates;
 
-            for (int i = 0; i < l; i++) {
+        // public GameValue[] GetTemplateInstance () {
+        //     int l = gameValueTemplates.Length;
+        //     GameValue[] newValues = new GameValue[l];
 
-                GameValue value = gameValueTemplates[i];
+        //     for (int i = 0; i < l; i++) {
+
+        //         GameValue value = gameValueTemplates[i];
                 
-                newValues[i] = new GameValue (
-                    value.name, 
-                    Random.Range( value.initializationRange.x, value.initializationRange.y ), value.baseMinMax
-                    // value.baseMinValue,
-                    // value.baseMaxValue
-                );
-            }
-            return newValues;
-        }
+        //         newValues[i] = new GameValue (
+        //             value.name, 
+        //             Random.Range( value.initializationRange.x, value.initializationRange.y ), value.baseMinMax
+        //             // value.baseMinValue,
+        //             // value.baseMaxValue
+        //         );
+        //     }
+        //     return newValues;
+        // }
     }
 }

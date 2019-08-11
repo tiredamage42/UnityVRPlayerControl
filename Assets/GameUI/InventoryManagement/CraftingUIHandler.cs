@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using InventorySystem;
+using ActorSystem;
 
 namespace GameUI {
     public class CraftingUIHandler : InventoryManagementUIHandler
@@ -22,6 +23,7 @@ namespace GameUI {
             int uiIndex, otherUIIndex;
             UnpackButtonData (customData, out slot, out forInventory, out linkedInventory, out uiIndex, out otherUIIndex);
             
+
             CraftingRecipeBehavior recipe = null;
 
             for (int i = 0; i < slot.item.stashedItemBehaviors.Length; i++) {
@@ -40,12 +42,17 @@ namespace GameUI {
 
             text += "\n\nRequires:\n";
 
-            ItemComposition[] requires = recipe.requires;
+            Item_Composition[] requires = recipe.requires;
+
+            InventoryCrafter crafter = inventory.GetComponent<InventoryCrafter>();
 
             for (int i = 0; i < requires.Length; i++) {
-                ItemComposition c = requires[i];
-                int hasCount = forInventory.GetItemCount(c.item);
-                text += c.item.itemName + "\t" + hasCount + " / " + c.amount + "\n";
+
+                Item_Composition c = requires[i];
+                if (GameValueCondition.ConditionsMet(c.conditions, crafter.gameValues, crafter.gameValues)) {
+                    int hasCount = crafter.GetItemCount(c.item);
+                    text += c.item.itemName + "\t" + hasCount + " / " + c.amount + "\n";
+                }
             }
 
             uiObject.textPanel.SetText(text);            
@@ -92,17 +99,23 @@ namespace GameUI {
                         return;
                     }
 
-                    ItemComposition[] requires = recipe.requires;
+                    Item_Composition[] requires = recipe.requires;
+
+                    InventoryCrafter crafter = inventory.GetComponent<InventoryCrafter>();
+
                     for (int i = 0; i < requires.Length; i++) {
 
-                        ItemComposition c = requires[i];
-                        int hasCount = forInventory.GetItemCount(c.item);
+                        Item_Composition c = requires[i];
 
-                        if (hasCount < c.amount) {
-                            forInventory.GetComponent<GameMessageInbox>().ShowMessage("Not Enough Ingredients");
-                            return;
+                        if (GameValueCondition.ConditionsMet(c.conditions, crafter.gameValues, crafter.gameValues)) {
+                
+                            int hasCount = crafter.GetItemCount(c.item);
+
+                            if (hasCount < c.amount) {
+                                forInventory.GetComponent<GameMessageInbox>().ShowMessage("Not Enough Ingredients");
+                                return;
+                            }
                         }
-                        
                     }
 
                     if (slot.item.OnConsume(forInventory, 1, input.y)){

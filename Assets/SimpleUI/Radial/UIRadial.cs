@@ -43,12 +43,15 @@ namespace SimpleUI{
                 SelectableElement element = allElements[i];
 
                 element.transform.localScale = selectInsideSize;
-                element.transform.localRotation = Quaternion.Euler(0,0,elementAngle + radialAngle);
+                element.transform.localRotation = Quaternion.Euler(0,0, elementAngle );
+
                 element.mainImage.fillAmount = radialAmount;
+                element.mainImage.rectTransform.localRotation = Quaternion.Euler(0,0, radialAngle );
+
                 
                 if (element.hasText) {
                     element.uiText.transform.localPosition = textLocalPos;
-                    element.uiText.transform.localRotation = Quaternion.Euler(0,0,-elementAngle);
+                    element.uiText.transform.localRotation = Quaternion.Euler(0,0,- (elementAngle));
                     if (elementAngle == 0 || elementAngle == -180) {
                         element.uiText.SetAnchor(TextAnchor.MiddleCenter);
                     }

@@ -29,7 +29,7 @@ namespace VRPlayer {
         void OnEnable () {
             // FindAllPoses();
             usePoseProp = serializedObject.FindProperty("poseToUse");
-            handPoseSelector = new AssetSelector<SteamVR_Skeleton_Pose>();
+            handPoseSelector = new AssetSelector<SteamVR_Skeleton_Pose>(null, null);
         }
         public override void OnInspectorGUI () {
             base.OnInspectorGUI () ;

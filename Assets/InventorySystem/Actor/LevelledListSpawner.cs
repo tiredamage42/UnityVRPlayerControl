@@ -13,54 +13,58 @@ namespace InventorySystem {
         [Header("In Game Days, -1 for no respawn")]
         public float respawnRate = 3.0f;
         Inventory inventory;
-        public Actor actorValuesToUse;
+        public Actor selfActorValues, suppliedActorValues;
+
 
         
         public bool respawnDebug;
         
         void Awake () {
             inventory = GetComponent<Inventory>();
+            
+            if (selfActorValues == null) {
+                selfActorValues = GetComponent<Actor>();
+            }
         }
         void Update () {
             if (respawnDebug) {
 
-                if (actorValuesToUse != null) {
-                    Respawn(actorValuesToUse.GetValueDictionary());
-                }
+                Respawn(selfActorValues.GetValueDictionary(), suppliedActorValues.GetValueDictionary());
+
                 respawnDebug = false;
             }
         }
 
         void Start () {
-            if (actorValuesToUse == null){
-                actorValuesToUse = Actor.playerActor;
-            }
-            if (actorValuesToUse != null) {
-                Respawn(actorValuesToUse.GetValueDictionary());
-            }
+            if (suppliedActorValues == null) suppliedActorValues = Actor.playerActor;
+            if (selfActorValues == null) selfActorValues = suppliedActorValues;
+            
+            Respawn(selfActorValues.GetValueDictionary(), suppliedActorValues.GetValueDictionary());
         }
 
-        public void Respawn (Dictionary<string, GameValue> gameValues) {
+        public void Respawn (Dictionary<string, GameValue> selfValues, Dictionary<string, GameValue> suppliedValues) {
             inventory.ClearInventory();
-
             List<Inventory.InventorySlot> spawnList = new List<Inventory.InventorySlot>();
-            GetSpawnedList(gameValues, levelledList, spawnList);
-
+            GetSpawnedList(selfValues, suppliedValues, levelledList, spawnList);
             inventory.AddInventory(spawnList);
         }
 
-        static void GetSpawnedList (Dictionary<string, GameValue> gameValues, LevelledList levelledList, List<Inventory.InventorySlot> spawnList) {
+        public static void GetSpawnedList (Dictionary<string, GameValue> selfValues, Dictionary<string, GameValue> suppliedValues, LevelledList levelledList, List<Inventory.InventorySlot> spawnList) {
+            bool didSpawn = false;
+
+            //CHECK FOR INJECTED RUNTIME LISTS ASSOCIATED WITH SUPPLIED LEVELLED LIST HERE
             
-            if (GameValueCondition.ConditionsMet (levelledList.conditions, gameValues)) {
+            LevelledList.ListItem[] listItems = levelledList.listItems;
 
-                bool didSpawn = false;
+            for (int i =0 ; i < listItems.Length; i++) {
+                LevelledList.ListItem listItem = listItems[i];
+                if (Random.value > listItem.chanceForNone) {
 
-                for (int i =0 ; i < levelledList.listItems.Length; i++) {
-                    LevelledList.ListItem listItem = levelledList.listItems[i];
-                    if (Random.value > listItem.chanceForNone) {
-                        int count = Random.Range(listItem.min, listItem.max+1);
 
-                        if (count > 0) {
+                    int count = Random.Range(listItem.minMax.x, listItem.minMax.y+1);
+                    if (count > 0) {
+
+                        if (GameValueCondition.ConditionsMet (listItem.conditions, selfValues, suppliedValues)) {
                             spawnList.Add(new Inventory.InventorySlot(listItem.item, count));
                             didSpawn = true;
 
@@ -70,17 +74,17 @@ namespace InventorySystem {
                         }
                     }
                 }
+            }
 
-                if (!didSpawn) {
-                    for (int i =0 ; i < levelledList.fallBacks.Length; i++) {
-                        LevelledList.ListItem listItem = levelledList.fallBacks[i];
-                        spawnList.Add(new Inventory.InventorySlot(listItem.item, Random.Range(Mathf.Max(listItem.min, 1), listItem.max + 1)));
-                            
+            if (!didSpawn) {
+                LevelledList.ListItem[] fallBacks = levelledList.fallBacks;
+
+                for (int i =0 ; i < fallBacks.Length; i++) {
+                    LevelledList.ListItem listItem = fallBacks[i];
+
+                    if (GameValueCondition.ConditionsMet (listItem.conditions, selfValues, suppliedValues)) {
+                        spawnList.Add(new Inventory.InventorySlot(listItem.item, Random.Range(Mathf.Max(listItem.minMax.x, 1), listItem.minMax.y + 1)));
                     }
-                }
-
-                for (int i = 0; i < levelledList.subLists.Length; i++) {
-                    GetSpawnedList (gameValues, levelledList.subLists[i], spawnList);
                 }
             }
         }

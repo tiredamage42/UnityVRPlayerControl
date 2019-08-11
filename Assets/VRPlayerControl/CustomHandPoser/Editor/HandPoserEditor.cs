@@ -46,7 +46,7 @@ namespace VRPlayer
 
             defaultPoseProp = serializedObject.FindProperty("defaultPose");
 
-            handPoseSelector = new AssetSelector<SteamVR_Skeleton_Pose>();
+            handPoseSelector = new AssetSelector<SteamVR_Skeleton_Pose>(null, null);
         }
 
         protected void UpdatePreviewHand(ref GameObject preview, ref bool showPreview, string assetName, SteamVR_Skeleton_Pose_Hand handData, SteamVR_Skeleton_Pose sourcePose, bool forceUpdate)

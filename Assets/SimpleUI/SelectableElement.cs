@@ -111,7 +111,7 @@ namespace SimpleUI {
         Image _mainImage;
         public Image mainImage {
             get {
-                if (_mainImage == null) _mainImage = GetComponent<Image>();
+                if (_mainImage == null) _mainImage = GetComponentsInChildren<Image>()[0];
                 return _mainImage;
             }
         }   

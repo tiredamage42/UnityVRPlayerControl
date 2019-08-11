@@ -201,7 +201,7 @@ public class Inventory : MonoBehaviour//, IInteractable
     
 
 
-    public List<int> autoScrapCategories = new List<int> ();
+    // public List<int> autoScrapCategories = new List<int> ();
     
     
     // weapons, armor, meds
@@ -210,29 +210,29 @@ public class Inventory : MonoBehaviour//, IInteractable
     };
 
 
-    public int GetItemCount (ItemBehavior item) {
-        int c = 0;
-        for (int i =0 ; i < allInventory.Count; i++) {
-            if (allInventory[i].item == item) {
-                c += allInventory[i].count;
-            }
-            else {
-                if (autoScrapCategories.Contains(allInventory[i].item.category)) {
+    // public int GetItemCount (Dictionary<string, ActorSystem.GameValue> gameValues, ItemBehavior item) {
+    //     int c = 0;
+    //     for (int i =0 ; i < allInventory.Count; i++) {
+    //         if (allInventory[i].item == item) {
+    //             c += allInventory[i].count;
+    //         }
+    //         else {
+    //             if (autoScrapCategories.Contains(allInventory[i].item.category)) {
 
-                    int consistsOfCount;
+    //                 int consistsOfCount;
 
-                    if ( ItemConsistsOf(allInventory[i].item, item, out consistsOfCount))
-                    {
+    //                 if ( ItemConsistsOf(gameValues, allInventory[i].item, item, out consistsOfCount))
+    //                 {
 
-                        c += consistsOfCount * allInventory[i].count;
+    //                     c += consistsOfCount * allInventory[i].count;
 
-                    }
-                }
+    //                 }
+    //             }
 
-            }
-        }
-        return c;
-    }
+    //         }
+    //     }
+    //     return c;
+    // }
 
     public List<Inventory.InventorySlot> GetFilteredInventory( List<int> categoryFilter ) {
         if (categoryFilter == null || categoryFilter.Count == 0)
@@ -253,110 +253,117 @@ public class Inventory : MonoBehaviour//, IInteractable
         }
         return r;
     }
-    public bool ItemConsistsOf(ItemBehavior a, ItemBehavior b, out int consistsOfCount) {
-        consistsOfCount = -1;
-        ItemComposition[] composedOf = a.composedOf;
-        for (int i = 0; i < composedOf.Length; i++) {
-            if (composedOf[i].item == b) {
-                consistsOfCount = composedOf[i].amount;
-                return true;
-            }
-        }
-        return false;
-    }
+    // public static bool ItemConsistsOf(Dictionary<string, ActorSystem.GameValue> gameValues, ItemBehavior a, ItemBehavior b, out int consistsOfCount) {
+    //     consistsOfCount = -1;
+    //     Item_Composition[] composedOf = a.composedOf;
+    //     for (int i = 0; i < composedOf.Length; i++) {
+    //         if (composedOf[i].item == b) {
 
-    public void RemoveItemComposition (ItemComposition itemComps) {
-        ItemBehavior item = itemComps.item;
-        int needsAmount = itemComps.amount;
+    //             if (ActorSystem.GameValueCondition.ConditionsMet(composedOf[i].conditions, gameValues, gameValues)) {
+    //                 consistsOfCount = composedOf[i].amount;
+    //                 return true;
+    //             }
+    //         }
+    //     }
+    //     return false;
+    // }
 
-        bool hasEnoughBaseComponents = false;
+    // public void RemoveItemComposition (Dictionary<string, ActorSystem.GameValue> gameValues, Item_Composition itemComps) {
+    //     if (!ActorSystem.GameValueCondition.ConditionsMet(itemComps.conditions, gameValues, gameValues)) {
+    //         return;
+    //     }
         
+    //     ItemBehavior item = itemComps.item;
+    //     int needsAmount = itemComps.amount;
 
-        for (int i = 0; i < allInventory.Count; i++) {
-            if (allInventory[i].item == item) {
-                int countToDrop = Mathf.Min(needsAmount, allInventory[i].count);
-
-                // DropItem(allInventory[i].item, countToDrop, false, -1);
-
-                needsAmount -= countToDrop;
-                break;
-            }
-        }
-        hasEnoughBaseComponents = needsAmount <= 0;
-
-        if (hasEnoughBaseComponents) {
-            DropItem(item, itemComps.amount, false, -1);
-
-
-        }
-        else {
+    //     bool hasEnoughBaseComponents = false;
     
-            //if not enough, loop through and junk items for their base components (first level only)
-            bool hasEnoughComponentsNow = false;
-            for (int i = 0; i < allInventory.Count; i++) {
-                
-                
-                if (autoScrapCategories.Contains(allInventory[i].item.category)) {
+    //     for (int i = 0; i < allInventory.Count; i++) {
+    //         if (allInventory[i].item == item) {
+    //             int countToDrop = Mathf.Min(needsAmount, allInventory[i].count);
 
-                
-                int consistsOfCount;
-                if (ItemConsistsOf(allInventory[i].item, item, out consistsOfCount)) {
-                    int itemCount = allInventory[i].count;
+    //             // DropItem(allInventory[i].item, countToDrop, false, -1);
 
-                    // if we're gonna scrap every item anyways
-                    if (needsAmount > (itemCount * consistsOfCount)) {
-                        ScrapItem(allInventory[i].item, itemCount);
-                        needsAmount -= itemCount * consistsOfCount;
-                    }
-                    else {
+    //             needsAmount -= countToDrop;
+    //             break;
+    //         }
+    //     }
+    //     hasEnoughBaseComponents = needsAmount <= 0;
 
-                        // need 6
-                        // consists of 4
-
-                        int countToScrap = (needsAmount / consistsOfCount) + Mathf.Min(needsAmount%consistsOfCount, 1);
-                        ScrapItem(allInventory[i].item, itemCount);
-                        needsAmount = 0;
-
-                        hasEnoughComponentsNow = true;
-
-                        break;
-
-                    }
-                }
-                }
-
-            }
-
-            if (hasEnoughComponentsNow) {
-                DropItem(item, itemComps.amount, false, -1);
-            }
-            else {
-                Debug.LogError("problem with math here....");
-            }
+    //     if (hasEnoughBaseComponents) {
+    //         DropItem(item, itemComps.amount, false, -1);
 
 
-
-
-        }
-    }
-
-    void ScrapItem (ItemBehavior item, int count) {
-        DropItem(item, count, false, -1);
-        for (int i = 0; i< count; i++) {
-            AddItemComposition(item.composedOf);
-        }
-    }
+    //     }
+    //     else {
     
-    public void RemoveItemComposition (ItemComposition[] itemComps) {
-        for (int i = 0; i < itemComps.Length; i++) {
-            RemoveItemComposition(itemComps[i]);
-        }
-    }
-    public void AddItemComposition(ItemComposition[] itemComps) {
-        for (int i = 0; i < itemComps.Length; i++) {
-            StashItem(itemComps[i].item, itemComps[i].amount, -1);
-        }
-    }
+    //         //if not enough, loop through and junk items for their base components (first level only)
+    //         bool hasEnoughComponentsNow = false;
+    //         for (int i = 0; i < allInventory.Count; i++) {
+                
+                
+    //             if (autoScrapCategories.Contains(allInventory[i].item.category)) {
+
+                
+    //             int consistsOfCount;
+    //             if (ItemConsistsOf(gameValues, allInventory[i].item, item, out consistsOfCount)) {
+    //                 int itemCount = allInventory[i].count;
+
+    //                 // if we're gonna scrap every item anyways
+    //                 if (needsAmount > (itemCount * consistsOfCount)) {
+    //                     ScrapItem(gameValues, allInventory[i].item, itemCount);
+    //                     needsAmount -= itemCount * consistsOfCount;
+    //                 }
+    //                 else {
+
+    //                     // need 6
+    //                     // consists of 4
+
+    //                     int countToScrap = (needsAmount / consistsOfCount) + Mathf.Min(needsAmount%consistsOfCount, 1);
+    //                     ScrapItem(gameValues, allInventory[i].item, itemCount);
+    //                     needsAmount = 0;
+
+    //                     hasEnoughComponentsNow = true;
+
+    //                     break;
+
+    //                 }
+    //             }
+    //             }
+
+    //         }
+
+    //         if (hasEnoughComponentsNow) {
+    //             DropItem(item, itemComps.amount, false, -1);
+    //         }
+    //         else {
+    //             Debug.LogError("problem with math here....");
+    //         }
+    //     }
+    // }
+
+    // void ScrapItem (Dictionary<string, ActorSystem.GameValue> gameValues, ItemBehavior item, int count) {
+    //     DropItem(item, count, false, -1);
+    //     for (int i = 0; i< count; i++) {
+    //         AddItemComposition(gameValues, item.composedOf);
+    //     }
+    // }
+    
+    // public void RemoveItemComposition (Dictionary<string, ActorSystem.GameValue> gameValues, Item_Composition[] itemComps) {
+    //     for (int i = 0; i < itemComps.Length; i++) {
+    //         RemoveItemComposition(gameValues, itemComps[i]);
+    //     }
+    // }
+
+
+    // public void AddItemComposition(Dictionary<string, ActorSystem.GameValue> gameValues, Item_Composition[] itemComps) {
+    //     for (int i = 0; i < itemComps.Length; i++) {
+
+    //         if (ActorSystem.GameValueCondition.ConditionsMet(itemComps[i].conditions, gameValues, gameValues)) {
+    //             StashItem(itemComps[i].item, itemComps[i].amount, -1);
+    //         }
+    //     }
+    // }
 
 
 

@@ -1,0 +1,156 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2499689881023938851
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2499689881023938853}
+  - component: {fileID: 2499689881023938850}
+  m_Layer: 0
+  m_Name: SurvivalQuest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2499689881023938853
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2499689881023938851}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -163, y: -44.5, z: 460.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2499689881023938850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2499689881023938851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28df317be20c949a894a53b8191d5b95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  questID: 0
+  isPublic: 0
+  infinite: 1
+  displayName: SurvivalQuest
+  survivalValues:
+  - survivalValueID: 0
+    questInstanceID: 0
+    valueTemplate:
+      name: Hunger
+      baseValue: 0
+      baseMinMax: {x: 0, y: 3}
+      initializationRange: {x: 0, y: 0}
+      modifiers: []
+    degredations:
+      list:
+      - conditions:
+          list: []
+        key: {x: 0, y: 0, z: 0}
+        count: 0
+        isStackable: 0
+        gameValueName: Hunger
+        modifyValueComponent: 0
+        modifyBehavior: 1
+        modifyValue: 0.2
+    degredationTime: 60
+    hintMessage: Eat some food...
+    thresholdPenalties:
+      list:
+      - list:
+        - conditions:
+            list: []
+          key: {x: 0, y: 0, z: 0}
+          count: 0
+          isStackable: 0
+          gameValueName: Charisma
+          modifyValueComponent: 3
+          modifyBehavior: 1
+          modifyValue: -1
+      - list:
+        - conditions:
+            list: []
+          key: {x: 0, y: 0, z: 0}
+          count: 0
+          isStackable: 0
+          gameValueName: Charisma
+          modifyValueComponent: 3
+          modifyBehavior: 1
+          modifyValue: -3
+      - list:
+        - conditions:
+            list: []
+          key: {x: 0, y: 0, z: 0}
+          count: 0
+          isStackable: 0
+          gameValueName: Charisma
+          modifyValueComponent: 3
+          modifyBehavior: 1
+          modifyValue: -5
+  - survivalValueID: 0
+    questInstanceID: 0
+    valueTemplate:
+      name: Thirst
+      baseValue: 0
+      baseMinMax: {x: 0, y: 3}
+      initializationRange: {x: 0, y: 0}
+      modifiers: []
+    degredations:
+      list:
+      - conditions:
+          list: []
+        key: {x: 0, y: 0, z: 0}
+        count: 0
+        isStackable: 0
+        gameValueName: Thirst
+        modifyValueComponent: 0
+        modifyBehavior: 1
+        modifyValue: 0.2
+    degredationTime: 60
+    hintMessage: Drink some water...
+    thresholdPenalties:
+      list:
+      - list:
+        - conditions:
+            list: []
+          key: {x: 0, y: 0, z: 0}
+          count: 0
+          isStackable: 0
+          gameValueName: AP
+          modifyValueComponent: 5
+          modifyBehavior: 2
+          modifyValue: 0.75
+      - list:
+        - conditions:
+            list: []
+          key: {x: 0, y: 0, z: 0}
+          count: 0
+          isStackable: 0
+          gameValueName: AP
+          modifyValueComponent: 5
+          modifyBehavior: 2
+          modifyValue: 0.5
+      - list:
+        - conditions:
+            list: []
+          key: {x: 0, y: 0, z: 0}
+          count: 0
+          isStackable: 0
+          gameValueName: AP
+          modifyValueComponent: 5
+          modifyBehavior: 2
+          modifyValue: 0.25

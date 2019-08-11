@@ -1,29 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-using ActorSystem;
-
-using GameUI;
+﻿using UnityEngine;
 
 namespace InventorySystem {
     
     [CreateAssetMenu(menuName="Stashed Item Behaviors/Crafting Recipe Behavior")]
-    public class CraftingRecipeBehavior : StashedItemBehavior// MonoBehaviour, IStashedItem
-    {
-
-        // public ItemComposition[] requires;
-        // public ItemComposition[] yields;
-
-        [DisplayedArray(new float[] {0,0,0,.1f}, false)] 
-        public ItemCompositionArray requires;
+    public class CraftingRecipeBehavior : StashedItemBehavior
+    {   
+        [DisplayedArray] public ItemCompositionArray requires;
 
         [Space][Space]
-        [DisplayedArray(new float[] {0,0,0,.1f}, false)] 
-        public ItemCompositionArray yields;
+        [DisplayedArray] public ItemCompositionArray yields;
 
-        
-    
         public override void OnItemStashed (Inventory inventory, ItemBehavior item, int count, int equipSlot, bool manual) {
             
         }
@@ -31,32 +17,10 @@ namespace InventorySystem {
 
         }
         public override void OnItemConsumed (Inventory inventory, ItemBehavior item, int count, int equipSlot) {
-            
-            //cehck if we have teh components in inventory
-            
-            //if not send message to inventory "missing required components"
+            InventoryCrafter crafter = inventory.GetComponent<InventoryCrafter>();
 
-            //else send message for each item composition yield
-
-
-            inventory.RemoveItemComposition(requires);
-            inventory.AddItemComposition (yields);
-
-
-            // for (int i = 0; i < yields.Length; i++) {
-            //     inventory.GetComponent<GameMessageInbox>().ShowMessage("Adde")
-            // }
-
-
-            //DO ABOVE IN UI to prevent on item sonsumed form happening if not enough components
-
-
-            //foreach item composition yield, inventory.Stash(yields[i])
-
-
-
-
-               
+            crafter.RemoveItemComposition(requires);
+            crafter.AddItemComposition (yields);               
         }
     }
 }

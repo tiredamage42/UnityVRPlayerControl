@@ -12,18 +12,13 @@ namespace InventorySystem {
 public class GiveBuffs : StashedItemBehavior//MonoBehaviour, IStashedItem
 {
 
-    [System.Serializable] public class GVMArray : NeatArrayWrapper<GameValueModifier> { }
-
-    [DisplayedArray(new float[] {0,0,0,.1f}, true)] 
-    public GVMArray stashBuffs;
+    
+    [DisplayedArray] public GameValueModifierArray stashBuffs;
     
     // [Header("Should be permanent")]
     [Space] [Space] [Space] 
-    [DisplayedArray(new float[] {0,0,0,.1f}, true)] 
-    public GVMArray consumeBuffs;
+    [DisplayedArray] public GameValueModifierArray consumeBuffs;
         
-
-    
     public override void OnItemStashed (Inventory inventory, ItemBehavior item, int count, int equipSlot, bool manual) {
         GameValueModifier[] buffs = stashBuffs;
 
