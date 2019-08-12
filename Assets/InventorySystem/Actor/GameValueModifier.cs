@@ -8,10 +8,10 @@ using UnityEngine;
 namespace ActorSystem {
 
     [System.Serializable] public class GameValueModifierArray : NeatArrayWrapper<GameValueModifier> { }
-    [System.Serializable] public class GameValueModifierArray2D { [DisplayedArray] public GameValueModifierArray[] list; }
+    [System.Serializable] public class GameValueModifierArray2D { [NeatArray] public GameValueModifierArray[] list; }
 
     [System.Serializable] public class GameValueModifier {
-        [DisplayedArray] public GameValueConditionArray conditions;
+        [NeatArray] public GameValueConditionArray conditions;
         
         public GameValueModifier () {
             count = 1;

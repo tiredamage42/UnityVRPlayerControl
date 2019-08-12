@@ -1,28 +1,28 @@
 ﻿
-using GameUI;
-using UnityEditor;
+// using GameUI;
+// using UnityEditor;
 
-namespace VRPlayer.UI {
+// namespace VRPlayer.UI {
 
-    [CustomEditor(typeof(VRInventoryManagementUIInputHandler))]
-    public class VRInventoryManagementUIInputHandlerEditor : Editor {
-        VRInventoryManagementUIInputHandler uiHandler;
+    // [CustomEditor(typeof(VRInventoryManagementUIInputHandler))]
+    // public class VRInventoryManagementUIInputHandlerEditor : Editor {
+    //     VRInventoryManagementUIInputHandler uiHandler;
 
-        void OnEnable () {
-            uiHandler = target as VRInventoryManagementUIInputHandler;
-        }
+    //     void OnEnable () {
+    //         uiHandler = target as VRInventoryManagementUIInputHandler;
+    //     }
 
-        public override void OnInspectorGUI () {
-            base.OnInspectorGUI();
+    //     public override void OnInspectorGUI () {
+    //         base.OnInspectorGUI();
 
-            string[] actionNames = InventoryManagementUIHandler.GetHandlerInputNames(uiHandler.context);
+    //         string[] actionNames = InventoryManagementUIHandler.GetHandlerInputNames(uiHandler.context);
 
-            if (actionNames != null) {
-                EditorGUILayout.HelpBox("Actions:\n" + string.Join(", ", actionNames) , MessageType.Info);
-            }
-            else {
-                EditorGUILayout.HelpBox("No context found :\n" + uiHandler.context, MessageType.Error);
-            }
-        }
-    }
-}
+    //         if (actionNames != null) {
+    //             EditorGUILayout.HelpBox("Actions:\n" + string.Join(", ", actionNames) , MessageType.Info);
+    //         }
+    //         else {
+    //             EditorGUILayout.HelpBox("No context found :\n" + uiHandler.context, MessageType.Error);
+    //         }
+    //     }
+    // }
+// }

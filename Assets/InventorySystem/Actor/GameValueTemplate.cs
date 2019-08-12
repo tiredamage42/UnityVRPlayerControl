@@ -5,7 +5,7 @@ namespace ActorSystem {
     [CreateAssetMenu()]
     public class GameValueTemplate : ScriptableObject {
 
-        [DisplayedArray] public GameValueArray gameValueTemplates;
+        [NeatArray] public GameValueArray gameValueTemplates;
         // public GameValue[] gameValueTemplates;
 
         // public GameValue[] GetTemplateInstance () {

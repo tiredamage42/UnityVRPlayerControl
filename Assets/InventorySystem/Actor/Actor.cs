@@ -36,6 +36,8 @@ using UnityEngine;
 
 namespace ActorSystem {
     public class Actor : MonoBehaviour {
+
+        public string actorName;
         public static Actor playerActor;
         public bool isPlayer;
         public GameValueTemplate template;
@@ -116,7 +118,9 @@ namespace ActorSystem {
             return null;
         }
 
-        public void AddBuffs (GameValueModifier[] buffs, int count, int senderKey, int buffKey, bool assertPermanent) {
+        public void AddBuffs (GameValueModifier[] buffs, int count, int senderKey, int buffKey, bool assertPermanent,
+            Dictionary<string, GameValue> selfValues, Dictionary<string, GameValue> suppliedValues
+        ) {
         
         // public void AddBuffs (ActorBuff buff, int count, int senderKey, int buffKey, bool assertPermanent) {
             //check Conditional 
@@ -140,7 +144,7 @@ namespace ActorSystem {
                         continue;
                     }
 
-                    if (GameValueCondition.ConditionsMet (mod.conditions, actorValues_Dict, actorValues_Dict)) {
+                    if (GameValueCondition.ConditionsMet (mod.conditions, selfValues, suppliedValues)) {
 
 
                         GameValue gameValue = GetGameValue(mod.gameValueName);

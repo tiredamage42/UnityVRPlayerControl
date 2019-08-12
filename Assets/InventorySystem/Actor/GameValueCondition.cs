@@ -9,14 +9,28 @@ using UnityEditor;
 
 namespace ActorSystem {
 
+    /*
+        Maybe a seperate InventoryValueCondition:
+            has item equipped
+            item count <= / == / > ...
+
+        Both inheret from Condition class
+    */
+
     [System.Serializable] public class GameValueCondition {
 
-        public static bool ConditionsMet (GameValueCondition[] conditions, Dictionary<string, GameValue> selfGameValues, Dictionary<string, GameValue> suppliedGameValues){//GameValueHolder holder) {
+        public static bool ConditionsMet (GameValueCondition[] conditions, 
+            Dictionary<string, GameValue> selfGameValues, 
+            Dictionary<string, GameValue> suppliedGameValues
+        ){
             
-            if (conditions == null || conditions.Length == 0) {
-                return true;
-            }
 
+
+
+            
+            
+            if (conditions == null || conditions.Length == 0) return true;
+            
             bool met = false;
             ConditionLink lastLink = ConditionLink.Or;
             bool falseUntilNextOr = false;
@@ -25,25 +39,17 @@ namespace ActorSystem {
                 
                 bool conditionMet = falseUntilNextOr ? false : conditions[i].IsMet(selfGameValues, suppliedGameValues);
 
-                if (lastLink == ConditionLink.Or) {
-                    met = met || conditionMet;
-                }
-                else if (lastLink == ConditionLink.And) {
-                    met = met && conditionMet;
-                }
-
+                if (lastLink == ConditionLink.Or) met = met || conditionMet;
+                else if (lastLink == ConditionLink.And) met = met && conditionMet;
+                
                 lastLink = conditions[i].link;
 
                 if (lastLink == ConditionLink.Or) {
-                    if (met) {
-                        return true;
-                    }
+                    if (met) return true;
                     falseUntilNextOr = false;
                 }
                 else if (lastLink == ConditionLink.And) {
-                    if (!met) {
-                        falseUntilNextOr = true;
-                    }
+                    if (!met) falseUntilNextOr = true;
                 }
             }
             return met;
@@ -90,8 +96,6 @@ namespace ActorSystem {
 
     [System.Serializable] public class GameValueConditionArray : NeatArrayWrapper<GameValueCondition> { }
         
-
-
 #if UNITY_EDITOR
     [CustomPropertyDrawer(typeof(GameValueCondition))] public class GameValueConditionDrawer : PropertyDrawer
     {

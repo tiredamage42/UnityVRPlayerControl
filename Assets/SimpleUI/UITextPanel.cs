@@ -8,7 +8,6 @@ namespace SimpleUI {
         public float textScale = 0.005f;
         public TextAnchor textAlignment = TextAnchor.UpperLeft;
         public int maxCharacters = 64;
-        [TextArea] public string panelText;
 
         public TextPanelParameters(
             Vector2 rectSize, Vector2 textOffsets, float textScale = 0.005f, TextAnchor textAlignment = TextAnchor.UpperLeft, int maxCharacters = 64
@@ -19,7 +18,7 @@ namespace SimpleUI {
             this.textScale = textScale;
             this.textAlignment = textAlignment;
             this.maxCharacters = maxCharacters;
-            this.panelText = "";
+            // this.panelText = "";
         }
         public TextPanelParameters () {
             this.rectSize = new Vector2 (4, 4);
@@ -27,7 +26,7 @@ namespace SimpleUI {
             this.textScale = 0.005f;
             this.textAlignment = TextAnchor.UpperLeft;
             this.maxCharacters = 64;
-            this.panelText = "";
+            // this.panelText = "";
         }
     }
 
@@ -35,9 +34,14 @@ namespace SimpleUI {
     [ExecuteInEditMode] public class UITextPanel : MonoBehaviour
     {
         public TextPanelParameters parameters = new TextPanelParameters();
+
+        [TextArea] public string panelText;
+
         
         UIText text;
         RectTransform[] panelRects;
+
+
 
 
         void OnEnable () {
@@ -64,31 +68,43 @@ namespace SimpleUI {
         const char lineBreak = '\n';
         const string lineBreakAdd = "-\n";
 
-        public void SetText(string newText) {
-            parameters.panelText = newText;
-            int length = parameters.panelText.Length;
+
+        public static string AdjustTextToMaxLength (string input, int maxCharacters, out int lines) {
+            lines = 1;
+
+            int length = input.Length;
             string adjusted = "";
             int l = 0;
             for (int i = 0; i < length; i++) {                
-                adjusted += parameters.panelText[i];
+                adjusted += input[i];
                 l++;
-                if (parameters.panelText[i] == lineBreak) {
+                if (input[i] == lineBreak) {
                     l = 0;
+                    lines++;
                 }
                 else {
-                    if ( l == parameters.maxCharacters ) {
+                    if ( l == maxCharacters ) {
                         adjusted += lineBreakAdd;
                         l = 0;
+                        lines++;
                     }
                 }
             }
+            return adjusted;
+        }
+
+        public void SetText(string newText) {
+            panelText = newText;
+            
+            int lines;
+            string adjusted = AdjustTextToMaxLength (panelText, parameters.maxCharacters, out lines);
             text.SetText(adjusted);
         }
 
     #if UNITY_EDITOR
         void Update () {
             SetRectSizes();
-            SetText(parameters.panelText);
+            SetText(panelText);
         }
     #endif
 

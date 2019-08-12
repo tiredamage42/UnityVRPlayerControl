@@ -75,6 +75,7 @@ namespace SimpleUI {
         public UITextPanel textPanelPrefab;
         public UIMessageElement messagePrefab;
         public UIValueTracker valueTrackerHorizontalPrefab, valueTrackerVerticalPrefab;
+        public UISubtitles subtitlesPrefab;
 
 
         static System.Func<Vector2> getSelectionAxis;

@@ -9,7 +9,7 @@ namespace VRPlayer.UI {
     public class VRUIInventoryBuilders : MonoBehaviour {
         public GameObject inventoryUIsObject;
 
-        public TransformBehavior pageWithPanelTransform, fullTradeTransform;
+        public TransformBehavior pageWithPanelTransform, fullTradeTransform, subTitlesTransform;
         
         void Awake () {
             if (inventoryUIsObject == null)
@@ -45,6 +45,11 @@ namespace VRPlayer.UI {
             
             QuickTradeUIHandler quickTradeUI = inventoryUIsObject.GetComponent<QuickTradeUIHandler>();
             quickTradeUI.SetUIObject(VRUI.MakeButtonsPage("QuickTrade", null, new UIPageParameters("Fix Page Title", .5f, 4, TextAnchor.MiddleCenter, 0), null, false, null, textScale));
+
+            DialoguePlayerUIHandler dialogueHandler = inventoryUIsObject.GetComponent<DialoguePlayerUIHandler>();
+            dialogueHandler.SetUIObject(VRUI.MakeButtonsPage("Dialogue", null, new UIPageParameters("", .5f, 4, TextAnchor.MiddleLeft, 0), null, false, null, textScale));
+
+            VRUI.MakeSubtitles("Subtitles", new UISubtitlesParameters(.005f, 3, 64, 9), subTitlesTransform);
         }
     }
 }

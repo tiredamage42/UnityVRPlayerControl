@@ -16,25 +16,17 @@ namespace InventorySystem {
             public ItemBehavior item;
             public Vector2Int minMax = new Vector2Int(2, 5);
             [Range(0,1)] public float chanceForNone = .5f;
-            [DisplayedArray] public GameValueConditionArray conditions;
-        
+            [NeatArray] public GameValueConditionArray conditions;
         }
-
-
-        // [DisplayedArray] public GameValueConditionArray conditions;
-        
 
         [Header("Only One List Item Spawned")]
         public bool singleSpawn;
-        // public ListItem[] listItems;
-        [DisplayedArray] public LevelledListItemArray listItems;
+        [NeatArray] public LevelledListItemArray listItems;
 
 
         [Header("ListItems spawned 100% if no original ListItems spawned")]
-        // public ListItem[] fallBacks;
-        [DisplayedArray] public LevelledListItemArray fallBacks;
+        [NeatArray] public LevelledListItemArray fallBacks;
 
-        //check conditons per sublist
         // public LevelledList[] subLists;
     }
 

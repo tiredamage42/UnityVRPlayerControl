@@ -72,7 +72,7 @@ namespace InventorySystem {
         public float weight = 1;
         [Range(0,100)] public float value = 50;
 
-        [DisplayedArray] public ItemCompositionArray composedOf;
+        [NeatArray] public ItemCompositionArray composedOf;
 
         
         [Header("Scene Behavior")]
@@ -107,7 +107,7 @@ namespace InventorySystem {
     [System.Serializable] public class Item_Composition {
         public ItemBehavior item;
         public int amount = 1;
-        [DisplayedArray] public GameValueConditionArray conditions;
+        [NeatArray] public GameValueConditionArray conditions;
 
         public Item_Composition () {
             amount = 1;

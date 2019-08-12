@@ -45,12 +45,14 @@ namespace GameUI {
             Item_Composition[] requires = recipe.requires;
 
             InventoryCrafter crafter = inventory.GetComponent<InventoryCrafter>();
+            ActorSystem.Actor actor = inventory.GetComponent<ActorSystem.Actor>();
+            
 
             for (int i = 0; i < requires.Length; i++) {
 
                 Item_Composition c = requires[i];
-                if (GameValueCondition.ConditionsMet(c.conditions, crafter.gameValues, crafter.gameValues)) {
-                    int hasCount = crafter.GetItemCount(c.item);
+                if (GameValueCondition.ConditionsMet(c.conditions, actor.GetValueDictionary(), actor.GetValueDictionary())) {
+                    int hasCount = crafter.GetItemCount(c.item, true, actor.GetValueDictionary(), actor.GetValueDictionary());
                     text += c.item.itemName + "\t" + hasCount + " / " + c.amount + "\n";
                 }
             }
@@ -99,28 +101,35 @@ namespace GameUI {
                         return;
                     }
 
-                    Item_Composition[] requires = recipe.requires;
+                    // Item_Composition[] requires = recipe.requires;
 
                     InventoryCrafter crafter = inventory.GetComponent<InventoryCrafter>();
+                    ActorSystem.Actor actor = inventory.GetComponent<ActorSystem.Actor>();
+            
 
-                    for (int i = 0; i < requires.Length; i++) {
+                    // for (int i = 0; i < requires.Length; i++) {
 
-                        Item_Composition c = requires[i];
+                    //     Item_Composition c = requires[i];
 
-                        if (GameValueCondition.ConditionsMet(c.conditions, crafter.gameValues, crafter.gameValues)) {
+                    //     if (GameValueCondition.ConditionsMet(c.conditions, crafter.gameValues, crafter.gameValues)) {
                 
-                            int hasCount = crafter.GetItemCount(c.item);
+                    //         int hasCount = crafter.GetItemCount(c.item, true);
 
-                            if (hasCount < c.amount) {
-                                forInventory.GetComponent<GameMessageInbox>().ShowMessage("Not Enough Ingredients");
-                                return;
-                            }
+                    //         if (hasCount < c.amount) {
+                    //             forInventory.GetComponent<GameMessageInbox>().ShowMessage("Not Enough Ingredients");
+                    //             return;
+                    //         }
+                    //     }
+                    // }
+
+                    if (crafter.ItemCompositionAvailableInInventory (recipe.requires, true, actor.GetValueDictionary(), actor.GetValueDictionary())) {
+
+                        if (slot.item.OnConsume(forInventory, 1, input.y)){
+                            updateButtons = true;
                         }
                     }
 
-                    if (slot.item.OnConsume(forInventory, 1, input.y)){
-                        updateButtons = true;
-                    }
+
                 }
 
                 if (updateButtons){

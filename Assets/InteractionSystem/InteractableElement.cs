@@ -5,8 +5,6 @@ using UnityEngine;
 
 namespace InteractionSystem {
 
-
-// [ExecuteInEditMode]
 public class InteractableElement : MonoBehaviour
 {
     // public const string interactableLayerName = "InteractableTrigger";
@@ -42,9 +40,6 @@ public class InteractableElement : MonoBehaviour
         //     }
         
         // }
-
-        
- 
     }
 
     public void SetInteractable (Interactable interactable) {
@@ -52,7 +47,6 @@ public class InteractableElement : MonoBehaviour
     }
     void Awake () {
         if (Application.isPlaying) {
-
             gameObject.layer = LayerMask.NameToLayer(Interactable.interactableLayerName);
             GetComponent<Collider>().isTrigger = true;
 

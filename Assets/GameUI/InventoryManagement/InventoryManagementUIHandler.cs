@@ -169,13 +169,6 @@ namespace GameUI {
             }
         }
 
-
-
-
-
-
-
-
         protected void SetUpButtons (Inventory forInventory, Inventory linkedInventory, int uiIndex, int otherIndex, bool setSelection, UIElementHolder uiObject){
             if (uiObject == null)
                 uiObject = this.uiObject;

@@ -545,6 +545,21 @@ namespace VRPlayer {
 
 
 
+        public static UISubtitles MakeSubtitles ( string goName, UISubtitlesParameters parameters, TransformBehavior equipBehavior ) {
+            // build a seperate worldspace canvas for each ui element
+            RectTransform canvasObject = BuildCanvasObject(goName, true, equipBehavior);
+            UISubtitles returnElement = GameObject.Instantiate( UIManager.instance.subtitlesPrefab );
+            returnElement.parameters = parameters;
+            returnElement.baseObject = canvasObject.gameObject;
+            
+            RectTransform newPageRect = returnElement.GetComponent<RectTransform>();
+            SetAnchor(newPageRect, new Vector2(.5f, .5f));
+            SetParent(newPageRect, canvasObject);
+            return returnElement;
+        }
+
+
+
         public static UIElementHolder MakeButtonsPage (
             string goName, 
             UIRadialParameters radialParameters, UIPageParameters pageParameters, TextPanelParameters textPanelParams, 
@@ -614,8 +629,8 @@ namespace VRPlayer {
             RectTransform canvasObject = BuildCanvasObject(goName, true, equipBehavior);
 
             RectTransform childRect = new GameObject(goName+"_holder").AddComponent<RectTransform>();
-            SetParent(childRect, canvasObject);
             SetAnchor(childRect, new Vector2(.5f, .5f));
+            SetParent(childRect, canvasObject);
                     
             
             ElementHolderCollection collection = childRect.gameObject.AddComponent<ElementHolderCollection>();
@@ -630,6 +645,8 @@ namespace VRPlayer {
             newPage0.isBase = true;
             newPage0.parameters = pageParameters;
 
+                    
+            SetAnchor(newPage0.GetComponent<RectTransform>(), new Vector2(.5f, 1f));
             SetParent(newPage0.GetComponent<RectTransform>(), collectionT, new Vector3(-(pageParameters.width*.5f), 0, 0));
 
             UIPage newPage1 = GameObject.Instantiate( UIManager.instance.pagePrefab );
@@ -637,26 +654,14 @@ namespace VRPlayer {
             newPage1.isBase = true;
             newPage1.parameters = pageParameters;
 
+                    
+            SetAnchor(newPage1.GetComponent<RectTransform>(), new Vector2(.5f, 1f));
             SetParent(newPage1.GetComponent<RectTransform>(), collectionT, new Vector3((pageParameters.width*.5f), 0, 0));
 
             collection.subHolders = new UIElementHolder[] { newPage0 , newPage1 };
 
             UIManager.HideUI(collection);
             return collection;
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
+        }  
     }
 }

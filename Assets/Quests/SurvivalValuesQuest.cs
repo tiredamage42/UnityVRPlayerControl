@@ -13,11 +13,11 @@ namespace Game {
             
             [HideInInspector] public int survivalValueID, questInstanceID;
             [Header("Value Template")] public GameValue valueTemplate;
-            [DisplayedArray] public GameValueModifierArray degredations;
+            [NeatArray] public GameValueModifierArray degredations;
             [Header("Realtime Seconds")] public float degredationTime = 1;
             public string hintMessage = "Drink some Water...";
             
-            [Header("Count = value template max")] [DisplayedArray] public GameValueModifierArray2D thresholdPenalties;
+            [Header("Count = value template max")] [NeatArray] public GameValueModifierArray2D thresholdPenalties;
 
             float timer;
             Actor playerActor;
@@ -49,7 +49,7 @@ namespace Game {
                     playerActor.GetComponent<GameMessageInbox>().ShowMessage (runtimeValue.name + " Level :: " + v + (v == 0 ? "" : hintMessage));
                     
                     playerActor.RemoveBuffs(thresholdPenalties.list[lastThresholdValue], 1, questInstanceID, survivalValueID);
-                    playerActor.AddBuffs(thresholdPenalties.list[v], 1, questInstanceID, survivalValueID, false);
+                    playerActor.AddBuffs(thresholdPenalties.list[v], 1, questInstanceID, survivalValueID, false, playerActor.GetValueDictionary(), playerActor.GetValueDictionary());
                     
                     lastThresholdValue = v;
                 }                
@@ -59,7 +59,7 @@ namespace Game {
 
                 timer += deltaTime;
                 if (timer >= degredationTime) {
-                    playerActor.AddBuffs(degredations, 1, 0, 0, true);
+                    playerActor.AddBuffs(degredations, 1, 0, 0, true, playerActor.GetValueDictionary(), playerActor.GetValueDictionary());
                     timer = 0;
                 }
             }

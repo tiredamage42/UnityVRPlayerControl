@@ -1,20 +1,25 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-
+﻿using UnityEngine;
+using ActorSystem;
+using InventorySystem;
 using InteractionSystem;
 
-namespace InventorySystem{
-    public class InventoryUIContextTrigger : MonoBehaviour, IInteractable
-    {
-        public int useAction = 0;
-        public string contextName;
-        public List<int> categoryFilter = new List<int>();
-        public Inventory linkedInventory;
+namespace DialogueSystem 
+{
+
+    //make interactable to start conversations...
+    public class DialogueTemplateHolder : MonoBehaviour, IInteractable {
+        public DialogueTemplate template;
+        public AudioSource audioSource;
+        public Actor actor;
+        public Inventory inventory;
+
         void Awake () {
-            if (linkedInventory == null) linkedInventory = GetComponent<Inventory>();
+            if (actor == null) actor = GetComponent<Actor>();
+            if (inventory == null) inventory = GetComponent<Inventory>();
         }
 
-
+        public int useAction = 0;
+        
         public void OnInteractableAvailabilityChange(bool available) { }
         public void OnInteractableInspectedStart (InteractionPoint interactor) { }
         public void OnInteractableInspectedEnd (InteractionPoint interactor) { }
@@ -22,14 +27,14 @@ namespace InventorySystem{
 
         public void OnInteractableUsedStart (InteractionPoint interactor, int useAction) {
             if ( useAction != this.useAction ) return;
-            Inventory interactorInventory = interactor.GetComponentInParent<Inventory>();
-            if (interactorInventory != null) {
-                interactorInventory.InitiateInventoryManagement(contextName, interactor.interactorID, linkedInventory, categoryFilter);
-            }
+            DialoguePlayer dialoguePlayer = interactor.GetComponentInParent<DialoguePlayer>();
+            if (dialoguePlayer != null) dialoguePlayer.StartDialogueWith(this);
         }
 
         public void OnInteractableUsedEnd (InteractionPoint interactor, int useAction) { }
         public void OnInteractableUsedUpdate (InteractionPoint interactor, int useAction) { }
-
     }
 }
+
+
+

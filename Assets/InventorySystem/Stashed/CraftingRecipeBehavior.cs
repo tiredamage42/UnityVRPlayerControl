@@ -5,10 +5,10 @@ namespace InventorySystem {
     [CreateAssetMenu(menuName="Stashed Item Behaviors/Crafting Recipe Behavior")]
     public class CraftingRecipeBehavior : StashedItemBehavior
     {   
-        [DisplayedArray] public ItemCompositionArray requires;
+        [NeatArray] public ItemCompositionArray requires;
 
         [Space][Space]
-        [DisplayedArray] public ItemCompositionArray yields;
+        [NeatArray] public ItemCompositionArray yields;
 
         public override void OnItemStashed (Inventory inventory, ItemBehavior item, int count, int equipSlot, bool manual) {
             
@@ -18,9 +18,9 @@ namespace InventorySystem {
         }
         public override void OnItemConsumed (Inventory inventory, ItemBehavior item, int count, int equipSlot) {
             InventoryCrafter crafter = inventory.GetComponent<InventoryCrafter>();
-
-            crafter.RemoveItemComposition(requires);
-            crafter.AddItemComposition (yields);               
+            ActorSystem.Actor actor = inventory.GetComponent<ActorSystem.Actor>();
+            crafter.RemoveItemComposition(requires, true, actor.GetValueDictionary(), actor.GetValueDictionary());
+            crafter.AddItemComposition (yields, true, actor.GetValueDictionary(), actor.GetValueDictionary());               
         }
     }
 }

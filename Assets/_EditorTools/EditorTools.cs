@@ -111,15 +111,14 @@ public class AssetSelector<T> where T : UnityEngine.Object{
 }
 
 public static class EditorTools {
-    const int buttonWidth = 16;
+    const int buttonWidth = 20;
     public static float DrawIndent (int level, float startX) {
         return startX + buttonWidth * level;
     }           
 }
 
 // This is not an editor script. The property attribute class should be placed in a regular script file.
-public class DisplayedArrayAttribute : PropertyAttribute { }
-[CustomPropertyDrawer(typeof(DisplayedArrayAttribute))] public class DisplayedArrayAttributeDrawer : PropertyDrawer
+[CustomPropertyDrawer(typeof(NeatArrayAttribute))] public class NeatArrayAttributeDrawer : PropertyDrawer
 {
     static readonly Color32 deleteColor = new Color32(200,75,75,255);
     static readonly Color32 addColor = new Color32(75,200,75,255);
@@ -134,15 +133,16 @@ public class DisplayedArrayAttribute : PropertyAttribute { }
         float _x = EditorTools.DrawIndent(EditorGUI.indentLevel, position.x);
         float y = position.y;
 
-        float labelWidth = EditorStyles.label.CalcSize(label).x;
-        GUI.Label(new Rect(_x, y, labelWidth, singleLine), label);
-        
         float buttonWidth = 12;
         GUI.backgroundColor = addColor;
-        if (GUI.Button(new Rect(_x + labelWidth, y, buttonWidth, buttonWidth), "", EditorStyles.miniButton)) {
+        if (GUI.Button(new Rect(_x, y, buttonWidth, buttonWidth), "", EditorStyles.miniButton)) {
             property.InsertArrayElementAtIndex(property.arraySize);
         }
         GUI.backgroundColor = Color.white;
+        
+        float labelWidth = EditorStyles.label.CalcSize(label).x;
+        GUI.Label(new Rect(_x + buttonWidth, y, labelWidth, singleLine), label);
+        
 
         
         int arraySize = property.arraySize;
@@ -186,8 +186,13 @@ public class DisplayedArrayAttribute : PropertyAttribute { }
         return h;
     }
 }
+
+
 #endif
 
+
+    public class NeatArrayAttribute : PropertyAttribute { }
+    [System.Serializable] public class NeatIntList : NeatListWrapper<int> {}
     public class NeatArrayWrapper<T> {
         public T[] list;
         public static implicit operator T[](NeatArrayWrapper<T> c) { return c.list; }
