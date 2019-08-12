@@ -29,61 +29,38 @@ using UnityEngine;
     to add perk:
 
         add item with give buff on stash that adds 1 to the perk name
-
-    
-
 */
+
+using InventorySystem;
+
 
 namespace ActorSystem {
     public class Actor : MonoBehaviour {
+
+        public Inventory inventory;
+        void InitializeComponents () {
+            inventory = GetComponent<Inventory>();
+        }
+
 
         public string actorName;
         public static Actor playerActor;
         public bool isPlayer;
         public GameValueTemplate template;
-        public List<GameValue> actorValues;
-        Dictionary<string, GameValue> actorValues_Dict = new Dictionary<string, GameValue>();
+        public List<GameValue> savedActorValues;
+        public Dictionary<string, GameValue> actorValues = new Dictionary<string, GameValue>();
 
         void Awake () {
-            if (isPlayer) {
-                playerActor = this;
-            }
+            InitializeComponents();
+            if (isPlayer) playerActor = this;
             CheckForTemplate();
-
-            // gameValuesDictionary = GetValueDictionary();
         }
 
-
-        public Dictionary<string, GameValue> GetValueDictionary() {
-            return actorValues_Dict;
-            // Dictionary<string, GameValue> toReturn = new Dictionary<string, GameValue>();
-            // for (int i = 0; i < gameValues.Length; i++) {
-            //     // Debug.LogError("adding " + gameValues[i].name);
-            //     toReturn.Add(gameValues[i].name, gameValues[i]);
-            // }
-            // return toReturn;
-        }
-
-        // public void ResetActor () {
-        //     gameValues = null;
-        // }
-        
         void CheckForTemplate () {
-
-            
-            // if (gameValues == null || gameValues.Length == 0) {
-                if (template != null) {
-
-                    AddGameValues(template.gameValueTemplates);
-                    // gameValues = template.GetTemplateInstance();
-                }
-            // }
+            if (template != null) {
+                AddGameValues(template.gameValueTemplates);
+            }
         }
-
-        // void Update () {
-        //     CheckForTemplate();
-        // }
-
 
         public void AddGameValues(GameValue[] template) {
             for (int i = 0; i < template.Length; i++ ){
@@ -93,73 +70,46 @@ namespace ActorSystem {
 
         public GameValue AddGameValue (GameValue template)
         {
-            if (actorValues_Dict.ContainsKey(template.name)) {
+            if (actorValues.ContainsKey(template.name)) {
                 Debug.LogError("Already added " + template.name + " game value to actor " + this.name + "!");
-                
+    
                 //maybe return null to avoid confusion on additive "mod" quests...
-                return actorValues_Dict[template.name]; 
+                return actorValues[template.name]; 
             }
             GameValue value = new GameValue (template.name, Random.Range( template.initializationRange.x, template.initializationRange.y ), template.baseMinMax);
-            actorValues_Dict[template.name] = value;
-            actorValues.Add(value);
+            actorValues[template.name] = value;
+            savedActorValues.Add(value);
             return value;
         }
 
         public GameValue GetGameValue (string name) {
-            if (actorValues_Dict.ContainsKey(name)) {
-                return actorValues_Dict[name];
-            }
-            // for (int i = 0; i< gameValues.Length; i++) {
-            //     if (gameValues[i].name == name) {
-            //         return gameValues[i];
-            //     }
-            // }
+            if (actorValues.ContainsKey(name)) return actorValues[name];
             Debug.LogWarning("Couldnt find game value: " + name + " on actor " + this.name);
             return null;
         }
 
-        public void AddBuffs (GameValueModifier[] buffs, int count, int senderKey, int buffKey, bool assertPermanent,
-            Dictionary<string, GameValue> selfValues, Dictionary<string, GameValue> suppliedValues
-        ) {
+        public void AddBuffs (GameValueModifier[] buffs, int count, int senderKey, int buffKey, bool assertPermanent, Dictionary<string, GameValue> selfValues, Dictionary<string, GameValue> suppliedValues) {
         
-        // public void AddBuffs (ActorBuff buff, int count, int senderKey, int buffKey, bool assertPermanent) {
-            //check Conditional 
-            // if (GameValueCondition.ConditionsMet (buff.conditions, gameValuesDictionary)) 
-            {
-                // GameValueModifier[] buffs = buff.buffs;
-                for (int i =0 ; i < buffs.Length; i++) {
+            for (int i =0 ; i < buffs.Length; i++) {
+                GameValueModifier mod = buffs[i];
 
+                if (assertPermanent && (
+                    mod.modifyValueComponent == GameValue.GameValueComponent.Value ||
+                    mod.modifyValueComponent == GameValue.GameValueComponent.MinValue ||
+                    mod.modifyValueComponent == GameValue.GameValueComponent.MaxValue
+                )) {                    
+                    continue;
+                }
 
-
-                    GameValueModifier mod = buffs[i];
-
-                    if (assertPermanent && (
-                        mod.modifyValueComponent == GameValue.GameValueComponent.Value ||
-                        mod.modifyValueComponent == GameValue.GameValueComponent.MinValue ||
-                        mod.modifyValueComponent == GameValue.GameValueComponent.MaxValue
-                    )) {
-                        // Debug.LogError("non permanent stacked buff found. Consume Buff Index: " + i.ToString() + " on " + name);
-                        // Debug.LogError("non permanent stacked buff found in OnItemConsumed. Consume Buff Index: " + consumeBuffs[i].name + " on " + name);
-                        
-                        continue;
-                    }
-
-                    if (GameValueCondition.ConditionsMet (mod.conditions, selfValues, suppliedValues)) {
-
-
-                        GameValue gameValue = GetGameValue(mod.gameValueName);
-                        if (gameValue != null) {
-                            gameValue.AddModifier(mod, count, new Vector3Int(senderKey, buffKey, i));
-                        }
+                if (GameValueCondition.ConditionsMet (mod.conditions, selfValues, suppliedValues)) {
+                    GameValue gameValue = GetGameValue(mod.gameValueName);
+                    if (gameValue != null) {
+                        gameValue.AddModifier(mod, count, new Vector3Int(senderKey, buffKey, i));
                     }
                 }
             }
         }
-        // public void RemoveBuffs (ActorBuff buff, int count, int senderKey, int buffKey) {
         public void RemoveBuffs (GameValueModifier[] buffs, int count, int senderKey, int buffKey) {
-        
-            // GameValueModifier[] buffs = buff.buffs;
-                
             for (int i =0 ; i < buffs.Length; i++) {
                 GameValue gameValue = GetGameValue(buffs[i].gameValueName);
                 if (gameValue != null) {

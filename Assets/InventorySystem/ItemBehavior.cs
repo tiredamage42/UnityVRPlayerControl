@@ -7,23 +7,6 @@ using UnityEditor;
 #endif
 
 /*
-    recipe:
-
-
-        Composition[] requires
-
-        [SHOULD BE PERMANENT]
-        actorbuffs[] // to give xp for instance
-
-        Composition[] yields
-
-        
- */
-
-
-/*
-
-
 
 SEPERATE STASHED ITEM TO HAVE 
     ON STASH 
@@ -34,11 +17,9 @@ CALLBACKS
 
 CAN SEPERATE BUFFS INTO OTHER COMPONENTS
 
-
 CONSUME ON STASH OPTION FOR ITEM MAYBE
 
-
- */
+*/
 
 
 namespace InventorySystem {
@@ -53,9 +34,6 @@ namespace InventorySystem {
         [Header("Set to false for utility items")]
         public bool keepOnStash = true;
         
-        // -1 if set by where equipped from
-                // else equip point index (overwritten if quick equipped)
-                
         public bool allowMultipleStashed = true;
 
 
@@ -79,6 +57,9 @@ namespace InventorySystem {
         public bool canQuickEquip = true;
         public Item[] scenePrefabVariations;
 
+
+        // -1 if set by where equipped from
+        // else equip point index (overwritten if quick equipped)
         [Header("'Armor Slot', -1 for anything that isnt wearable")]
         public int equipSlot = -1;
 
@@ -153,50 +134,7 @@ namespace InventorySystem {
         {
             return EditorGUIUtility.singleLineHeight + (EditorGUI.GetPropertyHeight(property.FindPropertyRelative("conditions"), true));
         }
-
-        // public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        // {
-        //     return EditorGUIUtility.singleLineHeight;
-        // }
     }
 #endif
 
-
-/*
-
-
-
-items have modifiers that modify owner values
-
-
-Set | Add | Multiply
-
-Base | Max     
-
-Variable Name
-
-Value
-
-isOneOff  
-    (modifier cant be removed, and is permanent 
-        i.e level up adds 100 to max health, 
-        or health pack adds health but then is let go (so cant remove modifier)
-    )
-
-gameMessage 
-
- */
-
-//  [System.Serializable] public class ActorValue {
-
-//  }
-
-//  [System.Serializable] public class Buff {
-
-//  }
-
-
-//     public class Buffs : ScriptableObject {
-
-//     }
 }

@@ -22,7 +22,7 @@ namespace Valve.VR.InteractionSystem.Sample
         
         private void FixedUpdate()
         {
-            bool used = GetComponent<Item>().linkedInventory != null;
+            bool used = GetComponent<Item>().parentInventory != null;
             // bool used = false;
             // if (interactable != null)
             //     used = interactable.attachedToHand;

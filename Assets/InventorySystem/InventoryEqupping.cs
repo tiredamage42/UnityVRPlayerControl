@@ -260,8 +260,8 @@ public bool ItemIsEquipped(int slotIndex, ItemBehavior item) {
                 
             // quick equipping
             if (sceneItem != null) {                
-                if (sceneItem.linkedInventory != null && sceneItem.linkedInventory != this) {
-                    Debug.LogError("Scene item :: " + sceneItem.name + " is already quick equipped to " + sceneItem.linkedInventory.name + " cant quick equip to "+ name);
+                if (sceneItem.parentInventory != null && sceneItem.parentInventory != this) {
+                    Debug.LogError("Scene item :: " + sceneItem.name + " is already quick equipped to " + sceneItem.parentInventory.name + " cant quick equip to "+ name);
                     return;
                 }
 
@@ -326,7 +326,7 @@ public bool ItemIsEquipped(int slotIndex, ItemBehavior item) {
             }
             
             equippedSlots[equipSlot] = equippedInventorySlot;
-            equippedSlots[equipSlot].sceneItem.linkedInventory = attachedInventory;
+            equippedSlots[equipSlot].sceneItem.parentInventory = attachedInventory;
             equippedSlots[equipSlot].sceneItem.myEquipPoint = equipPoints[equipSlot];
             
             if (equippedSlots[equipSlot].sceneItem.itemBehavior.equipType != EquipType.Static) 
@@ -390,7 +390,7 @@ public bool ItemIsEquipped(int slotIndex, ItemBehavior item) {
             equippedSlots[slotIndex] = null;
             equipPoints[slotIndex].GetComponent<InteractionPoint>().HoverUnlock(null);
 
-            slot.sceneItem.linkedInventory = null;
+            slot.sceneItem.parentInventory = null;
             slot.sceneItem.myEquipPoint = null;
             
             slot.sceneItem.OnUnequipped (attachedInventory);

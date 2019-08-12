@@ -11,6 +11,14 @@ namespace ActorSystem {
     [System.Serializable] public class GameValueModifierArray2D { [NeatArray] public GameValueModifierArray[] list; }
 
     [System.Serializable] public class GameValueModifier {
+
+        public bool isPermanent {
+            get {
+                return modifyValueComponent == GameValue.GameValueComponent.BaseValue
+                    || modifyValueComponent == GameValue.GameValueComponent.BaseMinValue
+                    || modifyValueComponent == GameValue.GameValueComponent.BaseMaxValue;
+            }
+        }
         [NeatArray] public GameValueConditionArray conditions;
         
         public GameValueModifier () {
@@ -26,15 +34,11 @@ namespace ActorSystem {
             modifyValue = template.modifyValue;
         }
             
-        [HideInInspector] public Vector3Int key; //sender, buff, modifier
+        [HideInInspector] public Vector3Int key;
         [HideInInspector] public int count = 1;
         int getCount { get { return isStackable ? count : 1; } }
-
-
         public bool isStackable;
         public string gameValueName = "Game Value Name";
-
-        // [Header("Base Value modifiers are permanent")]
         public GameValue.GameValueComponent modifyValueComponent;
         
         public enum ModifyBehavior { Set, Add, Multiply };

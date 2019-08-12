@@ -49,7 +49,7 @@ namespace Game {
                     playerActor.GetComponent<GameMessageInbox>().ShowMessage (runtimeValue.name + " Level :: " + v + (v == 0 ? "" : hintMessage));
                     
                     playerActor.RemoveBuffs(thresholdPenalties.list[lastThresholdValue], 1, questInstanceID, survivalValueID);
-                    playerActor.AddBuffs(thresholdPenalties.list[v], 1, questInstanceID, survivalValueID, false, playerActor.GetValueDictionary(), playerActor.GetValueDictionary());
+                    playerActor.AddBuffs(thresholdPenalties.list[v], 1, questInstanceID, survivalValueID, false, playerActor.actorValues, playerActor.actorValues);
                     
                     lastThresholdValue = v;
                 }                
@@ -59,7 +59,7 @@ namespace Game {
 
                 timer += deltaTime;
                 if (timer >= degredationTime) {
-                    playerActor.AddBuffs(degredations, 1, 0, 0, true, playerActor.GetValueDictionary(), playerActor.GetValueDictionary());
+                    playerActor.AddBuffs(degredations, 1, 0, 0, true, playerActor.actorValues, playerActor.actorValues);
                     timer = 0;
                 }
             }

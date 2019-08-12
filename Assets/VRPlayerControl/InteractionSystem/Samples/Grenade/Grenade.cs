@@ -24,7 +24,7 @@ namespace Valve.VR.InteractionSystem.Sample
             
             //don't explode in hand
             // if (interactable != null && interactable.attachedToHand != null) 
-            if (GetComponent<Item>().linkedInventory != null)
+            if (GetComponent<Item>().parentInventory != null)
                 return;
 
             if (collision.impulse.magnitude > minMagnitudeToExplode)

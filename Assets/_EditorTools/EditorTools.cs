@@ -1,24 +1,20 @@
-﻿
-#if UNITY_EDITOR
-
-using System.Collections;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
 
+#if UNITY_EDITOR
+using UnityEditor;
 using UnityEditorInternal;
-using UnityEditor.AnimatedValues;
 using System;
 using System.Linq;
 
 public class AssetSelector<T> where T : UnityEngine.Object{
-    T[] allAssets;
-    string[] allAssetNames;
-    System.Func<T, string> predicate;
+    T[] assets;
+    string[] allNames;
+    Func<T, string> namePredicate;
     Func<T,int> orderPredicate;
 
-    public AssetSelector (System.Func<T, string> predicate, System.Func<T, int> orderPredicate) {
-        this.predicate = predicate;
+    public AssetSelector (Func<T, string> namePredicate, Func<T, int> orderPredicate) {
+        this.namePredicate = namePredicate;
         this.orderPredicate = orderPredicate;
         UpdateAssetReferences();
     }
@@ -27,20 +23,10 @@ public class AssetSelector<T> where T : UnityEngine.Object{
         FindAllAssets();
     }
 
-
     void FindAllAssets () {
-        allAssets = FindAssetsByType(orderPredicate).ToArray();
-        allAssetNames = new string[allAssets.Length];
-        for (int i = 0; i < allAssets.Length; i++) {
-
-            if (predicate != null) {
-                allAssetNames[i] = predicate(allAssets[i]);
-
-            }
-            else {
-                allAssetNames[i] = allAssets[i].name;
-            }
-        }
+        assets = FindAssetsByType(orderPredicate).ToArray();
+        allNames = new string[assets.Length];
+        for (int i = 0; i < assets.Length; i++) allNames[i] = namePredicate != null ? namePredicate(assets[i]) : assets[i].name;
     }
 
     public static IEnumerable<T> FindAssetsByType(System.Func<T, int> orderPredicate) //where T : UnityEngine.Object
@@ -49,16 +35,10 @@ public class AssetSelector<T> where T : UnityEngine.Object{
         string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(T)));
         for( int i = 0; i < guids.Length; i++ )
         {
-            string assetPath = AssetDatabase.GUIDToAssetPath( guids[i] );
-            T asset = AssetDatabase.LoadAssetAtPath<T>( assetPath );
-            if( asset != null )
-            {
-                assets.Add(asset);
-            }
+            T asset = AssetDatabase.LoadAssetAtPath<T>( AssetDatabase.GUIDToAssetPath( guids[i] ) );
+            if ( asset != null ) assets.Add(asset);
         }
-        if (orderPredicate != null) {
-            return assets.OrderBy(orderPredicate);
-        }
+        if (orderPredicate != null) return assets.OrderBy(orderPredicate);
         return assets;
     }
 
@@ -69,44 +49,21 @@ public class AssetSelector<T> where T : UnityEngine.Object{
     public void Draw (Rect position, SerializedProperty property, GUIContent gui) {
         property.objectReferenceValue = Draw(position, (T) property.objectReferenceValue, gui);
     }
-
-    // EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("item"), GUIContent.none);
-    public T Draw (Rect position, T current, GUIContent gui) {
-
-        int activeIndex = -1;
-
-        for (int i =0 ; i < allAssets.Length; i++) {
-            if (allAssets[i] == current) {
-                activeIndex = i;
-                break;
-            }
+    
+    int GetActiveIndex (T current) {
+        for (int i =0 ; i < assets.Length; i++) {
+            if (assets[i] == current) return i;
         }
-        
-        int selected = EditorGUI.Popup (position, gui.text, activeIndex, allAssetNames);
-        
-        if (selected < 0)
-            return null;
-            
-        return allAssets[selected];
+        return -1;
     }
 
-
+    public T Draw (Rect position, T current, GUIContent gui) {
+        int selected = EditorGUI.Popup (position, gui.text, GetActiveIndex(current), allNames);
+        return selected < 0 ? null : assets[selected];
+    }
     public T Draw (T current, GUIContent gui) {
-
-        int activeIndex = -1;
-
-        for (int i =0 ; i < allAssets.Length; i++) {
-            if (allAssets[i] == current) {
-                activeIndex = i;
-                break;
-            }
-        }
-
-        int selected = EditorGUILayout.Popup (gui, activeIndex, allAssetNames);
-        
-        if (selected < 0) return null;
-            
-        return allAssets[selected];
+        int selected = EditorGUILayout.Popup (gui, GetActiveIndex(current), allNames);
+        return selected < 0 ? null : assets[selected];
     }
 }
 
@@ -117,7 +74,6 @@ public static class EditorTools {
     }           
 }
 
-// This is not an editor script. The property attribute class should be placed in a regular script file.
 [CustomPropertyDrawer(typeof(NeatArrayAttribute))] public class NeatArrayAttributeDrawer : PropertyDrawer
 {
     static readonly Color32 deleteColor = new Color32(200,75,75,255);
@@ -142,8 +98,6 @@ public static class EditorTools {
         
         float labelWidth = EditorStyles.label.CalcSize(label).x;
         GUI.Label(new Rect(_x + buttonWidth, y, labelWidth, singleLine), label);
-        
-
         
         int arraySize = property.arraySize;
         float h = EditorGUIUtility.singleLineHeight * (arraySize == 0 ? 1 : 1.25f);
@@ -181,15 +135,11 @@ public static class EditorTools {
         prop = prop.FindPropertyRelative("list");
         int arraySize = prop.arraySize;
         float h = EditorGUIUtility.singleLineHeight * (arraySize == 0 ? 1 : 1.5f);
-        for (int i = 0; i < arraySize; i++) 
-            h += EditorGUI.GetPropertyHeight(prop.GetArrayElementAtIndex(i), true);
+        for (int i = 0; i < arraySize; i++) h += EditorGUI.GetPropertyHeight(prop.GetArrayElementAtIndex(i), true);
         return h;
     }
 }
-
-
 #endif
-
 
     public class NeatArrayAttribute : PropertyAttribute { }
     [System.Serializable] public class NeatIntList : NeatListWrapper<int> {}

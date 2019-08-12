@@ -5,29 +5,29 @@ using UnityEngine;
 namespace InventorySystem {
     
     public class EquipPoint : MonoBehaviour {
-        public InventoryEqupping baseInventory;
+        public InventoryEqupping equipper;
         public int equipID;
 
 
         void Start () {
-            baseInventory.SetEquipPoint(equipID, this);
+            equipper.SetEquipPoint(equipID, this);
         }
 
 
 
-        protected const float MaxVelocityChange = 10f;
-        protected const float VelocityMagic = 6000f;
-        protected const float AngularVelocityMagic = 50f;
-        protected const float MaxAngularVelocityChange = 20f;
+        const float MaxVelocityChange = 10f;
+        const float VelocityMagic = 6000f;
+        const float AngularVelocityMagic = 50f;
+        const float MaxAngularVelocityChange = 20f;
 
         void FixedUpdate()
         {
-            if (equipID < 0 || equipID >= baseInventory.equippedSlots.Length) {
-                Debug.LogError("Equip slot " + equipID + " is out of range on inventory " + baseInventory);
+            if (equipID < 0 || equipID >= equipper.equippedSlots.Length) {
+                Debug.LogError("Equip slot " + equipID + " is out of range on equipper " + equipper);
                 return;
             }
 
-            InventoryEqupping.EquipSlot slot = baseInventory.equippedSlots[equipID]; 
+            InventoryEqupping.EquipSlot slot = equipper.equippedSlots[equipID]; 
             if (slot != null) {
                 ItemBehavior item = slot.sceneItem.itemBehavior;
 

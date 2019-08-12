@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using ActorSystem;
 
 #if UNITY_EDITOR
@@ -54,7 +53,6 @@ namespace InventorySystem {
             int oldIndent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
             float x = EditorTools.DrawIndent (oldIndent, position.x);
-
 
             InventorySystemEditorUtils.itemSelector.Draw(new Rect(x, position.y, 175, singleLineHeight), property.FindPropertyRelative("item"), GUIContent.none);
             x += 175;

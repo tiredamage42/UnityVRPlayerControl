@@ -6,6 +6,7 @@ using InteractionSystem;
 namespace InventorySystem{
     public class InventoryUIContextTrigger : MonoBehaviour, IInteractable
     {
+        
         public int useAction = 0;
         public string contextName;
         public List<int> categoryFilter = new List<int>();

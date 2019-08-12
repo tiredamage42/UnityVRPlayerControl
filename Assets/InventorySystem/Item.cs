@@ -38,46 +38,17 @@ weapons:
 aid items:
 //if destroy on use stash destroy from inventory
 
-
-buffs can be applied on stash (when ever player stashes item)
-on equip (guns add stats, or armor)
-on stash use
-
-
-items have modifiers that modify owner values
-
-
-Set | Add | Multiply
-
-Base | Max     
-
-Variable Name
-
-Value
-
-isOneOff  
-    (modifier cant be removed, and is permanent 
-        i.e level up adds 100 to max health, 
-        or health pack adds health but then is let go (so cant remove modifier)
-    )
-
-gameMessage 
-
-
-
-
  */
 
-/*
-    scene representation of the item
-*/
-
+    /*
+        scene representation of the item
+    */
     public class Item : MonoBehaviour, IInteractable
     {
 
         static Dictionary<int, HashSet<Item>> itemPoolsPerPrefab = new Dictionary<int, HashSet<Item>>();
         
-        public static Item GetSceneItem (ItemBehavior itemBehavior){// prefab) {// Inventory quickEquipInventory){// bool dropOnUseEnd) {
+        public static Item GetSceneItem (ItemBehavior itemBehavior) {
             Item prefab = itemBehavior.scenePrefabVariations[Random.Range(0, itemBehavior.scenePrefabVariations.Length)];
             
             int instanceID = prefab.GetInstanceID();
@@ -135,47 +106,25 @@ gameMessage
         public void OnInteractableInspectedEnd(InteractionPoint interactor) {}
         public void OnInteractableInspectedUpdate(InteractionPoint interactor) {}
         public void OnInteractableUsedStart(InteractionPoint interactor, int useIndex) {
-            // bool wasStashed = false;
-            Inventory inventory = interactor.GetComponentInParent<Inventory>();
 
-            
-            if (useIndex == Inventory.STASH_ACTION || (useIndex == Inventory.GRAB_ACTION && !this.itemBehavior.canQuickEquip)) {
-            // if (itemBehavior.stashActions.Contains(useIndex)) {
-                if (inventory.CanStashItem(this.itemBehavior)) {
+            Inventory inventory = interactor.inventory;
+
+            if (inventory == null)
+                return;
+
+            // if we cant quick equip this item, either action stashes it...
+            if (useIndex == Inventory.STASH_ACTION || (useIndex == Inventory.GRAB_ACTION && !itemBehavior.canQuickEquip)) {
+                if (inventory.CanStashItem(itemBehavior)) {
                     inventory.StashItem(this, interactor.interactorID);
-                    // wasStashed = true;
                 }
             }
-
-            else if (useIndex == Inventory.GRAB_ACTION && itemBehavior.canQuickEquip) {
-                
-                InventoryEqupping ie = inventory.GetComponent<InventoryEqupping>();
-                if (ie != null)
-                    ie.EquipItem(itemBehavior, interactor.interactorID, this );
-
-                
+            else if (useIndex == Inventory.GRAB_ACTION && itemBehavior.canQuickEquip) {   
+                InventoryEqupping ie = inventory.equipping;
+                if (ie != null) ie.EquipItem(itemBehavior, interactor.interactorID, this );
             }
-                    
-
-            // if (itemBehavior.equipActions.Contains(useIndex)) {
-                
-            //     // if we stashed it, equip normally, else just quick equip this one
-            //     // equip slot negative one because slot is driven by inventory's
-            //     // last set equip index
-
-                
-            //     // -1 if set by where equipped from
-            //     // else equip point index (overwritten if quick equipped)
-            //     int equipSlot = itemBehavior.equipSlot;
-                
-            //     //quick equipped in manually set slot
-            //     if (!wasStashed) {
-            //         equipSlot = -1;
-            //     }
-            //     inventory.EquipItem(itemBehavior, equipSlot, wasStashed ? null : this );
-            // }
-
         }
+
+
         public void OnInteractableUsedEnd(InteractionPoint interactor, int useIndex) {
 
         }
@@ -183,7 +132,7 @@ gameMessage
 
         }
 
-        [HideInInspector] public Inventory linkedInventory;
+        [HideInInspector] public Inventory parentInventory;
         [HideInInspector] public EquipPoint myEquipPoint;
 
 
@@ -219,15 +168,11 @@ gameMessage
         }
         
         public void OnEquipped (Inventory inventory) {
-            // this.parentInventory = inventory;
-            // interactable.isAvailable = false;
-
+            
             interactable.SetAvailable(false);
-
 
             SetItemColliderLayers();
             
-
             // if (itemBehavior.hoverLockOnEquip)
             //             interactor.HoverLock( interactable );
             
@@ -236,9 +181,6 @@ gameMessage
             }
         }
         public void OnUnequipped (Inventory inventory) {
-            // this.parentInventory = null;
-            // interactable.isAvailable = true;
-
             interactable.SetAvailable(true);
 
             ResetItemColliderLayers();
@@ -246,8 +188,6 @@ gameMessage
             // if (hoverLockOnEquip)
             //     interactor.HoverUnlock( interactable );
 
-                        
-            
             for (int i = 0; i < listeners.Count; i++) {
                 listeners[i].OnUnequipped(inventory);
             }
@@ -268,18 +208,6 @@ gameMessage
             // }
         }
         public void OnEquippedUseEnd (Inventory inventory, int useIndex) {
-
-
-
-
-
-
-
-
-
-
-
-
 
             for (int i = 0; i < listeners.Count; i++) {
                 listeners[i].OnEquippedUseEnd(inventory, useIndex);

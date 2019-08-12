@@ -8,13 +8,10 @@ using ActorSystem;
 namespace GameUI {
     public class CraftingUIHandler : InventoryManagementUIHandler
     {
-        public string context;
-        // public List<int> itemCategories = new List<int>();
-
         public override string[] GetInputNames () { return new string[] { "Craft" }; }
         public override bool EquipIDSpecific() { return false; }
         protected override bool UsesRadial() { return false; }
-        public override string ContextKey() { return context; }
+        public override string ContextKey() { return "Crafting"; }
 
         protected override void OnUISelect (GameObject[] data, object[] customData) {
             
@@ -44,15 +41,13 @@ namespace GameUI {
 
             Item_Composition[] requires = recipe.requires;
 
-            InventoryCrafter crafter = inventory.GetComponent<InventoryCrafter>();
-            ActorSystem.Actor actor = inventory.GetComponent<ActorSystem.Actor>();
             
 
             for (int i = 0; i < requires.Length; i++) {
 
                 Item_Composition c = requires[i];
-                if (GameValueCondition.ConditionsMet(c.conditions, actor.GetValueDictionary(), actor.GetValueDictionary())) {
-                    int hasCount = crafter.GetItemCount(c.item, true, actor.GetValueDictionary(), actor.GetValueDictionary());
+                if (GameValueCondition.ConditionsMet(c.conditions, inventory.actor.actorValues, inventory.actor.actorValues)) {
+                    int hasCount = inventory.crafter.GetItemCount(c.item, true, inventory.actor.actorValues, inventory.actor.actorValues);
                     text += c.item.itemName + "\t" + hasCount + " / " + c.amount + "\n";
                 }
             }
@@ -65,12 +60,7 @@ namespace GameUI {
         }
 
         protected override void OnInventoryManagementInitiate(Inventory inventory, int usingEquipPoint, Inventory otherInventory) {
-            // CloseAllUIs();
-
             SetUpButtons ( inventory, null, 0, 0, true, null);
-            
-            // SetUpButtons (0, true, null);
-            // UpdateUIButtons(inventory, null, 0, 0);
         }
         
         public const int craftAction = 0;
@@ -78,58 +68,35 @@ namespace GameUI {
         
     		if (customData != null) {
 
-
                 Inventory.InventorySlot slot;
                 Inventory forInventory, linkedInventory;
                 int uiIndex, otherUIIndex;
                 UnpackButtonData (customData, out slot, out forInventory, out linkedInventory, out uiIndex, out otherUIIndex);
 
-
-
                 bool updateButtons = false;
                 if (input.x == craftAction) {
 
-                    CraftingRecipeBehavior recipe = null;
+                    if (inventory.crafter != null && inventory.actor != null) {
 
-                    for (int i = 0; i < slot.item.stashedItemBehaviors.Length; i++) {
-                        recipe = (CraftingRecipeBehavior)slot.item.stashedItemBehaviors[i];
-                        if (recipe != null)
-                            break;
-                    }
+                        CraftingRecipeBehavior recipe = null;
+                        for (int i = 0; i < slot.item.stashedItemBehaviors.Length; i++) {
+                            recipe = (CraftingRecipeBehavior)slot.item.stashedItemBehaviors[i];
+                            if (recipe != null)
+                                break;
+                        }
 
-                    if (recipe == null) {
-                        return;
-                    }
+                        if (recipe == null) {
+                            return;
+                        }
+                        
+                        
+                        if (inventory.crafter.ItemCompositionAvailableInInventory (recipe.requires, true, inventory.actor.actorValues, inventory.actor.actorValues)) {
 
-                    // Item_Composition[] requires = recipe.requires;
-
-                    InventoryCrafter crafter = inventory.GetComponent<InventoryCrafter>();
-                    ActorSystem.Actor actor = inventory.GetComponent<ActorSystem.Actor>();
-            
-
-                    // for (int i = 0; i < requires.Length; i++) {
-
-                    //     Item_Composition c = requires[i];
-
-                    //     if (GameValueCondition.ConditionsMet(c.conditions, crafter.gameValues, crafter.gameValues)) {
-                
-                    //         int hasCount = crafter.GetItemCount(c.item, true);
-
-                    //         if (hasCount < c.amount) {
-                    //             forInventory.GetComponent<GameMessageInbox>().ShowMessage("Not Enough Ingredients");
-                    //             return;
-                    //         }
-                    //     }
-                    // }
-
-                    if (crafter.ItemCompositionAvailableInInventory (recipe.requires, true, actor.GetValueDictionary(), actor.GetValueDictionary())) {
-
-                        if (slot.item.OnConsume(forInventory, 1, input.y)){
-                            updateButtons = true;
+                            if (slot.item.OnConsume(forInventory, 1, input.y)){
+                                updateButtons = true;
+                            }
                         }
                     }
-
-
                 }
 
                 if (updateButtons){

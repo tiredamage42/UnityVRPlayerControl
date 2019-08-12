@@ -246,7 +246,11 @@ public class InteractionPoint : MonoBehaviour
         }
         public void SetBaseInteractor (Interactor baseInteractor) {
             this.baseInteractor = baseInteractor;
+            inventory = baseInteractor.GetComponent<InventorySystem.Inventory>();
+
         }
+        public InventorySystem.Inventory inventory;
+
 
         public void RemoveInteractionTags (List<string> tags) {
             baseInteractor.RemoveInteractionTags(BuildSuffixedTags(tags));   

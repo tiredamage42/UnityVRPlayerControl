@@ -418,7 +418,7 @@ namespace Valve.VR.InteractionSystem
 		// private Hand hand;
 		Inventory parentInventory {
 			get {
-				return GetComponent<Item>().linkedInventory;
+				return GetComponent<Item>().parentInventory;
 			}
 		}
 		// Interactor parentInventoryInteractor {

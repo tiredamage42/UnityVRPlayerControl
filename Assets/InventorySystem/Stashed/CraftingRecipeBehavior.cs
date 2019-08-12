@@ -1,14 +1,13 @@
 ﻿using UnityEngine;
-
+using System.Collections.Generic;
+using ActorSystem;
 namespace InventorySystem {
     
     [CreateAssetMenu(menuName="Stashed Item Behaviors/Crafting Recipe Behavior")]
     public class CraftingRecipeBehavior : StashedItemBehavior
     {   
         [NeatArray] public ItemCompositionArray requires;
-
-        [Space][Space]
-        [NeatArray] public ItemCompositionArray yields;
+        [Space][Space] [NeatArray] public ItemCompositionArray yields;
 
         public override void OnItemStashed (Inventory inventory, ItemBehavior item, int count, int equipSlot, bool manual) {
             
@@ -17,10 +16,12 @@ namespace InventorySystem {
 
         }
         public override void OnItemConsumed (Inventory inventory, ItemBehavior item, int count, int equipSlot) {
-            InventoryCrafter crafter = inventory.GetComponent<InventoryCrafter>();
-            ActorSystem.Actor actor = inventory.GetComponent<ActorSystem.Actor>();
-            crafter.RemoveItemComposition(requires, true, actor.GetValueDictionary(), actor.GetValueDictionary());
-            crafter.AddItemComposition (yields, true, actor.GetValueDictionary(), actor.GetValueDictionary());               
+            InventoryCrafter crafter = inventory.crafter;
+            if (crafter != null) {
+                Dictionary<string, GameValue> values = inventory.actor != null ? inventory.actor.actorValues : null;
+                crafter.RemoveItemComposition(requires, true, values, values);
+                crafter.AddItemComposition (yields, true, values, values);               
+            }
         }
     }
 }

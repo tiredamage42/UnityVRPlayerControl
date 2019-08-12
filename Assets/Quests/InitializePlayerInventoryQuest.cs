@@ -11,8 +11,8 @@ public class InitializePlayerInventoryQuest : Quest
 
         void InitializePlayerInventory () {
             List<Inventory.InventorySlot> spawnList = new List<Inventory.InventorySlot>();
-            LevelledListSpawner.GetSpawnedList(Actor.playerActor.GetValueDictionary(), Actor.playerActor.GetValueDictionary(), levelledList, spawnList);
-            Actor.playerActor.GetComponent<Inventory>().AddInventory(spawnList);
+            LevelledListSpawner.GetSpawnedList(Actor.playerActor.actorValues, Actor.playerActor.actorValues, levelledList, spawnList);
+            Actor.playerActor.inventory.AddInventory(spawnList);
         }
         public override void OnQuestInitialize () {
             InitializePlayerInventory();

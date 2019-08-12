@@ -1,5 +1,4 @@
-﻿// using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -18,16 +17,7 @@ namespace ActorSystem {
     */
 
     [System.Serializable] public class GameValueCondition {
-
-        public static bool ConditionsMet (GameValueCondition[] conditions, 
-            Dictionary<string, GameValue> selfGameValues, 
-            Dictionary<string, GameValue> suppliedGameValues
-        ){
-            
-
-
-
-            
+        public static bool ConditionsMet (GameValueCondition[] conditions, Dictionary<string, GameValue> selfGameValues, Dictionary<string, GameValue> suppliedGameValues){
             
             if (conditions == null || conditions.Length == 0) return true;
             
@@ -113,14 +103,9 @@ namespace ActorSystem {
             EditorGUI.indentLevel = 0;
             x = EditorTools.DrawIndent (oldIndent, x);
 
-
-
-
-
             SerializedProperty selfOrSuppliedProp = property.FindPropertyRelative("useSuppliedValues");
             selfOrSuppliedProp.boolValue = EditorGUI.Popup (new Rect(x, position.y, 60, EditorGUIUtility.singleLineHeight), "", selfOrSuppliedProp.boolValue ? 1 : 0, new string[] { "Self", "Supplied" }) == 1;
             x += 60;
-
 
             int i = 0;
                 

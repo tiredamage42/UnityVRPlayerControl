@@ -371,47 +371,6 @@ namespace VRPlayer
             HideController(true);
         }
 
-       
-        // private void UpdateDebugText()
-        // {
-        //         if (debugText == null)
-        //         {
-        //             debugText = new GameObject("_debug_text").AddComponent<TextMesh>();
-        //             debugText.fontSize = 120;
-        //             debugText.characterSize = 0.001f;
-        //             debugText.transform.parent = transform;
-
-        //             debugText.transform.localRotation = Quaternion.Euler(90.0f, 0.0f, 0.0f);
-        //         }
-
-        //         if (handType == SteamVR_Input_Sources.RightHand)
-        //         {
-        //             debugText.transform.localPosition = new Vector3(-0.05f, 0.0f, 0.0f);
-        //             debugText.alignment = TextAlignment.Right;
-        //             debugText.anchor = TextAnchor.UpperRight;
-        //         }
-        //         else
-        //         {
-        //             debugText.transform.localPosition = new Vector3(0.05f, 0.0f, 0.0f);
-        //             debugText.alignment = TextAlignment.Left;
-        //             debugText.anchor = TextAnchor.UpperLeft;
-        //         }
-
-        //         debugText.text = string.Format(
-        //             "Hovering: {0}\n" +
-        //             "Hover Lock: {1}\n" +
-        //             "Attached: {2}\n" +
-        //             "Type: {3}\n",
-        //             (interactor.hoveringInteractable ? interactor.hoveringInteractable.gameObject.name : "null"),
-        //             interactor.hoverLocked,
-
-        //             // (inventory.equippedItem != null ? inventory.equippedItem.item.name : "null"),
-        //             (inventory.GetComponent<InventoryEqupping>().equippedSlots[myEquipIndex] != null ? inventory.equippedSlots[myEquipIndex].item.itemName : "null"),
-                    
-        //             handType.ToString());
-           
-        // }
-
 
         protected virtual void OnEnable()
         {
@@ -518,10 +477,9 @@ namespace VRPlayer
             if (handOccupied)
                 return;
 
-
             ControlInteractorAndEquipper (useAction, Inventory.GRAB_ACTION, interactor, canQuickEquip, inventory.GetComponent<InventoryEqupping>());
             ControlInteractorAndEquipper (stashAction, Inventory.STASH_ACTION, interactor, true, inventory.GetComponent<InventoryEqupping>());
-            ControlInteractorAndEquipper (dropAction, Inventory.TRADE_ACTION, interactor, true, inventory.GetComponent<InventoryEqupping>());
+            // ControlInteractorAndEquipper (dropAction, Inventory.TRADE_ACTION, interactor, true, inventory.GetComponent<InventoryEqupping>());
                     
         }
 

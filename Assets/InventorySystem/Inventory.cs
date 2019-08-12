@@ -87,12 +87,24 @@ namespace InventorySystem {
  */
 
 
-// [RequireComponent(typeof(Interactable))]
-public class Inventory : MonoBehaviour//, IInteractable
+public class Inventory : MonoBehaviour
 {
+    public ActorSystem.Actor actor;
+    public InventoryEqupping equipping;
+    public InventoryCrafter crafter;
+    void InitializeComponents () {
+        actor = GetComponent<ActorSystem.Actor>();
+        equipping = GetComponent<InventoryEqupping>();
+        crafter = GetComponent<InventoryCrafter> ();
+    }
+
+    void Awake () {
+        InitializeComponents();
+    }
+
+
+
     public const string equippedItemLayer = "EquippedItem";
-
-
 
     public event System.Action<Inventory, int, Inventory, string, List<int>> onInventoryManagementInitiate;
     public event System.Action<Inventory, int, string> onEndInventoryManagement;
@@ -108,18 +120,6 @@ public class Inventory : MonoBehaviour//, IInteractable
         }
     }
     
-
-        
-
-
-
-
-
-
-
-
-
-
     // // Create a layer at the next available index. Returns silently if layer already exists.
     // public static void CreateLayer(string name)
     // {
@@ -163,76 +163,12 @@ public class Inventory : MonoBehaviour//, IInteractable
     public const string quickTradeContext = "QuickTrade";
     public const string fullTradeContext  = "FullTrade";
 
-    // public void OnInteractableAvailabilityChange(bool available) {
-			
-    // }
-		
-    // public void OnInteractableInspectedStart (InteractionPoint interactor) {
-    //     if (allowQuickTrade) {
-    //         Inventory interactorInventory = interactor.GetComponentInParent<Inventory>();
-    //         if (interactorInventory != null) {
-    //             interactorInventory.InitiateInventoryManagement(quickTradeContext, interactor.interactorID, this);
-    //         }
-    //     }
-    // }
-
-    // public void OnInteractableInspectedEnd (InteractionPoint interactor) {
-    //     if (allowQuickTrade) {
-    //         Inventory interactorInventory = interactor.GetComponentInParent<Inventory>();
-    //         if (interactorInventory != null) {
-    //             interactorInventory.EndInventoryManagement(quickTradeContext, interactor.interactorID);                
-    //         }
-    //     }
-    // }
-    // public void OnInteractableInspectedUpdate (InteractionPoint interactor) { }
-
-    // public void OnInteractableUsedStart (InteractionPoint interactor, int useAction) {
-    //     if (useAction == TRADE_ACTION) {
-    //         Inventory interactorInventory = interactor.GetComponentInParent<Inventory>();
-    //         if (interactorInventory != null) {
-    //             interactorInventory.EndInventoryManagement(quickTradeContext, interactor.interactorID);
-    //             interactorInventory.InitiateInventoryManagement(fullTradeContext, interactor.interactorID, this);
-                
-    //         }
-    //     }
-    // }
-    // public void OnInteractableUsedEnd (InteractionPoint interactor, int useAction) { }
-    // public void OnInteractableUsedUpdate (InteractionPoint interactor, int useAction) { }
-    
-
-
-    // public List<int> autoScrapCategories = new List<int> ();
     
     
     // weapons, armor, meds
     public List<int> favoriteAbleCategories = new List<int>() {
         0, 1, 2
     };
-
-
-    // public int GetItemCount (Dictionary<string, ActorSystem.GameValue> gameValues, ItemBehavior item) {
-    //     int c = 0;
-    //     for (int i =0 ; i < allInventory.Count; i++) {
-    //         if (allInventory[i].item == item) {
-    //             c += allInventory[i].count;
-    //         }
-    //         else {
-    //             if (autoScrapCategories.Contains(allInventory[i].item.category)) {
-
-    //                 int consistsOfCount;
-
-    //                 if ( ItemConsistsOf(gameValues, allInventory[i].item, item, out consistsOfCount))
-    //                 {
-
-    //                     c += consistsOfCount * allInventory[i].count;
-
-    //                 }
-    //             }
-
-    //         }
-    //     }
-    //     return c;
-    // }
 
     public List<Inventory.InventorySlot> GetFilteredInventory( List<int> categoryFilter ) {
         if (categoryFilter == null || categoryFilter.Count == 0)
@@ -253,120 +189,7 @@ public class Inventory : MonoBehaviour//, IInteractable
         }
         return r;
     }
-    // public static bool ItemConsistsOf(Dictionary<string, ActorSystem.GameValue> gameValues, ItemBehavior a, ItemBehavior b, out int consistsOfCount) {
-    //     consistsOfCount = -1;
-    //     Item_Composition[] composedOf = a.composedOf;
-    //     for (int i = 0; i < composedOf.Length; i++) {
-    //         if (composedOf[i].item == b) {
-
-    //             if (ActorSystem.GameValueCondition.ConditionsMet(composedOf[i].conditions, gameValues, gameValues)) {
-    //                 consistsOfCount = composedOf[i].amount;
-    //                 return true;
-    //             }
-    //         }
-    //     }
-    //     return false;
-    // }
-
-    // public void RemoveItemComposition (Dictionary<string, ActorSystem.GameValue> gameValues, Item_Composition itemComps) {
-    //     if (!ActorSystem.GameValueCondition.ConditionsMet(itemComps.conditions, gameValues, gameValues)) {
-    //         return;
-    //     }
-        
-    //     ItemBehavior item = itemComps.item;
-    //     int needsAmount = itemComps.amount;
-
-    //     bool hasEnoughBaseComponents = false;
     
-    //     for (int i = 0; i < allInventory.Count; i++) {
-    //         if (allInventory[i].item == item) {
-    //             int countToDrop = Mathf.Min(needsAmount, allInventory[i].count);
-
-    //             // DropItem(allInventory[i].item, countToDrop, false, -1);
-
-    //             needsAmount -= countToDrop;
-    //             break;
-    //         }
-    //     }
-    //     hasEnoughBaseComponents = needsAmount <= 0;
-
-    //     if (hasEnoughBaseComponents) {
-    //         DropItem(item, itemComps.amount, false, -1);
-
-
-    //     }
-    //     else {
-    
-    //         //if not enough, loop through and junk items for their base components (first level only)
-    //         bool hasEnoughComponentsNow = false;
-    //         for (int i = 0; i < allInventory.Count; i++) {
-                
-                
-    //             if (autoScrapCategories.Contains(allInventory[i].item.category)) {
-
-                
-    //             int consistsOfCount;
-    //             if (ItemConsistsOf(gameValues, allInventory[i].item, item, out consistsOfCount)) {
-    //                 int itemCount = allInventory[i].count;
-
-    //                 // if we're gonna scrap every item anyways
-    //                 if (needsAmount > (itemCount * consistsOfCount)) {
-    //                     ScrapItem(gameValues, allInventory[i].item, itemCount);
-    //                     needsAmount -= itemCount * consistsOfCount;
-    //                 }
-    //                 else {
-
-    //                     // need 6
-    //                     // consists of 4
-
-    //                     int countToScrap = (needsAmount / consistsOfCount) + Mathf.Min(needsAmount%consistsOfCount, 1);
-    //                     ScrapItem(gameValues, allInventory[i].item, itemCount);
-    //                     needsAmount = 0;
-
-    //                     hasEnoughComponentsNow = true;
-
-    //                     break;
-
-    //                 }
-    //             }
-    //             }
-
-    //         }
-
-    //         if (hasEnoughComponentsNow) {
-    //             DropItem(item, itemComps.amount, false, -1);
-    //         }
-    //         else {
-    //             Debug.LogError("problem with math here....");
-    //         }
-    //     }
-    // }
-
-    // void ScrapItem (Dictionary<string, ActorSystem.GameValue> gameValues, ItemBehavior item, int count) {
-    //     DropItem(item, count, false, -1);
-    //     for (int i = 0; i< count; i++) {
-    //         AddItemComposition(gameValues, item.composedOf);
-    //     }
-    // }
-    
-    // public void RemoveItemComposition (Dictionary<string, ActorSystem.GameValue> gameValues, Item_Composition[] itemComps) {
-    //     for (int i = 0; i < itemComps.Length; i++) {
-    //         RemoveItemComposition(gameValues, itemComps[i]);
-    //     }
-    // }
-
-
-    // public void AddItemComposition(Dictionary<string, ActorSystem.GameValue> gameValues, Item_Composition[] itemComps) {
-    //     for (int i = 0; i < itemComps.Length; i++) {
-
-    //         if (ActorSystem.GameValueCondition.ConditionsMet(itemComps[i].conditions, gameValues, gameValues)) {
-    //             StashItem(itemComps[i].item, itemComps[i].amount, -1);
-    //         }
-    //     }
-    // }
-
-
-
 
     public bool TransferInventoryContentsTo (Inventory otherInventory) {
         bool didAnyTransfer = false;
@@ -397,10 +220,10 @@ public class Inventory : MonoBehaviour//, IInteractable
             }
         }
         return false;
+    }
         
         
 
-    }
 
     public bool CanStashItem (ItemBehavior item) {
         if (item.allowMultipleStashed) 
@@ -441,166 +264,20 @@ public class Inventory : MonoBehaviour//, IInteractable
     public const int STASH_ACTION = 1;
     
     //when used ON inventory
-    public const int TRADE_ACTION = 2;
+    // public const int TRADE_ACTION = 2;
 
-
-    // public void OnUseStart (int equipSlot, int useIndex) {
-    //     if (equipSlot < 0 || equipSlot >= equippedSlots.Length) {
-    //         Debug.LogError("Equip slot " + equipSlot + " is out of range on inventory " + name);
-    //         return;
-    //     }
-        
-    //     if (equippedSlots[equipSlot] != null) {
-    //         equippedSlots[equipSlot].sceneItem.OnEquippedUseStart(this, useIndex);
-    //     }
-    // }
-
-    // public void OnUseEnd (int equipSlot, int useIndex) {
-    //     if (equipSlot < 0 || equipSlot >= equippedSlots.Length) {
-    //         Debug.LogError("Equip slot " + equipSlot + " is out of range on inventory " + name);
-    //         return;
-    //     }
-        
-    //     InventorySlot slot = equippedSlots[equipSlot];
-    //     if (slot != null) {
-    //         bool isQuickEquipped = false;
-    //         if (slot.isQuickEquipped) {
-
-    //             if (useIndex == GRAB_ACTION) {
-    //                 UnequipItem(equipSlot, true);
-    //                 isQuickEquipped = true;
-    //             }
-    //         }
-    //         if (!isQuickEquipped) {
-    //             slot.sceneItem.OnEquippedUseEnd(this, useIndex);
-    //         }
-    //     }
-
-    //     }
-    //     public void OnUseUpdate (int equipSlot, int useIndex) {
-
-    //         if (equipSlot < 0 || equipSlot >= equippedSlots.Length) {
-    //             Debug.LogError("Equip slot " + equipSlot + " is out of range on inventory " + name);
-    //             return;
-    //         }
-        
-    //         if (equippedSlots[equipSlot] != null) {
-    //             equippedSlots[equipSlot].sceneItem.OnEquippedUseEnd(this, useIndex);
-    //         }
-    //     }
-
-
-    // public class EquipInfo
-    // {
-    //     public bool originallyActive;
-    //     public CollisionDetectionMode collisionDetectionMode;
-    //     public RigidbodyInterpolation rbInterpolation;
-    //     public bool attachedRigidbodyWasKinematic;
-    //     public bool attachedRigidbodyUsedGravity;
-    //     public Transform originalParent;
-
-
-    //     public EquipInfo( Item sceneItem ) {
-    //         originallyActive = sceneItem.gameObject.activeSelf;
-    //         originalParent = sceneItem.transform.parent;
-
-    //         Rigidbody rb = sceneItem.rigidbody;
-    //         if (rb != null) {
-
-    //             attachedRigidbodyWasKinematic = rb.isKinematic;
-    //             attachedRigidbodyUsedGravity = rb.useGravity;
-    //             rbInterpolation = rb.interpolation;
-    //             rb.interpolation = RigidbodyInterpolation.None;
-                
-    //             if (sceneItem.itemBehavior.equipType == EquipType.Normal) {
-    //                 collisionDetectionMode = rb.collisionDetectionMode;
-    //                 if (rb.collisionDetectionMode == CollisionDetectionMode.Continuous) {
-    //                     rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
-    //                 }
-    //                 rb.isKinematic = true;
-    //             }
-    
-    //             if (sceneItem.itemBehavior.equipType == EquipType.Physics) {
-    //                 rb.useGravity = false;
-    //             }
-    //         }
-
-    //         if (!originallyActive) {
-    //             sceneItem.gameObject.SetActive(true);
-    //         }
-
-    //     }
-
-    //     public void ReturnItemToOriginalStateBeforeEquip (Item sceneItem) {
-    //         sceneItem.transform.parent = originalParent;
-    //         Rigidbody rb = sceneItem.rigidbody;
-    //         if (rb != null)
-    //         {
-    //             rb.interpolation = rbInterpolation;
-
-    //             if (sceneItem.itemBehavior.equipType == EquipType.Normal)
-    //             {
-    //                 rb.isKinematic = attachedRigidbodyWasKinematic;
-    //                 rb.collisionDetectionMode = collisionDetectionMode;
-    //             }
-    //             if (sceneItem.itemBehavior.equipType == EquipType.Physics)
-    //             {   
-    //                 rb.useGravity = attachedRigidbodyUsedGravity;       
-    //             }
-    //         }
-    //         sceneItem.gameObject.SetActive(originallyActive);
-    //     }
-    // }
-    
-
-    // public event System.Action<Inventory, Item, int, bool> onUnequip, onEquip, onEquipUpdate;
     public event System.Action<Inventory, ItemBehavior, int, int> onStash, onDrop;
     
 
     
-    // public EquipPoint[] equipPoints = new EquipPoint[2];
-    // public void SetEquipPoint (int atIndex, EquipPoint equipPoint) {
-    //     equipPoints[atIndex] = equipPoint;
-    // }
-
-
-    // void Update () {
-
-        // for (int i = 0 ; i < equippedSlots.Length; i++) {
-        //     if (equippedSlots[i] != null) {
-
-        //         equippedSlots[i].sceneItem.OnEquippedUpdate(this);
-        //         if (onEquipUpdate != null) {
-        //             onEquipUpdate(this, equippedSlots[i].sceneItem, i, equippedSlots[i].isQuickEquipped);
-        //         }
-        //     }
-        // }
-    // }
-
-    
-// public enum EquipType {
-//     Static, // item stays where it is, isnt parented or moved around to hand
-//     Normal, // item parented to hand
-//     Physics, // item follows hand wiht velocities
-// };
-
-
-
 [System.Serializable] public class InventorySlot {
-
     public InventorySlot(ItemBehavior item, int count) {
         this.item = item;
         this.count = count;
     }
     public ItemBehavior item;
     public int count;
-    // [HideInInspector] public Item sceneItem;
-    // [HideInInspector] public EquipInfo equipInfo;
-    // [HideInInspector] public bool isQuickEquipped;
 }
-
-
-// [HideInInspector] [System.NonSerialized] public InventorySlot[] equippedSlots = new InventorySlot[2];
 
 public int favoritesMaxCount = 8;
 [HideInInspector] public List<InventorySlot> allInventory = new List<InventorySlot>();
@@ -621,23 +298,6 @@ public bool FavoriteItem (InventorySlot slot) {
     return false;
 }
 
-// public bool ItemIsEquipped(int slotIndex, ItemBehavior item) {
-//     if (slotIndex < 0) {
-//         for (int i =0 ; i < equippedSlots.Length; i++) {
-//             if (equippedSlots[i] != null && equippedSlots[i].item == item) {        
-//                 return true;
-//             }
-//         }
-//         return false;
-//     }
-//     else {
-//         return equippedSlots[slotIndex] != null && equippedSlots[slotIndex].item == item;
-//     }
-// }
-
-        // public bool ItemIsEquipped (int slotIndex, Item item) {
-        //     return ItemIsEquipped(slotIndex, item.itemBehavior);
-        // }
 
         public Vector3 dropLocalPoint = new Vector3 (0,1,1);
 
@@ -788,176 +448,5 @@ public bool FavoriteItem (InventorySlot slot) {
         }
 
      
-
-        // InventorySlot BuildEquippedInventorySlot (Item sceneItem, bool quickEquip) {
-        //     // we need to save the initial state of the scene item to restore it when it's dropped
-        //     EquipInfo sceneItemEquipInfo = new EquipInfo( sceneItem );
-
-        //     InventorySlot inventorySlot = new InventorySlot(sceneItem.itemBehavior, sceneItem.itemCount);
-        //     inventorySlot.sceneItem = sceneItem;
-        //     inventorySlot.equipInfo = sceneItemEquipInfo;// quickEquipInfo;
-        //     inventorySlot.isQuickEquipped = quickEquip;
-            
-        //     return inventorySlot;
-        // }
-
-        // equip from item behavior
-        // public void EquipItem (ItemBehavior itemBehavior, int equipSlot, Item sceneItem) {
-
-        //     // if (equipSlot == -1) {
-        //     //     equipSlot = mainEquipPointIndex;
-        //     // }
-
-        //     if (equipSlot == -1) {
-        //         Debug.LogError("problem with equi slot not set, cant equip " + itemBehavior.itemName);
-        //         return;
-        //     }
-                
-        //     InventorySlot equippedInventorySlot = null;
-        //     int oldIndex = -1;
-                
-        //     // quick equipping
-        //     if (sceneItem != null) {                
-        //         if (sceneItem.linkedInventory != null && sceneItem.linkedInventory != this) {
-        //             Debug.LogError("Scene item :: " + sceneItem.name + " is already quick equipped to " + sceneItem.linkedInventory.name + " cant quick equip to "+ name);
-        //             return;
-        //         }
-
-        //         for (int i = 0; i < equippedSlots.Length; i++) {
-
-        //             if (equippedSlots[i] != null && equippedSlots[i].sceneItem == sceneItem) {
-        //                 //already equipped scene item here
-        //                 if (i == equipSlot) return;
-                        
-        //                 // item is already quick equipped at another slot
-        //                 if (equippedSlots[i].isQuickEquipped) {
-        //                     equippedInventorySlot = equippedSlots[i];
-        //                     oldIndex = i;   
-        //                 }
-        //                 else {
-        //                     // scene item is equipped as not quick equip, this shouldnt happen
-        //                     Debug.LogError("Scene item :: " + sceneItem.name + " is already equipped to " + name + " normally, cant quick equip" );
-        //                     return;
-        //                 }
-        //             }
-        //         }
-
-        //         if (equippedInventorySlot == null) {
-        //             equippedInventorySlot = BuildEquippedInventorySlot (sceneItem, true);
-        //         }
-        //         else {
-        //             equippedSlots[oldIndex] = null;
-        //         }
-
-        //         equipPoints[equipSlot].GetComponent<InteractionPoint>().HoverLock(null);
-
-        //     }
-        //     else {
-        //         //equipping , we need to get an available scene item
-        //         for (int i = 0; i < equippedSlots.Length; i++) {
-        //             if (equippedSlots[i] != null && equippedSlots[i].item == itemBehavior) {
-                        
-        //                 //already equipped item here
-        //                 if (i == equipSlot) return;
-                        
-        //                 // item is already equipped at another slot
-        //                 // unequip it there
-        //                 if (!equippedSlots[i].isQuickEquipped){
-        //                     equippedInventorySlot = equippedSlots[i];
-        //                     oldIndex = i;    
-        //                 }
-        //             }
-        //         }
-
-        //         if (equippedInventorySlot == null) {
-        //             equippedInventorySlot = BuildEquippedInventorySlot (Item.GetSceneItem(itemBehavior), false);
-        //         }
-        //         else {
-        //             equippedSlots[oldIndex] = null;
-        //         }
-        //     }
-
-
-        //     //unequip our current equip slot
-        //     if (equippedSlots[equipSlot] != null) {
-        //         UnequipItem(equipSlot, equippedSlots[equipSlot].isQuickEquipped);
-        //     }
-            
-        //     equippedSlots[equipSlot] = equippedInventorySlot;
-        //     equippedSlots[equipSlot].sceneItem.linkedInventory = this;
-        //     equippedSlots[equipSlot].sceneItem.myEquipPoint = equipPoints[equipSlot];
-            
-        //     if (equippedSlots[equipSlot].item.equipType != EquipType.Static) 
-        //     {
-        //         SnapItemToPosition ( equipSlot );
-        //     }
-            
-        //     equippedSlots[equipSlot].sceneItem.OnEquipped (this);
-                
-        //     if (onEquip != null) {
-        //         onEquip(this, equippedSlots[equipSlot].sceneItem, equipSlot, equippedSlots[equipSlot].isQuickEquipped);
-        //     }
-        // }
-
-
-        // void SnapItemToPosition (int equipSlot) {
-        //     Transform itemTransform = equippedSlots[equipSlot].sceneItem.transform;
-        //     ItemBehavior item = equippedSlots[equipSlot].item;
-        //     Transform oldParent = itemTransform.parent;
-
-        //     TransformBehavior.AdjustTransform(itemTransform, equipPoints[equipSlot].transform, item.equipTransform, equipSlot);
-                
-        //     if (item.equipType != EquipType.Normal) {
-        //         itemTransform.parent = oldParent;
-        //     }
-        // }
-           
-        // public void UnequipItem(Item item, bool showScene) {
-        //     for (int i =0 ; i < equippedSlots.Length; i++) {
-        //         if (equippedSlots[i] != null) {
-        //             if (equippedSlots[i].sceneItem == item) {
-        //                 UnequipItem(i, showScene);
-        //                 return;
-        //             }
-        //         }
-        //     }
-        // }
-        // public void UnequipItem(ItemBehavior item, bool showScene) {
-        //     for (int i =0 ; i < equippedSlots.Length; i++) {
-        //         if (equippedSlots[i] != null) {
-        //             if (equippedSlots[i].item == item) {
-        //                 UnequipItem(i, showScene);
-        //                 return;
-        //             }
-        //         }
-        //     }
-        // }
-
-        // public void UnequipItem(int slotIndex, bool showScene)
-        // {
-
-        //     if (slotIndex < 0 || slotIndex >= equippedSlots.Length) {
-        //         Debug.LogError("Equip slot " + slotIndex + " is out of range on inventory " + name);
-        //         return;
-        //     }
-        //     if (equippedSlots[slotIndex] == null) {
-        //         return;
-        //     }
-            
-        //     InventorySlot slot = equippedSlots[slotIndex];
-        //     equippedSlots[slotIndex] = null;
-        //     equipPoints[slotIndex].GetComponent<InteractionPoint>().HoverUnlock(null);
-
-        //     slot.sceneItem.linkedInventory = null;
-        //     slot.sceneItem.myEquipPoint = null;
-            
-        //     slot.sceneItem.OnUnequipped (this);
-        //     if (onUnequip != null) {
-        //         onUnequip(this, slot.sceneItem, slotIndex, slot.isQuickEquipped);
-        //     }
-
-        //     slot.equipInfo.ReturnItemToOriginalStateBeforeEquip(slot.sceneItem);
-        //     slot.sceneItem.gameObject.SetActive(showScene);
-        // }
     }
 }

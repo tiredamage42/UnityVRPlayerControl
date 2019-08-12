@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-
 
 using ActorSystem;
 
@@ -13,34 +11,30 @@ namespace InventorySystem {
         [Header("In Game Days, -1 for no respawn")]
         public float respawnRate = 3.0f;
         Inventory inventory;
-        public Actor selfActorValues, suppliedActorValues;
-
-
+        public Actor selfActor, suppliedActor;
         
         public bool respawnDebug;
         
         void Awake () {
             inventory = GetComponent<Inventory>();
             
-            if (selfActorValues == null) {
-                selfActorValues = GetComponent<Actor>();
+            if (selfActor == null) {
+                selfActor = GetComponent<Actor>();
             }
+        }
+        void Start () {
+            if (suppliedActor == null) suppliedActor = Actor.playerActor;
+            if (selfActor == null) selfActor = suppliedActor;
+            
+            Respawn(selfActor.actorValues, suppliedActor.actorValues);
         }
         void Update () {
             if (respawnDebug) {
-
-                Respawn(selfActorValues.GetValueDictionary(), suppliedActorValues.GetValueDictionary());
-
+                Respawn(selfActor.actorValues, suppliedActor.actorValues);
                 respawnDebug = false;
             }
         }
 
-        void Start () {
-            if (suppliedActorValues == null) suppliedActorValues = Actor.playerActor;
-            if (selfActorValues == null) selfActorValues = suppliedActorValues;
-            
-            Respawn(selfActorValues.GetValueDictionary(), suppliedActorValues.GetValueDictionary());
-        }
 
         public void Respawn (Dictionary<string, GameValue> selfValues, Dictionary<string, GameValue> suppliedValues) {
             inventory.ClearInventory();
