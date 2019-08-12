@@ -2,8 +2,6 @@
 using Valve.VR;
 using GameUI;
 using SimpleUI;
-using DialogueSystem;
-
 
 namespace VRPlayer.UI {
     public class VRDialogueUI : MonoBehaviour

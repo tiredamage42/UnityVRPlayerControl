@@ -1,16 +1,12 @@
-﻿// using System.Collections;
-// using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 using UnityEngine.UI;
 
 namespace VRPlayer.UI {
-    [ExecuteInEditMode]
     public class TrackpadGhostUI : MonoBehaviour
     {
         public Vector2 axis;
         public float showSize = .2f;
-
         RectTransform axisShowRect;
         
         void OnEnable () {
@@ -18,9 +14,8 @@ namespace VRPlayer.UI {
         }
     
         void UpdateAxisShow () {
-            if (axisShowRect == null) {
-                axisShowRect = transform.GetChild(1).GetComponent<RectTransform>();
-            }
+            if (axisShowRect == null) axisShowRect = transform.GetChild(1).GetComponent<RectTransform>();
+            
             if (axisShowRect != null) {
                 float halfShow = showSize * .5f;
                 Vector2 a = new Vector2(

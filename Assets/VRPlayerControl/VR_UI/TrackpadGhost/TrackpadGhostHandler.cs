@@ -21,7 +21,6 @@ namespace VRPlayer.UI {
             UpdateTrackpadTransforms();
         }
 
-        // Update is called once per frame
         void Update()
         {
 
