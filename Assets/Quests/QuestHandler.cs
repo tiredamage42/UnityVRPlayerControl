@@ -131,7 +131,7 @@ namespace QuestSystem {
         static T CopyComponent<T>(T original, GameObject destination) where T : Component
         {
 
-            Debug.Log("copying " + original.name);
+            // Debug.Log("copying " + original.name);
             System.Type type = original.GetType();
             
             var copy = destination.GetComponent(type) as T;
@@ -151,7 +151,7 @@ namespace QuestSystem {
             {
                 if (field.IsStatic) continue;
                 field.SetValue(copy, field.GetValue(original));
-                Debug.Log("copying field " + field.Name);
+                // Debug.Log("copying field " + field.Name);
             }
 
             var props = type.GetProperties(flags);
@@ -170,7 +170,7 @@ namespace QuestSystem {
                 if (obsolete) continue;
                 if (!prop.CanWrite || prop.Name == "name" || prop.PropertyType.Equals(typeof(Material)) || prop.PropertyType.Equals(typeof(Material[]))) continue;
                 prop.SetValue(copy, prop.GetValue(original, null), null);
-                Debug.Log("copying property " + prop.Name);
+                // Debug.Log("copying property " + prop.Name);
                     
             }
             return copy as T;

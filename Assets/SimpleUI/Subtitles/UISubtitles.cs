@@ -40,6 +40,10 @@ namespace SimpleUI {
         void Awake () {
             instance = this;   
         }
+        void Start () {
+
+            StopShowing();
+        } 
         void OnEnable () {
             texts = GetComponentsInChildren<UIText>();
             rectTransforms = GetComponentsInChildren<RectTransform>();
@@ -75,7 +79,8 @@ namespace SimpleUI {
             
             if (Application.isPlaying) {
                 if (!showing) {
-                    baseObject.SetActive(false);
+                    baseObject.SetActive(true);
+                    Debug.Log("show");;;
                     showing = true;
                 }
                 timer = 0;

@@ -18,10 +18,10 @@ namespace VRPlayer.UI {
                 return;
             }
 
-            float textScale = .005f;
+            float textScale = .0025f;
             float width = 4;
 
-            UIPageParameters pageParams = new UIPageParameters("Fix Page Title", .5f, width, TextAnchor.MiddleLeft, .05f);
+            UIPageParameters pageParams = new UIPageParameters("Fix Page Title", .25f, width, TextAnchor.MiddleLeft, .05f);
 
             UIElementHolder pageWPanelUI = VRUI.MakeButtonsPage("PageWPanel", null, pageParams,
                 new TextPanelParameters(new Vector2(width, 4), new Vector2(.1f, .1f), textScale, TextAnchor.UpperLeft, 64),

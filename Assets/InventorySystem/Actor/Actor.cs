@@ -77,6 +77,7 @@ namespace ActorSystem {
                 return actorValues[template.name]; 
             }
             GameValue value = new GameValue (template.name, Random.Range( template.initializationRange.x, template.initializationRange.y ), template.baseMinMax);
+            Debug.LogWarning("adding " + template.name);
             actorValues[template.name] = value;
             savedActorValues.Add(value);
             return value;

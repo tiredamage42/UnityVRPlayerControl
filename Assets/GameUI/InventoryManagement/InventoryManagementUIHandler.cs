@@ -158,6 +158,8 @@ namespace GameUI {
             UIManager.ShowUI(uiObject, true, !UsesRadial());
 
             uiObject.onBaseCancel = CloseUI;
+
+            Debug.Log("set close ui");
             uiObject.runtimeSubmitHandler = getUIInputs;
             
             uiObject.SubscribeToSubmitEvent(OnUIInput);
@@ -198,14 +200,23 @@ namespace GameUI {
         public event System.Action<UIElementHolder> onUIOpen, onUIClose;
 
         bool ShouldCloseUI (int equipID) {
-            return (!EquipIDSpecific() || (workingWithEquipID == equipID));
+            return (!EquipIDSpecific() || (workingWithEquipID == equipID) || equipID == -1 );
         }
 
         
         void _OnEndInventoryManagement(Inventory inventory, int usingEquipPoint, string context) {
+            
             if (context != null && ContextKey() != context) return;
-            if (!UIObjectActive()) return;
-            if (!ShouldCloseUI(usingEquipPoint)) return;
+            
+            
+            if (!UIObjectActive()) {
+                Debug.LogError("ui already off");
+                return;
+            } 
+            if (!ShouldCloseUI(usingEquipPoint)) {
+Debug.LogError("shouldnt close");
+                return;
+            }
         
             UIManager.HideUI(uiObject);
             for (int i = 0; i < inventoryButtonsPerInventory.Length; i++) inventoryButtonsPerInventory[i] = null;
@@ -273,9 +284,9 @@ namespace GameUI {
 
         protected void UnpackButtonData (object[] customData, out Inventory.InventorySlot slot, out Inventory forInventory, out Inventory linkedInventory, out int uiIndex, out int otherUIIndex)
         {
-            slot = (Inventory.InventorySlot)customData[0];
-            forInventory = (Inventory)customData[1];
-            linkedInventory = (Inventory)customData[2];
+            slot = customData[0] as Inventory.InventorySlot;
+            forInventory = customData[1] as Inventory;
+            linkedInventory = customData[2] as Inventory;
             uiIndex = (int)customData[3];
             otherUIIndex = (int)customData[4];
         }

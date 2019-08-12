@@ -205,6 +205,7 @@ namespace SimpleUI {
                         parentHolder.gameObject.SetActive(true);
                     }
                     else {
+                        Debug.Log("CANCE:");
                         OnBaseCancel();
                     }
                 }
@@ -213,10 +214,12 @@ namespace SimpleUI {
 
         void OnBaseCancel () {
             if (parentHolder != null) {
+                Debug.Log("has [arent");
                 parentHolder.OnBaseCancel();
             }
             else {
                 if (onBaseCancel != null) {
+                    Debug.Log("callback");
                     onBaseCancel ();
                 }
                 else {

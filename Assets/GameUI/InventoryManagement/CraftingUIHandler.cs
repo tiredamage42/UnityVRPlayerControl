@@ -14,17 +14,23 @@ namespace GameUI {
         public override string ContextKey() { return "Crafting"; }
 
         protected override void OnUISelect (GameObject[] data, object[] customData) {
-            
+            //cehck for empty....
+            if (customData == null)
+                return;
+
+
             Inventory.InventorySlot slot;
             Inventory forInventory, linkedInventory;
             int uiIndex, otherUIIndex;
             UnpackButtonData (customData, out slot, out forInventory, out linkedInventory, out uiIndex, out otherUIIndex);
-            
+            if (slot == null) {
+                return;
+            }
 
             CraftingRecipeBehavior recipe = null;
 
             for (int i = 0; i < slot.item.stashedItemBehaviors.Length; i++) {
-                recipe = (CraftingRecipeBehavior)slot.item.stashedItemBehaviors[i];
+                recipe = slot.item.stashedItemBehaviors[i] as CraftingRecipeBehavior;
                 if (recipe != null)
                     break;
             }
@@ -80,7 +86,7 @@ namespace GameUI {
 
                         CraftingRecipeBehavior recipe = null;
                         for (int i = 0; i < slot.item.stashedItemBehaviors.Length; i++) {
-                            recipe = (CraftingRecipeBehavior)slot.item.stashedItemBehaviors[i];
+                            recipe = slot.item.stashedItemBehaviors[i] as CraftingRecipeBehavior;
                             if (recipe != null)
                                 break;
                         }

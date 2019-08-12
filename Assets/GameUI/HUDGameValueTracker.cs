@@ -13,9 +13,17 @@ namespace GameUI {
             actor = GetComponent<Actor>();
         }
 
-        void OnEnable () {
+        void Start () {
             GameValue gv = actor.GetGameValue(gameValueName);
-            if (gv != null) gv.AddChangeListener(UpdateUIObject);
+            if (gv != null) {
+                Debug.LogError("adding change listener");
+                gv.AddChangeListener(UpdateUIObject);
+            }
+            else
+            {
+                                Debug.LogError("couldnt find " + gameValueName);
+
+            }
         }
             
         void OnDisable () {
@@ -28,6 +36,8 @@ namespace GameUI {
 
             if (uiObject != null) {
                 uiObject.SetText(gameValueName);
+                if (actor == null)
+                    actor = GetComponent<Actor>();
 
                 GameValue gv = actor.GetGameValue(gameValueName);
                 if (gv != null) UpdateUIObject(0, gv.GetValue(), gv.GetMinValue(), gv.GetMaxValue(), null);

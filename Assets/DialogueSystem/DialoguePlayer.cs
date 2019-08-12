@@ -132,12 +132,15 @@ namespace DialogueSystem {
         }
 
         void Update () {
-            if (phase == 0 || phase == 2) {
-                phaseTimer += Time.deltaTime;
-                if (phaseTimer >= phaseTime) {
-                    phaseTimer = 0;
-                    phase++;
-                    OnPhaseEnd();
+            if (inDialogue) {
+
+                if (phase == 0 || phase == 2) {
+                    phaseTimer += Time.deltaTime;
+                    if (phaseTimer >= phaseTime) {
+                        phaseTimer = 0;
+                        phase++;
+                        OnPhaseEnd();
+                    }
                 }
             }
         }
