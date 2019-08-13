@@ -19,7 +19,7 @@ namespace VRPlayer.UI {
             }
 
             float textScale = .0025f;
-            float width = 4;
+            float width = 3f;
 
             UIPageParameters pageParams = new UIPageParameters("Fix Page Title", .25f, width, TextAnchor.MiddleLeft, .05f);
 
@@ -41,15 +41,15 @@ namespace VRPlayer.UI {
             fullTradeUI.SetUIObject(VRUI.MakeFullTradeUI("FullTrade", pageParams, fullTradeTransform, textScale));
 
             QuickInventoryUIHandler quickInventoryUI = inventoryUIsObject.GetComponent<QuickInventoryUIHandler>();
-            quickInventoryUI.SetUIObject(VRUI.MakeButtonsPage("QuickInvRadial", new UIRadialParameters(.8f, .1f), null, null, false, null, textScale));
+            quickInventoryUI.SetUIObject(VRUI.MakeButtonsPage("QuickInvRadial", new UIRadialParameters(.8f, .1f), null, null, false, null, .0035f));
             
             QuickTradeUIHandler quickTradeUI = inventoryUIsObject.GetComponent<QuickTradeUIHandler>();
-            quickTradeUI.SetUIObject(VRUI.MakeButtonsPage("QuickTrade", null, new UIPageParameters("Fix Page Title", .5f, 4, TextAnchor.MiddleCenter, 0), null, false, null, textScale));
+            quickTradeUI.SetUIObject(VRUI.MakeButtonsPage("QuickTrade", null, new UIPageParameters("Fix Page Title", .25f, width, TextAnchor.MiddleCenter, 0), null, false, null, .0025f));
 
             DialoguePlayerUIHandler dialogueHandler = inventoryUIsObject.GetComponent<DialoguePlayerUIHandler>();
-            dialogueHandler.SetUIObject(VRUI.MakeButtonsPage("Dialogue", null, new UIPageParameters("", .5f, 4, TextAnchor.MiddleLeft, 0), null, false, null, textScale));
+            dialogueHandler.SetUIObject(VRUI.MakeButtonsPage("Dialogue", null, new UIPageParameters("", .25f, 4, TextAnchor.MiddleLeft, 0.05f), null, false, null, .0025f));
 
-            VRUI.MakeSubtitles("Subtitles", new UISubtitlesParameters(.005f, 3, 64, 9), subTitlesTransform);
+            VRUI.MakeSubtitles("Subtitles", new UISubtitlesParameters(.005f, .4f, 3, 64, 9), subTitlesTransform);
         }
     }
 }

@@ -252,14 +252,14 @@ namespace VRPlayer {
                     SetAnchor(childRect, new Vector2(.5f, 1f));
                     SetParent(childRect, canvasObject);
                 
-    
+                    float halfWidth = pageParameters.width*.5f;
                     SetAnchor(newPageRect, new Vector2(.5f, 1f));
-                    SetParent(newPageRect, childRect, new Vector3(-(pageParameters.width*.5f), 0, 0));
+                    SetParent(newPageRect, childRect, new Vector3(-(halfWidth*1.25f), 0, 0));
         
                     UITextPanel textPanel = GameObject.Instantiate( UIManager.instance.textPanelPrefab );
                     RectTransform newPanelRect = textPanel.GetComponent<RectTransform>();
                     SetAnchor(newPanelRect, new Vector2(.5f, 1f));
-                    SetParent(newPanelRect, childRect, new Vector3((pageParameters.width*.5f), -pageParameters.lineHeight, 0));
+                    SetParent(newPanelRect, childRect, new Vector3((halfWidth*1.25f), -pageParameters.lineHeight, 0));
     
                     textPanel.parameters = textPanelParams;
                     newPage.textPanel = textPanel;
@@ -305,7 +305,7 @@ namespace VRPlayer {
 
                     
             SetAnchor(newPage0.GetComponent<RectTransform>(), new Vector2(.5f, 1f));
-            SetParent(newPage0.GetComponent<RectTransform>(), collectionT, new Vector3(-(pageParameters.width*.5f), 0, 0));
+            SetParent(newPage0.GetComponent<RectTransform>(), collectionT, new Vector3(-(pageParameters.width*.75f), 0, 0));
 
             UIPage newPage1 = GameObject.Instantiate( UIManager.instance.pagePrefab );
             newPage1.textScale = textScale;
@@ -314,7 +314,7 @@ namespace VRPlayer {
 
                     
             SetAnchor(newPage1.GetComponent<RectTransform>(), new Vector2(.5f, 1f));
-            SetParent(newPage1.GetComponent<RectTransform>(), collectionT, new Vector3((pageParameters.width*.5f), 0, 0));
+            SetParent(newPage1.GetComponent<RectTransform>(), collectionT, new Vector3((pageParameters.width*.75f), 0, 0));
 
             collection.subHolders = new UIElementHolder[] { newPage0 , newPage1 };
 

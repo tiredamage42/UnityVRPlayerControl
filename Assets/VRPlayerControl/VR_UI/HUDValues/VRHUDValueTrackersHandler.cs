@@ -36,7 +36,7 @@ namespace VRPlayer.UI {
                 // trackerSize = new Vector2(2,1);
                 // emptyBackground = false;
                 // textScale = .005f;
-                UIValueTrackerParameters trackerParams = new UIValueTrackerParameters(.05f, new Vector2(.5f,2f), false, .005f);
+                UIValueTrackerParameters trackerParams = new UIValueTrackerParameters(.05f, new Vector2(.25f,2f), false, .005f);
 
                 for (int i = 0; i < foundTrackers.Length; i++) {
 

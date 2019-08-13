@@ -7,6 +7,7 @@ namespace SimpleUI {
     [System.Serializable] public class UISubtitlesParameters {
         public float textScale = .005f;
         public float textDuration = 3;
+        public float lineHeight = .5f;
 
         public int maxCharacters = 64;
         public float width = 40;
@@ -16,12 +17,14 @@ namespace SimpleUI {
             textDuration = 3;
             maxCharacters = 64;
             width = 40;
+            lineHeight = .5f;
         }
-        public UISubtitlesParameters(float textScale, float textDuration, int maxCharacters, float width) {
+        public UISubtitlesParameters(float textScale, float lineHeight, float textDuration, int maxCharacters, float width) {
             this.textScale = textScale;
             this.textDuration = textDuration;
             this.maxCharacters = maxCharacters;
             this.width = width;
+            this.lineHeight = lineHeight;
         }
     }
 
@@ -72,7 +75,7 @@ namespace SimpleUI {
                 texts[1].SetText(UITextPanel.AdjustTextToMaxLength (subtitles, parameters.maxCharacters, out lines));
 
                 for (int i = 0; i < rectTransforms.Length; i++) {
-                    rectTransforms[i].sizeDelta = new Vector2(parameters.width, (.5f * lines));
+                    rectTransforms[i].sizeDelta = new Vector2(parameters.width, (parameters.lineHeight * lines));
                 }
             }
 

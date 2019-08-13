@@ -29,8 +29,10 @@ namespace GameUI {
                 
                 // single trade
                 if (input.x == singleTradeAction) {
+                    Debug.LogError("trake action");
                     Inventory.InventorySlot item = (Inventory.InventorySlot)customData[0];
                     if (item != null) {
+                        Debug.LogError("inventory transferreed");
                         if (shownInventory.TransferItemTo(item.item, 1, tradee)) {
                             updateButtons = true;
                         }
