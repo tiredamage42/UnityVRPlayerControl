@@ -32,35 +32,64 @@ using UnityEngine;
 */
 
 using InventorySystem;
-
+using DialogueSystem;
+// using GameUI;
+using SimpleUI;
 
 namespace ActorSystem {
     public class Actor : MonoBehaviour {
 
-        public Inventory inventory;
+        [HideInInspector] public Inventory inventory;
+        DialoguePlayer dialoguePlayer;
+
+        // GameMessageInbox messageInbox;
+        // public UIMessageCenter messageCenterUI;
+
+        
         void InitializeComponents () {
             inventory = GetComponent<Inventory>();
+            dialoguePlayer = GetComponent<DialoguePlayer>();
+            // messageInbox = GetComponent<GameMessageInbox>();
+        }
+
+        public event System.Action<string, bool, UIColorScheme> onShowMessage;
+        public event System.Action<string, string> onShowSubtitles;
+        
+        public void ShowMessage (string msg, UIColorScheme scheme, bool immediate=false) {
+            if (onShowMessage != null) {
+                onShowMessage(msg, immediate, scheme);
+            }
+
+            // messageCenterUI.ShowMessage(msg, immediate, scheme);
+            // messageInbox.ShowMessage( msg );
+        }
+        public void ShowSubtitles (string speaker, string subtitles) {
+            if (onShowSubtitles != null) {
+                onShowSubtitles(speaker, subtitles);
+            }
         }
 
 
-        public string actorName;
+        public void StartDialogue (DialogueTemplate template, Actor otherActor, AudioSource actorSource) {
+            dialoguePlayer.StartDialogue(otherActor, template, actorSource);
+        }
+
+
         public static Actor playerActor;
+        public string actorName;
         public bool isPlayer;
-        public GameValueTemplate template;
-        public List<GameValue> savedActorValues;
+        public GameValueTemplate actorValuesTemplate;
+        [HideInInspector] public List<GameValue> savedActorValues;
         public Dictionary<string, GameValue> actorValues = new Dictionary<string, GameValue>();
 
         void Awake () {
             InitializeComponents();
             if (isPlayer) playerActor = this;
-            CheckForTemplate();
-        }
-
-        void CheckForTemplate () {
-            if (template != null) {
-                AddGameValues(template.gameValueTemplates);
+            if (actorValuesTemplate != null) {
+                AddGameValues(actorValuesTemplate.gameValueTemplates);
             }
         }
+
 
         public void AddGameValues(GameValue[] template) {
             for (int i = 0; i < template.Length; i++ ){
@@ -72,7 +101,6 @@ namespace ActorSystem {
         {
             if (actorValues.ContainsKey(template.name)) {
                 Debug.LogError("Already added " + template.name + " game value to actor " + this.name + "!");
-    
                 //maybe return null to avoid confusion on additive "mod" quests...
                 return actorValues[template.name]; 
             }
@@ -90,22 +118,12 @@ namespace ActorSystem {
         }
 
         public void AddBuffs (GameValueModifier[] buffs, int count, int senderKey, int buffKey, bool assertPermanent, Dictionary<string, GameValue> selfValues, Dictionary<string, GameValue> suppliedValues) {
-        
             for (int i =0 ; i < buffs.Length; i++) {
-                GameValueModifier mod = buffs[i];
-
-                if (assertPermanent && (
-                    mod.modifyValueComponent == GameValue.GameValueComponent.Value ||
-                    mod.modifyValueComponent == GameValue.GameValueComponent.MinValue ||
-                    mod.modifyValueComponent == GameValue.GameValueComponent.MaxValue
-                )) {                    
-                    continue;
-                }
-
-                if (GameValueCondition.ConditionsMet (mod.conditions, selfValues, suppliedValues)) {
-                    GameValue gameValue = GetGameValue(mod.gameValueName);
+                if (assertPermanent && !buffs[i].isPermanent) continue;
+                if (GameValueCondition.ConditionsMet (buffs[i].conditions, selfValues, suppliedValues)) {
+                    GameValue gameValue = GetGameValue(buffs[i].gameValueName);
                     if (gameValue != null) {
-                        gameValue.AddModifier(mod, count, new Vector3Int(senderKey, buffKey, i));
+                        gameValue.AddModifier(buffs[i], count, new Vector3Int(senderKey, buffKey, i));
                     }
                 }
             }

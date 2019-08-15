@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 using Valve.VR;
 using Valve.VR.InteractionSystem;
@@ -8,8 +7,6 @@ using Valve.VR.InteractionSystem;
 using InteractionSystem;
 using InventorySystem;
 
-
-using VRPlayer.UI;
 namespace VRPlayer
 {
     public class Hand : MonoBehaviour
@@ -26,17 +23,8 @@ namespace VRPlayer
             }
         }
 
-        void AdditionalInitialization () {
-            velocityEstimator = GetComponent<VelocityEstimator>();
-            VRManager.onPauseRoutineStart += OnGamePaused;
-        }
-
-        public SteamVR_Input_Sources handType;
+        public SteamVR_Input_Sources handType { get { return trackedObject.inputSource; } }
         SteamVR_Behaviour_Pose trackedObject;
-        public SteamVR_Action_Boolean useAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("GrabPinch");
-        public SteamVR_Action_Boolean stashAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("GrabPinch");
-        public SteamVR_Action_Boolean dropAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("GrabPinch");
-        
         public GameObject renderModelPrefab;
         protected RenderModel mainRenderModel;
         
@@ -45,100 +33,60 @@ namespace VRPlayer
         public bool isActive { get { return trackedObject.isActive; } }
         public bool isPoseValid { get { return trackedObject.isValid; } }
 
+        int myEquipIndex { get { return VRManager.Hand2Int(handType); } }
+        int otherHandEquipIndex { get { return 1 - myEquipIndex; } } 
 
-        int myEquipIndex {
-            get {
-                return VRManager.Hand2Int(handType);
-                
-            }
+        public SteamVR_Behaviour_Skeleton skeleton { get { return mainRenderModel != null ? mainRenderModel.GetSkeleton() : null; } }
+
+        public void ShowController(bool permanent = false) {
+            if (mainRenderModel != null) mainRenderModel.SetControllerVisibility(true, permanent);
         }
-        int otherHandEquipIndex {
-            get {
-                return VRManager.Hand2Int(VRManager.OtherHand(handType));
-                
-                
-            }
+        public void HideController(bool permanent = false) {
+            if (mainRenderModel != null) mainRenderModel.SetControllerVisibility(false, permanent);
         }
 
-        public SteamVR_Behaviour_Skeleton skeleton
-        {
-            get
-            {
-                if (mainRenderModel != null)
-                    return mainRenderModel.GetSkeleton();
-                return null;
-            }
+        public void ShowSkeleton(bool permanent = false) {
+            if (mainRenderModel != null) mainRenderModel.SetHandVisibility(true, permanent);
         }
 
-        public void ShowController(bool permanent = false)
-        {
-            if (mainRenderModel != null)
-                mainRenderModel.SetControllerVisibility(true, permanent);
+        public void HideSkeleton(bool permanent = false) {
+            if (mainRenderModel != null) mainRenderModel.SetHandVisibility(false, permanent);
         }
 
-        public void HideController(bool permanent = false)
-        {
-            if (mainRenderModel != null)
-                mainRenderModel.SetControllerVisibility(false, permanent);
-        }
-
-        public void ShowSkeleton(bool permanent = false)
-        {
-            if (mainRenderModel != null)
-                mainRenderModel.SetHandVisibility(true, permanent);
-        }
-
-        public void HideSkeleton(bool permanent = false)
-        {
-            if (mainRenderModel != null)
-                mainRenderModel.SetHandVisibility(false, permanent);
-        }
-
-        public bool HasSkeleton()
-        {
+        public bool HasSkeleton() {
             return mainRenderModel != null && mainRenderModel.GetSkeleton() != null;
         }
 
-        public void Show()
-        {
+        public void Show() {
             SetVisibility(true);
         }
 
-        public void Hide()
-        {
+        public void Hide() {
             SetVisibility(false);
         }
 
-        public void SetVisibility(bool visible)
-        {
-            if (mainRenderModel != null)
-                mainRenderModel.SetVisibility(visible);
+        public void SetVisibility(bool visible) {
+            if (mainRenderModel != null) mainRenderModel.SetVisibility(visible);
         }
 
-        public void SetSkeletonRangeOfMotion(EVRSkeletalMotionRange newRangeOfMotion, float blendOverSeconds = 0.1f)
-        {
+        public void SetSkeletonRangeOfMotion(EVRSkeletalMotionRange newRangeOfMotion, float blendOverSeconds = 0.1f) {
             mainRenderModel.SetSkeletonRangeOfMotion(newRangeOfMotion, blendOverSeconds);
         }
 
-        public void SetTemporarySkeletonRangeOfMotion(SkeletalMotionRangeChange temporaryRangeOfMotionChange, float blendOverSeconds = 0.1f)
-        {
+        public void SetTemporarySkeletonRangeOfMotion(SkeletalMotionRangeChange temporaryRangeOfMotionChange, float blendOverSeconds = 0.1f) {
             mainRenderModel.SetTemporarySkeletonRangeOfMotion(temporaryRangeOfMotionChange, blendOverSeconds);
         }
 
-        public void ResetTemporarySkeletonRangeOfMotion(float blendOverSeconds = 0.1f)
-        {
+        public void ResetTemporarySkeletonRangeOfMotion(float blendOverSeconds = 0.1f) {
             mainRenderModel.ResetTemporarySkeletonRangeOfMotion(blendOverSeconds);
         }
 
-        public void SetAnimationState(int stateValue)
-        {
-            mainRenderModel.SetAnimationState(stateValue);
-        }
-
-        public void StopAnimation()
-        {
-            mainRenderModel.StopAnimation();
-        }
+        // public void SetAnimationState(int stateValue) {
+        //     mainRenderModel.SetAnimationState(stateValue);
+        // }
+        // public void StopAnimation() {
+        //     mainRenderModel.StopAnimation();
+        // }
 
         protected float blendToPoseTime = 0.1f;
         protected float releasePoseBlendTime = 0.2f;
@@ -153,7 +101,7 @@ namespace VRPlayer
             if (quickEquipped) {
 
                 if (item.itemBehavior.equipType != InventoryEqupping.EquipType.Static && item.rigidbody != null) {
-                    GetComponent<VelocityEstimator>().BeginEstimatingVelocity();
+                    velocityEstimator.BeginEstimatingVelocity();
                 }
             }
                         
@@ -163,32 +111,16 @@ namespace VRPlayer
                 return;
             }
             
-            if (vr_item.hideHandOnAttach)
+            if (vr_item.hideHandOnAttach) {
                 Hide();
-
-            
-
-            // if (vr_item.handAnimationOnPickup != 0) {
-            //         // Debug.LogError("animation state");
-
-            //     SetAnimationState(vr_item.handAnimationOnPickup);
-            // }
+            }
 
             if (vr_item.setRangeOfMotionOnPickup != SkeletalMotionRangeChange.None) {
-                    // Debug.LogError("range of mot ion");
                 SetTemporarySkeletonRangeOfMotion(vr_item.setRangeOfMotionOnPickup);
             }
 
             if (vr_item.usePose) {
-                // if (!string.IsNullOrEmpty(vr_item.poseName)) {//.skeletonPoser != null)
-                // if (vr_item.skeletonPoser != null && skeleton != null) {
-                
-                    // Debug.LogError("blendign to poser");
-                    // skeleton.BlendToPoser(vr_item.poseName, vr_item.poseInfluence, blendToPoseTime);
-                    // skeleton.BlendToPoser(vr_item.poseToUse, vr_item.poseInfluence, blendToPoseTime);
-                    skeleton.BlendToPoser(vr_item.poseToUse, 1, blendToPoseTime);
-                // }
-
+                skeleton.BlendToPoser(vr_item.poseToUse, 1, blendToPoseTime);
             }
 
             if (vr_item.activateActionSetOnAttach != null)
@@ -224,43 +156,29 @@ namespace VRPlayer
             }
             
             if (vr_item.hideHandOnAttach) {
-
                 Show();
             }
 
-            // if (vr_item.handAnimationOnPickup != 0)
-            //     {
-
-            //     StopAnimation();
-            //     }
-
             if (vr_item.setRangeOfMotionOnPickup != SkeletalMotionRangeChange.None) {
-                // Debug.LogError("range of motion unewiup");
                 ResetTemporarySkeletonRangeOfMotion();
             }
               
             if (mainRenderModel != null) {
-                // Debug.LogError("render mdel");
                 mainRenderModel.ReturnHandToOrigin();
                 // mainRenderModel.MatchHandToTransform(mainRenderModel.transform);
             }
+
             //move to vr interacable
             if (vr_item.usePose) 
-            // if (!string.IsNullOrEmpty(vr_item.poseToUse))//.skeletonPoser != null)
             {
                 if (skeleton != null) {
-                    // Debug.LogError("blend to skeleton");
                     skeleton.BlendToSkeleton(releasePoseBlendTime);
                 }
             }
             
             if (vr_item.activateActionSetOnAttach != null)
             {
-                // int otherHandEquipIndex = VRManager.Hand2Int(VRManager.OtherHand(handType));
-                // int otherHandEquipIndex = 1-GetComponent<EquipPoint>().equipSlotOnBase;
-                // if (inventory.otherInventory.equippedItem == null || inventory.otherInventory.equippedItem.item.GetComponent<VRItemAddon>().activateActionSetOnAttach != vr_item.activateActionSetOnAttach)
-                if (inventory.GetComponent<InventoryEqupping>().equippedSlots[otherHandEquipIndex] == null || inventory.GetComponent<InventoryEqupping>().equippedSlots[otherHandEquipIndex].sceneItem.GetComponent<VRItemAddon>().activateActionSetOnAttach != vr_item.activateActionSetOnAttach)
-                
+                if (equipper.equippedSlots[otherHandEquipIndex] == null || equipper.equippedSlots[otherHandEquipIndex].sceneItem.GetComponent<VRItemAddon>().activateActionSetOnAttach != vr_item.activateActionSetOnAttach)
                 {
                     vr_item.activateActionSetOnAttach.Deactivate(handType);
                 }
@@ -342,18 +260,17 @@ namespace VRPlayer
 
         protected virtual void Awake()
         {
-            AdditionalInitialization();
-            
+            velocityEstimator = GetComponent<VelocityEstimator>();
             trackedObject = GetComponent<SteamVR_Behaviour_Pose>();
             
             interactor = GetComponent<InteractionPoint>();
-            inventory = Player.instance.GetComponent<Inventory>();
-
             interactor.interactorID = VRManager.Hand2Int(handType);
+
             GetComponent<EquipPoint>().equipID = interactor.interactorID;
+            
+            VRManager.onPauseRoutineStart += OnGamePaused;
         }
 
-        Inventory inventory;
         InteractionPoint interactor;
 
         protected virtual IEnumerator Start()
@@ -371,16 +288,16 @@ namespace VRPlayer
             HideController(true);
         }
 
-
+        InventoryEqupping equipper;
         protected virtual void OnEnable()
         {
          
-            Inventory inventory = Player.instance.GetComponent<Inventory>();
-            inventory.GetComponent<InventoryEqupping>().onEquip += OnItemEquipped;
-            inventory.GetComponent<InventoryEqupping>().onUnequip += OnItemUnequipped;
-            inventory.GetComponent<InventoryEqupping>().onEquipUpdate += OnEquippedUpdate;
+            equipper = Player.instance.GetComponent<InventoryEqupping>();
+            
+            equipper.onEquip += OnItemEquipped;
+            equipper.onUnequip += OnItemUnequipped;
+            equipper.onEquipUpdate += OnEquippedUpdate;
 
-            InteractionPoint interactor = GetComponent<InteractionPoint>();
             interactor.onInspectUpdate += OnInspectUpdate;
             interactor.onInspectStart += OnInspectStart;
             interactor.onInspectEnd += OnInspectEnd;
@@ -391,13 +308,10 @@ namespace VRPlayer
         {
             CancelInvoke();
 
-            
-            Inventory inventory = Player.instance.GetComponent<Inventory>();
-            inventory.GetComponent<InventoryEqupping>().onEquip -= OnItemEquipped;
-            inventory.GetComponent<InventoryEqupping>().onUnequip -= OnItemUnequipped;
-            inventory.GetComponent<InventoryEqupping>().onEquipUpdate -= OnEquippedUpdate;
+            equipper.onEquip -= OnItemEquipped;
+            equipper.onUnequip -= OnItemUnequipped;
+            equipper.onEquipUpdate -= OnEquippedUpdate;
 
-            InteractionPoint interactor = GetComponent<InteractionPoint>();
             interactor.onInspectUpdate -= OnInspectUpdate;
             interactor.onInspectStart -= OnInspectStart;
             interactor.onInspectEnd -= OnInspectEnd;
@@ -409,63 +323,42 @@ namespace VRPlayer
         
         }
         void OnInspectStart (InteractionPoint interactor, Interactable hoveringInteractable) {
-            
-            if (canQuickEquip) {
-                if (hoveringInteractable.actionNames.Length > Inventory.GRAB_ACTION) {
-            
-                StandardizedVRInput.instance.ShowHint(handType, useAction, hoveringInteractable.actionNames[Inventory.GRAB_ACTION]);
+            for (int i = 0; i < Player.instance.actions.Length; i++) {
+                if (hoveringInteractable.actionNames.Length > i) {
+                    if (i != equipper.quickEquipAction || equipper.equippedSlots[myEquipIndex] == null) {
+                        StandardizedVRInput.instance.ShowHint(handType, Player.instance.actions[i], hoveringInteractable.actionNames[i]);
+                    }
                 }
             }
-            else {
-
-                // if (!inventory.equippedSlots[myEquipIndex].isQuickEquipped) {
-
-                //     StandardizedVRInput.instance.ShowHint(handType, dropAction, hoveringInteractable.actionNames[Inventory.DROP_ACTION]);
-                // }
-            }
-            
-
-            if (hoveringInteractable.actionNames.Length > Inventory.STASH_ACTION) {
-                StandardizedVRInput.instance.ShowHint(handType, stashAction, hoveringInteractable.actionNames[Inventory.STASH_ACTION]);
-            }
-            // StandardizedVRInput.instance.ShowHint(handType, useAction, "Use");
         }
 
 
 
         void OnInspectEnd (InteractionPoint interactor, Interactable hoveringInteractable) {
-            StandardizedVRInput.instance.HideHint(handType, useAction);
-            StandardizedVRInput.instance.HideHint(handType, stashAction);
-        }
-
-        bool canQuickEquip {
-            get {
-                return inventory.GetComponent<InventoryEqupping>().equippedSlots[myEquipIndex] == null;
+            for (int i = 0; i < Player.instance.actions.Length; i++) {
+                StandardizedVRInput.instance.HideHint(handType, Player.instance.actions[i]);
             }
         }
 
 
-
-        void ControlInteractorAndEquipper (SteamVR_Action_Boolean action, int actionKey, InteractionPoint interactor, bool interactorAllowed, InventoryEqupping equipper) {
+        void ControlInteractorAndEquipper (SteamVR_Action_Boolean action, int actionKey) {
             bool useDown = action.GetStateDown(handType);
             bool useUp = action.GetStateUp(handType);
             bool useHeld = action.GetState(handType);
                 
             if (useDown) {
                 StandardizedVRInput.instance.HideHint(handType, action);
-                if (interactorAllowed) interactor.OnUseStart(actionKey);
-                equipper.OnUseStart(myEquipIndex, actionKey);
+                interactor.OnUseStart(actionKey);
+                equipper.OnActionStart(myEquipIndex, actionKey);
             }
             if (useUp) {
-                if (interactorAllowed) interactor.OnUseEnd(actionKey);
-                equipper.OnUseEnd(myEquipIndex, actionKey);
+                interactor.OnUseEnd(actionKey);
+                equipper.OnActionEnd(myEquipIndex, actionKey);
             }
             if (useHeld) {
-                if (interactorAllowed) interactor.OnUseUpdate(actionKey);
-                equipper.OnUseUpdate(myEquipIndex, actionKey);
+                interactor.OnUseUpdate(actionKey);
+                equipper.OnActionUpdate(myEquipIndex, actionKey);
             }         
-
-
         }
 
             
@@ -477,10 +370,9 @@ namespace VRPlayer
             if (handOccupied)
                 return;
 
-            ControlInteractorAndEquipper (useAction, Inventory.GRAB_ACTION, interactor, canQuickEquip, inventory.GetComponent<InventoryEqupping>());
-            ControlInteractorAndEquipper (stashAction, Inventory.STASH_ACTION, interactor, true, inventory.GetComponent<InventoryEqupping>());
-            // ControlInteractorAndEquipper (dropAction, Inventory.TRADE_ACTION, interactor, true, inventory.GetComponent<InventoryEqupping>());
-                    
+            for (int i = 0; i < Player.instance.actions.Length; i++) {
+                ControlInteractorAndEquipper (Player.instance.actions[i], i);
+            }        
         }
 
         protected virtual void OnEquippedUpdate( Inventory inventory, Item item, int slotIndex, bool quickEquipped )

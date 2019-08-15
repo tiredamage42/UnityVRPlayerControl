@@ -1,120 +1,90 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 namespace InteractionSystem {
 
 public class InteractionPoint : MonoBehaviour
 {
-    Interactable _hoveringInteractable;
+        public Transform referenceTransform;
+        public string extraSuffix;
+        public int interactorID = 0;
+        public Interactor baseInteractor;
+        public InventorySystem.Inventory inventory;
+        public bool findInteractables;
+        
+        public System.Action<InteractionPoint, Interactable> onInspectUpdate, onInspectStart, onInspectEnd;
+        public System.Action<InteractionPoint, int, Interactable> onUseUpdate, onUseStart, onUseEnd;
+        [HideInInspector] public Vector3 lastInteractionPoint;
+        public bool hoverLocked { get; private set; }
+        
+        Interactable _hoveringInteractable;
         const int ColliderArraySize = 16;
         Collider[] overlappingColliders;
-        public Transform referenceTransform;
         
-        public int interactorID = 0;
-
         
-        public Interactor baseInteractor;
-        [HideInInspector] public Vector3 lastInteractionPoint;
-        
-
-        
-
         void Awake () {
             overlappingColliders = new Collider[ColliderArraySize];
         }
+        public void SetBaseInteractor (Interactor baseInteractor) {
+            this.baseInteractor = baseInteractor;
+            inventory = baseInteractor.GetComponent<InventorySystem.Inventory>();
+        }
+        
 
         void FindInteractables () {
             if (hoverLocked)
                 return;
 
-            float closestDistance = float.MaxValue;
+            if (referenceTransform == null) {
+                Debug.LogError("no interactor reference transform supplied for " + name);
+                return;
+            }
+
             Interactable closestInteractable = null;
 
-            if (referenceTransform != null) {
-                if (( baseInteractor.usePositionCheck )) {
-                    UpdateHovering(
-                        referenceTransform.position, 
-                        baseInteractor.positionRadius, 
-                        ref closestDistance, ref closestInteractable
-                    );
+            float closestDistance = float.MaxValue;
+            
+            // use check around the interactors position
+            if (baseInteractor.usePositionCheck ) {
+                UpdateHovering (referenceTransform.position, baseInteractor.positionRadius, ref closestDistance, ref closestInteractable);
 
-                    if (closestInteractable != null) {
-                        lastInteractionPoint = referenceTransform.position;
-                    }
+                if (closestInteractable != null) {
+                    lastInteractionPoint = referenceTransform.position;
                 }
-                bool rayEnabled = closestInteractable == null && baseInteractor.useRayCheck;
-                Vector3 hitPos = Vector3.zero;
-                
-                if (rayEnabled) {
-
-                    UpdateRayCheck(referenceTransform.position, referenceTransform.forward, 
-                    baseInteractor.rayCheckDistance , 
-                    out hitPos, ref closestInteractable);
-                    
-                    if (closestInteractable != null) {
-                        lastInteractionPoint = hitPos;
-                    }
-
-                    // VisualizeInteractionRay (referenceTransform.position, hitPos, closestInteractable != null);
-                }
-                else {
-                    // DisableInteractionRay ();
-                }
-
-                if (onRayCheckUpdate != null) {
-                    onRayCheckUpdate(rayEnabled, referenceTransform.position, hitPos, closestInteractable != null, interactorID);
-                }
-
             }
-            else {
-                Debug.LogError("no interactor reference transform supplied for " + name);
-            }
+
+            bool rayEnabled = closestInteractable == null && baseInteractor.useRayCheck;
+            Vector3 hitPos = Vector3.zero;
+            
+            if (rayEnabled) {
+                UpdateRayCheck(referenceTransform.position, referenceTransform.forward, baseInteractor.rayCheckDistance, out hitPos, ref closestInteractable);
                 
+                if (closestInteractable != null) {
+                    lastInteractionPoint = hitPos;
+                }
+            }
+            
+            //for visualization....
+            if (onRayCheckUpdate != null) {
+                onRayCheckUpdate(rayEnabled, referenceTransform.position, hitPos, closestInteractable != null, interactorID);
+            }
+
             // Hover on this one
             hoveringInteractable = closestInteractable;
         }
-
-
         public System.Action<bool, Vector3, Vector3, bool, int> onRayCheckUpdate;
-        void UpdateRayCheck(Vector3 origin, Vector3 direction, float distance, out Vector3 hitPos, ref Interactable closestInteractable) {
-            Ray ray = new Ray(origin, direction);
-            RaycastHit hit;
-            //maybe raycast all
-            if (Physics.Raycast(ray, out hit, distance, Interactable.interactTriggerMask, QueryTriggerInteraction.Collide)){// baseInteractor.hoverLayerMask)) {
-                
-                hitPos = hit.point;
-                InteractableElement c = hit.collider.GetComponent<InteractableElement>();
-                if (c == null)
-                    return;
 
-                Interactable contacting = c.interactable;
-                // Interactable contacting = hit.collider.GetComponentInParent<Interactable>();
 
-                if (contacting == null || !contacting.available)
-                    return;
-
-                if (contacting.onlyProximityHover && !baseInteractor.godModeInteractor)
-                    return;
-                
-                closestInteractable = contacting;
-            }
-            else {
-                hitPos = origin + direction * distance;
-            }
-        }
+        
         void UpdateHovering(Vector3 hoverPosition, float hoverRadius, ref float closestDistance, ref Interactable closestInteractable)
         {
            
             // null out old vals
-            for (int i = 0; i < overlappingColliders.Length; ++i)
-            {
-                overlappingColliders[i] = null;
-            }
-
-            int numColliding = Physics.OverlapSphereNonAlloc(hoverPosition, hoverRadius, overlappingColliders, Interactable.interactTriggerMask, QueryTriggerInteraction.Collide);// baseInteractor.hoverLayerMask.value);
+            for (int i = 0; i < overlappingColliders.Length; ++i) overlappingColliders[i] = null;
+            
+            int numColliding = Physics.OverlapSphereNonAlloc(hoverPosition, hoverRadius, overlappingColliders, Interactable.interactTriggerMask, QueryTriggerInteraction.Collide);
 
             if (numColliding == ColliderArraySize)
-                Debug.LogWarning("<b>[SteamVR Interaction]</b> This hand is overlapping the max number of colliders: " + ColliderArraySize + ". Some collisions may be missed. Increase ColliderArraySize on Hand.cs");
+                Debug.LogWarning("overlapping the max number of colliders: " + ColliderArraySize + ". Some collisions may be missed. Increase ColliderArraySize on InteractionPoint.cs");
 
             // Pick the closest hovering
             for (int colliderIndex = 0; colliderIndex < numColliding; colliderIndex++)
@@ -125,9 +95,6 @@ public class InteractionPoint : MonoBehaviour
 
                 Interactable contacting = c.interactable;
                 
-                // Interactable contacting = overlappingColliders[colliderIndex].GetComponentInParent<Interactable>();
-
-                // Yeah, it's null, skip
                 if (contacting == null || !contacting.available)
                     continue;
 
@@ -140,11 +107,32 @@ public class InteractionPoint : MonoBehaviour
                 }
             }
         }
-        public bool findInteractables;
+        void UpdateRayCheck(Vector3 origin, Vector3 direction, float distance, out Vector3 hitPos, ref Interactable closestInteractable) {
+            RaycastHit hit;
+            //maybe raycast all
+            if (Physics.Raycast(new Ray(origin, direction), out hit, distance, Interactable.interactTriggerMask, QueryTriggerInteraction.Collide)){
+                
+                hitPos = hit.point;
+                InteractableElement c = hit.collider.GetComponent<InteractableElement>();
+                if (c == null)
+                    return;
+
+                Interactable contacting = c.interactable;
+                if (contacting == null || !contacting.available)
+                    return;
+
+                if (contacting.onlyProximityHover && !baseInteractor.godModeInteractor)
+                    return;
+                
+                closestInteractable = contacting;
+            }
+            else {
+                hitPos = origin + direction * distance;
+            }
+        }
         void Update()
         {         
             if (findInteractables) {
-
                 FindInteractables();
             }   
          
@@ -156,8 +144,6 @@ public class InteractionPoint : MonoBehaviour
                     onInspectUpdate(this, hoveringInteractable);
                 }
             }
-
-
         }
 
         public Interactable hoveringInteractable
@@ -223,8 +209,7 @@ public class InteractionPoint : MonoBehaviour
 
         public void OnUseEnd (int useIndex) {
             if (hoveringInteractable != null) {
-                bool isUseable = hoveringInteractable.useType != Interactable.UseType.Scripted;
-                if (isUseable) {
+                if (hoveringInteractable.useType != Interactable.UseType.Scripted) {
                     hoveringInteractable.OnUsedEnd(this, useIndex);
                 }
             }
@@ -234,28 +219,15 @@ public class InteractionPoint : MonoBehaviour
         }
         public void OnUseUpdate (int useIndex) {
             if (hoveringInteractable != null) {
-                bool isUseable = hoveringInteractable.useType != Interactable.UseType.Scripted;
-                if (isUseable) {
-                
-                hoveringInteractable.OnUsedUpdate(this, useIndex);
+                if (hoveringInteractable.useType != Interactable.UseType.Scripted) {
+                    hoveringInteractable.OnUsedUpdate(this, useIndex);
                 }
             }
             if (onUseUpdate != null) {
                 onUseUpdate (this, useIndex, hoveringInteractable);
             }
         }
-        public void SetBaseInteractor (Interactor baseInteractor) {
-            this.baseInteractor = baseInteractor;
-            inventory = baseInteractor.GetComponent<InventorySystem.Inventory>();
-
-        }
-        public InventorySystem.Inventory inventory;
-
-
-        public void RemoveInteractionTags (List<string> tags) {
-            baseInteractor.RemoveInteractionTags(BuildSuffixedTags(tags));   
-            
-        }
+        
         List<string> BuildSuffixedTags(List<string> tags) {
             if (extraSuffix == null || extraSuffix == string.Empty) {
                 return tags;
@@ -266,21 +238,13 @@ public class InteractionPoint : MonoBehaviour
             }
             return forBase;
         }
-
         public void AddInteractionTags (List<string> tags) {
             baseInteractor.AddInteractionTags(BuildSuffixedTags(tags));   
-            
         }
-        public bool hoverLocked { get; private set; }
-
-public string extraSuffix;
-        public System.Action<InteractionPoint, Interactable> onInspectUpdate, onInspectStart, onInspectEnd;
-        public System.Action<InteractionPoint, int, Interactable> onUseUpdate, onUseStart, onUseEnd;
+        public void RemoveInteractionTags (List<string> tags) {
+            baseInteractor.RemoveInteractionTags(BuildSuffixedTags(tags));      
+        }
         
-        
-
-
-
-}
+    }
 
 }

@@ -22,7 +22,7 @@ namespace SimpleUI{
 
         void DrawAddElementButton () {
             if (GUILayout.Button("Add " + NewElementString())) {
-                holder.AddNewElement(NewElementString());
+                holder.AddNewSelectableElement(NewElementString(), true);
             }
         }
     }

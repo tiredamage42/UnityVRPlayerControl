@@ -3,8 +3,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
 
-using RenderTricks;
-
 namespace InteractionSystem
 {
 
@@ -31,11 +29,6 @@ namespace InteractionSystem
         public bool onlyProximityHover;
         public bool available = true;
 
-        public void SetAvailable (bool available) {
-            this.available = available;
-            for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableAvailabilityChange(available);
-            // if (onAvailabilityChange != null) onAvailabilityChange.Invoke(available);
-        }
         
         public enum UseType { Normal, Scripted };
         public UseType useType;
@@ -44,18 +37,25 @@ namespace InteractionSystem
         // public InteractableInspectEvent onInspectStart, onInspectUpdate, onInspectEnd;
         // public InteractableAvailabilityEvent onAvailabilityChange;
 
-
-
         HashSet<int> currentHoveringIDs = new HashSet<int>();
 
         // public bool isDestroying { get; protected set; }
         public bool isHovering { get { return currentHoveringIDs.Count != 0; } }
 
 
+        List<IInteractable> listeners = new List<IInteractable>();
+        public void AddListener (IInteractable listener) {
+            listeners.Add(listener);
+        }
+        void InitializeListeners() {
+            IInteractable[] listeners_ = GetComponents<IInteractable>();
+            for (int i = 0; i< listeners_.Length; i++) this.listeners.Add(listeners_[i]);
+        }
         void SetInteractableElements () {
             InteractableElement[] elements = GetComponentsInChildren<InteractableElement>();
-            for (int i = 0; i < elements.Length; i++) elements[i].SetInteractable(this);
+            for (int i = 0; i < elements.Length; i++) elements[i].interactable = this;
         }
+        
         
         private void Awake()
         {
@@ -67,7 +67,11 @@ namespace InteractionSystem
             SetAvailable(available);
         }
 
-        
+        public void SetAvailable (bool available) {
+            this.available = available;
+            for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableAvailabilityChange(available);
+            // if (onAvailabilityChange != null) onAvailabilityChange.Invoke(available);
+        }
         public void OnInspectedStart (InteractionPoint interactor) {
             currentHoveringIDs.Add(interactor.GetInstanceID());
             for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableInspectedStart(interactor);
@@ -94,13 +98,6 @@ namespace InteractionSystem
             for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableUsedUpdate(interactor, useIndex);
             // if (onUseUpdate != null) onUseUpdate.Invoke(interactor, useIndex);
         }
-        List<IInteractable> listeners = new List<IInteractable>();
-        void InitializeListeners() {
-            IInteractable[] listeners_ = GetComponents<IInteractable>();
-            for (int i = 0; i< listeners_.Length; i++) this.listeners.Add(listeners_[i]);
-        }
-        public void AddListener (IInteractable listener) {
-            listeners.Add(listener);
-        }
+        
     }
 }

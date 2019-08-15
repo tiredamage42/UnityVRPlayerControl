@@ -1,11 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿// using System.Collections;
+// using System.Collections.Generic;
 using UnityEngine;
 
 namespace VRPlayer.Locomotion {
     public class LocomotionComfortVignette : MonoBehaviour
     {
-
         public float vignetteIntensity = 2.0f;
         public float vignetteSpeed = 10;
         public float vignetteMovementThreshold = 1;
@@ -22,8 +21,7 @@ namespace VRPlayer.Locomotion {
             
         }
         void Start () {
-
-            vignette = VRManager.instance.hmdTransform.GetComponentInChildren<VignettingVR>();
+            vignette = GameObject.FindObjectOfType<VignettingVR>();
         }
         
 
@@ -41,12 +39,5 @@ namespace VRPlayer.Locomotion {
             vignette.SetIntensity( currentVignetteIntensity );
             vignette.SetColor(Color.black);//isCrouched ? crouchVignetteColor : Color.black);
         }
-
-
-        
-
-
-
-
     }
 }

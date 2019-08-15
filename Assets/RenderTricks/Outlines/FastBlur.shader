@@ -8,11 +8,11 @@ Shader "Hidden/_FastBlur" {
 		#include "UnityCG.cginc"
 
 		sampler2D _MainTex;
-		sampler2D _Bloom;
+		// sampler2D _Bloom;
 				
 		uniform fixed4 _MainTex_TexelSize;
 		fixed4 _MainTex_ST;
-		fixed4 _Bloom_ST;
+		// fixed4 _Bloom_ST;
 		uniform fixed4 _Parameter;
 
 		struct v2f_tap
@@ -48,7 +48,10 @@ Shader "Hidden/_FastBlur" {
 	
 		// weight curves
 
-		// static const fixed curve[7] = { 0.0205, 0.0855, 0.232, 0.324, 0.232, 0.0855, 0.0205 };  // gauss'ish blur weights
+		/*
+			need to blur alpha as well
+		*/
+		static const fixed curve[7] = { 0.0205, 0.0855, 0.232, 0.324, 0.232, 0.0855, 0.0205 };  // gauss'ish blur weights
 
 		// static const fixed4 curve4[7] = { 
         //     fixed4(0.0205, 0.0205, 0.0205, 0), 
@@ -60,18 +63,15 @@ Shader "Hidden/_FastBlur" {
         //     fixed4(0.0205, 0.0205, 0.0205, 0) 
         // };
 
-		/*
-			need to blur alpha as well
-		*/
-        static const fixed4 curve4[7] = { 
-            fixed4(0.0205, 0.0205, 0.0205, 0.0205), 
-            fixed4(0.0855, 0.0855, 0.0855, 0.0855), 
-            fixed4(0.232,  0.232,  0.232,  0.232), 
-            fixed4(0.324,  0.324,  0.324,  0.324), 
-            fixed4(0.232,  0.232,  0.232,  0.232), 
-            fixed4(0.0855, 0.0855, 0.0855, 0.0855), 
-            fixed4(0.0205, 0.0205, 0.0205, 0.0205) 
-        };
+        // static const fixed4 curve4[7] = { 
+        //     fixed4(0.0205, 0.0205, 0.0205, 0.0205), 
+        //     fixed4(0.0855, 0.0855, 0.0855, 0.0855), 
+        //     fixed4(0.232,  0.232,  0.232,  0.232), 
+        //     fixed4(0.324,  0.324,  0.324,  0.324), 
+        //     fixed4(0.232,  0.232,  0.232,  0.232), 
+        //     fixed4(0.0855, 0.0855, 0.0855, 0.0855), 
+        //     fixed4(0.0205, 0.0205, 0.0205, 0.0205) 
+        // };
 
 		struct v2f_withBlurCoords8 
 		{
@@ -109,10 +109,9 @@ Shader "Hidden/_FastBlur" {
 			fixed2 coords = uv - netFilterWidth * 3.0;  
 			
 			fixed4 color = 0;
-  			for( int l = 0; l < 7; l++ )  
+  			[unroll] for( int l = 0; l < 7; l++ )  
   			{   
-				fixed4 tap = tex2D(_MainTex, UnityStereoScreenSpaceUVAdjust(coords, _MainTex_ST));
-                color += tap * curve4[l];
+				color += tex2D(_MainTex, UnityStereoScreenSpaceUVAdjust(coords, _MainTex_ST)) * curve[l];
 				coords += netFilterWidth;
   			}
             return color;
@@ -127,6 +126,8 @@ Shader "Hidden/_FastBlur" {
             CGPROGRAM
             #pragma vertex vert4Tap
             #pragma fragment fragDownsample
+			#pragma fragmentoption ARB_precision_hint_fastest
+		
             ENDCG
 		}
         // 1
@@ -135,6 +136,8 @@ Shader "Hidden/_FastBlur" {
             CGPROGRAM 
             #pragma vertex vertBlurVertical
             #pragma fragment fragBlur8
+			#pragma fragmentoption ARB_precision_hint_fastest
+		
             ENDCG 
 		}	
         Pass {		
@@ -142,6 +145,8 @@ Shader "Hidden/_FastBlur" {
             CGPROGRAM
             #pragma vertex vertBlurHorizontal
             #pragma fragment fragBlur8
+			#pragma fragmentoption ARB_precision_hint_fastest
+		
             ENDCG
 		}	
 	}	

@@ -9,16 +9,16 @@ namespace VRPlayer
 {
 	public class TeleportPoint : MonoBehaviour// TeleportMarkerBase
 	{
-		public enum TeleportPointType
-		{
-			MoveToLocation,
-			SwitchToNewScene
-		};
+		// public enum TeleportPointType
+		// {
+		// 	MoveToLocation,
+		// 	SwitchToNewScene
+		// };
 
 		//Public variables
-		public TeleportPointType teleportType = TeleportPointType.MoveToLocation;
+		// public TeleportPointType teleportType = TeleportPointType.MoveToLocation;
 		public string title;
-		public string switchToScene;
+		// public string switchToScene;
 		public Color titleVisibleColor;
 		public Color titleHighlightedColor;
 		public Color titleLockedColor;
@@ -35,12 +35,12 @@ namespace VRPlayer
 		Text titleText;
 		Vector3 lookAtPosition = Vector3.zero;
 		// int tintColorID = 0;
-		Color tintColor = Color.clear;
+		// Color tintColor = Color.clear;
 		Color titleColor = Color.clear;
 		float fullTitleAlpha = 0.0f;
 
 		//Constants
-		private const string switchSceneAnimation = "switch_scenes_idle";
+		// private const string switchSceneAnimation = "switch_scenes_idle";
 		private const string moveLocationAnimation = "move_location_idle";
 		private const string lockedAnimation = "locked_idle";
 
@@ -136,23 +136,23 @@ namespace VRPlayer
 			{
 				SetMeshMaterials( Teleport.instance.pointVisibleMaterial, titleVisibleColor );
 
-				switch ( teleportType )
-				{
-					case TeleportPointType.MoveToLocation:
-						{
+				// switch ( teleportType )
+				// {
+				// 	case TeleportPointType.MoveToLocation:
+				// 		{
 							pointIcon = moveLocationIcon;
 
 							animation.clip = animation.GetClip( moveLocationAnimation );
-						}
-						break;
-					case TeleportPointType.SwitchToNewScene:
-						{
-							pointIcon = switchSceneIcon;
+				// 		}
+				// 		break;
+				// 	case TeleportPointType.SwitchToNewScene:
+				// 		{
+				// 			pointIcon = switchSceneIcon;
 
-							animation.clip = animation.GetClip( switchSceneAnimation );
-						}
-						break;
-				}
+				// 			animation.clip = animation.GetClip( switchSceneAnimation );
+				// 		}
+				// 		break;
+				// }
 			}
 
 			titleText.text = title;
@@ -177,7 +177,7 @@ namespace VRPlayer
 		public void SetMeshMaterials( Material material, Color textColor )
 		{
 			markerMesh.sharedMaterial = material;
-			switchSceneIcon.sharedMaterial = material;
+			// switchSceneIcon.sharedMaterial = material;
 			moveLocationIcon.sharedMaterial = material;
 			lockedIcon.sharedMaterial = material;
 
@@ -186,17 +186,17 @@ namespace VRPlayer
 			titleText.color = titleColor;
 		}
 
-		public void TeleportToScene()
-		{
-			if ( !string.IsNullOrEmpty( switchToScene ) )
-			{
-				Debug.Log("<b>[SteamVR Interaction]</b> TeleportPoint: Hook up your level loading logic to switch to new scene: " + switchToScene );
-			}
-			else
-			{
-				Debug.LogError("<b>[SteamVR Interaction]</b> TeleportPoint: Invalid scene name to switch to: " + switchToScene );
-			}
-		}
+		// public void TeleportToScene()
+		// {
+		// 	if ( !string.IsNullOrEmpty( switchToScene ) )
+		// 	{
+		// 		Debug.Log("<b>[SteamVR Interaction]</b> TeleportPoint: Hook up your level loading logic to switch to new scene: " + switchToScene );
+		// 	}
+		// 	else
+		// 	{
+		// 		Debug.LogError("<b>[SteamVR Interaction]</b> TeleportPoint: Invalid scene name to switch to: " + switchToScene );
+		// 	}
+		// }
 
 		public void GetRelevantComponents()
 		{
@@ -211,15 +211,15 @@ namespace VRPlayer
 			gotReleventComponents = true;
 		}
 
-		public void ReleaseRelevantComponents()
-		{
-			markerMesh = null;
-			switchSceneIcon = null;
-			moveLocationIcon = null;
-			lockedIcon = null;
-			lookAtJointTransform = null;
-			titleText = null;
-		}
+		// public void ReleaseRelevantComponents()
+		// {
+		// 	markerMesh = null;
+		// 	switchSceneIcon = null;
+		// 	moveLocationIcon = null;
+		// 	lockedIcon = null;
+		// 	lookAtJointTransform = null;
+		// 	titleText = null;
+		// }
 
 
 
@@ -237,7 +237,7 @@ namespace VRPlayer
 			{
 				lockedIcon.gameObject.SetActive( true );
 				moveLocationIcon.gameObject.SetActive( false );
-				switchSceneIcon.gameObject.SetActive( false );
+				// switchSceneIcon.gameObject.SetActive( false );
 
 				markerMesh.sharedMaterial = Teleport.instance.pointLockedMaterial;
 				lockedIcon.sharedMaterial = Teleport.instance.pointLockedMaterial;
@@ -249,31 +249,31 @@ namespace VRPlayer
 				lockedIcon.gameObject.SetActive( false );
 
 				markerMesh.sharedMaterial = Teleport.instance.pointVisibleMaterial;
-				switchSceneIcon.sharedMaterial = Teleport.instance.pointVisibleMaterial;
+				// switchSceneIcon.sharedMaterial = Teleport.instance.pointVisibleMaterial;
 				moveLocationIcon.sharedMaterial = Teleport.instance.pointVisibleMaterial;
 
 				titleText.color = titleVisibleColor;
 
-				switch ( teleportType )
-				{
-					case TeleportPointType.MoveToLocation:
-						{
+				// switch ( teleportType )
+				// {
+					// case TeleportPointType.MoveToLocation:
+					// 	{
 							moveLocationIcon.gameObject.SetActive( true );
-							switchSceneIcon.gameObject.SetActive( false );
-						}
-						break;
-					case TeleportPointType.SwitchToNewScene:
-						{
-							moveLocationIcon.gameObject.SetActive( false );
-							switchSceneIcon.gameObject.SetActive( true );
-						}
-						break;
-				}
+							// switchSceneIcon.gameObject.SetActive( false );
+				// 		}
+				// 		break;
+				// 	case TeleportPointType.SwitchToNewScene:
+				// 		{
+				// 			moveLocationIcon.gameObject.SetActive( false );
+				// 			switchSceneIcon.gameObject.SetActive( true );
+				// 		}
+				// 		break;
+				// }
 			}
 
 			titleText.text = title;
 
-			ReleaseRelevantComponents();
+			// ReleaseRelevantComponents();
 		}
 
 

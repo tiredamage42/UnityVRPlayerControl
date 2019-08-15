@@ -2,16 +2,15 @@
 using UnityEngine.UI;
 
 namespace SimpleUI {
-    [ExecuteInEditMode] public class UIText : MonoBehaviour
+    /*
+        used to keep text in ui consistent
+    */
+    [RequireComponent(typeof(Text))] [RequireComponent(typeof(Outline))]
+    [ExecuteInEditMode] public class UIText : UIGraphic<Text>
     {
-        Text _text;
-        Text text {
-            get {
-                if (_text == null) _text = GetComponent<Text>();
-                return _text;
-            }
-        }
 
+        Text text { get { return mainGraphic; } }
+        
         Outline _outline;
         Outline outline {
             get {
@@ -19,21 +18,60 @@ namespace SimpleUI {
                 return _outline;
             }
         }
-        public RectTransform rectTransform { get { return text.rectTransform; } }
         
-        public bool invert;
-        void OnEnable () {
-            UpdateColors();
+
+        public int currentLines = 1;
+
+        const char lineBreak = '\n';
+        const string lineBreakAdd = "-\n";
+
+        public static string AdjustTextToMaxLength (string input, int maxCharacters, out int lines) {
+            lines = 1;
+
+            int length = input.Length;
+            string adjusted = "";
+            int l = 0;
+            for (int i = 0; i < length; i++) {                
+                adjusted += input[i];
+                l++;
+                if (input[i] == lineBreak) {
+                    l = 0;
+                    lines++;
+                }
+                else {
+                    if ( l == maxCharacters ) {
+                        adjusted += lineBreakAdd;
+                        l = 0;
+                        lines++;
+                    }
+                }
+            }
+            return adjusted;
+        }
+        public static int LineCount (string input) {
+            int lines = 1;
+            int length = input.Length;
+            for (int i = 0; i < length; i++) {                
+                if (input[i] == lineBreak) lines++;
+            }
+            return lines;
         }
 
-        public void SetText (string text) {
-            this.text.text = text;
+        
+        public void SetText (string text, int maxLineChars) {
+            if (maxLineChars > 0) {
+                this.text.text = AdjustTextToMaxLength (text, maxLineChars, out currentLines);
+            }
+            else {
+                this.text.text = text;
+                currentLines = LineCount(text);
+            }
         }
         public void SetAnchor(TextAnchor textAnchor) {
             text.alignment = textAnchor;
         }
 
-        public void AdjustAnchorSet (Vector2 offsets){//float marginOffset, float yOffset) {
+        public void AdjustAnchorSet (Vector2 offsets){
             
             bool isMiddle = text.alignment == TextAnchor.MiddleCenter || text.alignment == TextAnchor.MiddleRight || text.alignment == TextAnchor.MiddleLeft;
             bool isLower = text.alignment == TextAnchor.LowerCenter || text.alignment == TextAnchor.LowerRight || text.alignment == TextAnchor.LowerLeft;
@@ -69,9 +107,9 @@ namespace SimpleUI {
             outline.effectColor = c;
         }
 
-        public void UpdateColors () {
-            text.color = invert ? UIManager.instance.mainDarkColor : UIManager.instance.mainLightColor;
-            outline.effectColor = invert ? UIManager.instance.mainLightColor : UIManager.instance.mainDarkColor;
+        public override void UpdateGraphicColors() {
+            base.UpdateGraphicColors();
+            if (!overrideColors) outline.effectColor = UIManager.GetColor(colorScheme, !useDark );
         }
     }
 }

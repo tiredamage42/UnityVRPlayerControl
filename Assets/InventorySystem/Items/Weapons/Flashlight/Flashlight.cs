@@ -17,14 +17,12 @@ public class Flashlight : MonoBehaviour, ISceneItem
     }
     public void OnUnequipped(Inventory inventory) {
         EnableLight(false);
-
     }
     public void OnEquippedUpdate(Inventory inventory) {
 
     }
     public void OnEquippedUseStart(Inventory inventory, int useIndex) {
         if (useIndex == 0) {
-
             EnableLight(!lightEnabled);
         }
     }

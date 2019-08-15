@@ -23,8 +23,6 @@ using UnityEngine;
 using ActorSystem;
 using InventorySystem;
 using QuestSystem;
-using SimpleUI;
-using GameUI;
 
 #if UNITY_EDITOR 
 using UnityEditor;
@@ -33,11 +31,11 @@ using UnityEditor;
 namespace DialogueSystem {
     public class DialoguePlayer : MonoBehaviour {
         public AudioSource audioSource;
-        public DialoguePlayerUIHandler dialoguePlayerUIHandler;
         public bool inDialogue;
 
-        Actor myActor;
-        DialogueTemplateHolder speakingTo;
+        Actor myActor, speakingTo;
+        DialogueTemplate template; 
+        AudioSource speakerSource;
         Dictionary<int, DialogueStep> stepIDtoStep = new Dictionary<int, DialogueStep>();
         bool waitingForResponse;
         int phase, currentStepID;
@@ -54,7 +52,7 @@ namespace DialogueSystem {
             if (inDialogue) {
                 if (audioSource != null) audioSource.Stop();
                 if (speakingTo != null) {
-                    if (speakingTo.audioSource != null) speakingTo.audioSource.Stop();
+                    if (speakerSource != null) speakerSource.Stop();
                     speakingTo = null;
                 }
             }
@@ -64,12 +62,20 @@ namespace DialogueSystem {
         
         void BuildStepIDDictionary() {
             stepIDtoStep.Clear();
-            for (int i = 0; i < speakingTo.template.allSteps.Length; i++) {
-                stepIDtoStep.Add(speakingTo.template.allSteps[i].stepID, speakingTo.template.allSteps[i]);
+            for (int i = 0; i < template.allSteps.Length; i++) {
+                stepIDtoStep.Add(template.allSteps[i].stepID, template.allSteps[i]);
             }
         }
-        public void StartDialogueWith (DialogueTemplateHolder speakingTo) {
+        public void StartDialogue (Actor speakingTo, DialogueTemplate template, AudioSource speakerSource) {
+
+            if (onResponseRequested == null)
+            {
+                Debug.LogError(name + " / " + myActor.actorName + " doesnt have a callback for on response requested, hook player up with dialogue ui handler, or other method of choosing a response");
+            }
             this.speakingTo = speakingTo;
+            this.template = template;
+            this.speakerSource = speakerSource;
+
             inDialogue = true;
             currentStepID = 0;
             BuildStepIDDictionary();
@@ -80,37 +86,38 @@ namespace DialogueSystem {
             // Speaking to begins first...
             
             // show subtitles
-            UISubtitles.instance.ShowSubtitles (speakingTo.actor.actorName, step.bark);
+            myActor.ShowSubtitles (speakingTo.actorName, step.bark);
             
             // play audio
-            if (speakingTo.audioSource != null) {
+            if (speakerSource != null) {
                 if (step.associatedAudio != null) {
-                    speakingTo.audioSource.clip = step.associatedAudio;
+                    speakerSource.clip = step.associatedAudio;
                     audioSource.Play();
                 }
             }
 
 
             Dictionary<string, GameValue> selfValues = myActor.actorValues;
-            Dictionary<string, GameValue> suppliedValues = speakingTo.actor.actorValues;
+            Dictionary<string, GameValue> suppliedValues = speakingTo.actorValues;
             
 
             // add any buffs associated with this step to the player
             myActor.AddBuffs(step.playerBuffs, 1, 0, 0, true, selfValues, suppliedValues);
 
             // add any buffs associated with this step to the speaker
-            speakingTo.actor.AddBuffs(step.speakerBuffs, 1, 0, 0, true, selfValues, suppliedValues);
+            speakingTo.AddBuffs(step.speakerBuffs, 1, 0, 0, true, selfValues, suppliedValues);
 
             // give items to player
             if (step.transferToPlayer.list.Length > 0) {
-                myActor.inventory.crafter.AddItemComposition(step.transferToPlayer, true, selfValues, suppliedValues);
+                myActor.inventory.AddItemComposition(step.transferToPlayer, sendMessage: true, selfValues, suppliedValues);
             }
 
             // player gives items to speaker
             if (step.transferToSpeaker.list.Length > 0) {
-                Item_Composition[] removedItemsFromPlayer = myActor.inventory.crafter.RemoveItemComposition(step.transferToSpeaker, checkScrap: false, selfValues, suppliedValues);
+                Item_Composition[] removedItemsFromPlayer = myActor.inventory.RemoveItemComposition(step.transferToSpeaker, checkScrap: false, sendMessage: true, selfValues, suppliedValues);
                 
-                speakingTo.inventory.crafter.AddItemComposition(removedItemsFromPlayer, checkConditions: false, selfValues, suppliedValues);
+                // null game values = no condition check
+                speakingTo.inventory.AddItemComposition(removedItemsFromPlayer, false, null, null);
             }
 
             // quest given to the player
@@ -167,7 +174,7 @@ namespace DialogueSystem {
                 }
 
                 Dictionary<string, GameValue> selfValues = myActor.actorValues;
-                Dictionary<string, GameValue> suppliedValues = speakingTo.actor.actorValues;
+                Dictionary<string, GameValue> suppliedValues = speakingTo.actorValues;
             
                 DialogueResponse[] responses = workingStep.responses;
                 List<DialogueResponse> usedResponses = new List<DialogueResponse>();
@@ -186,7 +193,7 @@ namespace DialogueSystem {
                             // that the player inventory has enough components
                             DialogueStep leadsToStep = stepIDtoStep[nextStepID];
                             bool hasTransferFromPlayer = leadsToStep.transferToSpeaker.list.Length > 0;
-                            if (!hasTransferFromPlayer || myActor.inventory.crafter.ItemCompositionAvailableInInventory(leadsToStep.transferToSpeaker, checkScrap: false, selfValues, suppliedValues)) {
+                            if (!hasTransferFromPlayer || myActor.inventory.ItemCompositionAvailableInInventory(leadsToStep.transferToSpeaker, checkScrap: false, selfValues, suppliedValues)) {
                                 usedResponses.Add(responses[i]);
                             }
                         }
@@ -199,8 +206,9 @@ namespace DialogueSystem {
 
                 //set up the ui to show potential responses (TODO: fade out instead of hard close on response...)
                 waitingForResponse = true;
-                dialoguePlayerUIHandler.onUIClose += OnDialogueUIHandlerClose;
-                dialoguePlayerUIHandler.ShowResponses(usedResponses, OnResponseChosen);
+
+                onResponseRequested(usedResponses, OnResponseChosen, OnResponseCancelled);
+                
             }
             
             // we chose a response and let the audio play
@@ -210,11 +218,16 @@ namespace DialogueSystem {
             }
         }
 
+
+
+
+        public event System.Action<List<DialogueResponse>, System.Action<DialogueResponse>, System.Action> onResponseRequested;
+
         void OnResponseChosen (DialogueResponse chosenResponse) {
             waitingForResponse = false;
 
             // player "speaks"
-            UISubtitles.instance.ShowSubtitles (myActor.actorName, chosenResponse.bark);
+            myActor.ShowSubtitles (myActor.actorName, chosenResponse.bark);
             
             if (audioSource != null && chosenResponse.associatedAudio != null) {
                 audioSource.clip = chosenResponse.associatedAudio;
@@ -225,9 +238,7 @@ namespace DialogueSystem {
             currentStepID = chosenResponse.nextDialogueStepID;
         }
 
-        void OnDialogueUIHandlerClose (UIElementHolder uiObject) {
-            dialoguePlayerUIHandler.onUIClose -= OnDialogueUIHandlerClose;
-            
+        void OnResponseCancelled () {
             // if we closed the ui without choosing a response, just stop the convo
             if (waitingForResponse) {
                 Stop();

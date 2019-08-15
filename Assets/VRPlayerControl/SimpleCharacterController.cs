@@ -116,7 +116,10 @@ public class SimpleCharacterController : MonoBehaviour
             relativeTransform = transform;
         }
 
-        characterController.Move( relativeTransform.TransformDirection( moveVector ) );
+        if (characterController.enabled) {
+            characterController.Move( relativeTransform.TransformDirection( moveVector ) );
+        }
+
     
     }
 

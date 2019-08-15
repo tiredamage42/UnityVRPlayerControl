@@ -6,8 +6,6 @@
 
 #include "UnityCG.cginc" 
 
-
-
 #define WORLDPOS_NAME i_VertexWorld
 #define WORLDNORM_NAME i_NormalWorld
 #define WORLDTANG_NAME i_TangentWorld
@@ -139,8 +137,11 @@
     #define TRANSFER_TSPACEMATRIX(a, b) \
         b.wPos = a.wPos; \
         b.wNorm = a.wNorm; 
-        
 #endif
+
+
+
+        
 
 #ifndef UNITY_PASS_FORWARDADD
     #define AMBIENT_LIGHTING_COORDS(TCID) float3 ambLighting : TEXCOORD##TCID; 
@@ -174,7 +175,6 @@
 #endif
 
 #ifdef BUMP_MAP
-    
     #define PACK_TSPACE_MATRIX(o, sign) \
         fixed3 worldBinormal = cross(WORLDNORM_NAME, WORLDTANG_NAME) * (sign * unity_WorldTransformParams.w); \
         o.tSpace0 = float4(WORLDTANG_NAME.x, worldBinormal.x, WORLDNORM_NAME.x, WORLDPOS_NAME.x); \
@@ -212,9 +212,7 @@
 
 
 #if defined(_EMISSION) && !defined(UNITY_PASS_FORWARDADD)
-
     // same as Unity variables to keep consistensy...
-
     fixed4 _EmissionColor;
     #define ADD_EMISSION_LIGHTING(color) color.rgb += _EmissionColor.rgb;
 #else
@@ -222,7 +220,14 @@
 #endif
 
 
-
+#if defined(_RIM_LIGHTING) && !defined(UNITY_PASS_FORWARDADD)
+    // same as Unity variables to keep consistensy...
+    fixed4 _RimColor;
+    fixed _RimPower;
+    #define ADD_RIM_LIGHTING(color, worldPos) color.rgb += _RimColor.rgb * pow (1.0 - saturate(dot (normalize(_WorldSpaceCameraPos - worldPos), (wNorm))), _RimPower) * _RimColor.a;
+#else
+    #define ADD_RIM_LIGHTING(color, worldPos)            
+#endif
 
 
 #ifndef UNITY_PASS_FORWARDADD
@@ -296,6 +301,7 @@
     ADD_LAMBERT_LIGHTING(i, color, albedo, wNorm); \
     ADD_AMBIENT_LIGHTING(i, color, albedo, wNorm); \
     ADD_EMISSION_LIGHTING(color) \
+    ADD_RIM_LIGHTING(color, wPos) \
     APPLY_FOG(fogCoord, color); \
     return color;
 

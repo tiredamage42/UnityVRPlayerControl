@@ -16,12 +16,12 @@ namespace InventorySystem {
 
         }
         public override void OnItemConsumed (Inventory inventory, ItemBehavior item, int count, int equipSlot) {
-            InventoryCrafter crafter = inventory.crafter;
-            if (crafter != null) {
+            // InventoryCrafter crafter = inventory.crafter;
+            // if (crafter != null) {
                 Dictionary<string, GameValue> values = inventory.actor != null ? inventory.actor.actorValues : null;
-                crafter.RemoveItemComposition(requires, true, values, values);
-                crafter.AddItemComposition (yields, true, values, values);               
-            }
+                inventory.RemoveItemComposition(requires, true, true, values, values);
+                inventory.AddItemComposition (yields, true, values, values);               
+            // }
         }
     }
 }

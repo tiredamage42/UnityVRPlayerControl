@@ -19,6 +19,8 @@ namespace Game {
             
             [Header("Count = value template max")] [NeatArray] public GameValueModifierArray2D thresholdPenalties;
 
+            [NeatArray] public UIColorSchemeArray thresholdMessageColorSchemes;
+
             float timer;
             Actor playerActor;
             GameValue runtimeValue;
@@ -40,14 +42,13 @@ namespace Game {
             void OnValueChange(float delta, float current, float min, float max, string msg) {
                 //value relief
                 if (delta < 0) {
-                    playerActor.GetComponent<GameMessageInbox>().ShowMessage (runtimeValue.name + " " + delta);
+                    playerActor.ShowMessage (runtimeValue.name + " " + delta, UIColorScheme.Normal);
                 }
                 
                 int v = (int)current;
                 if (lastThresholdValue != v) {
 
-                    playerActor.GetComponent<GameMessageInbox>().ShowMessage (runtimeValue.name + " Level :: " + v + (v == 0 ? "" : hintMessage));
-                    
+                    playerActor.ShowMessage (runtimeValue.name + " Level :: " + v + (v == 0 ? "" : hintMessage), thresholdMessageColorSchemes.list[v]);
                     playerActor.RemoveBuffs(thresholdPenalties.list[lastThresholdValue], 1, questInstanceID, survivalValueID);
                     playerActor.AddBuffs(thresholdPenalties.list[v], 1, questInstanceID, survivalValueID, false, playerActor.actorValues, playerActor.actorValues);
                     

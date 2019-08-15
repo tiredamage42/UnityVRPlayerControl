@@ -2,25 +2,22 @@
 using UnityEngine;
 
 using InventorySystem;
-
+using SimpleUI;
 namespace GameUI {
     public class QuickTradeUIHandler : InventoryManagementUIHandler
     {
-        public override bool EquipIDSpecific() { return true; }
-        protected override bool UsesRadial() { return false; }
-        public override string ContextKey() { return Inventory.quickTradeContext; }
+        // public override string[] GetInputNames () { return new string[] { "Take", "Take All", "Open Trade" }; }
         protected override void OnUISelect (GameObject[] data, object[] customData) { }
 
-
-        protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (Inventory forInventory, List<int> categoryFilter) {
-            return forInventory.allInventory;
+        protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (Inventory shownInventory, int uiIndex, List<int> categoryFilter) {
+            return shownInventory.allInventory;
+        }
+        protected override void OnInventoryManagementInitiate(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
+            SetUpButtons (otherInventory, inventory, 0, 0, true, null, categoryFilter);
+            (uiObject as UIPage).SetTitle(otherInventory.GetDisplayName());
         }
 
-        public const int singleTradeAction = 0, tradeAllAction = 1, switchToFullTradeAction = 2;
-
-        public override string[] GetInputNames () { return new string[] { "Take", "Take All", "Open Trade" }; }
-        
-
+        const int singleTradeAction = 0, tradeAllAction = 1, switchToFullTradeAction = 2;
         protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input) {
     		if (customData != null) {
                 bool updateButtons = false;
@@ -29,23 +26,20 @@ namespace GameUI {
                 
                 // single trade
                 if (input.x == singleTradeAction) {
-                    Debug.LogError("trake action");
                     Inventory.InventorySlot item = (Inventory.InventorySlot)customData[0];
                     if (item != null) {
-                        Debug.LogError("inventory transferreed");
-                        if (shownInventory.TransferItemTo(item.item, 1, tradee)) {
-                            updateButtons = true;
-                        }
+                        shownInventory.TransferItemAlreadyInInventoryTo(item, 1, tradee, sendMessage: false);
                     }
                 }
                 // take all
                 else if (input.x == tradeAllAction) {
-                    if (shownInventory.TransferInventoryContentsTo(tradee)) {
-                        updateButtons = true;
-                    }
+
+                    // TODO: check if shown inventory has anything
+                    shownInventory.TransferInventoryContentsTo(tradee, sendMessage: false);
+                    updateButtons = true;
                 }
                 else if (input.x == switchToFullTradeAction) {
-                    tradee.EndInventoryManagement(ContextKey(), input.y);
+                    tradee.EndInventoryManagement(context, input.y);
                     tradee.InitiateInventoryManagement(Inventory.fullTradeContext, input.y, shownInventory, null);
                 }
                 if (updateButtons){
@@ -54,8 +48,6 @@ namespace GameUI {
             }
 		}
 
-        protected override void OnInventoryManagementInitiate(Inventory inventory, int usingEquipPoint, Inventory otherInventory) {
-            SetUpButtons (inventory, null, 0, 0, true, null);
-        }
+        
     }
 }

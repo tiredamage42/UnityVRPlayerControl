@@ -15,6 +15,8 @@ namespace VRPlayer
 	
 	public class Player : MonoBehaviour
 	{
+
+		public SteamVR_Action_Boolean[] actions = new SteamVR_Action_Boolean[3];
 		public float handsTogetherThreshold = .25f;
 		[HideInInspector] public bool handsTogether;
 
@@ -101,7 +103,7 @@ namespace VRPlayer
 			recalibrateHeight = false;
 		}
 
-		[Tooltip( "List Hands *RIGHT FIRST*" )]
+		[Header( "* RIGHT FIRST *" )]
 		public Hand[] hands;
 
 		static Player _instance;
@@ -128,7 +130,6 @@ namespace VRPlayer
 		public Hand rightHand { get { return GetHand(SteamVR_Input_Sources.RightHand); } }
 
 		// Guess for the world-space position of the player's feet, directly beneath the HMD.
-		// public Vector3 feetPositionGuess { get { return trackingOriginTransform.position + Vector3.ProjectOnPlane( hmdTransform.position - trackingOriginTransform.position, trackingOriginTransform.up ); } }
 		public Vector3 feetPositionGuess { get { return transform.position + Vector3.ProjectOnPlane( VRManager.hmd_Transform.position - transform.position, transform.up ); } }
 
 		void Awake()

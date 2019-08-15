@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿// using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -93,10 +93,26 @@ aid items:
             interactable.actionNames = new string[] {
                 "Grab", "Stash"
             };
+
+
             rigidbody = GetComponent<Rigidbody>();
+            itemColliders = GetComponentsInChildren<Collider>();
 
             InitializeListeners();
         }
+        List<ISceneItem> listeners = new List<ISceneItem>();
+        void InitializeListeners() {
+            ISceneItem[] listeners_ = GetComponents<ISceneItem>();
+            for (int i = 0; i< listeners_.Length; i++) {
+                this.listeners.Add(listeners_[i]);
+            }
+        }
+        public void AddListener (ISceneItem listener) {
+            listeners.Add(listener);
+        }
+
+            
+        Collider[] itemColliders;
         
         public void OnInteractableAvailabilityChange(bool available) {
 			
@@ -107,23 +123,23 @@ aid items:
         public void OnInteractableInspectedUpdate(InteractionPoint interactor) {}
         public void OnInteractableUsedStart(InteractionPoint interactor, int useIndex) {
 
-            Inventory inventory = interactor.inventory;
+            // Inventory inventory = interactor.inventory;
 
-            if (inventory == null)
-                return;
+            // if (inventory == null)
+            //     return;
 
-            // if we cant quick equip this item, either action stashes it...
-            if (useIndex == Inventory.STASH_ACTION || (useIndex == Inventory.GRAB_ACTION && !itemBehavior.canQuickEquip)) {
-                if (inventory.CanStashItem(itemBehavior)) {
-                    inventory.StashItem(this, interactor.interactorID);
-                }
-            }
-            else if (useIndex == Inventory.GRAB_ACTION && itemBehavior.canQuickEquip) {   
-                InventoryEqupping ie = inventory.equipping;
-                if (ie != null) ie.EquipItem(itemBehavior, interactor.interactorID, this );
-            }
+            if (interactor.inventory != null) interactor.inventory.OnSceneItemActionStart (this, interactor.interactorID, useIndex);
+
+
+            // // if we cant quick equip this item, either action stashes it...
+            // if (useIndex == Inventory.STASH_ACTION || (useIndex == Inventory.GRAB_ACTION && !itemBehavior.canQuickEquip)) {
+            //     inventory.StashItem(this, interactor.interactorID);
+            // }
+            // else if (useIndex == Inventory.GRAB_ACTION && itemBehavior.canQuickEquip) {   
+            //     InventoryEqupping ie = inventory.equipping;
+            //     if (ie != null) ie.EquipItem(itemBehavior, interactor.interactorID, this );
+            // }
         }
-
 
         public void OnInteractableUsedEnd(InteractionPoint interactor, int useIndex) {
 
@@ -137,13 +153,12 @@ aid items:
 
 
 
-        void SetItemColliderLayers () {
-            Collider[] cols = GetComponentsInChildren<Collider>();
-            for (int i = 0; i < cols.Length; i++) {
-                colliderLayers.Add(new ColliderLayerPair(cols[i], Inventory.equippedItemLayer));
+        void TemporarilySetCollidersToEquippedItemLayer () {
+            for (int i = 0; i < itemColliders.Length; i++) {
+                colliderLayers.Add(new ColliderLayerPair(itemColliders[i], Inventory.equippedItemLayer));
             }
         }
-        void ResetItemColliderLayers () {
+        void ResetItemColliderLayersToOriginals () {
             for (int i = colliderLayers.Count - 1; i >= 0; i--) {
                 colliderLayers[i].ResetPair();
                 colliderLayers.Remove(colliderLayers[i]);
@@ -151,7 +166,6 @@ aid items:
         }
 
         List<ColliderLayerPair> colliderLayers = new List<ColliderLayerPair>();
-
 
         struct ColliderLayerPair {
             Collider collider;
@@ -171,7 +185,7 @@ aid items:
             
             interactable.SetAvailable(false);
 
-            SetItemColliderLayers();
+            TemporarilySetCollidersToEquippedItemLayer();
             
             // if (itemBehavior.hoverLockOnEquip)
             //             interactor.HoverLock( interactable );
@@ -183,7 +197,7 @@ aid items:
         public void OnUnequipped (Inventory inventory) {
             interactable.SetAvailable(true);
 
-            ResetItemColliderLayers();
+            ResetItemColliderLayersToOriginals();
 
             // if (hoverLockOnEquip)
             //     interactor.HoverUnlock( interactable );
@@ -225,16 +239,7 @@ aid items:
             // }
         }
 
-        List<ISceneItem> listeners = new List<ISceneItem>();
-        void InitializeListeners() {
-            ISceneItem[] listeners_ = GetComponents<ISceneItem>();
-            for (int i = 0; i< listeners_.Length; i++) {
-                this.listeners.Add(listeners_[i]);
-            }
-        }
-        public void AddListener (ISceneItem listener) {
-            listeners.Add(listener);
-        }
+        
 
         // void OnDestroy()
         // {

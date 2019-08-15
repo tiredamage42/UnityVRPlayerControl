@@ -35,8 +35,8 @@ RectTransform:
   m_Father: {fileID: 4460107286679315886}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
@@ -208,10 +208,10 @@ MonoBehaviour:
   parentHolder: {fileID: 0}
   isBase: 0
   subHolders: []
+  pageTitleText: Window Title
   parameters:
-    pageTitleText: Window Title
-    lineHeight: 0.5
-    width: 4
+    elementsSize: {x: 4, y: 0.5}
+    titleHeight: 0.5
     textAlignment: 3
     textOffset: 0.05
 --- !u!114 &7574123744170017057
@@ -336,6 +336,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   invert: 0
+  currentLines: 1
 --- !u!1 &4460107286679315887
 GameObject:
   m_ObjectHideFlags: 0

@@ -31,14 +31,14 @@ namespace InventorySystem {
         [TextArea]
         public string itemDescription = "No Description Available...";
         
-        [Header("Set to false for utility items")]
-        public bool keepOnStash = true;
+        // [Header("Set to false for utility items")]
+        // public bool keepOnStash = true;
         
-        public bool allowMultipleStashed = true;
+        // public bool allowMultipleStashed = true;
 
 
-        [Header("Cant be dropped from inventory accidentally")]
-        public bool permanentStash;
+        // [Header("Cant be dropped from inventory accidentally")]
+        // public bool permanentStash;
 
         public int category;
 

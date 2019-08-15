@@ -89,6 +89,9 @@ public class TouchpadLocomotion : MonoBehaviour
     public bool isClimbing;
     SteamVR_Input_Sources currentClimbHand;
     public Vector3 climbExitForceMultiplier = new Vector3(10, 100, 10);
+
+    InteractionSystem.Interactor interactor;
+
     
     void SetHandClimb (SteamVR_Input_Sources climbHand) {
         isClimbing = true;
@@ -98,7 +101,7 @@ public class TouchpadLocomotion : MonoBehaviour
 
     
     void UpdateClimbs () {
-        InteractionSystem.Interactor interactor = GetComponent<InteractionSystem.Interactor>();
+        // InteractionSystem.Interactor interactor = GetComponent<InteractionSystem.Interactor>();
         climbables[0] = interactor.HasTag("ClimbRight");
         climbables[1] = interactor.HasTag("ClimbLeft");
         
@@ -290,18 +293,8 @@ public class TouchpadLocomotion : MonoBehaviour
     
     public SteamVR_Action_Boolean turnActionLeft, turnActionRight;
 
-    public SteamVR_Input_Sources moveHand 
-    {
-        get {
-            return VRManager.instance.offHand;
-        }
-    }
-    public SteamVR_Input_Sources turnHand
-    {
-        get {
-            return VRManager.instance.mainHand;
-        }
-    }
+    public SteamVR_Input_Sources moveHand { get { return VRManager.instance.offHand; } }
+    public SteamVR_Input_Sources turnHand { get { return VRManager.instance.mainHand; } }
     
 
     [Header("Movement")]
@@ -326,10 +319,11 @@ public class TouchpadLocomotion : MonoBehaviour
     float fastTurnDegreesPerSecond { get { return turnDegrees / fastTurnTime; } }
     [HideInInspector] public int smoothTurnDirection;
     float fastTurnTotalRotation = float.MaxValue;
-    // bool fastTurnRight;
     float smoothTurnMultiplier;
 
     void Awake () {
+
+        interactor = GetComponent<InteractionSystem.Interactor>();
 
         characterController = GetComponent<CharacterController>();
         if (characterController == null) characterController = gameObject.AddComponent<CharacterController>();
@@ -416,41 +410,45 @@ public class TouchpadLocomotion : MonoBehaviour
     // set move velocity to zero every frame for instant stop
     // when not moving
     void HandleMoveInput (bool movementEnabled) {
-        currentMoveVector = Vector2.zero;
+        // currentMoveVector = Vector2.zero;
         
-        if (!movementEnabled) {
+        // if (!movementEnabled) {
+        //     isRunning = false;
+        //     return;
+        // }
+        currentMoveVector = !movementEnabled || StandardizedVRInput.ActionOccupied(moveAction, moveHand) ? Vector2.zero : moveAction.GetAxis(moveHand);
+        if (currentMoveVector == Vector2.zero)
+        {
             isRunning = false;
-            return;
+            return;   
         }
-        currentMoveVector = StandardizedVRInput.ActionOccupied(moveAction, moveHand) ? Vector2.zero : moveAction.GetAxis(moveHand);
+        // if (currentMoveVector != Vector2.zero) {
 
-        if (currentMoveVector != Vector2.zero) {
+        if (currentMoveVector.sqrMagnitude > 1) {
+            currentMoveVector.Normalize();
+        }
 
-            if (currentMoveVector.sqrMagnitude > 1) {
-                currentMoveVector.Normalize();
+        if (runMode != RunMode.None) {
+
+            // we're used to walking forward, lateral and backwards/up down movement feels wrong
+            // so it's speed needs to be clamped to prevent motion sickness
+            bool runPossible = Vector2.Angle(currentMoveVector, new Vector2(0, 1)) <= runAngleThreshold;
+            if (!runPossible) {
+                isRunning = false;
             }
-
-            if (runMode != RunMode.None) {
-
-                bool runPossible = Vector2.Angle(currentMoveVector, new Vector2(0, 1)) <= runAngleThreshold;
-                if (!runPossible) {
-                    // we're used to walking forward, lateral and backwards/up down movement feels wrong
-                    // so it's speed needs to be clamped to prevent motion sickness
-                    isRunning = false;
+            else {
+                if (runMode == RunMode.Held) {
+                    isRunning = runAction.GetState(moveHand);
                 }
                 else {
-                    if (runMode == RunMode.Held) {
-                        isRunning = runAction.GetState(moveHand);
-                    }
-                    else {
-                        if (runAction.GetStateDown(moveHand)) {
-                            isRunning = true;
-                        }
+                    if (runAction.GetStateDown(moveHand)) {
+                        isRunning = true;
                     }
                 }
             }
-            currentMoveVector = currentMoveVector * maxSpeed * (isRunning ? runMultiplier : 1);
         }
+        currentMoveVector = currentMoveVector * maxSpeed * (isRunning ? runMultiplier : 1);
+        // }
     }
 
     void HandleTurningUpdate(Transform head, float deltaTime) {

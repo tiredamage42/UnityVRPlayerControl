@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using ActorSystem;
+using System.Collections.Generic;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -27,6 +28,51 @@ namespace InventorySystem {
         [NeatArray] public LevelledListItemArray fallBacks;
 
         // public LevelledList[] subLists;
+
+
+        public List<Inventory.InventorySlot> SpawnItems (Dictionary<string, GameValue> selfValues, Dictionary<string, GameValue> suppliedValues) {
+
+            List<Inventory.InventorySlot> spawnList = new List<Inventory.InventorySlot>();
+
+            bool didSpawn = false;
+            //CHECK FOR INJECTED RUNTIME LISTS ASSOCIATED WITH SUPPLIED LEVELLED LIST HERE
+            
+            LevelledList.ListItem[] listItems = this.listItems;
+
+            for (int i =0 ; i < listItems.Length; i++) {
+                LevelledList.ListItem listItem = listItems[i];
+                if (Random.value > listItem.chanceForNone) {
+
+                    int count = Random.Range(listItem.minMax.x, listItem.minMax.y+1);
+                    if (count > 0) {
+
+                        if (GameValueCondition.ConditionsMet (listItem.conditions, selfValues, suppliedValues)) {
+                            spawnList.Add(new Inventory.InventorySlot(listItem.item, count));
+                            didSpawn = true;
+                            if (singleSpawn) {
+                                break;
+                            }    
+                        }
+                    }
+                }
+            }
+
+            if (!didSpawn) {
+                LevelledList.ListItem[] fallBacks = this.fallBacks;
+
+                for (int i =0 ; i < fallBacks.Length; i++) {
+                    LevelledList.ListItem listItem = fallBacks[i];
+
+                    if (GameValueCondition.ConditionsMet (listItem.conditions, selfValues, suppliedValues)) {
+                        spawnList.Add(new Inventory.InventorySlot(listItem.item, Random.Range(Mathf.Max(listItem.minMax.x, 1), listItem.minMax.y + 1)));
+                    }
+                }
+            }
+
+
+            return spawnList;
+        }
+        
     }
 
 

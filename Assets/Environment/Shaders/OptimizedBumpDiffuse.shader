@@ -5,6 +5,13 @@
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _BumpMap ("Normalmap", 2D) = "bump" {}
         _BumpScale ("Bump Scale", Range(0,50)) = 2
+
+        [Toggle(_EMISSION)] _Emission ("Emission", Float) = 0
+        _EmissionColor ("Emission Color", Color) = (0,0,0,0)
+
+        [Toggle(_RIM_LIGHTING)] _RimLighting ("Rim Lighting", Float) = 0
+        _RimColor ("Rim Color", Color) = (0,0,0,0)
+        _RimPower ("Rim Power", Range(.01, 10)) = 1
     }
     SubShader
     {
@@ -21,6 +28,8 @@
             #pragma multi_compile_fog
             #pragma multi_compile_fwdbase
             #pragma multi_compile __ _EMISSION
+            #pragma multi_compile __ _RIM_LIGHTING
+            
             #include "OptimizedBumpDiffuse.cginc"
             ENDCG
         }

@@ -70,7 +70,7 @@ namespace QuestSystem {
             if (selectedQuest == null)
                 return;
 
-            Actor.playerActor.GetComponent<GameMessageInbox>().ShowMessage( selectedQuest.GetHint() );
+            Actor.playerActor.ShowMessage( selectedQuest.GetHint(), UIColorScheme.Normal );
         }
 
 
@@ -127,7 +127,7 @@ namespace QuestSystem {
         }
 
 
-        
+        // TODO: test out if this actually copies all nested class values...
         static T CopyComponent<T>(T original, GameObject destination) where T : Component
         {
 

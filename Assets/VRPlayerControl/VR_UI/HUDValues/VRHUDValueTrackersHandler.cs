@@ -15,6 +15,7 @@ namespace VRPlayer.UI {
         public SteamVR_Input_Sources uiHand = SteamVR_Input_Sources.LeftHand;
         public TransformBehavior equipBehaviors;
         HUDGameValueTracker[] foundTrackers;
+        public UIValueTrackerParameters trackerParams = new UIValueTrackerParameters();
 
         bool lengthsOK;
         bool CheckLength () {
@@ -24,7 +25,6 @@ namespace VRPlayer.UI {
             }
             return true;
         }
-
 
         void Awake () {
             foundTrackers = uiTrackersObject.GetComponents<HUDGameValueTracker>();
@@ -36,11 +36,11 @@ namespace VRPlayer.UI {
                 // trackerSize = new Vector2(2,1);
                 // emptyBackground = false;
                 // textScale = .005f;
-                UIValueTrackerParameters trackerParams = new UIValueTrackerParameters(.05f, new Vector2(.25f,2f), false, .005f);
+                // UIValueTrackerParameters trackerParams = new UIValueTrackerParameters(.05f, new Vector2(.25f,2f), false, .005f);
 
                 for (int i = 0; i < foundTrackers.Length; i++) {
 
-                    UIValueTracker uiObject = VRUI.MakeValueTrackerUI(foundTrackers[i].gameValueName + "TrackerUI", trackerParams, true);
+                    UIValueTracker uiObject = VRUIBuilder.MakeValueTrackerUI(foundTrackers[i].gameValueName + "TrackerUI", trackerParams, true);
                     foundTrackers[i].SetUIObject(uiObject);
                     TransformBehavior.AdjustTransform(uiObject.baseObject.transform, Player.instance.GetHand(uiHand).transform, equipBehaviors, i);
                 }

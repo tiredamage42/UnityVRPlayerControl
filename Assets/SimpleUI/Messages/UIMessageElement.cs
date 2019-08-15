@@ -5,21 +5,23 @@ namespace SimpleUI
 {
      public class UIMessageElement : MonoBehaviour {
         [HideInInspector] public UIText text;
-        Image[] allImages;
+        UIImage[] images;
         float[] originalAlphas;
         void Awake () {
             
-            allImages = GetComponentsInChildren<Image>();
-            originalAlphas = new float[allImages.Length];
-            for (int i = 0; i < allImages.Length; i++) {
-                originalAlphas[i] = allImages[i].color.a;
+            images = GetComponentsInChildren<UIImage>();
+            originalAlphas = new float[images.Length];
+
+            for (int i = 0; i < images.Length; i++) {
+                originalAlphas[i] = images[i].mainGraphic.color.a;
             }
+            
             text = GetComponentInChildren<UIText>();
         }
 
         public void SetSizeDelta (Vector2 sizeDelta) {
-            for (int i = 0; i < allImages.Length; i++) {
-                allImages[i].rectTransform.sizeDelta = sizeDelta;
+            for (int i = 0; i < images.Length; i++) {
+                images[i].rectTransform.sizeDelta = sizeDelta;
             }          
         }
 
@@ -33,15 +35,15 @@ namespace SimpleUI
         }
 
         void SetAlpha () {
-            for (int i = 0; i < allImages.Length; i++) {
-                Color c = allImages[i].color;
+            for (int i = 0; i < images.Length; i++) {
+                Color c = images[i].mainGraphic.color;
                 c.a = Mathf.Lerp(0, originalAlphas[i], alpha);
-                allImages[i].color = c;
+                images[i].mainGraphic.color = c;
             }
             text.SetAlpha(alpha);
         }
 
-        public void ShowMessage (float duration, float fadeIn, float fadeOut){
+        public void ShowMessage (float duration, float fadeIn, float fadeOut, UIColorScheme scheme){
             
             gameObject.SetActive(true);
 
@@ -51,6 +53,9 @@ namespace SimpleUI
             this.duration = duration;
             this.fadeIn = fadeIn;
             this.fadeOut = fadeOut;
+
+            for (int i = 0; i < images.Length; i++) images[i].SetColorScheme(scheme, images[i].useDark);
+            text.SetColorScheme(scheme, text.useDark);
             
             SetAlpha();
         }

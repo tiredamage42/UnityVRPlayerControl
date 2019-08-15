@@ -143,6 +143,11 @@ public static class EditorTools {
 
     public class NeatArrayAttribute : PropertyAttribute { }
     [System.Serializable] public class NeatIntList : NeatListWrapper<int> {}
+    [System.Serializable] public class NeatStringArray : NeatArrayWrapper<string> {}
+    [System.Serializable] public class NeatFloatArray : NeatArrayWrapper<float> {}
+
+    
+    
     public class NeatArrayWrapper<T> {
         public T[] list;
         public static implicit operator T[](NeatArrayWrapper<T> c) { return c.list; }
@@ -153,3 +158,43 @@ public static class EditorTools {
         public static implicit operator List<T>(NeatListWrapper<T> c) { return c.list; }
         public static implicit operator NeatListWrapper<T>(List<T> l) { return new NeatListWrapper<T>(){ list = l }; }
     }
+
+
+    
+    // // Create a layer at the next available index. Returns silently if layer already exists.
+    // public static void CreateLayer(string name)
+    // {
+    //     if (string.IsNullOrEmpty(name))
+    //         throw new System.ArgumentNullException("name", "New layer name string is either null or empty.");
+
+    //     var tagManager = new UnityEditor.SerializedObject(UnityEditor.AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+    //     var layerProps = tagManager.FindProperty("layers");
+    //     var propCount = layerProps.arraySize;
+
+    //     UnityEditor.SerializedProperty firstEmptyProp = null;
+
+    //     for (var i = 0; i < propCount; i++)
+    //     {
+    //         var layerProp = layerProps.GetArrayElementAtIndex(i);
+    //         var stringValue = layerProp.stringValue;
+
+    //         if (stringValue == name) return;
+
+    //         if (i < 8 || stringValue != string.Empty) 
+    //             continue;
+
+    //         if (firstEmptyProp == null) {
+    //             firstEmptyProp = layerProp;
+    //             break;
+    //         }
+    //     }
+
+    //     if (firstEmptyProp == null)
+    //     {
+    //         Debug.LogError("Maximum limit of " + propCount + " layers exceeded. Layer \"" + name + "\" not created.");
+    //         return;
+    //     }
+
+    //     firstEmptyProp.stringValue = name;
+    //     tagManager.ApplyModifiedProperties();
+    // }

@@ -2,66 +2,54 @@
 using UnityEngine;
 
 using InventorySystem;
-
+using SimpleUI;
 namespace GameUI {
 
     public class FullTradeUIHandler : InventoryManagementUIHandler
     {
 
-
-        public override bool EquipIDSpecific() { return false; }
-        protected override bool UsesRadial() { return false; }
-        public override string ContextKey() { return Inventory.fullTradeContext; }
-
-        protected override void OnUISelect (GameObject[] data, object[] customData) {
-
-            // Inventory.InventorySlot slot;
-            // Inventory forInventory, linkedInventory;
-            // int uiIndex, otherUIIndex;
-            // UnpackButtonData (customData, out slot, out forInventory, out linkedInventory, out uiIndex, out otherUIIndex);
-            // uiObject.textPanel.SetText(slot.item.itemDescription);
-            
+        // public override string[] GetInputNames () { return new string[] { "Trade", "Trade All", "Use" }; }
+        
+        // TODO: limit equip ID for consume action to 0 when equipping on ai for instance
+        protected override void OnUISelect (GameObject[] data, object[] customData) { }
+        protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (Inventory shownInventory, int uiIndex, List<int> categoryFilter) {
+            return shownInventory.GetFilteredInventory(categoryFilter);
         }
 
-
-        protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (Inventory forInventory, List<int> categoryFilter) {
-            return forInventory.allInventory;
-        }
-
-        protected override void OnInventoryManagementInitiate(Inventory inventory, int usingEquipPoint, Inventory otherInventory) {
+        protected override void OnInventoryManagementInitiate(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
             
+            (uiObject.subHolders[0] as UIPage).SetTitle(inventory.GetDisplayName());
+            (uiObject.subHolders[1] as UIPage).SetTitle(otherInventory.GetDisplayName());
+
             // CloseAllUIs();            
-            SetUpButtons ( inventory, otherInventory, 0, 1, true, uiObject.subHolders[0]);
-            SetUpButtons ( otherInventory, inventory, 1, 0, false, uiObject.subHolders[1]);
+            SetUpButtons ( inventory, otherInventory, 0, 1, true, uiObject.subHolders[0], categoryFilter);
+            SetUpButtons ( otherInventory, inventory, 1, 0, false, uiObject.subHolders[1], categoryFilter);
         }
 
-        public const int singleTradeAction = 0, tradeAllAction = 1, consumeAction = 2;
+        const int singleTradeAction = 0, tradeAllAction = 1, consumeAction = 2;
 
-        public override string[] GetInputNames () { return new string[] { "Trade", "Trade All", "Use" }; }
-        
-        
         protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input) {
     
         	if (customData != null) {
                 Inventory.InventorySlot item = (Inventory.InventorySlot)customData[0];
                     
                 bool updateButtons = false;
-                Inventory trader = (Inventory)customData[1];
-                Inventory tradee = (Inventory)customData[2];
+                Inventory highlightedInventory = (Inventory)customData[1];
+                Inventory otherInventory = (Inventory)customData[2];
                 
                 // single trade
                 if (input.x == singleTradeAction) {
                     if (item != null) {
-                        if (trader.TransferItemTo(item.item, 1, tradee)) {
-                            updateButtons = true;
-                        }
+                        highlightedInventory.TransferItemAlreadyInInventoryTo(item, 1, otherInventory, sendMessage: false);
+                        updateButtons = true;
                     }
                 }
                 // take all
                 else if (input.x == tradeAllAction) {   
-                    if (trader.TransferInventoryContentsTo(tradee)) {
-                        updateButtons = true;
-                    }
+
+                    //TODO: check if any actually transfeerrrd
+                    highlightedInventory.TransferInventoryContentsTo(otherInventory, sendMessage: false);
+                    updateButtons = true;
                 }
                 //consume on selected inventory
                 else if (input.x == consumeAction) {
@@ -69,16 +57,16 @@ namespace GameUI {
                     
                         int count = 1;
                 
-                        if (item.item.OnConsume(trader, count, input.y)){
-                        
+                        if (item.item.OnConsume(highlightedInventory, count, input.y)){
+                
                             updateButtons = true;
                         }
                     }
                 }
                 
                 if (updateButtons){
-                    UpdateUIButtons(trader, tradee, (int)customData[3], (int)customData[4], null);
-                    UpdateUIButtons(tradee, trader, (int)customData[4], (int)customData[3], null);
+                    UpdateUIButtons(highlightedInventory, otherInventory, (int)customData[3], (int)customData[4], null);
+                    UpdateUIButtons(otherInventory, highlightedInventory, (int)customData[4], (int)customData[3], null);
                 }
             }
 		}    

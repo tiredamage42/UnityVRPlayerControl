@@ -20,10 +20,8 @@ namespace VRPlayer.UI {
         }
 
         void UpdateTextValues () {
-            if (text == null) {
-                text = GetComponentInChildren<UIText>();
-            }
-
+            if (text == null) text = GetComponentInChildren<UIText>();
+    
             if (text != null) {
                 text.SetAnchor(textAnchor);
                 text.transform.localPosition = textOffset;
@@ -44,7 +42,7 @@ namespace VRPlayer.UI {
             UpdateTextValues();
             if (text != null) {
                 gameObject.SetActive(true);
-                text.SetText(message);
+                text.SetText(message, -1);
             }
         }
     }

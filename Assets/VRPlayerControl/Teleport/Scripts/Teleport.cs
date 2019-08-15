@@ -23,41 +23,32 @@ namespace VRPlayer
         public LayerMask traceLayerMask;
 		public Texture2D teleportPointTexture;
 		
-		[System.NonSerialized] Material _pointVisibleMaterial, _invalidMaterial;
-		[System.NonSerialized] Material _pointLockedMaterial;
-		[System.NonSerialized] Material _pointHighlightedMaterial;
-
-		
 		static int tintColorID = Shader.PropertyToID( "_TintColor" );
 		static int mainTexID = Shader.PropertyToID( "_MainTex" );
-
 		const string shaderName  = "Valve/VR/Highlight";
+		[System.NonSerialized] Material _pointVisibleMaterial, _invalidMaterial, _pointLockedMaterial, _pointHighlightedMaterial;
 			
 		public Material pointVisibleMaterial {
 			get {
-				if (_pointVisibleMaterial == null)
-					_pointVisibleMaterial = MakeMaterial(visibleColor);
+				if (_pointVisibleMaterial == null) _pointVisibleMaterial = MakeMaterial(visibleColor);
 				return _pointVisibleMaterial;
 			}
 		}
 		public Material pointLockedMaterial {
 			get {
-				if (_pointLockedMaterial == null)
-					_pointLockedMaterial = MakeMaterial(lockedColor);
+				if (_pointLockedMaterial == null) _pointLockedMaterial = MakeMaterial(lockedColor);
 				return _pointLockedMaterial;
 			}
 		}
 		public Material pointHighlightedMaterial {
 			get {
-				if (_pointHighlightedMaterial == null) 
-					_pointHighlightedMaterial = MakeMaterial(highlightedColor);
+				if (_pointHighlightedMaterial == null) _pointHighlightedMaterial = MakeMaterial(highlightedColor);
 				return _pointHighlightedMaterial;
 			}
 		}
 		public Material invalidMaterial {
 			get {
-				if (_invalidMaterial == null) 
-					_invalidMaterial = MakeMaterial(invalidColor);
+				if (_invalidMaterial == null) _invalidMaterial = MakeMaterial(invalidColor);
 				return _invalidMaterial;
 			}
 		}
@@ -101,7 +92,6 @@ namespace VRPlayer
 		public AudioClip badHighlightSound;
 
 		
-		bool isPointing;
 		
 		
 		TeleportArc teleportArc = null;
@@ -122,41 +112,31 @@ namespace VRPlayer
 
 		public float maxGroundAngle = 45;
 
-		private static Teleport _instance;
-		public static Teleport instance
-		{
-			get
-			{
-				if ( _instance == null )
-				{
-					_instance = GameObject.FindObjectOfType<Teleport>();
-				}
-
+		static Teleport _instance;
+		public static Teleport instance {
+			get {
+				if ( _instance == null ) _instance = GameObject.FindObjectOfType<Teleport>();
 				return _instance;
 			}
 		}
 
+		CharacterController playerCC;
 		void Awake()
         {
             _instance = this;
-			
-		
 			teleportArc = GetComponent<TeleportArc>();
 			teleportArc.traceLayerMask = traceLayerMask;
 			teleportArc.material = pointHighlightedMaterial;
 
-			destinationReticleTransform.GetComponent<MeshRenderer>().sharedMaterial = pointHighlightedMaterial;
+			destinationReticleTransform.GetComponentInChildren<MeshRenderer>().sharedMaterial = pointHighlightedMaterial;
 			invalidReticleTransform.GetComponentInChildren<MeshRenderer>().sharedMaterial = invalidMaterial;
-
 			
 			float invalidReticleStartingScale = invalidReticleTransform.localScale.x;
 			invalidReticleMinScale *= invalidReticleStartingScale;
 			invalidReticleMaxScale *= invalidReticleStartingScale;
 
-
 			loopSource = gameObject.AddComponent<AudioSource>();
 			oneShotSource = gameObject.AddComponent<AudioSource>();
-			
 			
 			loopSource.loop = true;
 			oneShotSource.loop = false;
@@ -170,6 +150,7 @@ namespace VRPlayer
 
 		void Start()
         {
+			playerCC = Player.instance.GetComponent<CharacterController>();
             teleportMarkers = GameObject.FindObjectsOfType<TeleportPoint>();
 			HidePointer();
 		}
@@ -179,26 +160,29 @@ namespace VRPlayer
 			HidePointer();
 		}
 
+		
 		void Update()
 		{
 			SmoothTeleport(Time.deltaTime);
 
 			bool teleportNewlyPressed = false;
 
-			if ( visible )
-			{
-
-				if (teleportAction.GetStateUp(teleportHand))
+			if (!teleporting && teleportationAllowed) {
+				if ( visible && validAreaTargeted)
 				{
-					TryTeleportPlayer();
+					if (teleportAction.GetStateUp(teleportHand))
+					{
+						//Pointing at an unlocked teleport marker
+						teleportingToMarker = pointedAtTeleportMarker;
+						InitiateTeleportFade();
+					}
 				}
-			}
+				if (!GameManager.isPaused) {
 
-			if (!GameManager.isPaused && teleportationAllowed) {
-
-				if (!StandardizedVRInput.ActionOccupied(teleportAction, teleportHand) && teleportAction.GetStateDown(teleportHand) )
-				{
-					teleportNewlyPressed = true;
+					if (!StandardizedVRInput.ActionOccupied(teleportAction, teleportHand) && teleportAction.GetStateDown(teleportHand) )
+					{
+						teleportNewlyPressed = true;
+					}
 				}
 			}
 
@@ -250,28 +234,22 @@ namespace VRPlayer
 			SceneChaperone.Activate(true);
 		}
 
-
-		void ActivateReticles (bool destination, bool invalid){//, bool offset) {
-
+		void ActivateReticles (bool destination, bool invalid) {
 			destinationReticleTransform.gameObject.SetActive( destination );
 			invalidReticleTransform.gameObject.SetActive( invalid );
-			
 		}
 
 		bool validAreaTargeted;
 
 		void UpdatePointer()
 		{
-
+			Vector3 pointerStart = teleportHandClass.transform.position;
+			Vector3 pointerDir = teleportHandClass.transform.forward;
 			validAreaTargeted = false;
 
-			Vector3 pointerStart = teleportHandClass.transform.position;
 			Vector3 pointerEnd;
-			Vector3 pointerDir = teleportHandClass.transform.forward;
 			bool hitSomething = false;
 			
-			Vector3 playerFeetOffset = VRManager.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
-
 			Vector3 arcVelocity = pointerDir * arcDistance;
 
 			TeleportPoint hitTeleportMarker = null;
@@ -279,43 +257,35 @@ namespace VRPlayer
 			//Check pointer angle
 			float dotUp = Vector3.Dot( pointerDir, Vector3.up );
 			float dotForward = Vector3.Dot( pointerDir, VRManager.instance.hmdTransform.forward );
-			bool pointerAtBadAngle = false;
-			if ( ( dotForward > 0 && dotUp > 0.75f ) || ( dotForward < 0.0f && dotUp > 0.5f ) )
-			{
-				pointerAtBadAngle = true;
-			}
-
+			bool pointerAtBadAngle = ( ( dotForward > 0 && dotUp > 0.75f ) || ( dotForward < 0.0f && dotUp > 0.5f ) );
+			
 			//Trace to see if the pointer hit anything
-			RaycastHit hitInfo;
-			teleportArc.SetArcData( pointerStart, arcVelocity, true, pointerAtBadAngle );
-			if ( teleportArc.DrawArc( out hitInfo ) )
-			{
-				hitSomething = true;
-				hitTeleportMarker = hitInfo.collider.GetComponentInParent<TeleportPoint>();
-			}
+			RaycastHit hitInfo = new RaycastHit();
 
-			if ( pointerAtBadAngle )
-			{
-				hitTeleportMarker = null;
+			teleportArc.SetArcData( pointerStart, arcVelocity, true, pointerAtBadAngle );
+			
+			if (!pointerAtBadAngle) {
+				if ( teleportArc.DrawArc( out hitInfo ) )
+				{
+					hitSomething = true;
+					hitTeleportMarker = hitInfo.collider.GetComponentInParent<TeleportPoint>();
+				}
 			}
 
 			HighlightSelected( hitTeleportMarker );
 
 			if ( hitTeleportMarker != null ) //Hit a teleport marker
 			{
-				if ( !hitTeleportMarker.locked )
-				{
-					validAreaTargeted = true;
-				}
+				if ( !hitTeleportMarker.locked ) validAreaTargeted = true;
 				
-				ActivateReticles (false, false);//, true);
+				ActivateReticles (false, false);
 				
 				pointedAtTeleportMarker = hitTeleportMarker;
 				pointedAtPosition = hitInfo.point;
 
 				pointerEnd = hitInfo.point;
 			}
-			else //Hit neither
+			else 
 			{
 				Vector3 normalToUse = Vector3.up;
 				float angle = 0;
@@ -331,27 +301,18 @@ namespace VRPlayer
 				
 				pointedAtTeleportMarker = null;
 
-				if ( hitSomething )
-				{
-					pointerEnd = hitInfo.point;
-				}
-				else
-				{
-					pointerEnd = teleportArc.GetArcPositionAtTime( teleportArc.arcDuration );
-				}
-
-				if (invalidReticleTransform.gameObject.activeSelf) {
-					ResizeReticleBasedOnDistance (invalidReticleTransform, pointerEnd, normalToUse);
-				}
-
-				if (destinationReticleTransform.gameObject.activeSelf) {
-					ResizeReticleBasedOnDistance (destinationReticleTransform, pointerEnd, normalToUse);
-				}
+				pointerEnd = hitSomething ? hitInfo.point : teleportArc.GetArcPositionAtTime( teleportArc.arcDuration );
+				
+				if (invalidReticleTransform.gameObject.activeSelf) ResizeReticleBasedOnDistance (invalidReticleTransform, pointerEnd, normalToUse);
+				if (destinationReticleTransform.gameObject.activeSelf) ResizeReticleBasedOnDistance (destinationReticleTransform, pointerEnd, normalToUse);
+				
 				pointedAtPosition = pointerEnd;
 			}
 
 			teleportArc.SetColor( validAreaTargeted ? highlightedColor : invalidColor );
 
+
+			Vector3 playerFeetOffset = VRManager.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
 			ShowPlayArea(validAreaTargeted, playerFeetOffset, pointedAtPosition);
 			
 			destinationReticleTransform.position = pointedAtPosition;
@@ -360,9 +321,7 @@ namespace VRPlayer
 			
 		}
 		void ResizeReticleBasedOnDistance (Transform reticle, Vector3 pointerEnd, Vector3 hitNormal) {
-
 			//Orient the reticle to the normal of the trace hit point
-			
 			Quaternion targetRotation = Quaternion.FromToRotation( Vector3.up, hitNormal );
 			reticle.rotation = Quaternion.Slerp( reticle.rotation, targetRotation, 0.1f );
 
@@ -370,43 +329,33 @@ namespace VRPlayer
 			float distanceFromPlayer = Vector3.Distance( pointerEnd, VRManager.instance.hmdTransform.position );
 			float invalidReticleCurrentScale = Mathf.Lerp(invalidReticleMinScale, invalidReticleMaxScale, Mathf.InverseLerp(invalidReticleMinScaleDistance, invalidReticleMaxScaleDistance, distanceFromPlayer)); 
 			reticle.transform.localScale = Vector3.one * invalidReticleCurrentScale;
+		}
 
 				
-		}
-		private void HidePointer()
+		void HidePointer()
 		{
-			
-
 			visible = false;
 
-			if ( isPointing )
-			{
-				//Stop looping sound
-				loopSource.Stop();
-				PlayAudioClip(oneShotSource, pointerStopSound);
-				
-			}
-
+			loopSource.Stop();
+			PlayAudioClip(oneShotSource, pointerStopSound);
+			
 			teleportArc.Hide();
 
-			foreach ( TeleportPoint teleportMarker in teleportMarkers )
-			{
-				if ( teleportMarker != null && teleportMarker.markerActive && teleportMarker.gameObject != null )
-				{
-					teleportMarker.gameObject.SetActive( false );
-				}
-			}
-
-			destinationReticleTransform.gameObject.SetActive( false );
-			invalidReticleTransform.gameObject.SetActive( false );
+			ActivateTeleportMarkers(false);
+			ActivateReticles (false, false);
 
 			SceneChaperone.Activate(false);
-			
-			isPointing = false;
-			
 		}
 
-		private void ShowPointer ( )
+		void ActivateTeleportMarkers (bool activated) {
+			foreach ( TeleportPoint teleportMarker in teleportMarkers ) {
+				// if ( teleportMarker != null && teleportMarker.markerActive && teleportMarker.gameObject != null )
+				teleportMarker.gameObject.SetActive( activated );
+			}
+		}
+			
+
+		void ShowPointer ( )
 		{
 			pointedAtTeleportMarker = null;
 			visible = true;
@@ -429,9 +378,8 @@ namespace VRPlayer
 			loopSource.Play();
 			
 			PlayAudioClip( oneShotSource, pointerStartSound );
-
-			isPointing = true;
 		}
+
 
 
 		private void PlayAudioClip( AudioSource source, AudioClip clip )
@@ -442,69 +390,32 @@ namespace VRPlayer
 
 		private void PlayPointerHaptic( bool validLocation )
 		{
-			if (isPointing)
-			{
-				StandardizedVRInput.instance.TriggerHapticPulse(teleportHand, (ushort)(validLocation ? 800 : 100) );
-			}
+			StandardizedVRInput.instance.TriggerHapticPulse(teleportHand, (ushort)(validLocation ? 800 : 100) );
 		}
-
-
-		private void TryTeleportPlayer()
-		{
-			if ( visible && !teleporting )
-			{
-				if ( validAreaTargeted)
-				{
-					//Pointing at an unlocked teleport marker
-					teleportingToMarker = pointedAtTeleportMarker;
-					InitiateTeleportFade();
-				}
-			}
-		}
-
 
 		float teleportLerp;
 		public bool fastTeleport = true;
 		public float fastTeleportTime = .25f;
 		Vector3 teleportStartPosition;
 
-
-
-
-
-		
-
-
 		void SmoothTeleport (float deltaTime) {
 			if (teleporting && fastTeleport) {
 
 				teleportLerp += deltaTime * (1.0f/fastTeleportTime);
-				if (teleportLerp > 1) {
-					teleportLerp = 1;
-				}
-
+				
+				if (teleportLerp > 1) teleportLerp = 1;
+				
 
 				Vector3 teleportPosition = pointedAtPosition;
+				if ( teleportingToMarker != null ) teleportPosition = teleportingToMarker.transform.position;
 
-			TeleportPoint teleportPoint = teleportingToMarker as TeleportPoint;
-			if ( teleportPoint != null )
-			{
-				teleportPosition = teleportPoint.transform.position;
-
-				
-			}
-			Vector3 targetPos = GetNewPlayAreaPosition(teleportPosition);
-
+				Vector3 targetPos = GetNewPlayAreaPosition(teleportPosition);
 
 				VRManager.instance.trackingOriginTransform.position = Vector3.Lerp(teleportStartPosition, targetPos, teleportLerp);
 
-
-
 				if (teleportLerp == 1) {
-
 					teleporting = false;
-					Player.instance.GetComponent<CharacterController>().enabled = true;
-					
+					if (playerCC != null) playerCC.enabled = true;
 				}
 			}
 		}
@@ -517,24 +428,20 @@ namespace VRPlayer
 
 			currentFadeTime = teleportFadeTime;
 
-			TeleportPoint teleportPoint = teleportingToMarker as TeleportPoint;
-			if ( teleportPoint != null && teleportPoint.teleportType == TeleportPoint.TeleportPointType.SwitchToNewScene )
-			{
-				currentFadeTime *= 3.0f;
-			}
-			else {
-
+			// TeleportPoint teleportPoint = teleportingToMarker as TeleportPoint;
+			// if ( teleportPoint != null && teleportPoint.teleportType == TeleportPoint.TeleportPointType.SwitchToNewScene ) {
+			// 	currentFadeTime *= 3.0f;
+			// }
+			// else {
 				if (fastTeleport) {
 					doFade = false;
 					teleportStartPosition = VRManager.instance.trackingOriginTransform.position;
 					teleportLerp = 0;
-					Player.instance.GetComponent<CharacterController>().enabled = false;
+					if (playerCC != null) playerCC.enabled = false;
 				}
-			}
+			// }
 			
-
 			if (doFade) {
-
 				SteamVR_Fade.Start( Color.clear, 0 );
 				SteamVR_Fade.Start( Color.black, currentFadeTime );
 			}
@@ -548,7 +455,7 @@ namespace VRPlayer
 
 		}
 
-		private void TeleportPlayer()
+		void TeleportPlayer()
 		{
 			teleporting = false;
 
@@ -556,22 +463,19 @@ namespace VRPlayer
 
 			Vector3 teleportPosition = pointedAtPosition;
 
-			TeleportPoint teleportPoint = teleportingToMarker as TeleportPoint;
-			if ( teleportPoint != null )
+			if ( teleportingToMarker != null )
 			{
-				teleportPosition = teleportPoint.transform.position;
+				teleportPosition = teleportingToMarker.transform.position;
 
 				//Teleport to a new scene
-				if ( teleportPoint.teleportType == TeleportPoint.TeleportPointType.SwitchToNewScene )
-				{
-					teleportPoint.TeleportToScene();
-					return;
-				}
-			}
-			
+				// if ( teleportingToMarker.teleportType == TeleportPoint.TeleportPointType.SwitchToNewScene )
+				// {
+				// 	teleportingToMarker.TeleportToScene();
+				// 	return;
+				// }
+			}			
 			VRManager.instance.trackingOriginTransform.position = GetNewPlayAreaPosition(teleportPosition);
 		}
-
 
 		Vector3 GetNewPlayAreaPosition (Vector3 teleportPosition) {
 			Vector3 playerFeetOffset = VRManager.instance.trackingOriginTransform.position - Player.instance.feetPositionGuess;
@@ -579,21 +483,21 @@ namespace VRPlayer
 		}
 
 
-		void HighlightSelected( TeleportPoint hitTeleportMarker )
+		void HighlightSelected( TeleportPoint marker )
 		{
-			if ( pointedAtTeleportMarker != hitTeleportMarker ) //Pointing at a new teleport marker
+			if ( pointedAtTeleportMarker != marker ) //Pointing at a new teleport marker
 			{
 				if ( pointedAtTeleportMarker != null )
 				{
 					pointedAtTeleportMarker.Highlight( false );
 				}
 
-				if ( hitTeleportMarker != null )
+				if ( marker != null )
 				{
-					hitTeleportMarker.Highlight( true );
+					marker.Highlight( true );
 
 					prevPointedAtPosition = pointedAtPosition;
-					PlayPointerHaptic( !hitTeleportMarker.locked );
+					PlayPointerHaptic( !marker.locked );
 					PlayAudioClip( oneShotSource, goodHighlightSound );
 
 				}
@@ -602,12 +506,12 @@ namespace VRPlayer
 					PlayAudioClip( oneShotSource, badHighlightSound );
 				}
 			}
-			else if ( hitTeleportMarker != null ) //Pointing at the same teleport marker
+			else if ( marker != null ) //Pointing at the same teleport marker
 			{
 				if ( Vector3.Distance( prevPointedAtPosition, pointedAtPosition ) > 1.0f )
 				{
 					prevPointedAtPosition = pointedAtPosition;
-					PlayPointerHaptic( !hitTeleportMarker.locked );
+					PlayPointerHaptic( !marker.locked );
 				}
 			}
 		}		

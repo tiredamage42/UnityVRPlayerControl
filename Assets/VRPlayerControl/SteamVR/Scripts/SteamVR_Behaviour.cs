@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-#if UNITY_2017_2_OR_NEWER
+// #if UNITY_2017_2_OR_NEWER
     using UnityEngine.XR;
-#else
-using XRSettings = UnityEngine.VR.VRSettings;
-using XRDevice = UnityEngine.VR.VRDevice;
-#endif
+// #else
+// using XRSettings = UnityEngine.VR.VRSettings;
+// using XRDevice = UnityEngine.VR.VRDevice;
+// #endif
 
 namespace Valve.VR
 {

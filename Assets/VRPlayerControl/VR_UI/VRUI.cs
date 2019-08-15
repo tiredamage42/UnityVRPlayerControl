@@ -1,40 +1,118 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿// using System.Collections;
+// using System.Collections.Generic;
 using UnityEngine;
-
 
 using InventorySystem;
 using SimpleUI;
 using Valve.VR;
 using GameUI;
 using GameBase;
+using ActorSystem;
 
-
-namespace VRPlayer {
+namespace VRPlayer.UI {
 
     public class VRUI : MonoBehaviour
     {
+        // public GameObject playerObject;
+
+        public float buildRotationOffset = 25;
+
+
+        public TransformBehavior pageWithPanelTransform, fullTradeTransform, subTitlesTransform, dialogueOptionsTransform, messageCenterTransform;
+
+        [Header("Normal Page Params")]
+        public UIPageParameters normalPageParams = new UIPageParameters(new Vector2(3, .25f), .5f, .01f, TextAnchor.MiddleLeft, .05f, .0025f);
         
+        [Header("Text Panel Params")]
+        public TextPanelParameters textPanelParameters = new TextPanelParameters(new Vector2(3, 4), new Vector2(.1f, .1f), .0025f, TextAnchor.UpperLeft, 64);
+        
+        [Header("Quick Inventory Radial Params")]
+        public UIRadialParameters radialParams = new UIRadialParameters(.8f, .1f, .0035f);
 
-        InventoryUI inventoryUI;
+        [Header("Quick Trade Page Params")]
+        public UIPageParameters quickTradeParams = new UIPageParameters(new Vector2(3, .25f), .5f, .01f, TextAnchor.MiddleCenter, 0, .0025f);
+
+        [Header("Dialogue Options Page Params")]
+        public UIPageParameters dialogueParams = new UIPageParameters(new Vector2(4, .25f), .5f, .01f, TextAnchor.MiddleLeft, 0.05f, .0025f);
+
+        [Header("Subtitiles Params")]
+        public UISubtitlesParameters subtitlesParameters = new UISubtitlesParameters(.005f, new Vector2(9, .4f), 3, 64);        
+
+        [Header("Message Center Params")]
+        public UIMessageCenterParameters messageCenterParameters = new UIMessageCenterParameters(TextAnchor.MiddleLeft, 1, new Vector2(4, .5f), .005f, .05f, 3, new Vector2(.1f, .1f), .05f, 1);
+        
+        //TODO: get ui stuff out of actor script...
+        void BuildUIs (Actor playerActor) {
+            // if (playerObject == null)
+            // {
+            //     Debug.LogError("no inventory uis object specified");
+            //     return;
+            // }
+
+            UIElementHolder fullTradeHolder = VRUIBuilder.MakeFullTradeUI("FullTrade", normalPageParams, textPanelParameters, fullTradeTransform, buildRotationOffset);
+
+            playerActor.GetComponent<CraftingUIHandler>().SetUIObject(fullTradeHolder);
+            playerActor.GetComponent<FullTradeUIHandler>().SetUIObject(fullTradeHolder);
+            playerActor.GetComponent<QuickInventoryUIHandler>().SetUIObject(VRUIBuilder.MakeRadial("QuickInvRadial", radialParams));
+            
+            playerActor.GetComponent<FullInventoryUIHandler>().SetUIObject(VRUIBuilder.MakeButtonsPage("PageWPanel", normalPageParams, textPanelParameters, true, pageWithPanelTransform, buildRotationOffset));
+            
+            dialoguePlayerUIHandler.SetUIObject(VRUIBuilder.MakeButtonsPage("Dialogue", dialogueParams, true, dialogueOptionsTransform));
+            
+            playerActor.GetComponent<QuickTradeUIHandler>().SetUIObject(VRUIBuilder.MakeButtonsPage("QuickTrade", quickTradeParams, false, null));
+
+            subtitles = VRUIBuilder.MakeSubtitles("Subtitles", subtitlesParameters, subTitlesTransform);
+            msgCenter = VRUIBuilder.MakeMessageCenter ("Message Center", messageCenterParameters, messageCenterTransform);
+
+            //link the subtitles and msg center showers to the player
+            playerActor.onShowMessage += msgCenter.ShowMessage;
+            playerActor.onShowSubtitles += subtitles.ShowSubtitles;
+
+            dialoguePlayerUIHandler.onUIOpen += OnOpenDialogueUI;
+
+
+            // msgCenter.onShowMessage += OnShowGameMessage;
+
+        }
+
+        UISubtitles subtitles;
+        UIMessageCenter msgCenter;
+        DialoguePlayerUIHandler dialoguePlayerUIHandler;
+
+        void UninitializeUIs (Actor playerActor) {
+            playerActor.onShowMessage -= msgCenter.ShowMessage;
+            playerActor.onShowSubtitles -= subtitles.ShowSubtitles;
+            dialoguePlayerUIHandler.onUIOpen -= OnOpenDialogueUI;
+
+            // msgCenter.onShowMessage -= OnShowGameMessage;
+
+        }
+
         Inventory inventory;
-
-
+        public SteamVR_Input_Sources dialogueHand = SteamVR_Input_Sources.RightHand;
+        void OnOpenDialogueUI (UIElementHolder uiObject) {
+            VRUIInput.SetUIHand(dialogueHand);
+        }
 
         void OnEnable () {
-        
-            GameManager.onPauseRoutineStart += OnGamePaused;
-            
-            UIManager.onUISelect += OnUISelection;
             inventory = Player.instance.GetComponent<Inventory>();
-            inventoryUI = Player.instance.GetComponent<InventoryUI>();
+            dialoguePlayerUIHandler = inventory.GetComponent<DialoguePlayerUIHandler>();
+            
+            BuildUIs(inventory.actor);
+
+            
+            GameManager.onPauseRoutineStart += OnGamePaused;
+            UIManager.onAnyUISelect += OnUISelection;
             
         }
             
             
         void OnDisable () {
+
             GameManager.onPauseRoutineStart -= OnGamePaused;
-            UIManager.onUISelect -= OnUISelection;
+            UIManager.onAnyUISelect -= OnUISelection;
+            
+            UninitializeUIs(inventory.actor);
         }
 
         
@@ -49,81 +127,56 @@ namespace VRPlayer {
             }
         }        
 
+        
+        
+
+        // public SteamVR_Input_Sources messagesHand = SteamVR_Input_Sources.LeftHand;
+        // void OnShowGameMessage (string message) {            
+        //     StandardizedVRInput.instance.TriggerHapticPulse( messagesHand, .1f, 1.0f, 1.0f );   
+        // }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-         
-        [Space] public SteamVR_Action_Boolean uiInvToggleAction;
-        public string invContext = "FullInventory";
-
-
-        protected InventoryManagementUIHandler invUIHandler;
         
        
-        // open full inventory logic
         void Update()
-        {            
+        { 
+            if (GameManager.isPaused) return;
             UpdateNormalInventory();
-                 UpdateQuickInventory();
+            UpdateQuickInventory();
        
         }
-        void UpdateNormalInventory () {
-            // if (GameManager.isPaused)
-            //     return;
-            // if (inventoryUI.IsOpen(InventoryUI.UIType.FullTrade))
-            //     return;
-            
-            if (uiInvToggleAction.GetStateDown(VRManager.instance.mainHand)) {
-                if (invUIHandler == null) {
-                    invUIHandler = InventoryManagementUIHandler.GetUIHandlerByContext(invContext);
-                }
-                            
+         
+        [Space] public SteamVR_Action_Boolean uiInvToggleAction;
+        // public string invContext = "FullInventory";
+        InventoryManagementUIHandler invUIHandler;
 
+        // open full inventory logic
+        void UpdateNormalInventory () {
+            if (uiInvToggleAction.GetStateDown(VRManager.instance.mainHand)) {
+                if (invUIHandler == null) invUIHandler = InventoryManagementUIHandler.GetUIHandlerByContext(Inventory.fullInventoryContext);
+                
                 if (invUIHandler.UIObjectActive())
-                    inventory.EndInventoryManagement (invContext, 0);
+                    inventory.EndInventoryManagement (Inventory.fullInventoryContext, 0);
                 else
-                    inventory.InitiateInventoryManagement (invContext, 0, null, null);
+                    inventory.InitiateInventoryManagement (Inventory.fullInventoryContext, 0, null, null);
                     
             }
         } 
 
-
-
-
         [Space] public SteamVR_Action_Boolean uiQuickInvToggleAction;
-        public string quickInvContext = "QuickInventory";
+        // public string quickInvContext = "QuickInventory";
        
-
         // Opening quick invnetory logic
-        
-
         bool CheckHandForWristRadialOpen (SteamVR_Input_Sources hand) {
 			if (uiQuickInvToggleAction.GetStateDown(hand)) {
-                inventory.InitiateInventoryManagement (quickInvContext, VRManager.Hand2Int(hand), null, null);
+                inventory.InitiateInventoryManagement (Inventory.quickInventoryContext, VRManager.Hand2Int(hand), null, null);
 				return true;
 			}
 			return false;
 		}
         void UpdateQuickInventory () {
 
-            if (UIManager.AnyUIOpen(-1))
+            if (UIManager.AnyUIOpen())//-1))
                 return;
             
 			if (Player.instance.handsTogether) {
@@ -140,186 +193,5 @@ namespace VRPlayer {
         }   
 
 
-
-        static RectTransform BuildCanvasObject (string name, bool addVRMenuBehavior, TransformBehavior followBehavior) {
-            GameObject g = new GameObject(name);
-
-            RectTransform t = g.AddComponent<RectTransform>();
-            t.sizeDelta = Vector2.one;
-        
-            Canvas c = g.AddComponent<Canvas>();
-            c.renderMode = RenderMode.WorldSpace;
-
-            UnityEngine.UI.CanvasScaler scaler = g.AddComponent<UnityEngine.UI.CanvasScaler>();
-            scaler.dynamicPixelsPerUnit = 1;
-            scaler.referencePixelsPerUnit = 1;
-
-            // UnityEngine.UI.GraphicRaycaster gr = g.AddComponent<UnityEngine.UI.GraphicRaycaster>();
-            // gr.ignoreReversedGraphics = true;
-            // gr.blockingObjects = UnityEngine.UI.GraphicRaycaster.BlockingObjects.None;
-
-            if (addVRMenuBehavior) {
-
-                VRMenu vrm = g.AddComponent<VRMenu>();
-                vrm.matchXRotation = false;
-                vrm.angleThreshold = 45;
-                vrm.followSpeed = 5;
-                vrm.followBehavior = followBehavior;
-            }
-
-            return t;
-        }
-
-        static void SetAnchor(RectTransform t, Vector2 anchor) {
-            t.anchorMin = anchor;
-            t.anchorMax = anchor;
-            t.pivot = anchor;
-        }
-        static void SetParent(RectTransform t, RectTransform parent) {
-            t.SetParent(parent);
-            t.localPosition = Vector3.zero;
-            t.localRotation = Quaternion.identity;
-            t.localScale = Vector3.one;
-        }
-        static void SetParent(RectTransform t, RectTransform parent, Vector3 lPos) {
-            SetParent(t, parent);
-            t.localPosition = lPos;
-        }
-
-        public static UIValueTracker MakeValueTrackerUI (string goName, UIValueTrackerParameters parameters, bool useVertical) {
-            
-            // build a seperate worldspace canvas for each ui element
-            RectTransform canvasObject = BuildCanvasObject(goName, false, null);
-            UIValueTracker newValueTracker = GameObject.Instantiate( useVertical ? UIManager.instance.valueTrackerVerticalPrefab : UIManager.instance.valueTrackerHorizontalPrefab );
-            newValueTracker.parameters = parameters;
-            newValueTracker.baseObject = canvasObject.gameObject;
-            
-            RectTransform newTrackerRect = newValueTracker.GetComponent<RectTransform>();
-            SetAnchor(newTrackerRect, new Vector2(.5f, .5f));
-            SetParent(newTrackerRect, canvasObject);
-            
-            return newValueTracker;
-        }
-
-
-
-        public static UISubtitles MakeSubtitles ( string goName, UISubtitlesParameters parameters, TransformBehavior equipBehavior ) {
-            // build a seperate worldspace canvas for each ui element
-            RectTransform canvasObject = BuildCanvasObject(goName, true, equipBehavior);
-            UISubtitles returnElement = GameObject.Instantiate( UIManager.instance.subtitlesPrefab );
-            returnElement.parameters = parameters;
-            returnElement.baseObject = canvasObject.gameObject;
-            
-            RectTransform newPageRect = returnElement.GetComponent<RectTransform>();
-            SetAnchor(newPageRect, new Vector2(.5f, .5f));
-            SetParent(newPageRect, canvasObject);
-            return returnElement;
-        }
-
-
-
-        public static UIElementHolder MakeButtonsPage (
-            string goName, 
-            UIRadialParameters radialParameters, UIPageParameters pageParameters, TextPanelParameters textPanelParams, 
-            bool addVRMenuBehavior, TransformBehavior equipBehavior, float textScale
-        ) {
-            // build a seperate worldspace canvas for each ui element
-            RectTransform canvasObject = BuildCanvasObject(goName, addVRMenuBehavior, equipBehavior);
-            UIElementHolder returnElement = null;
-            if (radialParameters != null) {
-                
-                UIRadial newRadial = GameObject.Instantiate( UIManager.instance.radialPrefab );
-                newRadial.parameters = radialParameters;
-                
-                RectTransform newPageRect = newRadial.GetComponent<RectTransform>();
-                SetAnchor(newPageRect, new Vector2(.5f, .5f));
-                SetParent(newPageRect, canvasObject);
-
-                returnElement = newRadial;
-
-            }
-            else {
-
-                UIPage newPage = GameObject.Instantiate( UIManager.instance.pagePrefab );
-                newPage.parameters = pageParameters;
-                
-                RectTransform newPageRect = newPage.GetComponent<RectTransform>();
-
-                if (textPanelParams != null) {
-
-                    RectTransform childRect = new GameObject(pageParameters.pageTitleText+"_holder").AddComponent<RectTransform>();
-                    childRect.sizeDelta = Vector2.one;
-                    SetAnchor(childRect, new Vector2(.5f, 1f));
-                    SetParent(childRect, canvasObject);
-                
-                    float halfWidth = pageParameters.width*.5f;
-                    SetAnchor(newPageRect, new Vector2(.5f, 1f));
-                    SetParent(newPageRect, childRect, new Vector3(-(halfWidth*1.25f), 0, 0));
-        
-                    UITextPanel textPanel = GameObject.Instantiate( UIManager.instance.textPanelPrefab );
-                    RectTransform newPanelRect = textPanel.GetComponent<RectTransform>();
-                    SetAnchor(newPanelRect, new Vector2(.5f, 1f));
-                    SetParent(newPanelRect, childRect, new Vector3((halfWidth*1.25f), -pageParameters.lineHeight, 0));
-    
-                    textPanel.parameters = textPanelParams;
-                    newPage.textPanel = textPanel;
-                }
-                else {
-
-                    SetAnchor(newPageRect, new Vector2(.5f, 1f));
-                    SetParent(newPageRect, canvasObject);
-                    
-                }
-                returnElement = newPage;
-            }
-
-            returnElement.textScale = textScale;
-            returnElement.isBase = true;
-            returnElement.baseObject = canvasObject.gameObject;
-            UIManager.HideUI(returnElement);
-            return returnElement;
-
-        }
-
-
-        public static UIElementHolder MakeFullTradeUI (string goName, UIPageParameters pageParameters, TransformBehavior equipBehavior, float textScale) {
-            // build a seperate worldspace canvas for each ui element
-            RectTransform canvasObject = BuildCanvasObject(goName, true, equipBehavior);
-
-            RectTransform childRect = new GameObject(goName+"_holder").AddComponent<RectTransform>();
-            SetAnchor(childRect, new Vector2(.5f, .5f));
-            SetParent(childRect, canvasObject);
-                    
-            
-            ElementHolderCollection collection = childRect.gameObject.AddComponent<ElementHolderCollection>();
-            collection.textScale = textScale;
-            collection.isBase = true;
-
-            collection.baseObject = canvasObject.gameObject;
-            RectTransform collectionT = collection.GetComponent<RectTransform>();
-
-            UIPage newPage0 = GameObject.Instantiate( UIManager.instance.pagePrefab );
-            newPage0.textScale = textScale;
-            newPage0.isBase = true;
-            newPage0.parameters = pageParameters;
-
-                    
-            SetAnchor(newPage0.GetComponent<RectTransform>(), new Vector2(.5f, 1f));
-            SetParent(newPage0.GetComponent<RectTransform>(), collectionT, new Vector3(-(pageParameters.width*.75f), 0, 0));
-
-            UIPage newPage1 = GameObject.Instantiate( UIManager.instance.pagePrefab );
-            newPage1.textScale = textScale;
-            newPage1.isBase = true;
-            newPage1.parameters = pageParameters;
-
-                    
-            SetAnchor(newPage1.GetComponent<RectTransform>(), new Vector2(.5f, 1f));
-            SetParent(newPage1.GetComponent<RectTransform>(), collectionT, new Vector3((pageParameters.width*.75f), 0, 0));
-
-            collection.subHolders = new UIElementHolder[] { newPage0 , newPage1 };
-
-            UIManager.HideUI(collection);
-            return collection;
-        }  
     }
 }

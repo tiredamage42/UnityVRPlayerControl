@@ -16,8 +16,6 @@ namespace VRPlayer {
         public float interactRayWidth = .1f;
         LineRenderer[] interactRays;
 
-        void Awake () {
-        }
         void Start () {
             GetInteractionPoints();
             UpdateInteractorReferenceTransform();
@@ -26,13 +24,9 @@ namespace VRPlayer {
 
         void GetInteractionPoints () {
             if (Player.instance != null) {
-                if (interactionPoints == null || interactionPoints.Length != 2) {
-                    interactionPoints = new InteractionPoint[2];
-                }
+                if (interactionPoints == null || interactionPoints.Length != 2) interactionPoints = new InteractionPoint[2];
                 for (int i = 0; i < 2; i++) {
-                    if (interactionPoints[i] == null) {
-                        interactionPoints[i] = Player.instance.GetHand(VRManager.Int2Hand(i)).GetComponent<InteractionPoint>();
-                    }
+                    if (interactionPoints[i] == null) interactionPoints[i] = Player.instance.GetHand(VRManager.Int2Hand(i)).GetComponent<InteractionPoint>();
                 }
             }
         }

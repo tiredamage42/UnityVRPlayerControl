@@ -41,10 +41,9 @@ namespace InteractionSystem {
             if (interactableEmissionFlasher == null) {
                 return;
             }
+
             for (int i = 0; i < renderers.Length; i++) {
-                Material materials = renderers[i].sharedMaterial;
-                SubmitMaterial ( materials, interactableEmissionFlasher );
-                
+                SubmitMaterial ( renderers[i].sharedMaterial, interactableEmissionFlasher );
             }
         }
 

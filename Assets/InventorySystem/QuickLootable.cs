@@ -9,7 +9,6 @@ namespace InventorySystem{
         }
 
         public void OnInteractableAvailabilityChange(bool available) { }
-            
         public void OnInteractableInspectedStart (InteractionPoint interactor) {
             if (linkedInventory != null && interactor.inventory != null) interactor.inventory.InitiateInventoryManagement(Inventory.quickTradeContext, interactor.interactorID, linkedInventory, null);
         }

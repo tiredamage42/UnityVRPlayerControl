@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using ActorSystem;
-using InventorySystem;
 using InteractionSystem;
 
 namespace DialogueSystem 
@@ -8,27 +7,22 @@ namespace DialogueSystem
 
     //make interactable to start conversations...
     public class DialogueTemplateHolder : MonoBehaviour, IInteractable {
+        public int useAction = 0;
         public DialogueTemplate template;
-        public AudioSource audioSource;
         public Actor actor;
-        public Inventory inventory;
+        public AudioSource audioSource;
 
         void Awake () {
             if (actor == null) actor = GetComponent<Actor>();
-            if (inventory == null) inventory = GetComponent<Inventory>();
         }
 
-        public int useAction = 0;
-        
         public void OnInteractableAvailabilityChange(bool available) { }
         public void OnInteractableInspectedStart (InteractionPoint interactor) { }
         public void OnInteractableInspectedEnd (InteractionPoint interactor) { }
         public void OnInteractableInspectedUpdate (InteractionPoint interactor) { }
 
         public void OnInteractableUsedStart (InteractionPoint interactor, int useAction) {
-            if ( useAction != this.useAction ) return;
-            DialoguePlayer dialoguePlayer = interactor.GetComponentInParent<DialoguePlayer>();
-            if (dialoguePlayer != null) dialoguePlayer.StartDialogueWith(this);
+            if ( useAction == this.useAction ) interactor.inventory.actor.StartDialogue(template, actor, audioSource);
         }
 
         public void OnInteractableUsedEnd (InteractionPoint interactor, int useAction) { }

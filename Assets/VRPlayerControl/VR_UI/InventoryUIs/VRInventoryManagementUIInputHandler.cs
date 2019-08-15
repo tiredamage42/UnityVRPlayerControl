@@ -3,6 +3,8 @@
 using GameUI;
 using SimpleUI;
 using Valve.VR;
+using InventorySystem;
+using System.Collections.Generic;
 
 #if UNITY_EDITOR 
 using UnityEditor;
@@ -22,10 +24,33 @@ namespace VRPlayer.UI {
         [NeatArray] public UIInputControlArray controls;
         public TransformBehavior equipBehavior;
         public string context;
+
+        [Header("Input uses only one Hand")]
+        public bool usesSingleHand;
+        public int enforcedEquipID = -1;
+
+
+        bool UIShouldOpenCheck (Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
+            return enforcedEquipID == -1 || usingEquipPoint == enforcedEquipID;            
+        }
+        bool UIShouldCloseCheck (Inventory inventory, int usingEquipPoint) {
+            return enforcedEquipID == -1 || usingEquipPoint == enforcedEquipID;
+        }
+
+
         protected InventoryManagementUIHandler myUIHandler;
         
+        bool needsSingleHandInput { get { return usesSingleHand || enforcedEquipID != -1; } }
 
-        Vector2Int GetUIInputs (int equipID, SteamVR_Input_Sources hand) {
+            
+        
+        // Vector2Int GetUIInputs () {
+        // }
+        Vector2Int GetUIInputs (){//int equipID, SteamVR_Input_Sources hand) {
+            // bool usesID = usesSingleHand || enforcedEquipID != -1;// ||  myUIHandler.EquipIDSpecific();
+            int equipID = needsSingleHandInput ? myUIHandler.workingWithEquipID : 0;
+            SteamVR_Input_Sources hand = needsSingleHandInput ? VRManager.Int2Hand( equipID ) : SteamVR_Input_Sources.Any;
+            // return GetUIInputs(equipID, hand);
             
             for (int i = 0; i < controls.list.Length; i++) {
                 if (controls.list[i].handDependent) {
@@ -46,27 +71,22 @@ namespace VRPlayer.UI {
             return new Vector2Int(-1, equipID);        
         }
 
-            
-        
-        Vector2Int GetUIInputs () {
-            bool usesID = myUIHandler.EquipIDSpecific();
-            int equipID = usesID ? myUIHandler.workingWithEquipID : 0;
-            SteamVR_Input_Sources hand = usesID ? VRManager.Int2Hand( equipID ) : SteamVR_Input_Sources.Any;
-            return GetUIInputs(equipID, hand);
-        }
 
-
-        string[] actionNames;
+        // string[] actionNames;
 
         protected virtual void OnEnable () {
 
             myUIHandler = InventoryManagementUIHandler.GetUIHandlerByContext(context);
 
             if (myUIHandler != null) {
-                actionNames = myUIHandler.GetInputNames();
+                // actionNames = myUIHandler.GetInputNames();
                 myUIHandler.onUIClose += OnCloseUI;
                 myUIHandler.onUIOpen += OnOpenUI;
                 myUIHandler.SetUIInputCallback(GetUIInputs);
+
+                myUIHandler.shouldCloseCheck = UIShouldCloseCheck;
+                myUIHandler.shouldOpenCheck = UIShouldOpenCheck;
+                
             }
         }
 
@@ -78,11 +98,14 @@ namespace VRPlayer.UI {
         }
 
         void OnOpenUI (UIElementHolder uiObject) {
-            SteamVR_Input_Sources hand = myUIHandler.EquipIDSpecific() ? VRManager.Int2Hand( myUIHandler.workingWithEquipID ) : SteamVR_Input_Sources.Any;
+            // SteamVR_Input_Sources hand = myUIHandler.EquipIDSpecific() ? VRManager.Int2Hand( myUIHandler.workingWithEquipID ) : SteamVR_Input_Sources.Any;
 
+            SteamVR_Input_Sources hand = needsSingleHandInput ? VRManager.Int2Hand( myUIHandler.workingWithEquipID ) : SteamVR_Input_Sources.Any;
+
+            string[] inputNames = myUIHandler.inputNames;
             for (int i = 0; i < controls.list.Length; i++) {
                 StandardizedVRInput.MarkActionOccupied(controls.list[i].action, hand);
-                StandardizedVRInput.instance.ShowHint(hand, controls.list[i].action, actionNames[i]);
+                StandardizedVRInput.instance.ShowHint(hand, controls.list[i].action, inputNames[i]);
             }     
 
             if (equipBehavior != null) {
@@ -138,7 +161,6 @@ namespace VRPlayer.UI {
             uiHandler = target as VRInventoryManagementUIInputHandler;
         }
         public override void OnInspectorGUI () {
-            base.OnInspectorGUI();
             string[] actionNames = InventoryManagementUIHandler.GetHandlerInputNames(uiHandler.context);
             if (actionNames != null) {
                 EditorGUILayout.HelpBox("Actions:\n" + string.Join(", ", actionNames) , MessageType.Info);
@@ -146,6 +168,7 @@ namespace VRPlayer.UI {
             else {
                 EditorGUILayout.HelpBox("No context found :\n" + uiHandler.context, MessageType.Error);
             }
+            base.OnInspectorGUI();
         }
     }
 

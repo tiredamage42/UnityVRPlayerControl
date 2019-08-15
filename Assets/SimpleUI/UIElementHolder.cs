@@ -1,57 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
-
+using System;
 
 namespace SimpleUI {
 
-
-    
-    [ExecuteInEditMode] public abstract class UIElementHolder : MonoBehaviour
+    [ExecuteInEditMode] public abstract class UIElementHolder : BaseUIElement
     {
-        public float textScale = 0.005f;
-
-
+        protected abstract float TextScale();
      
-        public GameObject baseObject;
         public UITextPanel textPanel;
 
-        
-        // EventSystem _evsys;
-        // public EventSystem eventSystem {
-        //     get {
-        //         if (_evsys == null) {
-        //             _evsys = GameObject.FindObjectOfType<EventSystem>();
-        //         }
-        //         return _evsys;
-        //     }
-        // }
-
-        
-        // public bool needsDefaultSelection = true;
-
-
-        
-        [HideInInspector] public UIElementHolder parentHolder;
         public bool isBase;
         public UIElementHolder[] subHolders;
-
-        void InitializeSubHolders () {
-            if (subHolders != null) {
-
-            for (int i = 0 ; i < subHolders.Length; i++) {
-                subHolders[i].parentHolder = this;
-            }
-            }
-        }
+        [HideInInspector] public UIElementHolder parentHolder;
 
 
         
-        System.Func<Vector2Int> _runtimeSubmitHandler;
-        public System.Func<Vector2Int> runtimeSubmitHandler { 
+        Func<Vector2Int> _runtimeSubmitHandler;
+        public Func<Vector2Int> runtimeSubmitHandler { 
             get { return parentHolder != null ? parentHolder.runtimeSubmitHandler : _runtimeSubmitHandler; } 
             set {
                 if (parentHolder != null) {
@@ -63,9 +29,8 @@ namespace SimpleUI {
             }
         }
 
-
-        List<System.Action<GameObject[], object[]>> onSelectdelegates = new List<System.Action<GameObject[], object[]>>();
-        event System.Action<GameObject[], object[]> _onSelect;
+        List<Action<GameObject[], object[]>> onSelectdelegates = new List<Action<GameObject[], object[]>>();
+        event Action<GameObject[], object[]> _onSelect;
         public void BroadcastSelectEvent (GameObject[] data, object[] customData) {
             if (parentHolder != null) {
                 parentHolder.BroadcastSelectEvent(data, customData);
@@ -73,7 +38,7 @@ namespace SimpleUI {
             }
             if (_onSelect != null) _onSelect(data, customData);
         }
-        public void SubscribeToSelectEvent (System.Action<GameObject[], object[]> callback) {
+        public void SubscribeToSelectEvent (Action<GameObject[], object[]> callback) {
             if (parentHolder != null) {
                 parentHolder.SubscribeToSelectEvent(callback);
                 return;
@@ -82,8 +47,8 @@ namespace SimpleUI {
             onSelectdelegates.Add(callback);
         }
 
-        List<System.Action<GameObject[], object[], Vector2Int>> onSubmitdelegates = new List<System.Action<GameObject[], object[], Vector2Int>>();
-        event System.Action<GameObject[], object[], Vector2Int> _onSubmit;
+        List<Action<GameObject[], object[], Vector2Int>> onSubmitdelegates = new List<Action<GameObject[], object[], Vector2Int>>();
+        event Action<GameObject[], object[], Vector2Int> _onSubmit;
         public void BroadcastSubmitEvent (GameObject[] data, object[] customData, Vector2Int submit) {
             if (parentHolder != null) {
                 parentHolder.BroadcastSubmitEvent(data, customData, submit);
@@ -91,7 +56,7 @@ namespace SimpleUI {
             }
             if (_onSubmit != null) _onSubmit(data, customData, submit);
         }
-        public void SubscribeToSubmitEvent (System.Action<GameObject[], object[], Vector2Int> callback) {
+        public void SubscribeToSubmitEvent (Action<GameObject[], object[], Vector2Int> callback) {
             if (parentHolder != null) {
                 parentHolder.SubscribeToSubmitEvent(callback);
                 return;
@@ -99,8 +64,10 @@ namespace SimpleUI {
             _onSubmit += callback;
             onSubmitdelegates.Add(callback);
         }
-        
 
+        public Action onBaseCancel;
+        
+        
         public void RemoveAllEvents()
         {
             foreach(var eh in onSelectdelegates) _onSelect -= eh;
@@ -112,32 +79,24 @@ namespace SimpleUI {
             runtimeSubmitHandler = null;
         }
 
-
-
         protected abstract SelectableElement ElementPrefab () ;
-
 
         bool isHoldersCollection { get { return subHolders != null && subHolders.Length > 0; } }
 
-
         Transform _elementsParent;
-        protected Transform elementsParent {
+        Transform elementsParent {
             get {
                 if (isHoldersCollection) return null;
                 if (_elementsParent == null) _elementsParent = ElementsParent();
                 return _elementsParent;
             }
         }
-        protected abstract Transform ElementsParent ();
-        
 
-        // public event System.Action onBaseCancel;
-        public System.Action onBaseCancel;
-        
+
+        protected abstract Transform ElementsParent ();
         protected List<SelectableElement> allElements = new List<SelectableElement>();
 
-        void GetElementReferences () {
-
+        void GetSelectableElementReferences () {
             if (isHoldersCollection) return;
                 
             allElements.Clear();
@@ -149,63 +108,61 @@ namespace SimpleUI {
             }
         }
 
-        public virtual void UpdateElementHolder () {
-            
-            if (isHoldersCollection)  {
-                for (int i = 0; i < subHolders.Length; i++) subHolders[i].textScale = textScale;
-                return;
-            }
-                
+        public virtual void UpdateSelectableElementHolder () {
+            if (isHoldersCollection) return;
+
+            Vector3 textScale = Vector3.one * TextScale();
             
             for (int i = 0; i < allElements.Count; i++) {
-                UIText t = allElements[i].uiText;
-                if (allElements[i].hasText) {
-
-                    t.transform.localScale = Vector3.one * textScale;  
-                }
+                allElements[i].uiText.transform.localScale = textScale;  
                 allElements[i].UpdateElement();  
             }
+        }
 
-            // if (Application.isPlaying) {
-            //     if (needsDefaultSelection && allElements.Count > 0) {
-            //         SelectOnEnable selectOnEnable = GetComponent<SelectOnEnable>();
-            //         if (selectOnEnable != null) {
-            //             selectOnEnable.toSelect = allElements[0].gameObject;
-            //         }
-            //     }
-            // }
+        void InitializeSubSelectableElementHolders () {
+            if (!isHoldersCollection) return;
+            for (int i = 0 ; i < subHolders.Length; i++) {
+                subHolders[i].parentHolder = this;
+            }
+        }
+
+        void InitializeSelectableElements () {
+            GetSelectableElementReferences();
+            UpdateSelectableElementHolder();    
         }
         
         protected virtual void OnEnable () {
-            InitializeSubHolders();
-            GetElementReferences();
-            UpdateElementHolder();    
+            InitializeSubSelectableElementHolders();
+            InitializeSelectableElements();
         }
             
         protected virtual void OnDisable () {
-
             if (isHoldersCollection) return;
-            
-            foreach(var e in allElements) e.selected = false;
-
+            for (int i = 0; i < allElements.Count; i++) {
+                allElements[i].gameObject.SetActive(true);
+                allElements[i].selected = false;
+            }
             allElements.Clear();
         }
            
         protected virtual void Update () {
 
+#if UNITY_EDITOR 
             if (!Application.isPlaying) {
-                GetElementReferences();
-                UpdateElementHolder();
+                InitializeSelectableElements();
             }
+#endif
 
             if (Application.isPlaying) {
-                if (UIManager.input.GetButtonDown(UIManager.cancelButton)) {
+
+                // check if we hit the cancel button specified in the project's
+                // standalone input module
+                if (UIManager.currentInput.GetButtonDown(UIManager.standaloneInputModule.cancelButton)) {
                     if (!isBase) {
                         gameObject.SetActive(false);
                         parentHolder.gameObject.SetActive(true);
                     }
                     else {
-                        Debug.Log("CANCE:");
                         OnBaseCancel();
                     }
                 }
@@ -214,12 +171,10 @@ namespace SimpleUI {
 
         void OnBaseCancel () {
             if (parentHolder != null) {
-                Debug.Log("has [arent");
                 parentHolder.OnBaseCancel();
             }
             else {
                 if (onBaseCancel != null) {
-                    Debug.Log("callback");
                     onBaseCancel ();
                 }
                 else {
@@ -228,41 +183,41 @@ namespace SimpleUI {
             }
         }
 
-        public SelectableElement[] GetAllElements (int targetCount) {
+        public SelectableElement[] GetAllSelectableElements (int targetCount) {
             if (isHoldersCollection) return null;
             
-            if (allElements.Count < targetCount) {
-                int c = allElements.Count;
+            int c = allElements.Count;
+            if (c < targetCount) {
+                int cnt = targetCount - c;
                 for (int i = 0 ; i < targetCount - c; i++) {
-                    AddNewElement("Adding new");
+                    AddNewSelectableElement("Adding new", i == (cnt - 1));
+                }
+            }
+            else if (c > targetCount) {
+                for (int i = targetCount ; i < c; i++) {
+                    allElements[i].gameObject.SetActive(false);
                 }
             }
 
             return allElements.ToArray();
         }
 
-        public SelectableElement AddNewElement (string elementText) {
+        public SelectableElement AddNewSelectableElement (string elementText, bool updateHolder) {
             if (isHoldersCollection) return null;
             
             SelectableElement newElement = Instantiate(ElementPrefab());
             newElement.parentHolder = this;
+
             newElement.transform.SetParent( elementsParent.transform );
             newElement.transform.localScale = Vector3.one;
             newElement.transform.localPosition = Vector3.zero;
             newElement.transform.localRotation = Quaternion.identity;
             
             allElements.Add(newElement);
-            newElement.uiText.SetText( elementText );
-            UpdateElementHolder();
+            newElement.uiText.SetText( elementText, -1);
+
+            if (updateHolder) UpdateSelectableElementHolder();
             return newElement;
         }
-
-
-
-        
-
-
-
     }
-
 }

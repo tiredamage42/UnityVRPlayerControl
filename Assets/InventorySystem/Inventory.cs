@@ -1,16 +1,16 @@
-﻿using System.Collections;
+﻿// using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using VRPlayer;
+// using VRPlayer;
 
 
-using Valve.VR;
-
+// using Valve.VR;
 using System;
 
-using InteractionSystem;
 
+using InteractionSystem;
+using ActorSystem;
 
 namespace InventorySystem {
 
@@ -89,21 +89,46 @@ namespace InventorySystem {
 
 public class Inventory : MonoBehaviour
 {
-    public ActorSystem.Actor actor;
-    public InventoryEqupping equipping;
-    public InventoryCrafter crafter;
+
+    public int stashAction = 1;
+    [HideInInspector] public ActorSystem.Actor actor;
+    [HideInInspector] public InventoryEqupping equipping;
+    // public InventoryCrafter crafter;
     void InitializeComponents () {
         actor = GetComponent<ActorSystem.Actor>();
         equipping = GetComponent<InventoryEqupping>();
-        crafter = GetComponent<InventoryCrafter> ();
+        // crafter = GetComponent<InventoryCrafter> ();
     }
 
     void Awake () {
         InitializeComponents();
     }
 
+    public event System.Action<Item, int, int> onSceneItemActionStart;
+
+        public void OnSceneItemActionStart (Item sceneItem, int interactorID, int actionIndex) {
+            
+
+            if (actionIndex == stashAction) {
+                StashItem(sceneItem, interactorID, true);
+            }
+            if (onSceneItemActionStart != null) {
+                onSceneItemActionStart(sceneItem, interactorID, actionIndex);
+            }
+        }
+
+        public string GetDisplayName () {
+            if (actor != null) {
+                return actor.actorName;
+            }
+            return name;
+        }
 
 
+    public List<int> scrappableCategories = new List<int> () { 0, 1, 3 };
+    
+    public List<int> autoScrapCategories = new List<int> () { 3 };
+        
     public const string equippedItemLayer = "EquippedItem";
 
     public event System.Action<Inventory, int, Inventory, string, List<int>> onInventoryManagementInitiate;
@@ -120,48 +145,13 @@ public class Inventory : MonoBehaviour
         }
     }
     
-    // // Create a layer at the next available index. Returns silently if layer already exists.
-    // public static void CreateLayer(string name)
-    // {
-    //     if (string.IsNullOrEmpty(name))
-    //         throw new System.ArgumentNullException("name", "New layer name string is either null or empty.");
-
-    //     var tagManager = new UnityEditor.SerializedObject(UnityEditor.AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
-    //     var layerProps = tagManager.FindProperty("layers");
-    //     var propCount = layerProps.arraySize;
-
-    //     UnityEditor.SerializedProperty firstEmptyProp = null;
-
-    //     for (var i = 0; i < propCount; i++)
-    //     {
-    //         var layerProp = layerProps.GetArrayElementAtIndex(i);
-    //         var stringValue = layerProp.stringValue;
-
-    //         if (stringValue == name) return;
-
-    //         if (i < 8 || stringValue != string.Empty) 
-    //             continue;
-
-    //         if (firstEmptyProp == null) {
-    //             firstEmptyProp = layerProp;
-    //             break;
-    //         }
-    //     }
-
-    //     if (firstEmptyProp == null)
-    //     {
-    //         Debug.LogError("Maximum limit of " + propCount + " layers exceeded. Layer \"" + name + "\" not created.");
-    //         return;
-    //     }
-
-    //     firstEmptyProp.stringValue = name;
-    //     tagManager.ApplyModifiedProperties();
-    // }
 
 
     
     public const string quickTradeContext = "QuickTrade";
     public const string fullTradeContext  = "FullTrade";
+    public const string quickInventoryContext = "QuickInventory";
+    public const string fullInventoryContext = "FullInventory";
 
     
     
@@ -170,11 +160,13 @@ public class Inventory : MonoBehaviour
         0, 1, 2
     };
 
-    public List<Inventory.InventorySlot> GetFilteredInventory( List<int> categoryFilter ) {
-        if (categoryFilter == null || categoryFilter.Count == 0)
-            return allInventory;
+
+
+
+    // empty filters will return all inventory with categories >= 0
+    public List<InventorySlot> GetFilteredInventory( List<int> categoryFilter ) {
         
-        List<Inventory.InventorySlot> r = new List<Inventory.InventorySlot>();
+        List<InventorySlot> r = new List<InventorySlot>();
         for (int i = 0; i < allInventory.Count; i++) {
             if (categoryFilter == null || categoryFilter.Count == 0) {
                 if (allInventory[i].item.category >= 0) {
@@ -191,258 +183,384 @@ public class Inventory : MonoBehaviour
     }
     
 
-    public bool TransferInventoryContentsTo (Inventory otherInventory) {
-        bool didAnyTransfer = false;
+    public void TransferInventoryContentsTo (Inventory otherInventory, bool sendMessage) {
         for (int i = allInventory.Count -1 ; i >= 0; i--) {
-            
             ItemBehavior item = allInventory[i].item;
             int count = allInventory[i].count;
 
-            if (CanDropItem(item, out _, out _, false)) {
-                if (otherInventory.CanStashItem(item)) {
-                    DropItem(item, count, false, i);
-                    otherInventory.StashItem(item, count, -1);
-                    didAnyTransfer = true;
+            DropItemAlreadyInInventory(allInventory[i], count, false, i, true, sendMessage);
+            otherInventory.StashItem(item, count, -1, sendMessage);
+        }
+    }
+    
+    public void TransferItemAlreadyInInventoryTo (Inventory.InventorySlot slot, int count, Inventory otherInventory, bool sendMessage) {
+        DropItemAlreadyInInventory(slot, count, false, -1, true, sendMessage);
+        otherInventory.StashItem(slot.item, count, -1, sendMessage);
+    }
+
+
+        public bool ItemCompositionAvailableInInventory (Item_Composition[] compositions, bool checkScrap, Dictionary<string, GameValue> selfGameValues, Dictionary<string, GameValue> suppliedGameValues) {
+            for (int i = 0; i < compositions.Length; i++) {
+                Item_Composition composition = compositions[i];
+                if (GameValueCondition.ConditionsMet(composition.conditions, selfGameValues, suppliedGameValues)) {
+                    if (GetItemCount(composition.item, checkScrap, selfGameValues, suppliedGameValues) < composition.amount) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        
+        bool RemoveItemComposition (Item_Composition itemComps, bool checkScrap, bool sendMessage, Dictionary<string, GameValue> selfGameValues, Dictionary<string, GameValue> suppliedGameValues) {
+            
+            if (!GameValueCondition.ConditionsMet(itemComps.conditions, selfGameValues, suppliedGameValues)) {
+                return false;
+            }
+
+            //just to be sure
+            int itemCompositionAmount = Mathf.Max(1, itemComps.amount);
+            
+            ItemBehavior itemToRemove = itemComps.item;
+            int needsAmount = itemCompositionAmount;
+
+            int baseSlot = GetSlotIndex(itemToRemove);
+
+            if (baseSlot != -1) {
+                needsAmount -= allInventory[baseSlot].count;
+            }
+
+            bool hasEnoughBaseComponents = needsAmount <= 0;
+
+            if (hasEnoughBaseComponents) {
+                DropItemAlreadyInInventory(itemToRemove, itemCompositionAmount, false, baseSlot, true, sendMessage);
+                return true;
+            }
+            else {
+                
+                if (checkScrap) {
+                    
+                    // if not enough, loop through and junk items for their base components (first level only)
+
+                    // dont clear empties while looping, in order to keep indicies consistent
+                    for (int i = 0; i < allInventory.Count; i--) {
+
+                        if (allInventory[i].count <= 0) continue;
+
+                        ItemBehavior potentiallyScrapped = allInventory[i].item;
+                        int potentiallyScrappedCountInInventory = allInventory[i].count;
+
+                        if (autoScrapCategories.Contains(potentiallyScrapped.category)) {
+
+                        
+                            int scrappedItemSubIngredientCount;
+                            if (ItemConsistsOf(potentiallyScrapped, itemToRemove, out scrappedItemSubIngredientCount, selfGameValues, suppliedGameValues)) {
+
+                                int itemToRemoveCountWithinIngredients = potentiallyScrappedCountInInventory * scrappedItemSubIngredientCount;
+
+                                // if we're gonna scrap every item anyways and still need some
+                                if (needsAmount > itemToRemoveCountWithinIngredients) {
+                                    //need to check for inventory slot, since slot indicies could change during scrapping
+                                    ScrapItemAlreadyInInventory(potentiallyScrapped, potentiallyScrappedCountInInventory, i, false, sendMessage, selfGameValues, suppliedGameValues);
+                                    needsAmount -= itemToRemoveCountWithinIngredients;
+                                }
+                                // we only need to scrap some of the item we have...
+                                else {
+                                    /*
+                                        just checking math by hand...
+                                        // need 6, consists of 4 = scrap 2
+                                        // need 4, consists of 6 = scrap 1
+                                        // need 6, consists of 6 = scrap 1
+                                    */
+
+                                    int countToScrap = (needsAmount / scrappedItemSubIngredientCount) + Mathf.Min(needsAmount%scrappedItemSubIngredientCount, 1);
+                                    ScrapItemAlreadyInInventory(potentiallyScrapped, countToScrap, i, false, sendMessage, selfGameValues, suppliedGameValues);
+                                    
+                                    needsAmount = 0;
+
+                                    hasEnoughBaseComponents = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    //we have enough base components after scrpping to remove the item composition...
+                    if (hasEnoughBaseComponents) {
+
+                        //in case we couldnt find a slot for our base component before
+                        if (baseSlot == -1) baseSlot = GetSlotIndex(itemToRemove);
+                        DropItemAlreadyInInventory(itemToRemove, itemCompositionAmount, false, baseSlot, true, sendMessage);
+                        return true;
+                    }
+                    else {
+                        Debug.LogError("problem with math here....");
+                        return false;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public Item_Composition[] RemoveItemComposition (Item_Composition[] itemComps, bool checkScrap, bool sendMessage, Dictionary<string, GameValue> selfGameValues, Dictionary<string, GameValue> suppliedGameValues) {
+
+            List<Item_Composition> removed = new List<Item_Composition>();
+            for (int i = 0; i < itemComps.Length; i++) {
+                if (RemoveItemComposition(itemComps[i], checkScrap, sendMessage, selfGameValues, suppliedGameValues)){
+                    removed.Add(itemComps[i]);
+                }
+            }
+            RemoveEmpties();
+            return removed.ToArray();
+        }
+
+                    
+        public static List<Item_Composition> FilterItemComposition (Item_Composition[] compositions, Dictionary<string, GameValue> selfGameValues, Dictionary<string, GameValue> suppliedGameValues) {
+            List<Item_Composition> filtered = new List<Item_Composition>();
+            for (int i = 0; i < compositions.Length; i++) {
+                if (GameValueCondition.ConditionsMet(compositions[i].conditions, selfGameValues, suppliedGameValues)) {
+                    filtered.Add(compositions[i]);
+                }
+            }
+            return filtered;
+        }
+
+        public void AddItemComposition(Item_Composition[] itemComps, bool sendMessage, Dictionary<string, GameValue> selfGameValues, Dictionary<string, GameValue> suppliedGameValues) {
+            bool checkConditions = selfGameValues != null && suppliedGameValues != null;
+            for (int i = 0; i < itemComps.Length; i++) {
+                if (!checkConditions || GameValueCondition.ConditionsMet(itemComps[i].conditions, selfGameValues, suppliedGameValues)) {
+                    StashItem(itemComps[i].item, itemComps[i].amount, -1, sendMessage);
                 }
             }
         }
-        return didAnyTransfer;
 
-    }
-    
-    public bool TransferItemTo (ItemBehavior item, int count, Inventory otherInventory) {
-        int itemIndex;
-        if (CanDropItem(item, out itemIndex, out _, false)) {
-            if (otherInventory.CanStashItem(item)) {
-                DropItem(item, count, false, itemIndex);
-                otherInventory.StashItem(item, count, -1);
-                return true;
+        void ScrapItemWithCheck (ItemBehavior item, int count, bool removeEmpty, bool sendMessage, Dictionary<string, GameValue> selfGameValues, Dictionary<string, GameValue> suppliedGameValues) {
+            int slotIndex = GetSlotIndex(item);
+            if (slotIndex != -1) ScrapItemAlreadyInInventory ( item, count, slotIndex, removeEmpty, sendMessage, selfGameValues, suppliedGameValues );
+        }
+
+        public void ScrapItemAlreadyInInventory (ItemBehavior item, int count, int slotIndex, bool removeEmpty, bool sendMessage, Dictionary<string, GameValue> selfGameValues, Dictionary<string, GameValue> suppliedGameValues) {
+            DropItemAlreadyInInventory(item, count, false, slotIndex, removeEmpty, sendMessage);
+            for (int i = 0; i< count; i++) {
+                AddItemComposition(item.composedOf, sendMessage, selfGameValues, suppliedGameValues);
             }
         }
-        return false;
-    }
-        
-        
 
+        public int GetItemCount (ItemBehavior itemToCheckFor, bool checkScrap, Dictionary<string, GameValue> selfGameValues, Dictionary<string, GameValue> suppliedGameValues) {
+            int c = 0;
+            for (int i =0 ; i < allInventory.Count; i++) {
+                if (allInventory[i].item == itemToCheckFor) {
+                    c += allInventory[i].count;
+                    
+                    if (!checkScrap) 
+                        return c;
 
-    public bool CanStashItem (ItemBehavior item) {
-        if (item.allowMultipleStashed) 
-            return true;
-        //check if it's already in inventory
-        return !ItemIsInInventory(item, out _, out _);
-    }
-        
-    public bool CanDropItem (ItemBehavior item, out int atIndex, out InventorySlot slot, bool checkInventory) {
-        slot = null;
-        atIndex = -1;
-        if (item.permanentStash)
+                    continue;
+                }
+
+                if (checkScrap) {
+                    if (allInventory[i].count > 0) {
+                        if (autoScrapCategories.Contains(allInventory[i].item.category)) {
+                            int consistsOfCount;
+                            if (ItemConsistsOf(allInventory[i].item, itemToCheckFor, out consistsOfCount, selfGameValues, suppliedGameValues))
+                            {
+                                c += consistsOfCount * allInventory[i].count;
+                            }
+                        }
+                    }
+                }
+            }
+            return c;
+        }
+
+        public static bool ItemConsistsOf(ItemBehavior item, ItemBehavior componentCheck, out int consistsOfCount, Dictionary<string, GameValue> selfGameValues, Dictionary<string, GameValue> suppliedGameValues) {
+            consistsOfCount = -1;
+            Item_Composition[] composedOf = item.composedOf;
+            for (int i = 0; i < composedOf.Length; i++) {
+                if (composedOf[i].item == componentCheck) {
+                    if (GameValueCondition.ConditionsMet(composedOf[i].conditions, selfGameValues, suppliedGameValues)) {
+                        consistsOfCount = composedOf[i].amount;
+                        return true;
+                    }
+                }
+            }
             return false;
-
-        //check if it's already in inventory
-        if (checkInventory)
-            return ItemIsInInventory(item, out atIndex, out slot);
+        }
         
-        return true;
-    }
+        
+        public event System.Action<Inventory, ItemBehavior, int, int> onStash, onDrop;
+    
+        [System.Serializable] public class InventorySlot {
+            public InventorySlot(ItemBehavior item, int count) {
+                this.item = item;
+                this.count = count;
+            }
+            public ItemBehavior item;
+            public int count;
+        }
 
-    bool ItemIsInInventory (ItemBehavior item, out int atIndex, out InventorySlot slot) {
-        slot = null;
-        atIndex = -1;
-        for (int i = 0; i < allInventory.Count; i++) {
-            if (allInventory[i].item == item) {
-                atIndex = i;
-                slot = allInventory[i];
-                return true;
+        public int favoritesMaxCount = 8;
+        [HideInInspector] public List<InventorySlot> allInventory = new List<InventorySlot>();
+        [HideInInspector] public List<int> favorites = new List<int>();
+
+        public void FavoriteItem (ItemBehavior item) {
+            int slotIndex = GetSlotIndex(item);
+            FavoriteItem(slotIndex);
+            
+        }
+        public void FavoriteItem (int slotIndex) {
+            if (favoriteAbleCategories.Contains(allInventory[slotIndex].item.category)) {
+                if (!favorites.Contains(slotIndex)) {
+                    favorites.Add(slotIndex);
+                }
+                else {
+                    UnfavoriteItem (slotIndex);
+                }
             }
         }
-        return false;
-    }
 
-    //maybe switch these to interaction system (stash and trade will be secondary/terciary action....)
-    // when used BY inventory
-    public const int GRAB_ACTION = 0;
-    public const int STASH_ACTION = 1;
-    
-    //when used ON inventory
-    // public const int TRADE_ACTION = 2;
-
-    public event System.Action<Inventory, ItemBehavior, int, int> onStash, onDrop;
-    
-
-    
-[System.Serializable] public class InventorySlot {
-    public InventorySlot(ItemBehavior item, int count) {
-        this.item = item;
-        this.count = count;
-    }
-    public ItemBehavior item;
-    public int count;
-}
-
-public int favoritesMaxCount = 8;
-[HideInInspector] public List<InventorySlot> allInventory = new List<InventorySlot>();
-[HideInInspector] public List<InventorySlot> favorites = new List<InventorySlot>();
-
-
-public bool FavoriteItem (InventorySlot slot) {
-    if (favoriteAbleCategories.Contains(slot.item.category)) {
-    // if (slot.item.canBeFavorite) {
-        if (!favorites.Contains(slot)) {
-            favorites.Add(slot);
+        void UnfavoriteItem (int slotIndex) {
+            favorites.Remove(slotIndex);
         }
-        else {
-            favorites.Remove(slot);
-        }
-        return true;
-    }
-    return false;
-}
 
 
         public Vector3 dropLocalPoint = new Vector3 (0,1,1);
 
-
-        public void StashItem(ItemBehavior itemBehavior, int count, int equipSlot) {
-            //check if it's already in inventory
+        public void StashItem(ItemBehavior itemBehavior, int count, int equipSlot, bool sendMessage) {
+            
             InventorySlot slotToUse = null;
 
-            if (itemBehavior.keepOnStash) {
-                for (int i = 0; i < allInventory.Count; i++) {
-                    if (allInventory[i].item == itemBehavior) {
-                        slotToUse = allInventory[i];
-                        break;
-                    }
-                }
-            }
-            bool wasInInventory = slotToUse != null;
-
+            //check if it's already in inventory
+            int slotIndex = GetSlotIndex(itemBehavior);
+            bool wasInInventory = slotIndex != -1;
             if (wasInInventory) {
-                if (!itemBehavior.allowMultipleStashed) {
-                    return;// false;
-                }
+                slotToUse = allInventory[slotIndex];
                 slotToUse.count += count;
             }
-            else {
-
-                
-                if (itemBehavior.keepOnStash) {
-                    slotToUse = new InventorySlot(itemBehavior, count);
-                    allInventory.Add(slotToUse);
-                }
+            else {                
+                slotToUse = new InventorySlot(itemBehavior, count);
+                allInventory.Add(slotToUse);
+                slotIndex = allInventory.Count - 1;
             }
-
-            int newCount = slotToUse.count;
 
             for (int i = 0; i < itemBehavior.stashedItemBehaviors.Length; i++) {
                 itemBehavior.stashedItemBehaviors[i].OnItemStashed(this, itemBehavior, count, equipSlot, equipSlot != -1);
             }
 
             if (onStash != null) {
-                onStash(this, itemBehavior, count, newCount);
+                onStash(this, itemBehavior, count, slotToUse.count);
             }
+
+            if (sendMessage && actor != null && actor.isPlayer) {
+                actor.ShowMessage("Stashed " + itemBehavior.itemName + " [ x" + count + " ]", UIColorScheme.Normal);
+            }
+
 
             if (!wasInInventory) {
-                if (slotToUse != null) {
-                    if (favorites.Count < favoritesMaxCount) {
-                        FavoriteItem(slotToUse);
-                    }
+                if (favorites.Count < favoritesMaxCount) {
+                    FavoriteItem(slotIndex);
                 }
             }
-
-
         }
 
-        public void StashItem(Item item, int equipSlot)
+        public void StashItem(Item item, int equipSlot, bool sendMessage)
         {
             ItemBehavior itemBehavior = item.itemBehavior;
-
-            if (CanStashItem(itemBehavior)) {
-
-                StashItem(itemBehavior, itemBehavior.stackable ? item.itemCount : 1, equipSlot);
-
-                //disable the scene item (frees it up for pool)
-                item.gameObject.SetActive(false);
-            }
+            StashItem(itemBehavior, itemBehavior.stackable ? item.itemCount : 1, equipSlot, sendMessage);
+            //disable the scene item (frees it up for pool)
+            item.gameObject.SetActive(false);
+            
         }
 
 
-        public void ClearInventory () {
+        public void ClearInventory (bool sendMessage) {
             for (int i = allInventory.Count -1; i >= 0; i--) {
-                DropItem(allInventory[i].item, allInventory[i].count, false, i);
+                DropItemAlreadyInInventory(allInventory[i], allInventory[i].count, false, i, true, sendMessage);
             }
         }
-        public void AddInventory (List<InventorySlot> slots) {
+        public void AddInventory (List<InventorySlot> slots, bool sendMessage) {
             for (int i =0 ; i < slots.Count; i++) {
-                StashItem(slots[i].item, slots[i].count, -1);
+                StashItem(slots[i].item, slots[i].count, -1, sendMessage);
             }
         }
 
-        public void DropItem (ItemBehavior itemBehavior, int count, bool getScene, int inventoryIndex) {
-            if (itemBehavior.permanentStash) {
-                return;// false;
-            }
+        public void DropItemWithInventoryCheck (InventorySlot slot, int countDropped, bool getScene, bool removeEmpty, bool sendMessage) {
+            DropItemWithInventoryCheck(slot.item, countDropped, getScene, removeEmpty, sendMessage);
+        }
+        public void DropItemWithInventoryCheck (ItemBehavior itemBehavior, int countDropped, bool getScene, bool removeEmpty, bool sendMessage) {
+            int slotIndex = GetSlotIndex(itemBehavior);
+            if (slotIndex == -1) return;
+            DropItemAlreadyInInventory(allInventory[slotIndex], countDropped, getScene, slotIndex, removeEmpty, sendMessage);
+        }
+            
+        public void DropItemAlreadyInInventory (ItemBehavior itemBehavior, int countDropped, bool getScene, int slotIndex, bool removeEmpty, bool sendMessage) {    
+            if (slotIndex == -1) slotIndex = GetSlotIndex(itemBehavior);
+            DropItemAlreadyInInventory(allInventory[slotIndex], countDropped, getScene, slotIndex, removeEmpty, sendMessage);
+        }
 
-            if (inventoryIndex < 0) {
-                //check if it's already in inventory
-                for (int i = 0; i < allInventory.Count; i++) {
-                    if (allInventory[i].item == itemBehavior) {
-                        inventoryIndex = i;
-                        break;
-                    }
+
+        int GetSlotIndex (InventorySlot slot) {
+            for (int i = 0; i < allInventory.Count; i++) {
+                if (allInventory[i] == slot) return i;
+            }
+            return -1;
+        }
+        int GetSlotIndex (ItemBehavior item) {
+            for (int i = 0; i < allInventory.Count; i++) {
+                if (allInventory[i].item == item) return i;
+            }
+            return -1;
+        }
+
+        public void RemoveEmpties () {
+            for (int i = allInventory.Count-1; i >= 0; i--) {
+                if (allInventory[i].count == 0) allInventory.Remove(allInventory[i]);
+            }
+        }
+
+        public void DropItemAlreadyInInventory (InventorySlot slot, int countDropped, bool getScene, int slotIndex, bool removeEmpty, bool sendMessage) {
+            
+            countDropped = Mathf.Min(countDropped, slot.count);
+            slot.count -= countDropped;
+            
+            int newCount = slot.count;
+            if (newCount == 0) {
+                if (slotIndex < 0) slotIndex = GetSlotIndex(slot);
+                UnfavoriteItem(slotIndex);
+
+                if (removeEmpty) {
+                    allInventory.Remove(slot);
                 }
             }
             
-            InventorySlot slotInInventory = null;
-            if (inventoryIndex >= 0) {
-                slotInInventory = allInventory[inventoryIndex];
+            bool hasModel = false;
+            // if (newCount == 0) {
+            //     if (ItemIsEquipped(-1, itemBehavior)) {
+            //         UnequipItem(itemBehavior, getScene);
+            //         hasModel= true;
+            //     }
+            // }
+
+            // remove buffs
+            for (int i = 0; i < slot.item.stashedItemBehaviors.Length; i++) {
+                slot.item.stashedItemBehaviors[i].OnItemDropped(this, slot.item, countDropped);
             }
 
-            bool wasInInventory = slotInInventory != null;
+            if (onDrop != null) {
+                onDrop(this, slot.item, countDropped, newCount);
+            }
 
-            if (wasInInventory) {
+            if (sendMessage && actor != null && actor.isPlayer) {
+                actor.ShowMessage("Dropped " + slot.item.itemName + " [ x" + countDropped + " ]", UIColorScheme.Normal);
+            }
 
-                count = Mathf.Min(count, slotInInventory.count);
-
-                slotInInventory.count -= count;
-                if (slotInInventory.count <= 0) {
-                    slotInInventory.count = 0;
-                }
-
-                int newCount = slotInInventory.count;
-
-                bool hasModel = false;
-
-                // if (newCount == 0) {
-                //     if (ItemIsEquipped(-1, itemBehavior)) {
-                //         UnequipItem(itemBehavior, getScene);
-                //         hasModel= true;
-                //     }
-                // }
-                
-                // remove buffs
-                for (int i = 0; i < itemBehavior.stashedItemBehaviors.Length; i++) {
-                    itemBehavior.stashedItemBehaviors[i].OnItemDropped(this, itemBehavior, count);
-                }
-
-
-                if (slotInInventory.count == 0) {
-                    allInventory.Remove(slotInInventory);
-                }
-
-                if (onDrop != null) {
-                    onDrop(this, itemBehavior, count, newCount);
-                }
-
-
-                if (!hasModel) {
-
-                    if (getScene) {
-
-                        Item sceneItem = Item.GetSceneItem(itemBehavior);
-                        sceneItem.transform.position = transform.TransformPoint(dropLocalPoint);
-                        sceneItem.transform.rotation = Quaternion.Euler(UnityEngine.Random.Range(0,360), UnityEngine.Random.Range(0,360), UnityEngine.Random.Range(0,360));
-                        sceneItem.gameObject.SetActive(true);
-                    }
+            //TODO: figure out a way to check if we unequipped an item to drop it (hasModel = true)
+            if (!hasModel) { 
+                if (getScene) {
+                    //TODO: add count to GetSceneItem when dropping multiple...         
+                    Item sceneItem = Item.GetSceneItem(slot.item);
+                    sceneItem.transform.position = transform.TransformPoint(dropLocalPoint);
+                    sceneItem.transform.rotation = Quaternion.Euler(UnityEngine.Random.Range(0,360), UnityEngine.Random.Range(0,360), UnityEngine.Random.Range(0,360));
+                    sceneItem.gameObject.SetActive(true);
                 }
             }
         }

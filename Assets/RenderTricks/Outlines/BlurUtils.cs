@@ -1,16 +1,17 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace RenderTricks {
 
-    public class BlurUtils : MonoBehaviour
+    public class BlurUtils 
     {
-        static Material _material;
+
+        [System.NonSerialized] static Material _material;
         static Material material {
             get {
                 if (_material == null) {
                     _material = new Material(Shader.Find("Hidden/_FastBlur"));
+                    _material.hideFlags = HideFlags.HideAndDontSave;
                 }
                 return _material;
             }
@@ -48,7 +49,6 @@ namespace RenderTricks {
 
             RenderTexture.ReleaseTemporary (rt);
             RenderTexture.ReleaseTemporary (rt2);
-            
         }
     }
 }

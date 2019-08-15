@@ -1,5 +1,5 @@
 ﻿// using System.Collections;
-using System.Collections.Generic;
+// using System.Collections.Generic;
 using UnityEngine;
 using QuestSystem;
 using InventorySystem;
@@ -10,9 +10,7 @@ public class InitializePlayerInventoryQuest : Quest
     public LevelledList levelledList;
 
         void InitializePlayerInventory () {
-            List<Inventory.InventorySlot> spawnList = new List<Inventory.InventorySlot>();
-            LevelledListSpawner.GetSpawnedList(Actor.playerActor.actorValues, Actor.playerActor.actorValues, levelledList, spawnList);
-            Actor.playerActor.inventory.AddInventory(spawnList);
+            Actor.playerActor.inventory.AddInventory(levelledList.SpawnItems(Actor.playerActor.actorValues, Actor.playerActor.actorValues), sendMessage: false);
         }
         public override void OnQuestInitialize () {
             InitializePlayerInventory();

@@ -1,13 +1,58 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 using UnityEngine.UI;
 
 
 namespace SimpleUI {
 
-    public class UIMessageCenter : MonoBehaviour
+    [System.Serializable] public class UIMessageCenterParameters {
+
+        public TextAnchor textAnchor;
+
+        public float textScale = 0.0015f;
+        public float textMargin = .05f;
+
+        public Vector2 lineSize = new Vector2(4, .5f);
+        
+        [Header("negative values flip directions")]
+        public float startXOffset = .1f;
+        public float moveSpeed = 5;
+        public float duration = 1;
+        public float frequency = 1f;
+        public Vector2 fadeInOut = new Vector2( .25f, .25f );
+
+        public UIMessageCenterParameters () {
+            textAnchor = TextAnchor.MiddleLeft;
+            moveSpeed = 5;
+            lineSize = new Vector2(4, .5f);
+            textScale = 0.0015f;
+            textMargin = .05f;
+            duration = 1; 
+            frequency = 1;
+            fadeInOut = new Vector2( .25f, .25f );
+            startXOffset = .1f;
+        }
+        public UIMessageCenterParameters (TextAnchor textAnchor, float moveSpeed , Vector2 lineSize , float textScale , float textMargin , float duration , Vector2 fadeInOut, float startXOffset, float frequency) {
+            this.textAnchor = textAnchor;
+            this.moveSpeed = moveSpeed;
+            this.lineSize = lineSize;
+            this.textScale = textScale;
+            this.textMargin = textMargin;
+            this.duration = duration; 
+            this.frequency = frequency;
+            this.fadeInOut = fadeInOut;
+            this.startXOffset = startXOffset;
+        }
+    }
+
+    public class UIMessageCenter : BaseUIElement
     {
+
+        Queue<string> messageQ = new Queue<string>();
+        Queue<UIColorScheme> schemesQ = new Queue<UIColorScheme>();
+        
         static Queue<UIMessageElement> elementPool = new Queue<UIMessageElement>();
         UIMessageElement BuildNewElement () {
             UIMessageElement newElement = Instantiate(UIManager.instance.messagePrefab);
@@ -18,6 +63,7 @@ namespace SimpleUI {
             return newElement;
         }
 
+
         UIMessageElement GetAvailableElement () {
             if (elementPool.Count > 0) 
                 return elementPool.Dequeue();
@@ -25,33 +71,51 @@ namespace SimpleUI {
         }
 
         List<UIMessageElement> shownElements = new List<UIMessageElement>();
+
+        public UIMessageCenterParameters parameters = new UIMessageCenterParameters();
         
-        public TextAnchor textAnchor;
-        public float elementMoveSpeed = 5;
+        public event System.Action<string> onShowMessage;
+        void Start () {
+            StartCoroutine(HandleMessageShowing());
+        }
 
-        public float width = 128;
-        public float textScale = 0.0015f;
-        public float textMargin = .05f;
-        
-        public float duration = 1, fadeIn = .25f, fadeOut = .25f;
+        IEnumerator HandleMessageShowing () {
 
-        [Header("negative values flip directions")]
-        public float startXOffset = .1f;
-        public float lineHeight = .5f;
+            while (true) {
+                if (messageQ.Count > 0) {
+                    ShowMessageImmediate(messageQ.Dequeue(), schemesQ.Dequeue());
+                }
+                yield return new WaitForSeconds(parameters.frequency);
+            }
+        }
 
-        public void ShowMessage (string message) {
-            
+        public void ShowMessage (string message, bool immediate, UIColorScheme scheme) {
+            if (immediate || messageQ.Count == 0) {
+                ShowMessageImmediate(message, scheme);
+            }
+            else {
+                messageQ.Enqueue(message);
+            }
+        }
+
+
+        public void ShowMessageImmediate (string message, UIColorScheme scheme) {
+            if (onShowMessage != null) {
+                onShowMessage(message);
+            }
+
             UIMessageElement newMessage = GetAvailableElement();
             shownElements.Add(newMessage);
-            newMessage.ShowMessage ( duration, fadeIn, fadeOut );
+            newMessage.ShowMessage ( parameters.duration, parameters.fadeInOut.x, parameters.fadeInOut.y, scheme );
+            
+            newMessage.transform.localPosition = new Vector3(parameters.startXOffset, (shownElements.Count - 1) * parameters.lineSize.y, 0);
 
-            newMessage.transform.localPosition = new Vector3(startXOffset, (shownElements.Count - 1) * lineHeight, 0);
-            newMessage.SetSizeDelta(new Vector2(width, Mathf.Abs(lineHeight)));
-
-            newMessage.text.SetText(message);
-            newMessage.text.SetAnchor(textAnchor);
-            newMessage.text.AdjustAnchorSet(new Vector2(textMargin, 0));
-            newMessage.text.transform.localScale = Vector3.one * textScale;  
+            newMessage.text.SetText(message, -1);
+            newMessage.text.SetAnchor(parameters.textAnchor);
+            newMessage.text.AdjustAnchorSet(new Vector2(parameters.textMargin, 0));
+            newMessage.text.transform.localScale = Vector3.one * parameters.textScale;  
+            
+            newMessage.SetSizeDelta(new Vector2(parameters.lineSize.x, Mathf.Abs(parameters.lineSize.y)));
         }
 
         public void DisableAllMessages () {
@@ -64,10 +128,10 @@ namespace SimpleUI {
 
         void UpdateShownElements (float deltaTime) {
             
-            float speed = deltaTime * elementMoveSpeed;
+            float speed = deltaTime * parameters.moveSpeed;
             for (int i = 0; i < shownElements.Count; i++) {
                 UIMessageElement element = shownElements[i];
-                element.transform.localPosition = Vector3.Lerp(element.transform.localPosition, new Vector3 (0, i * lineHeight, 0), speed);
+                element.transform.localPosition = Vector3.Lerp(element.transform.localPosition, new Vector3 (0, i * parameters.lineSize.y, 0), speed);
                 element.UpdateElement(deltaTime);
             }
 

@@ -1,9 +1,9 @@
-﻿// using System.Collections;
-// using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Valve.VR;
 
 namespace VRPlayer {
+
+    //TODO: pause TOD when game pauses, or this fog gets all messed up
 
     public class PauseVisuals : MonoBehaviour
     {

@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa287429e7fe54a0fba39e3e51a09820, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selected: 1
+  selected: 0
   elementText: dfsdfsdf
   selectInvertsTextColor: 0
   destination: {fileID: 0}
@@ -238,7 +238,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.5686275, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:

@@ -4,83 +4,54 @@ using UnityEngine;
 using ActorSystem;
 
 namespace InventorySystem {
-    [RequireComponent(typeof(Inventory))]
-    public class LevelledListSpawner : MonoBehaviour {
+    /*
+        spawns a levelled list of inventory items to populate an inventory
+
+
+        TODO: figure out a way for quick lootables (such as crates) to only spawn when checked
+    */
+    [RequireComponent(typeof(Inventory))] public class LevelledListSpawner : MonoBehaviour {
         public LevelledList levelledList;
 
-        [Header("In Game Days, -1 for no respawn")]
-        public float respawnRate = 3.0f;
-        Inventory inventory;
-        public Actor selfActor, suppliedActor;
+        [Header("Defaults to player actor if null and no Actor attached to this object")]
+        public Actor selfActorForConditions;
+
+        [Header("Defaults to player actor if null")]
+        public Actor suppliedActorForConditions;
         
+        // [Header("In Game Days, -1 for no respawn")]
+        // public float respawnRate = 3.0f;
         public bool respawnDebug;
+        Inventory inventory;
         
         void Awake () {
             inventory = GetComponent<Inventory>();
-            
-            if (selfActor == null) {
-                selfActor = GetComponent<Actor>();
-            }
         }
         void Start () {
-            if (suppliedActor == null) suppliedActor = Actor.playerActor;
-            if (selfActor == null) selfActor = suppliedActor;
+            //if no supplied actor, use player actor...
+            if (suppliedActorForConditions == null) suppliedActorForConditions = Actor.playerActor;
             
-            Respawn(selfActor.actorValues, suppliedActor.actorValues);
+            // try to get an actor attached to this object first (for self)
+            if (selfActorForConditions == null) selfActorForConditions = GetComponent<Actor>();
+            if (selfActorForConditions == null) selfActorForConditions = Actor.playerActor;
+            
+            Respawn();
         }
         void Update () {
             if (respawnDebug) {
-                Respawn(selfActor.actorValues, suppliedActor.actorValues);
+                Respawn();
                 respawnDebug = false;
             }
         }
 
 
-        public void Respawn (Dictionary<string, GameValue> selfValues, Dictionary<string, GameValue> suppliedValues) {
-            inventory.ClearInventory();
-            List<Inventory.InventorySlot> spawnList = new List<Inventory.InventorySlot>();
-            GetSpawnedList(selfValues, suppliedValues, levelledList, spawnList);
-            inventory.AddInventory(spawnList);
-        }
-
-        public static void GetSpawnedList (Dictionary<string, GameValue> selfValues, Dictionary<string, GameValue> suppliedValues, LevelledList levelledList, List<Inventory.InventorySlot> spawnList) {
-            bool didSpawn = false;
-
-            //CHECK FOR INJECTED RUNTIME LISTS ASSOCIATED WITH SUPPLIED LEVELLED LIST HERE
-            
-            LevelledList.ListItem[] listItems = levelledList.listItems;
-
-            for (int i =0 ; i < listItems.Length; i++) {
-                LevelledList.ListItem listItem = listItems[i];
-                if (Random.value > listItem.chanceForNone) {
-
-
-                    int count = Random.Range(listItem.minMax.x, listItem.minMax.y+1);
-                    if (count > 0) {
-
-                        if (GameValueCondition.ConditionsMet (listItem.conditions, selfValues, suppliedValues)) {
-                            spawnList.Add(new Inventory.InventorySlot(listItem.item, count));
-                            didSpawn = true;
-
-                            if (levelledList.singleSpawn) {
-                                break;
-                            }    
-                        }
-                    }
-                }
+        public void Respawn () {
+            if (levelledList == null) {
+                Debug.LogError(name + " levelled list spawner, cant spawn, levelled list is null");
+                return;
             }
-
-            if (!didSpawn) {
-                LevelledList.ListItem[] fallBacks = levelledList.fallBacks;
-
-                for (int i =0 ; i < fallBacks.Length; i++) {
-                    LevelledList.ListItem listItem = fallBacks[i];
-
-                    if (GameValueCondition.ConditionsMet (listItem.conditions, selfValues, suppliedValues)) {
-                        spawnList.Add(new Inventory.InventorySlot(listItem.item, Random.Range(Mathf.Max(listItem.minMax.x, 1), listItem.minMax.y + 1)));
-                    }
-                }
-            }
+            inventory.ClearInventory(false);
+            inventory.AddInventory(levelledList.SpawnItems(selfActorForConditions.actorValues, suppliedActorForConditions.actorValues), false);
         }
     }
 }

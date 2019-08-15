@@ -4,35 +4,39 @@ using UnityEngine.UI;
 namespace SimpleUI{
 
     [System.Serializable] public class UIRadialParameters {
+        public float textScale = .005f;
         public float textOffset = .8f;
         [Range(0,1)] public float selectionSizeOffset = .1f;
         
-        public UIRadialParameters (float textOffset, float selectionSizeOffset) {
+        public UIRadialParameters (float textOffset, float selectionSizeOffset, float textScale) {
             this.textOffset = textOffset;
             this.selectionSizeOffset = selectionSizeOffset;
+            this.textScale = textScale;
         }
 
         public UIRadialParameters () {
             textOffset = .8f;
             selectionSizeOffset = .1f;
+            textScale = .005f;
         }
     }
 
     [ExecuteInEditMode] public class UIRadial : UIElementHolder
     {
-        public UIRadialParameters parameters = new UIRadialParameters();
-        // public float textOffset = .8f;
-        // [Range(0,1)] public float selectionSizeOffset = .1f;
+        protected override float TextScale() { return parameters.textScale; }
         
-        public override void UpdateElementHolder () {
-            base.UpdateElementHolder();
+        public UIRadialParameters parameters = new UIRadialParameters();
+        
+        public override void UpdateSelectableElementHolder () {
+            base.UpdateSelectableElementHolder();
 
             if (allElements.Count == 0)
                 return;
 
             float sliceAngle = 360.0f / allElements.Count;
             float radialAmount = 1f / allElements.Count;
-            float radialAngle = sliceAngle*.5f;
+            
+            Quaternion radialAngleRotation = Quaternion.Euler(0,0, sliceAngle*.5f);
 
             Vector3 selectInsideSize = Vector3.one * (1+parameters.selectionSizeOffset);
             Vector3 textLocalPos = new Vector3(0,parameters.textOffset,0);
@@ -43,21 +47,19 @@ namespace SimpleUI{
                 SelectableElement element = allElements[i];
 
                 element.transform.localScale = selectInsideSize;
-                element.transform.localRotation = Quaternion.Euler(0,0, elementAngle );
+                element.transform.localRotation = Quaternion.Euler(0,0, elementAngle);
 
                 element.mainImage.fillAmount = radialAmount;
-                element.mainImage.rectTransform.localRotation = Quaternion.Euler(0,0, radialAngle );
+                element.mainImage.rectTransform.localRotation = radialAngleRotation;
 
+                element.uiText.transform.localPosition = textLocalPos;
+                element.uiText.transform.localRotation = Quaternion.Euler(0,0, -elementAngle);
                 
-                if (element.hasText) {
-                    element.uiText.transform.localPosition = textLocalPos;
-                    element.uiText.transform.localRotation = Quaternion.Euler(0,0,- (elementAngle));
-                    if (elementAngle == 0 || elementAngle == -180) {
-                        element.uiText.SetAnchor(TextAnchor.MiddleCenter);
-                    }
-                    else {
-                        element.uiText.SetAnchor(elementAngle < -180f ? TextAnchor.MiddleRight : TextAnchor.MiddleLeft);
-                    }
+                if (elementAngle == 0 || elementAngle == -180) {
+                    element.uiText.SetAnchor(TextAnchor.MiddleCenter);
+                }
+                else {
+                    element.uiText.SetAnchor(elementAngle < -180f ? TextAnchor.MiddleRight : TextAnchor.MiddleLeft);
                 }
             }
         }
@@ -101,7 +103,6 @@ namespace SimpleUI{
 
             if (lastSelected != currentSelected) {
                 UIManager.SetSelection(currentSelected != -1 ? allElements[currentSelected].gameObject : null);
-                // eventSystem.SetSelectedGameObject( currentSelected != -1 ? allElements[currentSelected].gameObject : null );
             }
         }
     }

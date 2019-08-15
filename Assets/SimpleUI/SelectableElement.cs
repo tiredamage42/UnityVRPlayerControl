@@ -9,26 +9,20 @@ namespace SimpleUI {
     [System.Serializable] public class UIButtonClickWData : UnityEvent<GameObject[]> {}
     [ExecuteInEditMode] public class SelectableElement : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmitHandler
     {
-        public bool selected;
         public string elementText;
         public bool selectInvertsTextColor;
-
         public UIElementHolder destination;
+        public bool selected;
         [HideInInspector] public UIElementHolder parentHolder;
-        [HideInInspector] public bool hasText = true;
-
+        
         UIText _text;
         public UIText uiText {
             get {
-                if (hasText && _text == null) {
-                    _text = GetComponentInChildren<UIText>();
-                    if (_text == null) {
-                        hasText = false;
-                    }
-                }
+                if (_text == null) _text = GetComponentInChildren<UIText>();
                 return _text;
             }
         }
+        
         RectTransform _rect;
         public RectTransform rectTransform {
             get {
@@ -36,13 +30,15 @@ namespace SimpleUI {
                 return _rect;
             }
         }
-
-        bool hasRuntimeSubmitCallback {
+        Image _mainImage;
+        public Image mainImage {
             get {
-                return parentHolder.runtimeSubmitHandler != null;
+                if (_mainImage == null) _mainImage = GetComponentsInChildren<Image>()[0];
+                return _mainImage;
             }
-        }
+        }   
         
+        bool hasRuntimeSubmitCallback { get { return parentHolder.runtimeSubmitHandler != null; } }
         public GameObject[] data;
         public object[] customData;
         public UIButtonClickWData onClick;
@@ -50,23 +46,38 @@ namespace SimpleUI {
         void OnEnable () {
             UpdateElement();
         }
-        void OnDisable() {
-            // selected = false;
+
+        public void UpdateElement () {
+            mainImage.color = selected ? UIManager.instance.mainLightColor : (Color32)Color.clear;
+            
+            // prefab editing scene was messing up because of this... 
+            // so check if we're in a real scene context
+            if (parentHolder != null) gameObject.name = elementText + "_Button";
+            
+            uiText.SetText(elementText, -1);
+            if (selectInvertsTextColor) uiText.SetColorScheme(uiText.colorScheme, selected);
         }
         
         //Do this when the selectable UI object is selected.
         public void OnSelect(BaseEventData eventData)
         {
-            // Debug.Log("Selected " + name);
             selected = true;
             UpdateElement();
             parentHolder.BroadcastSelectEvent(data, customData);
         }
+        public void OnDeselect(BaseEventData data)
+        {
+            selected = false;
+            UpdateElement();
+        }
+        public void OnSubmit(BaseEventData eventData)
+        {
+            if (hasRuntimeSubmitCallback) return;
+            DoSubmit(Vector2Int.zero);
+        }
 
         void Update () {
-            if (!Application.isPlaying) return;
-            if (!selected) return;
-            if (!hasRuntimeSubmitCallback) return;
+            if (!Application.isPlaying || !selected || !hasRuntimeSubmitCallback) return;
             
             Vector2Int alternativeSubmit = parentHolder.runtimeSubmitHandler();
             if (alternativeSubmit.x >= 0) {
@@ -95,38 +106,5 @@ namespace SimpleUI {
             }
         }
 
-        public void OnSubmit(BaseEventData eventData)
-        {
-            if (hasRuntimeSubmitCallback) return;
-         
-            DoSubmit(Vector2Int.zero);
-        }
-
-        public void OnDeselect(BaseEventData data)
-        {
-            selected = false;
-            UpdateElement();
-        }
-
-        Image _mainImage;
-        public Image mainImage {
-            get {
-                if (_mainImage == null) _mainImage = GetComponentsInChildren<Image>()[0];
-                return _mainImage;
-            }
-        }   
-        
-        public void UpdateElement () {
-            mainImage.color = selected ? UIManager.instance.mainLightColor : (Color32)Color.clear;
-
-            gameObject.name = elementText + "_Button";
-            if (hasText) {
-                uiText.SetText(elementText);
-                if (selectInvertsTextColor) {
-                    uiText.invert = selected;
-                    uiText.UpdateColors();
-                }
-            }
-        }
     }
 }
