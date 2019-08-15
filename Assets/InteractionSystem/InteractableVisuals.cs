@@ -26,7 +26,7 @@ namespace InteractionSystem {
         static void SubmitMaterial (Material material, EmissionFlasher interactableEmissionFlasher) {
             if (!nonFlash2Flash.ContainsKey(material)) {
                 Material emissionVersion = new Material(material);
-                emissionVersion.EnableKeyword("_EMISSION");
+                // emissionVersion.EnableKeyword("_EMISSION");
                 interactableEmissionFlasher.AddMaterial(emissionVersion);
 
                 nonFlash2Flash.Add(material, emissionVersion);

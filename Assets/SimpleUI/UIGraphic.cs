@@ -25,7 +25,7 @@ namespace SimpleUI {
             UpdateGraphicColors();
         }
         public virtual void UpdateGraphicColors () {
-            mainGraphic.color = UIManager.GetColor(colorScheme, useDark );
+            if (!overrideColors) mainGraphic.color = UIManager.GetColor(colorScheme, useDark );
         }
     }
 }

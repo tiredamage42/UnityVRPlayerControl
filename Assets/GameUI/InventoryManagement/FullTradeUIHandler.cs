@@ -7,14 +7,23 @@ namespace GameUI {
 
     public class FullTradeUIHandler : InventoryManagementUIHandler
     {
+        protected override bool UsesRadial() { return false; }
+        
+        protected override int MaxUIPages () { return 2; }
+
 
         // public override string[] GetInputNames () { return new string[] { "Trade", "Trade All", "Use" }; }
         
         // TODO: limit equip ID for consume action to 0 when equipping on ai for instance
         protected override void OnUISelect (GameObject[] data, object[] customData) { }
-        protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (Inventory shownInventory, int uiIndex, List<int> categoryFilter) {
-            return shownInventory.GetFilteredInventory(categoryFilter);
+        
+        // int[] lastSlotsCount = new int[2];
+        protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter) {
+            List<Inventory.InventorySlot> slots = shownInventory.GetFilteredInventory(categoryFilter);
+            // lastSlotsCount[uiIndex] = slots.Count;
+            return slots;
         }
+        // protected override int GetUnpaginatedShowCount(object[] updateButtonsParameters) { return lastSlotsCount[(int)updateButtonsParameters[0]]; } 
 
         protected override void OnInventoryManagementInitiate(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
             
@@ -22,8 +31,12 @@ namespace GameUI {
             (uiObject.subHolders[1] as UIPage).SetTitle(otherInventory.GetDisplayName());
 
             // CloseAllUIs();            
-            SetUpButtons ( inventory, otherInventory, 0, 1, true, uiObject.subHolders[0], categoryFilter);
-            SetUpButtons ( otherInventory, inventory, 1, 0, false, uiObject.subHolders[1], categoryFilter);
+            // SetUpButtons ( inventory, otherInventory, 0, true, uiObject.subHolders[0], categoryFilter);
+            // SetUpButtons ( otherInventory, inventory, 1, false, uiObject.subHolders[1], categoryFilter);
+
+
+            BuildButtons(uiObject.subHolders[0], true, new object[] { 0, inventory, otherInventory, categoryFilter });
+            BuildButtons(uiObject.subHolders[1], false, new object[] { 1, otherInventory, inventory, categoryFilter });
         }
 
         const int singleTradeAction = 0, tradeAllAction = 1, consumeAction = 2;
@@ -31,11 +44,14 @@ namespace GameUI {
         protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input) {
     
         	if (customData != null) {
-                Inventory.InventorySlot item = (Inventory.InventorySlot)customData[0];
+                Inventory.InventorySlot item = customData[0] as Inventory.InventorySlot;
+
+                object[] updateButtonsParameters = customData[1] as object[];
                     
                 bool updateButtons = false;
-                Inventory highlightedInventory = (Inventory)customData[1];
-                Inventory otherInventory = (Inventory)customData[2];
+
+                Inventory highlightedInventory = updateButtonsParameters[1] as Inventory;
+                Inventory otherInventory = updateButtonsParameters[2] as Inventory;
                 
                 // single trade
                 if (input.x == singleTradeAction) {
@@ -65,8 +81,17 @@ namespace GameUI {
                 }
                 
                 if (updateButtons){
-                    UpdateUIButtons(highlightedInventory, otherInventory, (int)customData[3], (int)customData[4], null);
-                    UpdateUIButtons(otherInventory, highlightedInventory, (int)customData[4], (int)customData[3], null);
+                    UpdateUIButtons(
+                        updateButtonsParameters
+                    //     highlightedInventory, otherInventory, (int)customData[3], (int)customData[4], null);
+                    );
+                    UpdateUIButtons(
+                        new object[] { 1 - (int)updateButtonsParameters[0], updateButtonsParameters[2], updateButtonsParameters[1], updateButtonsParameters[3] }
+                    );
+
+
+                    // UpdateUIButtons(
+                    //     otherInventory, highlightedInventory, (int)customData[4], (int)customData[3], null);
                 }
             }
 		}    

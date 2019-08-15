@@ -50,21 +50,37 @@ MonoBehaviour:
   mainDarkColor:
     serializedVersion: 2
     rgba: 3749983798
-  buttonPrefab: {fileID: 4156403610041847957, guid: 863e571ed57764067863224b2c8cb64e,
-    type: 3}
-  radialElementPrefab: {fileID: 8826569598863012957, guid: 70338709aead241deb2b66cada626e44,
-    type: 3}
+  warningLightColor:
+    serializedVersion: 2
+    rgba: 4278512639
+  warningDarkColor:
+    serializedVersion: 2
+    rgba: 3741357217
+  invalidLightColor:
+    serializedVersion: 2
+    rgba: 4278190335
+  invalidDarkColor:
+    serializedVersion: 2
+    rgba: 3741319283
   pagePrefab: {fileID: 5216722850633688028, guid: b8cd3d39a02b3450da2dd77de5d445a1,
+    type: 3}
+  buttonPrefab: {fileID: 4156403610041847957, guid: 863e571ed57764067863224b2c8cb64e,
     type: 3}
   radialPrefab: {fileID: 5205179763256309693, guid: 29b3d6eec2c874d0aa9b12a0e909ea13,
     type: 3}
+  radialElementPrefab: {fileID: 8826569598863012957, guid: 70338709aead241deb2b66cada626e44,
+    type: 3}
   textPanelPrefab: {fileID: 6725307235909370130, guid: 073328b8c6fb4432f869d1b8a1ee5786,
     type: 3}
-  messagePrefab: {fileID: 6070794106359091924, guid: 4f2226d96024744fa96fe3dcf676031b,
+  valueTrackerVerticalPrefab: {fileID: 5854501275588539811, guid: f8c91e07ab45f45f482109f9e5e11440,
     type: 3}
   valueTrackerHorizontalPrefab: {fileID: 7820511064186041775, guid: d7565b25dac3a4196b9c2fd1bd1e5a36,
     type: 3}
-  valueTrackerVerticalPrefab: {fileID: 5854501275588539811, guid: f8c91e07ab45f45f482109f9e5e11440,
+  subtitlesPrefab: {fileID: 5309485828928785889, guid: eba30aececa1749a9b58e20d50c4f331,
+    type: 3}
+  messageCenterPrefab: {fileID: 3040117851802115767, guid: 323f90be6f17b471f91821bc9557e354,
+    type: 3}
+  messagePrefab: {fileID: 6070794106359091924, guid: 4f2226d96024744fa96fe3dcf676031b,
     type: 3}
 --- !u!1 &2452292221489131804
 GameObject:

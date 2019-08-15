@@ -322,14 +322,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43b70a2848beb42ae9db2ec21a010719, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiObject: {fileID: 0}
+  context: QuickInventory
   inputNames:
     list:
     - Use
+  uiObject: {fileID: 0}
   maxButtons: 8
-  context: QuickInventory
-  usesRadial: 1
-  workingWithEquipID: -1
 --- !u!114 &579055647788123081
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -342,16 +340,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83d780d5942b047dd964dcc0773a98ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiObject: {fileID: 0}
+  context: FullInventory
   inputNames:
     list:
     - Use
     - Drop
     - Favorite
+  uiObject: {fileID: 0}
   maxButtons: 16
-  context: FullInventory
-  usesRadial: 0
-  workingWithEquipID: -1
+  nextUIHandler: {fileID: 0}
+  previousUIHandler: {fileID: 0}
 --- !u!114 &3203987616310123330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -364,16 +362,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc8ddee62a9cc4e1fa3168759054e55a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiObject: {fileID: 0}
+  context: FullTrade
   inputNames:
     list:
     - Trade
     - Trade All
     - Use
+  uiObject: {fileID: 0}
   maxButtons: 16
-  context: FullTrade
-  usesRadial: 0
-  workingWithEquipID: -1
 --- !u!114 &107949
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -386,16 +382,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7475d86d8b05c4bc3950a79ce8c2764f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiObject: {fileID: 0}
+  context: QuickTrade
   inputNames:
     list:
     - Take
     - Take All
     - Trade
+  uiObject: {fileID: 0}
   maxButtons: 6
-  context: QuickTrade
-  usesRadial: 0
-  workingWithEquipID: -1
 --- !u!114 &107948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -408,14 +402,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e8426fdc7274721bed0d764ffea1b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiObject: {fileID: 0}
+  context: Crafting
   inputNames:
     list:
     - Craft/Scrap
+  uiObject: {fileID: 0}
   maxButtons: 16
-  context: Crafting
-  usesRadial: 0
-  workingWithEquipID: -1
 --- !u!114 &894408064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -428,6 +420,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba97e2f8239d945bca636598d0cfaaeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  context: Dialogue
+  inputNames:
+    list: []
   uiObject: {fileID: 0}
 --- !u!114 &6817886381281038955
 MonoBehaviour:
@@ -588,7 +583,7 @@ MonoBehaviour:
   heaviness: 2
   overlayAlphaHelper: 1
   downsample: 1
-  blurSize: 3
+  blurSize: 2
   blurIterations: 2
   highlightGroups:
   - highlightColor: {r: 1, g: 0.66644806, b: 0, a: 1}
@@ -607,11 +602,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4153579481fc3488cb55c155ac71a263, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bokehRadius: 0.6
-  startDistance: 100
-  fadeRange: 200
+  startDistance: 7
+  fadeRange: 100
   fadeSteepness: 1
-  smallKernel: 1
+  downsample: 2
+  blurSize: 5
+  blurIterations: 2
   debugVisuals: 0
 --- !u!124 &12440092
 Behaviour:
@@ -712,7 +708,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   velocityEstimator: {fileID: 0}
-  handType: 1
   renderModelPrefab: {fileID: 1000011547835092, guid: d5082f7d9f947374197e0a97786f4e40,
     type: 3}
 --- !u!114 &114000011273627542
@@ -870,7 +865,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   velocityEstimator: {fileID: 0}
-  handType: 2
   renderModelPrefab: {fileID: 1000012617731570, guid: 837f93beb9a614743ae3a2c0ada7c388,
     type: 3}
 --- !u!114 &114000011957598740
@@ -1177,7 +1171,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.05
-  far clip plane: 25
+  far clip plane: 10
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -6996,6 +6990,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20bea63586cae401293454372581c9be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buildRotationOffset: 25
   pageWithPanelTransform: {fileID: 11400000, guid: 6c1b14d3a33774bc2976ac82ed95cfb6,
     type: 2}
   fullTradeTransform: {fileID: 11400000, guid: 709bf75dbf5a144049c0a926241fb5cd, type: 2}

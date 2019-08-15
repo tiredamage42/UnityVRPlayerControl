@@ -9,6 +9,9 @@ namespace GameUI {
     public class CraftingUIHandler : InventoryManagementUIHandler
     {
 
+        protected override bool UsesRadial() { return false; }
+        protected override int MaxUIPages () { return 2; }
+
         // TODO: check if item is in fact scrappable (not base components)
 
 
@@ -38,8 +41,8 @@ namespace GameUI {
             }
 
             Inventory shownInventory, linkedInventory;
-            int uiIndex, otherUIIndex;
-            UnpackButtonData (customData, out selectedSlot, out shownInventory, out linkedInventory, out uiIndex, out otherUIIndex);
+            int uiIndex;//, otherUIIndex;
+            UnpackButtonData (customData, out selectedSlot, out shownInventory, out linkedInventory, out uiIndex);//, out otherUIIndex);
             if (selectedSlot == null) {
                 // scrapAttempts = 0;
                 return;
@@ -81,15 +84,16 @@ namespace GameUI {
                 uiObject.textPanel.SetText(text);            
 
             }
-
-
-
         }
 
-        protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (Inventory shownInventory, int uiIndex, List<int> categoryFilter) {
-            if (uiIndex == 0) {
+        // protected override int GetUnpaginatedShowCount(object[] updateButtonsParameters) { return lastSlotsCount[(int)updateButtonsParameters[0]]; } 
 
-                return shownInventory.GetFilteredInventory(categoryFilter);
+        // int[] lastSlotsCount = new int[2];
+        protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter) {
+            if (uiIndex == 0) {
+                List<Inventory.InventorySlot> slots = shownInventory.GetFilteredInventory(categoryFilter);
+                // lastSlotsCount[0] = slots.Count;
+                return slots;
             }
             else {
                 List<Inventory.InventorySlot> r = shownInventory.GetFilteredInventory(categoryFilter);
@@ -98,21 +102,44 @@ namespace GameUI {
                         r.Remove(r[i]);
                     }
                 } 
+                // lastSlotsCount[1] = r.Count;
                 return r;
             }
         }
+        
+
+
+
+
+        // protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (Inventory shownInventory, int uiIndex, List<int> categoryFilter) {
+        //     if (uiIndex == 0) {
+
+        //         return shownInventory.GetFilteredInventory(categoryFilter);
+        //     }
+        //     else {
+        //         List<Inventory.InventorySlot> r = shownInventory.GetFilteredInventory(categoryFilter);
+        //         for (int i = r.Count - 1; i >= 0; i--) {
+        //             if (r[i].item.composedOf.list.Length == 0) {
+        //                 r.Remove(r[i]);
+        //             }
+        //         } 
+        //         return r;
+        //     }
+        // }
 
         protected override void OnInventoryManagementInitiate(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
-            UIPage recipesPage = uiObject.subHolders[0] as UIPage;
-            UIPage scrapPage = uiObject.subHolders[1] as UIPage;
             
-            recipesPage.SetTitle("Recipes");
-            scrapPage.SetTitle("Scrappable Items");
-
+            (uiObject.subHolders[0] as UIPage).SetTitle("Recipes");
+            (uiObject.subHolders[1] as UIPage).SetTitle("Scrappable Items");
 
             // SetUpButtons ( inventory, null, 0, 0, true, null);
-            SetUpButtons ( inventory, inventory, 0, 1, true, uiObject.subHolders[0], categoryFilter);
-            SetUpButtons ( inventory, inventory, 1, 0, false, uiObject.subHolders[1], inventory.scrappableCategories);
+            // SetUpButtons ( inventory, inventory, 0, true, uiObject.subHolders[0], categoryFilter);
+            // SetUpButtons ( inventory, inventory, 1, false, uiObject.subHolders[1], inventory.scrappableCategories);
+
+
+            BuildButtons(uiObject.subHolders[0], true, new object[] { 0, inventory, inventory, categoryFilter });
+            BuildButtons(uiObject.subHolders[1], false, new object[] { 1, inventory, inventory, inventory.scrappableCategories });
+
         }
         
         const int craftAction = 0;
@@ -126,8 +153,8 @@ namespace GameUI {
 
                 Inventory.InventorySlot slot;
                 Inventory shownInventory, linkedInventory;
-                int uiIndex, otherUIIndex;
-                UnpackButtonData (customData, out slot, out shownInventory, out linkedInventory, out uiIndex, out otherUIIndex);
+                int uiIndex;//, otherUIIndex;
+                UnpackButtonData (customData, out slot, out shownInventory, out linkedInventory, out uiIndex);//, out otherUIIndex);
 
                 bool updateButtons = false;
                 if (input.x == craftAction) {
@@ -160,7 +187,14 @@ namespace GameUI {
                 }
 
                 if (updateButtons){
-                    UpdateUIButtons((Inventory)customData[1], (Inventory)customData[2], (int)customData[3], (int)customData[4], usingCategoryFilter);
+                    object[] updateButtonsParameters = customData[1] as object[];
+
+                    UpdateUIButtons(updateButtonsParameters); // (Inventory)customData[1], (Inventory)customData[2], (int)customData[3], (int)customData[4], usingCategoryFilter);
+                    UpdateUIButtons(
+                        new object[] { 1 - (int)updateButtonsParameters[0], updateButtonsParameters[1], updateButtonsParameters[2], updateButtonsParameters[3] }
+                    );
+
+                    // UpdateUIButtons((Inventory)customData[1], (Inventory)customData[2], (int)customData[3], (int)customData[4], usingCategoryFilter);
                 }                
             }
 		}

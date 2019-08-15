@@ -6,14 +6,20 @@ using SimpleUI;
 namespace GameUI {
     public class QuickTradeUIHandler : InventoryManagementUIHandler
     {
+        protected override bool UsesRadial() { return false; }
+        
+
+        protected override int MaxUIPages () { return 1; }
+
         // public override string[] GetInputNames () { return new string[] { "Take", "Take All", "Open Trade" }; }
         protected override void OnUISelect (GameObject[] data, object[] customData) { }
-
-        protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (Inventory shownInventory, int uiIndex, List<int> categoryFilter) {
+        // protected override int GetUnpaginatedShowCount(object[] updateButtonsParameters) { return (updateButtonsParameters[1] as Inventory).allInventory.Count; }
+        protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter) {
             return shownInventory.allInventory;
         }
         protected override void OnInventoryManagementInitiate(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
-            SetUpButtons (otherInventory, inventory, 0, 0, true, null, categoryFilter);
+            // SetUpButtons (otherInventory, inventory, 0, true, null, categoryFilter);
+            BuildButtons(null, true, new object[] { 0, otherInventory, inventory, categoryFilter });
             (uiObject as UIPage).SetTitle(otherInventory.GetDisplayName());
         }
 
@@ -21,33 +27,36 @@ namespace GameUI {
         protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input) {
     		if (customData != null) {
                 bool updateButtons = false;
-                Inventory shownInventory = (Inventory)customData[1];
-                Inventory tradee = (Inventory)customData[2];
+
+                object[] updateButtonsParameters = customData[1] as object[];
+
+                Inventory shownInventory = updateButtonsParameters[1] as Inventory;
+                Inventory taker = updateButtonsParameters[2] as Inventory;
                 
                 // single trade
                 if (input.x == singleTradeAction) {
-                    Inventory.InventorySlot item = (Inventory.InventorySlot)customData[0];
+                    Inventory.InventorySlot item = customData[0] as Inventory.InventorySlot;
                     if (item != null) {
-                        shownInventory.TransferItemAlreadyInInventoryTo(item, 1, tradee, sendMessage: false);
+                        shownInventory.TransferItemAlreadyInInventoryTo(item, 1, taker, sendMessage: false);
                     }
                 }
                 // take all
                 else if (input.x == tradeAllAction) {
 
                     // TODO: check if shown inventory has anything
-                    shownInventory.TransferInventoryContentsTo(tradee, sendMessage: false);
+                    shownInventory.TransferInventoryContentsTo(taker, sendMessage: false);
                     updateButtons = true;
                 }
                 else if (input.x == switchToFullTradeAction) {
-                    tradee.EndInventoryManagement(context, input.y);
-                    tradee.InitiateInventoryManagement(Inventory.fullTradeContext, input.y, shownInventory, null);
+                    CloseUI();
+                    // taker.EndInventoryManagement(context, input.y);
+                    taker.InitiateInventoryManagement(Inventory.fullTradeContext, input.y, shownInventory, null);
                 }
                 if (updateButtons){
-                    UpdateUIButtons(shownInventory, tradee, 0, 0, null);   
+
+                    UpdateUIButtons(updateButtonsParameters);//shownInventory, taker, 0, 0, null);   
                 }
             }
 		}
-
-        
     }
 }

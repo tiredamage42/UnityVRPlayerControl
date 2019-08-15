@@ -266,10 +266,11 @@ namespace GameUI {
                 }
             }
                     
-
-
     */
 
+
+    /*
+    
     [System.Serializable] public class PerkHolder {
         public Perk perk;
         public int level;
@@ -372,6 +373,7 @@ namespace GameUI {
         }
     }
 
+*/
 
 
 
@@ -384,40 +386,39 @@ namespace GameUI {
         TODO: Add close ui on game pause
     */
 
-    public abstract class InventoryManagementUIHandler : UISelectableElementHandler
+    public abstract class InventoryManagementUIHandler : UISelectableElementHandler<Inventory.InventorySlot>
     {
 
-    #if UNITY_EDITOR
-        public static string[] GetHandlerInputNames (string context) {
-            InventoryManagementUIHandler handler = GetUIHandlerByContext(context);
-            return handler != null ? handler.inputNames : null;
+        protected override int MaxButtons() {
+            return maxButtons;
         }
-    #endif
-        public static InventoryManagementUIHandler GetUIHandlerByContext (string context) {
-            InventoryManagementUIHandler[] allHandlers = GameObject.FindObjectsOfType<InventoryManagementUIHandler>();
-            for (int i = 0; i < allHandlers.Length; i++) {
-                if (allHandlers[i].context == context) {
-                    return allHandlers[i];
-                }
-            }
-            return null;
-        }
+
+
+        // public static InventoryManagementUIHandler GetUIHandlerByContext (string context) {
+        //     InventoryManagementUIHandler[] allHandlers = GameObject.FindObjectsOfType<InventoryManagementUIHandler>();
+        //     for (int i = 0; i < allHandlers.Length; i++) {
+        //         if (allHandlers[i].context == context) {
+        //             return allHandlers[i];
+        //         }
+        //     }
+        //     return null;
+        // }
         
         // public string[] inputNames;
-        [NeatArray] public NeatStringArray inputNames;
+        // [NeatArray] public NeatStringArray inputNames;
         public int maxButtons = 8;
-        public string context;
-        public bool usesRadial;
+        // public string context;
+        // public bool usesRadial;
 
         Inventory inventory;
         
-        protected System.Func<Vector2Int> getUIInputs;
-        public void SetUIInputCallback (System.Func<Vector2Int> callback) {
-            getUIInputs = callback;
-        }
+        // protected System.Func<Vector2Int> customGetInputMethod;
+        // public void SetUIInputCallback (System.Func<Vector2Int> callback) {
+        //     customGetInputMethod = callback;
+        // }
 
         protected bool CheckForGetInputCallback () {
-            if (getUIInputs == null) {
+            if (customGetInputMethod == null) {
                 Debug.LogError("cant open " + context + " UI, no getUIInputs callback supplied");
                 return false;
             }
@@ -425,210 +426,266 @@ namespace GameUI {
         }
 
 
-        protected abstract void OnUIInput (GameObject[] data, object[] customData, Vector2Int input);
+        // protected abstract void OnUIInput (GameObject[] data, object[] customData, Vector2Int input);
 
-        const int maxInventories = 2; // need 2 for trade, cant think of a situation for any more
-        protected SelectableElement[][] inventoryButtonsPerInventory = new SelectableElement[maxInventories][];
-        protected int[] currentPaginatedOffsets = new int[maxInventories];
+        // const int maxInventories = 2; // need 2 for trade, cant think of a situation for any more
+        // protected SelectableElement[][] inventoryButtonsPerInventory = new SelectableElement[maxInventories][];
+        // protected int[] currentPaginatedOffsets = new int[maxInventories];
+
 
         
-        protected virtual void OnEnable () {
+        
+        protected override void OnEnable () {
+            base.OnEnable();
             inventory = GetComponent<Inventory>();
-            inventory.onInventoryManagementInitiate += _OnInventoryManagementInitiate;
-            inventory.onEndInventoryManagement += _OnEndInventoryManagement;
+            inventory.onInventoryManagementInitiate += OpenUI;
+            inventory.onEndInventoryManagement += CloseUI;
             //subscripbe to close when game paused
         }
 
-        public void CloseUI () {
-            _OnEndInventoryManagement(null, -1, null);
+        public override void CloseUI () {
+            CloseUI(null, -1, null);
         }
     
-        protected virtual void OnDisable () {
-            inventory.onInventoryManagementInitiate -= _OnInventoryManagementInitiate;
-            inventory.onEndInventoryManagement -= _OnEndInventoryManagement;
+        protected override void OnDisable () {
+            base.OnDisable();
+            inventory.onInventoryManagementInitiate -= OpenUI;
+            inventory.onEndInventoryManagement -= CloseUI;
         }
 
-        public System.Func<Inventory, int, Inventory, List<int>, bool> shouldOpenCheck;
-        public System.Func<Inventory, int, bool> shouldCloseCheck;
+        // public System.Func<Inventory, int, Inventory, List<int>, bool> shouldOpenCheck;
+        // public System.Func<Inventory, int, bool> shouldCloseCheck;
 
-        [HideInInspector] public int workingWithEquipID = -1;
-        protected List<int> usingCategoryFilter;
+        // [HideInInspector] public int workingWithEquipID = -1;
+        // protected List<int> usingCategoryFilter;
 
 
+        public override void OpenUI() {
+            // todo limit cold open for things that need these extra parameters
+            OpenUI ( inventory, 0, null, context, null);
+        }
 
-        
-        void _OnInventoryManagementInitiate (Inventory inventory, int usingEquipPoint, Inventory otherInventory, string context, List<int> categoryFilter) {
+        void OpenUI (Inventory inventory, int usingEquipPoint, Inventory otherInventory, string context, List<int> categoryFilter) {
 
             if (this.context != context) return;
             if (!CheckForGetInputCallback()) return;
-            if (UIObjectActive()) return;
+            
+            object[] parameters = new object[] { inventory, usingEquipPoint, otherInventory, context, categoryFilter };
 
-            if (shouldOpenCheck != null && !shouldOpenCheck(inventory, usingEquipPoint, otherInventory, categoryFilter)) return;
+            if (OpenUIDenied(parameters)) return;
+            // if (UIObjectActive()) return;
+            // if (UIManager.AnyUIOpen()) return;
+            // if (shouldOpenCheck != null && !shouldOpenCheck(inventory, usingEquipPoint, otherInventory, categoryFilter)) return;
             
-            if (UIManager.AnyUIOpen()) return;
             
-            usingCategoryFilter = categoryFilter;
-            workingWithEquipID = usingEquipPoint;
+            // usingCategoryFilter = categoryFilter;
+            // workingWithEquipID = usingEquipPoint;
             InitializeCallbacksForUIs();
+
             OnInventoryManagementInitiate(inventory, usingEquipPoint, otherInventory, categoryFilter);
-            BroadcastUIOpen();
+            
+            BroadcastUIOpen(parameters);
         }
 
 
 
         void InitializeCallbacksForUIs ( ) {
             //reset pagination offsets
-            for (int i = 0; i < currentPaginatedOffsets.Length; i++) currentPaginatedOffsets[i] = 0;
-            
-            UIManager.ShowUI(uiObject, true, !usesRadial);
 
-            uiObject.onBaseCancel = CloseUI;
+            ResetPagination();
+            // for (int i = 0; i < currentPaginatedOffsets.Length; i++) currentPaginatedOffsets[i] = 0;
+            
 
-            uiObject.runtimeSubmitHandler = getUIInputs;
+            StartShow();
             
-            uiObject.SubscribeToSubmitEvent(OnUIInput);
+            // UIManager.ShowUI(uiObject, true, !usesRadial);
+            // uiObject.onBaseCancel = CloseUI;
+            // uiObject.SubscribeToSubmitEvent(OnUIInput);
+
+            // uiObject.runtimeSubmitHandler = customGetInputMethod;
             
-            uiObject.SubscribeToSelectEvent(OnUISelect);
             
-            if (!usesRadial) {
-                uiObject.SubscribeToSelectEvent(OnPaginatedUISelect);
-            }
+            // uiObject.SubscribeToSelectEvent(OnUISelect);
+            
+            // if (!usesRadial) {
+            //     uiObject.SubscribeToSelectEvent(OnPaginatedUISelect);
+            // }
         }
 
-        protected void SetUpButtons (Inventory forInventory, Inventory linkedInventory, int uiIndex, int otherIndex, bool setSelection, UIElementHolder uiObject, List<int> categoryFilter){
-            if (uiObject == null)
-                uiObject = this.uiObject;
+        // protected void SetUpButtons (
+        //     Inventory forInventory, Inventory linkedInventory, int uiIndex, 
+        //     // int otherIndex, 
+        //     bool setSelection, UIElementHolder uiObject, List<int> categoryFilter){
+        //     if (uiObject == null)
+        //         uiObject = this.uiObject;
 
-            if (inventoryButtonsPerInventory[uiIndex] == null) 
-                inventoryButtonsPerInventory[uiIndex] = uiObject.GetAllSelectableElements(maxButtons);
+        //     if (buttonReferences[uiIndex] == null) buttonReferences[uiIndex] = uiObject.GetAllSelectableElements(maxButtons);
             
-            if (setSelection)
-                UIManager.SetSelection(inventoryButtonsPerInventory[uiIndex][0].gameObject);
+        //     if (setSelection) UIManager.SetSelection(buttonReferences[uiIndex][0].gameObject);
 
 
-            UpdateUIButtons(forInventory, linkedInventory, uiIndex, otherIndex, categoryFilter);
-        }
+        //     UpdateUIButtons(new object[] { uiIndex, forInventory, linkedInventory, categoryFilter });//  forInventory, linkedInventory, uiIndex, otherIndex, categoryFilter);
+        // }
 
         protected abstract void OnInventoryManagementInitiate(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter);
 
         
-        void _OnEndInventoryManagement(Inventory inventory, int usingEquipPoint, string context) {
+        void CloseUI(Inventory inventory, int usingEquipPoint, string context) {
             
             if (context != null && this.context != context) return;
-            if (!UIObjectActive()) return;
-            if (shouldCloseCheck != null && !shouldCloseCheck(inventory, usingEquipPoint)) return;
+
+            if (UICloseDenied (new object[] { inventory, usingEquipPoint, context })) return;
             
-            UIManager.HideUI(uiObject);
-            for (int i = 0; i < inventoryButtonsPerInventory.Length; i++) inventoryButtonsPerInventory[i] = null;
-            for (int i = 0; i < currentPaginatedOffsets.Length; i++) currentPaginatedOffsets[i] = 0;
-            BroadcastUIClose();
+            // if (!UIObjectActive()) return;
+            // if (shouldCloseCheck != null && !shouldCloseCheck(inventory, usingEquipPoint)) return;
+            
+            HideUIAndReset();
         
-            workingWithEquipID = -1;
-            usingCategoryFilter = null;
+            // workingWithEquipID = -1;
+            // usingCategoryFilter = null;
         }
 
-        protected abstract void OnUISelect (GameObject[] data, object[] customData);
+        // protected abstract void OnUISelect (GameObject[] data, object[] customData);
         
 
-        // handle paginated scrolling
-        void OnPaginatedUISelect (GameObject[] data, object[] customData) {
-			if (customData != null) {
-                string buttonSelectText = customData[0] as string;
-                if (buttonSelectText != null) {
+        // // handle paginated scrolling
+        // void OnPaginatedUISelect (GameObject[] data, object[] customData) {
+		// 	if (customData != null) {
+        //         string buttonSelectText = customData[0] as string;
+        //         if (buttonSelectText != null) {
 
-                    Inventory forInventory = (Inventory)customData[1];
+        //             object[] updateButtonsParams = customData[1] as object[];
                     
-                    int uiIndex = (int)customData[3];
+        //             int uiIndex = (int)updateButtonsParams[0];
+        //             // int uiIndex = (int)customData[3];
 
-                    bool updateButtons = false;
-                    SelectableElement newSelection = null;
+        //             bool updateButtons = false;
+        //             SelectableElement newSelection = null;
 
-                    // hovered over the page up button
-                    if (buttonSelectText == "BACK") {
-                        currentPaginatedOffsets[uiIndex]--;
-
-                        if (currentPaginatedOffsets[uiIndex] != 0) {
-                            newSelection = inventoryButtonsPerInventory[uiIndex][1];
-                        }
-
-                        updateButtons = true;
-                    } 
+        //             // hovered over the page up button
+        //             if (buttonSelectText == "B") {
+        //                 currentPaginatedOffsets[uiIndex]--;
+        //                 if (currentPaginatedOffsets[uiIndex] != 0) {
+        //                     newSelection = buttonReferences[uiIndex][1];
+        //                 }
+        //                 updateButtons = true;
+        //             } 
                     
-                    // hovered over the page down button
-                    else if (buttonSelectText == "FWD") {
-                        currentPaginatedOffsets[uiIndex]++;
-                        bool isAtEnd = currentPaginatedOffsets[uiIndex] >= forInventory.allInventory.Count - maxButtons;
+        //             // hovered over the page down button
+        //             else if (buttonSelectText == "F") {
+        //                 currentPaginatedOffsets[uiIndex]++;
+        //                 // bool isAtEnd = currentPaginatedOffsets[uiIndex] >= GetUnpaginatedShowCount(updateButtonsParams) - maxButtons;
+        //                 bool isAtEnd = currentPaginatedOffsets[uiIndex] >= lastElementsShownCount[uiIndex] - maxButtons;
+
                         
-                        if (!isAtEnd) {
-                            newSelection = inventoryButtonsPerInventory[uiIndex][maxButtons - 2];
-                        }
+                        
+
+        //                 if (!isAtEnd) {
+        //                     newSelection = buttonReferences[uiIndex][maxButtons - 2];
+        //                 }
         
-                        updateButtons = true;
-                    }
-                    if (updateButtons){
-                        Inventory linkedInventory = (Inventory)customData[2];
+        //                 updateButtons = true;
+        //             }
 
-                        UpdateUIButtons(forInventory, linkedInventory, uiIndex, (int)customData[4], usingCategoryFilter);
+        //             if (updateButtons){
+        //                 UpdateUIButtons(
+        //                     updateButtonsParams
+                            
+        //                     // (Inventory)customData[1], (Inventory)customData[2], uiIndex, (int)customData[4], usingCategoryFilter
+        //                 );
                         
-                        if (newSelection != null) {
-                            StartCoroutine(SetSelection(newSelection.gameObject));
-                        }
-                    }
-                }   
-            }
-		}
-        IEnumerator SetSelection(GameObject selection) {
-            yield return new WaitForEndOfFrame();
-            UIManager.SetSelection(selection);
-        }
+        //                 if (newSelection != null) {
+        //                     StartCoroutine(SetSelection(newSelection.gameObject));
+        //                 }
+        //             }
+        //         }   
+        //     }
+		// }
 
-        protected void UnpackButtonData (object[] customData, out Inventory.InventorySlot slot, out Inventory shownInventory, out Inventory linkedInventory, out int uiIndex, out int otherUIIndex)
+        // protected abstract int GetUnpaginatedShowCount (object[] updateButtonsParameters);
+        
+
+        // IEnumerator SetSelection(GameObject selection) {
+        //     yield return new WaitForEndOfFrame();
+        //     UIManager.SetSelection(selection);
+        // }
+
+        protected void UnpackButtonData (object[] customData, out Inventory.InventorySlot slot, out Inventory shownInventory, out Inventory linkedInventory, out int uiIndex)//, out int otherUIIndex)
         {
             slot = customData[0] as Inventory.InventorySlot;
-            shownInventory = customData[1] as Inventory;
-            linkedInventory = customData[2] as Inventory;
-            uiIndex = (int)customData[3];
-            otherUIIndex = (int)customData[4];
+            
+            object[] updateParams = customData[1] as object[];
+            uiIndex = (int)updateParams[0];
+            shownInventory = updateParams[1] as Inventory;
+            linkedInventory = updateParams[3] as Inventory;
+            // otherUIIndex = (int)customData[4];
         }
+
         
-        protected abstract List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (Inventory shownInventory, int uiIndex, List<int> categoryFilter) ;
+        protected abstract List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter) ;
 
-        protected void UpdateUIButtons (Inventory shownInventory, Inventory linkedInventory, int uiIndex, int otherIndex, List<int> categoryFilter) 
-        {
-            bool paginate = !usesRadial;
-            List<Inventory.InventorySlot> invSlots = BuildInventorySlotsForDisplay ( shownInventory, uiIndex, categoryFilter);
-            int invCount = invSlots.Count;
+
+        protected override List<Inventory.InventorySlot> BuildButtonObjectsListForDisplay(object[] updateButtonsParams) {
+            return BuildInventorySlotsForDisplay((int)updateButtonsParams[0], (Inventory)updateButtonsParams[1], (List<int>)updateButtonsParams[3]);
+        }
+
+        protected override string GetDisplayForButtonObject(Inventory.InventorySlot buttonObject) {
+            return buttonObject.item.itemName + " ( x"+buttonObject.count+" )";
+        }
+
+        protected override bool Paginated () {
+            return !UsesRadial();
+        }
+
+        
+        
+        
+        // protected void UpdateUIButtons (Inventory shownInventory, Inventory linkedInventory, int uiIndex, int otherIndex, List<int> categoryFilter) 
+        // protected void UpdateUIButtons (object[] updateButtonsParams) 
+        // {
+        //     int uiIndex = (int)updateButtonsParams[0];
+        
+        //     bool paginate = !usesRadial;
+        //     List<Inventory.InventorySlot> buttonObjects = BuildInventorySlotsForDisplay ( updateButtonsParams );
+        //     int buttonObjectsCount = buttonObjects.Count;
+
+        //     lastElementsShownCount[uiIndex] = buttonObjectsCount;
             
 
-            SelectableElement[] elements = inventoryButtonsPerInventory[uiIndex];
+        //     SelectableElement[] elements = buttonReferences[uiIndex];
             
-            int start = 0;
-            int end = maxButtons;
-            if (paginate) {
+        //     int start = 0;
+        //     int end = maxButtons;
+        //     if (paginate) {
 
-                bool isAtEnd = currentPaginatedOffsets[uiIndex] >= invCount - maxButtons;
-                bool isAtBeginning = currentPaginatedOffsets[uiIndex] == 0;
+        //         bool isAtEnd = currentPaginatedOffsets[uiIndex] >= buttonObjectsCount - maxButtons;
+        //         bool isAtBeginning = currentPaginatedOffsets[uiIndex] == 0;
 
-                if (!isAtBeginning){
-                    MakeButton(elements[0], " [ Page Up ] ", new object[]{ "BACK", shownInventory, linkedInventory, uiIndex, otherIndex });
-                    start = 1;
-                }
-                if (!isAtEnd) {
-                    MakeButton(elements[maxButtons-1], "[ Page Down ] ", new object[]{ "FWD", shownInventory, linkedInventory, uiIndex, otherIndex });
-                    end = maxButtons - 1;
-                }
-            }
+        //         if (!isAtBeginning){
+        //             // MakeButton(elements[0], " [ Page Up ] ", new object[]{ "BACK", shownInventory, linkedInventory, uiIndex, otherIndex });
+        //             MakeButton(elements[0], " [ Page Up ] ", new object[]{ "B", updateButtonsParams });
+        //             start = 1;
+        //         }
+        //         if (!isAtEnd) {
+        //             // MakeButton(elements[maxButtons-1], "[ Page Down ] ", new object[]{ "FWD", shownInventory, linkedInventory, uiIndex, otherIndex });
+        //             MakeButton(elements[maxButtons-1], "[ Page Down ] ", new object[]{ "F", updateButtonsParams });
+                    
+        //             end = maxButtons - 1;
+        //         }
+        //     }
             
-            for (int i = start ; i < end; i++) {
-                int inventoryIndex = paginate ? (i-start) + currentPaginatedOffsets[uiIndex] : i;
+        //     for (int i = start ; i < end; i++) {
+        //         int index = paginate ? (i-start) + currentPaginatedOffsets[uiIndex] : i;
 
-                if (inventoryIndex < invCount) {
-                    MakeButton( elements[i], invSlots[inventoryIndex].item.itemName + " ( x"+invSlots[inventoryIndex].count+" )", new object[] { invSlots[inventoryIndex], shownInventory, linkedInventory, uiIndex, otherIndex } );
-                }
-                else {
-                    MakeButton( elements[i], "Empty", new object[] { null, shownInventory, linkedInventory, uiIndex, otherIndex } );
-                }
-            }
-        }  
+        //         if (index < buttonObjectsCount) {
+        //             // MakeButton( elements[i], invSlots[index].item.itemName + " ( x"+invSlots[index].count+" )", new object[] { invSlots[index], shownInventory, linkedInventory, uiIndex, otherIndex } );
+        //             MakeButton( elements[i], GetDisplayForButtonObject(buttonObjects[index]), new object[] { buttonObjects[index], updateButtonsParams } );
+        //         }
+        //         else {
+        //             // MakeButton( elements[i], "Empty", new object[] { null, shownInventory, linkedInventory, uiIndex, otherIndex } );
+        //             MakeButton( elements[i], "Empty", new object[] { null, updateButtonsParams } );
+        //         }
+        //     }
+        // }  
     }
 }

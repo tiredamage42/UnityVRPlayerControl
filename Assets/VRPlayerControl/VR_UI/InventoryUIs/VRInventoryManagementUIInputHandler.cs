@@ -30,15 +30,17 @@ namespace VRPlayer.UI {
         public int enforcedEquipID = -1;
 
 
-        bool UIShouldOpenCheck (Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
+        bool UIShouldOpenCheck (object[] parameters){//Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
+            int usingEquipPoint = (int)parameters[1];
             return enforcedEquipID == -1 || usingEquipPoint == enforcedEquipID;            
         }
-        bool UIShouldCloseCheck (Inventory inventory, int usingEquipPoint) {
+        bool UIShouldCloseCheck (object[] parameters){//Inventory inventory, int usingEquipPoint) {
+            int usingEquipPoint = (int)parameters[1];
             return enforcedEquipID == -1 || usingEquipPoint == enforcedEquipID;
         }
 
 
-        protected InventoryManagementUIHandler myUIHandler;
+        protected UIHandler myUIHandler;
         
         bool needsSingleHandInput { get { return usesSingleHand || enforcedEquipID != -1; } }
 
@@ -48,7 +50,7 @@ namespace VRPlayer.UI {
         // }
         Vector2Int GetUIInputs (){//int equipID, SteamVR_Input_Sources hand) {
             // bool usesID = usesSingleHand || enforcedEquipID != -1;// ||  myUIHandler.EquipIDSpecific();
-            int equipID = needsSingleHandInput ? myUIHandler.workingWithEquipID : 0;
+            int equipID = needsSingleHandInput ? workingWithEquipID : 0;
             SteamVR_Input_Sources hand = needsSingleHandInput ? VRManager.Int2Hand( equipID ) : SteamVR_Input_Sources.Any;
             // return GetUIInputs(equipID, hand);
             
@@ -76,7 +78,7 @@ namespace VRPlayer.UI {
 
         protected virtual void OnEnable () {
 
-            myUIHandler = InventoryManagementUIHandler.GetUIHandlerByContext(context);
+            myUIHandler = UIHandler.GetUIHandlerByContext(context);
 
             if (myUIHandler != null) {
                 // actionNames = myUIHandler.GetInputNames();
@@ -97,10 +99,18 @@ namespace VRPlayer.UI {
             }
         }
 
-        void OnOpenUI (UIElementHolder uiObject) {
+// new object[] { inventory, usingEquipPoint, otherInventory, context, categoryFilter }
+
+
+        int workingWithEquipID;
+        void OnOpenUI (GameObject uiObject, object[] parameters) {
+        // void OnOpenUI (UIElementHolder uiObject) {
+
+            workingWithEquipID = (int)parameters[1];
+        
             // SteamVR_Input_Sources hand = myUIHandler.EquipIDSpecific() ? VRManager.Int2Hand( myUIHandler.workingWithEquipID ) : SteamVR_Input_Sources.Any;
 
-            SteamVR_Input_Sources hand = needsSingleHandInput ? VRManager.Int2Hand( myUIHandler.workingWithEquipID ) : SteamVR_Input_Sources.Any;
+            SteamVR_Input_Sources hand = needsSingleHandInput ? VRManager.Int2Hand( workingWithEquipID ) : SteamVR_Input_Sources.Any;
 
             string[] inputNames = myUIHandler.inputNames;
             for (int i = 0; i < controls.list.Length; i++) {
@@ -109,13 +119,16 @@ namespace VRPlayer.UI {
             }     
 
             if (equipBehavior != null) {
-                TransformBehavior.AdjustTransform(uiObject.baseObject.transform, Player.instance.GetHand(hand).transform, equipBehavior, 0);
+                // TransformBehavior.AdjustTransform(uiObject.baseObject.transform, Player.instance.GetHand(hand).transform, equipBehavior, 0);
+                TransformBehavior.AdjustTransform(uiObject.transform, Player.instance.GetHand(hand).transform, equipBehavior, 0);
             }
 
             VRUIInput.SetUIHand(hand);
         }
 
-        void OnCloseUI (UIElementHolder uiObject) {
+        void OnCloseUI (GameObject uiObject) {
+        // void OnCloseUI (UIElementHolder uiObject) {
+        
             for (int i = 0; i < controls.list.Length; i++) {
                 StandardizedVRInput.MarkActionUnoccupied(controls.list[i].action);
                 StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, controls.list[i].action);    
@@ -161,7 +174,7 @@ namespace VRPlayer.UI {
             uiHandler = target as VRInventoryManagementUIInputHandler;
         }
         public override void OnInspectorGUI () {
-            string[] actionNames = InventoryManagementUIHandler.GetHandlerInputNames(uiHandler.context);
+            string[] actionNames = UIHandler.GetHandlerInputNames(uiHandler.context);
             if (actionNames != null) {
                 EditorGUILayout.HelpBox("Actions:\n" + string.Join(", ", actionNames) , MessageType.Info);
             }

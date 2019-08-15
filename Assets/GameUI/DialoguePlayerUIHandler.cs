@@ -2,61 +2,99 @@
 using SimpleUI;
 using DialogueSystem;
 using System.Collections.Generic;
+using System;
+
 namespace GameUI{
 
-    public class DialoguePlayerUIHandler : UISelectableElementHandler {
+    public class DialoguePlayerUIHandler : UISelectableElementHandler<DialogueResponse> {
         
+        protected override int MaxUIPages() { return 1; }
+        protected override int MaxButtons() { return currentMaxButtons; }
+        protected override bool Paginated () { return false; }
+        protected override bool UsesRadial() { return false; }
+        public override void OpenUI() { }
 
-        void OnEnable () {
+        protected override List<DialogueResponse> BuildButtonObjectsListForDisplay (object[] updateButtonsParams) {
+            return updateButtonsParams[1] as List<DialogueResponse>;
+        }
+
+        protected override string GetDisplayForButtonObject(DialogueResponse obj) {
+            return obj.bark;
+        }
+
+        protected override void OnEnable () {
+            base.OnEnable();
             GetComponent<DialoguePlayer>().onResponseRequested += OnResponseRequested;
         }
-        void OnDisable () {
+        protected override void OnDisable () {
+            base.OnDisable();
             GetComponent<DialoguePlayer>().onResponseRequested -= OnResponseRequested;
         }
-        
-        protected void OnUIInput (GameObject[] data, object[] customData, Vector2Int input) {
+
+        protected override void OnUISelect (GameObject[] data, object[] customData) { }
+
+        protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input) {
         	if (input.x == 0){
                 onRespond(customData[0] as DialogueResponse);
             }
-            CloseResponseUI();
+            CloseUI();
 		}
 
-        SelectableElement[] buttonsReferences = new SelectableElement[0];
-        System.Action<DialogueResponse> onRespond;
-        System.Action onResponseCancelled;
+        Action<DialogueResponse> onRespond;
+        Action onResponseCancelled;
       
-        public void OnResponseRequested (List<DialogueResponse> responses, System.Action<DialogueResponse> onRespond, System.Action onResponseCancelled) {
+        
+        int currentMaxButtons;
+        public void OnResponseRequested (List<DialogueResponse> responses, Action<DialogueResponse> onRespond, Action onResponseCancelled) {
             this.onResponseCancelled = onResponseCancelled;
-            if (UIObjectActive()) return;
-            if (UIManager.AnyUIOpen()) return;
-
             this.onRespond = onRespond;
             
-            UIManager.ShowUI(uiObject, true, true);
-            
-            uiObject.SubscribeToSubmitEvent(OnUIInput);
-            uiObject.onBaseCancel = CloseResponseUI;
 
-            buttonsReferences = uiObject.GetAllSelectableElements(responses.Count);
-            for (int i = 0 ; i < responses.Count; i++) {
-                MakeButton( buttonsReferences[i], responses[i].bark, new object[] { responses[i] } );
-            }
+            object[] parameters = new object[] { responses };
+            // if (UIObjectActive()) return;
+            // if (UIManager.AnyUIOpen()) return;
 
-            UIManager.SetSelection(buttonsReferences[0].gameObject);
+
+
+            if (OpenUIDenied (parameters)) return;
+
+            StartShow();
+            // UIManager.ShowUI(uiObject, true, true);
+            // uiObject.onBaseCancel = CloseUI;
+            // uiObject.SubscribeToSubmitEvent(OnUIInput);
             
-            BroadcastUIOpen();
+
+            currentMaxButtons = responses.Count;
+
+
+            object[] updateButtonsParams = new object[] { 0, responses };
+
+            BuildButtons(null, true, updateButtonsParams);
+
+            // buttonReferences[0] = uiObject.GetAllSelectableElements(responses.Count);
+
+            // UpdateUIButtons (new object[] { 0, responses }) ;
+
+            // for (int i = 0 ; i < responses.Count; i++) {
+            //     MakeButton( buttonReferences[0][i], responses[i].bark, new object[] { responses[i] } );
+            // }
+
+            // UIManager.SetSelection(buttonReferences[0][0].gameObject);
+            
+            BroadcastUIOpen(parameters);
         }
-        
-        public void CloseResponseUI () {
-            if (!UIObjectActive()) return;
-            UIManager.HideUI(uiObject);
-            buttonsReferences = null;
-            BroadcastUIClose();
 
+        public override void CloseUI() {
+
+            if (UICloseDenied (null)) return;
+            // if (!UIObjectActive()) return;
+
+            HideUIAndReset();
+            
             if (onResponseCancelled != null) {
                 onResponseCancelled();
                 onResponseCancelled = null;
-            }
+            }   
         }
     }
 }

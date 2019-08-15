@@ -90,7 +90,9 @@ namespace VRPlayer.UI {
 
         Inventory inventory;
         public SteamVR_Input_Sources dialogueHand = SteamVR_Input_Sources.RightHand;
-        void OnOpenDialogueUI (UIElementHolder uiObject) {
+        void OnOpenDialogueUI (GameObject uiObject, object[] parameters) {
+        // void OnOpenDialogueUI (UIElementHolder uiObject) {
+        
             VRUIInput.SetUIHand(dialogueHand);
         }
 
@@ -148,12 +150,13 @@ namespace VRPlayer.UI {
          
         [Space] public SteamVR_Action_Boolean uiInvToggleAction;
         // public string invContext = "FullInventory";
-        InventoryManagementUIHandler invUIHandler;
+        // InventoryManagementUIHandler invUIHandler;
+        FullInventoryUIHandler invUIHandler;
 
         // open full inventory logic
         void UpdateNormalInventory () {
             if (uiInvToggleAction.GetStateDown(VRManager.instance.mainHand)) {
-                if (invUIHandler == null) invUIHandler = InventoryManagementUIHandler.GetUIHandlerByContext(Inventory.fullInventoryContext);
+                if (invUIHandler == null) invUIHandler = GameObject.FindObjectOfType<FullInventoryUIHandler>();// InventoryManagementUIHandler.GetUIHandlerByContext(Inventory.fullInventoryContext);
                 
                 if (invUIHandler.UIObjectActive())
                     inventory.EndInventoryManagement (Inventory.fullInventoryContext, 0);
