@@ -45,7 +45,7 @@ namespace VRPlayer {
 
         void Awake () {
             Canvas canvas = GetComponent<Canvas>();
-            if (canvas.renderMode == RenderMode.WorldSpace) {
+            if (canvas.renderMode != RenderMode.WorldSpace) {
                 Debug.LogError(name + " :: when using vr menu, canvas should be world space");
             }
 

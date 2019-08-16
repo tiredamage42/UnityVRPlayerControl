@@ -60,7 +60,7 @@ namespace SimpleUI {
             fillImage.SetColorScheme(scheme, false);
         }
 
-        void UpdateLayout() {
+        public void UpdateLayout() {
             valueText.SetAnchor( isHorizontal ? TextAnchor.MiddleLeft : TextAnchor.UpperCenter );    
             
             valueText.rectTransform.sizeDelta = new Vector2(

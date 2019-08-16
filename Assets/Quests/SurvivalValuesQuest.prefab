@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2499689881023938853}
   - component: {fileID: 2499689881023938850}
   m_Layer: 0
-  m_Name: SurvivalQuest
+  m_Name: SurvivalValuesQuest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,8 +45,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questID: 0
   isPublic: 0
-  infinite: 1
   displayName: SurvivalQuest
+  infinite: 1
   survivalValues:
   - survivalValueID: 0
     questInstanceID: 0
@@ -101,6 +101,8 @@ MonoBehaviour:
           modifyValueComponent: 3
           modifyBehavior: 1
           modifyValue: -5
+    thresholdMessageColorSchemes:
+      list: 000000000100000002000000
   - survivalValueID: 0
     questInstanceID: 0
     valueTemplate:
@@ -154,3 +156,5 @@ MonoBehaviour:
           modifyValueComponent: 5
           modifyBehavior: 2
           modifyValue: 0.25
+    thresholdMessageColorSchemes:
+      list: 000000000100000002000000

@@ -64,7 +64,9 @@ namespace ActorSystem {
             // messageInbox.ShowMessage( msg );
         }
         public void ShowSubtitles (string speaker, string subtitles) {
+            // Debug.LogError("show sutitles player");
             if (onShowSubtitles != null) {
+                // Debug.LogError(("show subtitls event"));
                 onShowSubtitles(speaker, subtitles);
             }
         }

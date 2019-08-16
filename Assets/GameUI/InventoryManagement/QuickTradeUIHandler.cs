@@ -15,6 +15,7 @@ namespace GameUI {
         protected override void OnUISelect (GameObject[] data, object[] customData) { }
         // protected override int GetUnpaginatedShowCount(object[] updateButtonsParameters) { return (updateButtonsParameters[1] as Inventory).allInventory.Count; }
         protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter) {
+            // Debug.LogError("quick trade here");
             return shownInventory.allInventory;
         }
         protected override void OnInventoryManagementInitiate(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {

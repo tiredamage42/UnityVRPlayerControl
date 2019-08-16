@@ -410,7 +410,7 @@ namespace GameUI {
         // public string context;
         // public bool usesRadial;
 
-        Inventory inventory;
+        protected Inventory inventory;
         
         // protected System.Func<Vector2Int> customGetInputMethod;
         // public void SetUIInputCallback (System.Func<Vector2Int> callback) {

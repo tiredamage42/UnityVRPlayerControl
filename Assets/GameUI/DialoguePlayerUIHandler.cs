@@ -62,6 +62,8 @@ namespace GameUI{
             // UIManager.ShowUI(uiObject, true, true);
             // uiObject.onBaseCancel = CloseUI;
             // uiObject.SubscribeToSubmitEvent(OnUIInput);
+
+            (uiObject as UIPage).SetTitle("");
             
 
             currentMaxButtons = responses.Count;

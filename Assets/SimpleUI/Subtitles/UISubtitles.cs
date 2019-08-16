@@ -31,7 +31,7 @@ namespace SimpleUI {
         UIText[] texts;
         RectTransform[] rectTransforms;
         float timer;
-        bool showing { get { return gameObject.activeSelf; } }
+        bool showing { get { return gameObject.activeInHierarchy ; } }
 
         void OnEnable () {
             texts = GetComponentsInChildren<UIText>();
@@ -55,7 +55,7 @@ namespace SimpleUI {
             this.subtitles = subtitles;
 
             if (texts.Length == 2) {
-                
+                // Debug.LogError("showing subtitles");
                 texts[0].SetText(speaker + ":", -1);
                 texts[1].SetText(subtitles, parameters.maxCharacters);
 
@@ -68,7 +68,8 @@ namespace SimpleUI {
             }
 
             if (Application.isPlaying) {
-                if (!showing) baseObject.SetActive(true);
+                if (!showing) 
+                    baseObject.SetActive(true);
                 timer = 0;
             }
         }

@@ -23,8 +23,18 @@ namespace VRPlayer
             }
         }
 
+
+            
+
         public SteamVR_Input_Sources handType { get { return trackedObject.inputSource; } }
-        SteamVR_Behaviour_Pose trackedObject;
+        SteamVR_Behaviour_Pose _trackedObject;
+
+        SteamVR_Behaviour_Pose trackedObject {
+            get {
+                if (_trackedObject == null) _trackedObject = GetComponent<SteamVR_Behaviour_Pose>();
+                return _trackedObject;
+            }
+        }
         public GameObject renderModelPrefab;
         protected RenderModel mainRenderModel;
         
@@ -261,7 +271,6 @@ namespace VRPlayer
         protected virtual void Awake()
         {
             velocityEstimator = GetComponent<VelocityEstimator>();
-            trackedObject = GetComponent<SteamVR_Behaviour_Pose>();
             
             interactor = GetComponent<InteractionPoint>();
             interactor.interactorID = VRManager.Hand2Int(handType);

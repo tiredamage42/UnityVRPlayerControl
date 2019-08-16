@@ -91,11 +91,18 @@ public class Inventory : MonoBehaviour
 {
 
     public int stashAction = 1;
-    [HideInInspector] public ActorSystem.Actor actor;
+
+    ActorSystem.Actor _actor;
+    [HideInInspector] public ActorSystem.Actor actor {
+        get {
+            if (_actor == null) _actor = GetComponent<ActorSystem.Actor>();
+            return _actor;
+        }
+    }
     [HideInInspector] public InventoryEqupping equipping;
     // public InventoryCrafter crafter;
     void InitializeComponents () {
-        actor = GetComponent<ActorSystem.Actor>();
+        // actor = GetComponent<ActorSystem.Actor>();
         equipping = GetComponent<InventoryEqupping>();
         // crafter = GetComponent<InventoryCrafter> ();
     }
@@ -136,6 +143,7 @@ public class Inventory : MonoBehaviour
 
     public void InitiateInventoryManagement (string context, int equipID, Inventory secondaryInventory, List<int> categoryFilter) {
         if (onInventoryManagementInitiate != null) {
+            // Debug.LogError("opwninf " + context);
             onInventoryManagementInitiate(this, equipID, secondaryInventory, context, categoryFilter);
         }
     }
@@ -242,7 +250,7 @@ public class Inventory : MonoBehaviour
                     // if not enough, loop through and junk items for their base components (first level only)
 
                     // dont clear empties while looping, in order to keep indicies consistent
-                    for (int i = 0; i < allInventory.Count; i--) {
+                    for (int i = 0; i < allInventory.Count; i++) {
 
                         if (allInventory[i].count <= 0) continue;
 

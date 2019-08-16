@@ -93,7 +93,7 @@ namespace VRPlayer.UI {
         void OnOpenDialogueUI (GameObject uiObject, object[] parameters) {
         // void OnOpenDialogueUI (UIElementHolder uiObject) {
         
-            VRUIInput.SetUIHand(dialogueHand);
+            // VRUIInput.SetUIHand(dialogueHand);
         }
 
         void OnEnable () {

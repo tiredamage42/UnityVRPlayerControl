@@ -10,6 +10,7 @@ namespace VRPlayer.UI {
         // build a seperate worldspace canvas for each ui element
         static RectTransform BuildCanvasObject (string name, bool addVRMenuBehavior, TransformBehavior followBehavior) {
             GameObject g = new GameObject(name);
+            g.layer = LayerMask.NameToLayer("UI");
 
             RectTransform t = g.AddComponent<RectTransform>();
             t.sizeDelta = Vector2.one;
@@ -73,6 +74,7 @@ namespace VRPlayer.UI {
         public static UIValueTracker MakeValueTrackerUI (string goName, UIValueTrackerParameters parameters, bool useVertical) {
             UIValueTracker newValueTracker = GameObject.Instantiate( useVertical ? UIManager.instance.valueTrackerVerticalPrefab : UIManager.instance.valueTrackerHorizontalPrefab );
             newValueTracker.parameters = parameters;
+            newValueTracker.UpdateLayout();
             return InitializeBaseUIElement<UIValueTracker> (newValueTracker, BuildCanvasObject(goName, false, null), new Vector2(.5f, .5f));
         }
 
@@ -131,6 +133,9 @@ namespace VRPlayer.UI {
 
         static T InitializeBaseUIElement<T> (BaseUIElement element, RectTransform baseObject, Vector2 anchor) where T : BaseUIElement {
             element.baseObject = baseObject.gameObject;
+            // Debug.Log(element.name);
+            // Debug.Log(element.rectTransform);
+            
             SetParent(element.rectTransform, baseObject, anchor);
             return element as T;
         }
@@ -161,7 +166,7 @@ namespace VRPlayer.UI {
 
             collection.subHolders = new UIElementHolder[] { newPage0 , newPage1 };
 
-            SetParent(InstantiateTextPanel(textPanelParams, collection.subHolders).rectTransform, collection.rectTransform, anchor, new Vector3(0, -pageParameters.titleHeight, 0));
+            SetParent(InstantiateTextPanel(textPanelParams, new UIElementHolder[] {collection, newPage0 , newPage1 }).rectTransform, collection.rectTransform, anchor, new Vector3(0, -pageParameters.titleHeight, 0));
 
             UIManager.HideUI(collection);
             return collection;

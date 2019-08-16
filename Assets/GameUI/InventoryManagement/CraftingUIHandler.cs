@@ -57,7 +57,7 @@ namespace GameUI {
             if (uiIndex == 0) {
                 CraftingRecipeBehavior recipe = FindCraftingRecipeOnItem(selectedSlot.item);
                 if (recipe == null) {
-                    Debug.LogError(selectedSlot.item.itemName + " doesnt have a recipe behavior,\nbut is in a crafting category...");
+                    // Debug.LogError(selectedSlot.item.itemName + " doesnt have a recipe behavior,\nbut is in a crafting category...");
                     return;
                 }
             
@@ -127,8 +127,10 @@ namespace GameUI {
         //     }
         // }
 
+        List<int> categoryFilter;
+
         protected override void OnInventoryManagementInitiate(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
-            
+            this.categoryFilter = categoryFilter;
             (uiObject.subHolders[0] as UIPage).SetTitle("Recipes");
             (uiObject.subHolders[1] as UIPage).SetTitle("Scrappable Items");
 
@@ -168,6 +170,13 @@ namespace GameUI {
                                 if (shownInventory.ItemCompositionAvailableInInventory (recipe.requires, true, shownInventory.actor.actorValues, shownInventory.actor.actorValues)) {
                                     if (slot.item.OnConsume(shownInventory, 1, input.y)){
                                         updateButtons = true;
+
+                                         object[] updateButtonsParameters = customData[1] as object[];
+
+                    UpdateUIButtons(updateButtonsParameters); // (Inventory)customData[1], (Inventory)customData[2], (int)customData[3], (int)customData[4], usingCategoryFilter);
+                    UpdateUIButtons(
+                        new object[] { 1 - (int)updateButtonsParameters[0], updateButtonsParameters[1], updateButtonsParameters[2], inventory.scrappableCategories }
+                    );
                                     }
                                 }
                             }
@@ -177,22 +186,39 @@ namespace GameUI {
 
                         if (scrapAttempts == 1) {
                             scrapAttempts = 0;
+                            Debug.Log("scrpping");
                             shownInventory.ScrapItemAlreadyInInventory(slot.item, 1, -1, true, sendMessage: true, shownInventory.actor.actorValues, shownInventory.actor.actorValues);
+                        updateButtons = true;
+
+
+                         object[] updateButtonsParameters = customData[1] as object[];
+
+                         UpdateUIButtons(
+                        new object[] { (int)updateButtonsParameters[0], updateButtonsParameters[1], updateButtonsParameters[2], inventory.scrappableCategories }
+                    );
+
+
+
+                    // UpdateUIButtons(updateButtonsParameters); // (Inventory)customData[1], (Inventory)customData[2], (int)customData[3], (int)customData[4], usingCategoryFilter);
+                    UpdateUIButtons(
+                        new object[] { 1 - (int)updateButtonsParameters[0], updateButtonsParameters[1], updateButtonsParameters[2], categoryFilter }
+                    );
                         }
                         else {
                             uiObject.textPanel.SetText("\n\nAre you sure you want to scrap " + slot.item.itemName + " ?\n\nPress 'Scrap' again to confirm.\nSelect another item to cancel...");
+                        scrapAttempts = 1;
                         }
                     }
 
                 }
 
                 if (updateButtons){
-                    object[] updateButtonsParameters = customData[1] as object[];
+                    // object[] updateButtonsParameters = customData[1] as object[];
 
-                    UpdateUIButtons(updateButtonsParameters); // (Inventory)customData[1], (Inventory)customData[2], (int)customData[3], (int)customData[4], usingCategoryFilter);
-                    UpdateUIButtons(
-                        new object[] { 1 - (int)updateButtonsParameters[0], updateButtonsParameters[1], updateButtonsParameters[2], updateButtonsParameters[3] }
-                    );
+                    // UpdateUIButtons(updateButtonsParameters); // (Inventory)customData[1], (Inventory)customData[2], (int)customData[3], (int)customData[4], usingCategoryFilter);
+                    // UpdateUIButtons(
+                    //     new object[] { 1 - (int)updateButtonsParameters[0], updateButtonsParameters[1], updateButtonsParameters[2], updateButtonsParameters[3] }
+                    // );
 
                     // UpdateUIButtons((Inventory)customData[1], (Inventory)customData[2], (int)customData[3], (int)customData[4], usingCategoryFilter);
                 }                

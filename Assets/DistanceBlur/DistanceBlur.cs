@@ -9,6 +9,8 @@ public class DistanceBlur : MonoBehaviour {
     [Range(0.1f, 500f)] public float fadeRange = 3f;
     [Range(0.001f, 10)] public float fadeSteepness = 1;
 
+    public float maxDistance = 999;
+
     [Header("Blur")]
     [Range(0, 2)] public int downsample = 1;
     [Range(0.0f, 10.0f)] public float blurSize = 3.0f;
@@ -53,6 +55,7 @@ public class DistanceBlur : MonoBehaviour {
         // material.SetFloat("_BokehRadius", bokehRadius);
         material.SetFloat("_FocusDistance", startDistance);
 		material.SetFloat("_FocusRange", fadeRange);
+        material.SetFloat("_MaxDistance", maxDistance);
         material.SetTexture("_DoFTex", dof0);
         material.SetTexture("_CoCTex", coc);
 

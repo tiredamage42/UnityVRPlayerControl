@@ -13,7 +13,7 @@
 		sampler2D _MainTex, _CameraDepthTexture, _CoCTex, _DoFTex;
 		float4 _MainTex_TexelSize;
         // float _BokehRadius, _FocusDistance, _FocusRange, _COCSteepness;
-		float _FocusDistance, _FocusRange, _COCSteepness;
+		float _FocusDistance, _FocusRange, _COCSteepness, _MaxDistance;
 
 		struct VertexData {
 			float4 vertex : POSITION;
@@ -198,7 +198,13 @@
 		Pass {// 0 circleOfConfusionPass
 			CGPROGRAM
 				half FragmentProgram (Interpolators i) : SV_Target {
-					return (LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv)) - _FocusDistance) / (_FocusRange);
+					half depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv));
+					if (depth >= _MaxDistance) {
+						return 0;
+					}
+					// return depth;
+
+					return ((depth - _FocusDistance) / (_FocusRange));
 				}
 			ENDCG
 		}
@@ -207,6 +213,7 @@
 				half4 FragmentProgram (Interpolators i) : SV_Target {
 					
 					half coc = tex2D(_CoCTex, i.uv).r;
+					// return coc;
 					
 					half dofStrength = pow(smoothstep(0, 1, coc), _COCSteepness);
 
