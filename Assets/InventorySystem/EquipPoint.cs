@@ -1,19 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿// using System.Collections;
+// using System.Collections.Generic;
 using UnityEngine;
 
-namespace InventorySystem {
+namespace Game.InventorySystem {
     
     public class EquipPoint : MonoBehaviour {
-        public InventoryEqupping equipper;
+        public InventoryEquipper equipper;
         public int equipID;
-
 
         void Start () {
             equipper.SetEquipPoint(equipID, this);
         }
-
-
 
         const float MaxVelocityChange = 10f;
         const float VelocityMagic = 6000f;
@@ -27,21 +24,20 @@ namespace InventorySystem {
                 return;
             }
 
-            InventoryEqupping.EquipSlot slot = equipper.equippedSlots[equipID]; 
+            InventoryEquipper.EquipSlot slot = equipper.equippedSlots[equipID]; 
             if (slot != null) {
                 ItemBehavior item = slot.sceneItem.itemBehavior;
 
-                if (item.equipType == InventoryEqupping.EquipType.Physics) {        
+                if (item.equipType == InventoryEquipper.EquipType.Physics) {        
                     UpdateAttachedVelocity(slot);
                 }
-                else if (item.equipType == InventoryEqupping.EquipType.Normal) {
+                else if (item.equipType == InventoryEquipper.EquipType.Normal) {
                     TransformBehavior.AdjustTransform(slot.sceneItem.transform, transform, item.equipTransform, equipID);
                 }
             }
         }
 
-
-        void UpdateAttachedVelocity(InventoryEqupping.EquipSlot equippedSlot)
+        void UpdateAttachedVelocity(InventoryEquipper.EquipSlot equippedSlot)
         {
             Vector3 velocityTarget, angularTarget;
             if (GetUpdatedEquippedVelocities(equippedSlot, out velocityTarget, out angularTarget))
@@ -56,10 +52,9 @@ namespace InventorySystem {
             }
         }
 
-        bool GetUpdatedEquippedVelocities(InventoryEqupping.EquipSlot equippedSlot, out Vector3 velocityTarget, out Vector3 angularTarget)
+        bool GetUpdatedEquippedVelocities(InventoryEquipper.EquipSlot equippedSlot, out Vector3 velocityTarget, out Vector3 angularTarget)
         {
             bool realNumbers = false;
-
 
             Vector3 localPosition;
             Quaternion localRotation;
@@ -67,23 +62,18 @@ namespace InventorySystem {
 
             TransformBehavior.GetValues(equippedSlot.sceneItem.itemBehavior.equipTransform, equipID, out localPosition, out localRotation, out localScale);
 
-            
             Vector3 targetItemPosition = transform.TransformPoint(localPosition);
             Vector3 positionDelta = (targetItemPosition - equippedSlot.sceneItem.rigidbody.position);
             velocityTarget = (positionDelta * VelocityMagic * Time.deltaTime);
 
             if (float.IsNaN(velocityTarget.x) == false && float.IsInfinity(velocityTarget.x) == false)
-            {
                 realNumbers = true;
-            }
             else
                 velocityTarget = Vector3.zero;
-
 
             Quaternion targetItemRotation = transform.rotation * localRotation;
             
             Quaternion rotationDelta = targetItemRotation * Quaternion.Inverse(equippedSlot.sceneItem.transform.rotation);
-
 
             float angle;
             Vector3 axis;

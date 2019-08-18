@@ -7,7 +7,7 @@
 using UnityEngine;
 using System.Collections;
 using InteractionSystem;
-using InventorySystem;
+using Game.InventorySystem;
 using VRPlayer;
 namespace GameBase// Valve.VR.InteractionSystem
 {
@@ -35,9 +35,6 @@ namespace GameBase// Valve.VR.InteractionSystem
 		public void OnEquippedUpdate (Inventory inventory) {
 			UpdateLinearMapping(inventory.transform);
 		}
-
-
-
 
 		public Transform startPosition;
 		public Transform endPosition;

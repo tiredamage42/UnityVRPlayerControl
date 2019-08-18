@@ -32,7 +32,7 @@ namespace GameUI {
 
         void OnPauseRoutineEnd(bool isPaused, float routineTime) {
             if (isPaused) {
-                UIManager.ShowUI (mainMenuBasePage, true, true);
+                UIManager.ShowUI (mainMenuBasePage, true);//, true);
             }
             else {
                 UIManager.HideUI (mainMenuBasePage);

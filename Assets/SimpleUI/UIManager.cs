@@ -29,6 +29,9 @@ namespace SimpleUI {
         public static void SetSelection(GameObject selection) {
             eventSystem.SetSelectedGameObject(selection);
         }
+        public static GameObject CurrentSelected () {
+            return eventSystem.currentSelectedGameObject;
+        }
         static StandaloneInputModule _inputModule;
         public static StandaloneInputModule standaloneInputModule {
             get {
@@ -119,6 +122,10 @@ namespace SimpleUI {
         public UIMessageCenter messageCenterPrefab;
         public UIMessageElement messagePrefab;
 
+        [Header("Popups")]
+        public UISliderPopup sliderPopupPrefab;
+        public UISelectionPopup selectionPopupPrefab;
+
 
         static System.Func<Vector2> getSelectionAxis;
         public static void OverrideSelectionAxis (System.Func<Vector2> getAxis) {
@@ -137,12 +144,23 @@ namespace SimpleUI {
         }
 
 
-        HashSet<GameObject> shownUIsWithInput = new HashSet<GameObject>();
+        static void SetAllActiveUIsSelectableActive(bool active) {
+            foreach (var e in shownUIsWithInput) {
+                e.SetSelectableActive(active);
+            }
+        }
 
-        static IEnumerator _ShowUI (GameObject uiObject, UIElementHolder uiObjectC, bool needsInput, bool tryRepeat) {
-            if (needsInput) {
+
+        static HashSet<BaseUIElement> shownUIsWithInput = new HashSet<BaseUIElement>();
+
+        static IEnumerator _ShowUI (GameObject uiObject, BaseUIElement uiObjectC, 
+            // bool needsInput, 
+            bool tryRepeat) {
+            
+            if (uiObjectC.RequiresInput()) {
+            // if (needsInput) {
                 standaloneInputModule.gameObject.SetActive(true);
-                instance.shownUIsWithInput.Add(uiObject);
+                shownUIsWithInput.Add(uiObjectC);
             }
             
             uiObject.SetActive(true);
@@ -156,16 +174,20 @@ namespace SimpleUI {
                 yield return null; uiObject.SetActive(false);
                 yield return null; uiObject.SetActive(true);
             }
-                            
-            if (onAnyUISelect != null) {
-                foreach (var d in onAnyUISelect.GetInvocationList()) {
-                    uiObjectC.SubscribeToSelectEvent((System.Action<GameObject[], object[]>)d);
-                }
-            }
 
-            if (onAnyUISubmit != null) {
-                foreach (var d in onAnyUISubmit.GetInvocationList()) {
-                    uiObjectC.SubscribeToSubmitEvent((System.Action<GameObject[], object[], Vector2Int>)d);
+            if (uiObjectC.RequiresInput()) {
+                uiObjectC.SetSelectableActive(true);
+
+                if (onAnyUISelect != null) {
+                    foreach (var d in onAnyUISelect.GetInvocationList()) {
+                        uiObjectC.SubscribeToSelectEvent((System.Action<GameObject[], object[]>)d);
+                    }
+                }
+
+                if (onAnyUISubmit != null) {
+                    foreach (var d in onAnyUISubmit.GetInvocationList()) {
+                        uiObjectC.SubscribeToSubmitEvent((System.Action<GameObject[], object[], Vector2Int>)d);
+                    }
                 }
             }
         }
@@ -173,12 +195,16 @@ namespace SimpleUI {
         public static event System.Action<GameObject[], object[]> onAnyUISelect;
         public static event System.Action<GameObject[], object[], Vector2Int> onAnyUISubmit;
         
-        static void ShowUI (GameObject uiObject, UIElementHolder uiObjectC, bool needsInput, bool tryRepeat) {
+        static void ShowUI (GameObject uiObject, BaseUIElement uiObjectC, 
+            // bool needsInput, 
+            bool tryRepeat) {
             //set active so we can call coroutines on it    
-            instance.StartCoroutine(_ShowUI(uiObject, uiObjectC, needsInput, tryRepeat));
+            instance.StartCoroutine(_ShowUI(uiObject, uiObjectC, 
+            // needsInput, 
+            tryRepeat));
         }
             
-        static GameObject GetUIObj (UIElementHolder uiObject) {
+        static GameObject GetUIObj (BaseUIElement uiObject) {
             return uiObject.baseObject != null ? uiObject.baseObject : uiObject.gameObject;
         }
 
@@ -201,27 +227,150 @@ namespace SimpleUI {
             return uiInputActive;//instance.shownUIsWithInput.Count != 0;
         }
         
-        public static void ShowUI(UIElementHolder uiObject, bool needsInput, bool tryRepeat) {
-            ShowUI(GetUIObj(uiObject), uiObject, needsInput, tryRepeat);
+        public static void ShowUI(BaseUIElement uiObject, 
+            // bool needsInput, 
+            bool tryRepeat) {
+            ShowUI(GetUIObj(uiObject), uiObject, 
+            // needsInput, 
+            tryRepeat);
         }
 
-        public static void HideUI (UIElementHolder uiObject) {
+        public static void HideUI (BaseUIElement uiObject) {
+            if (shownUIsWithInput.Contains(uiObject)) {
+                shownUIsWithInput.Remove(uiObject);
+            }
             HideUI(GetUIObj(uiObject));
             uiObject.RemoveAllEvents();
         }
         static void HideUI (GameObject baseUIObject) {
-            if (instance.shownUIsWithInput.Contains(baseUIObject)) {
-                instance.shownUIsWithInput.Remove(baseUIObject);
-            }
             baseUIObject.SetActive(false);
         }
 
         // remove input module control in late update, so we dont use inputs
         // the same frame they're closing
         void LateUpdate () {
-            if (uiInputActive && instance.shownUIsWithInput.Count == 0) {
+            if (uiInputActive && shownUIsWithInput.Count == 0) {
                 standaloneInputModule.gameObject.SetActive(false);
             }
         }   
+
+        public static bool popupOpen;
+
+
+
+        static System.Action<bool, int> selectionReturnCallback;
+        static UISelectionPopup selectionPopupElement;
+        public static void SetUISelectionPopupInstance(UISelectionPopup selectionPopupElement) {
+            UIManager.selectionPopupElement = selectionPopupElement;
+        }
+
+        static void MakeButton (SelectableElement element, string text, object[] customData) {
+            element.elementText = text;
+            element.uiText.SetText(text, -1);
+            element.customData = customData;
+        }
+
+        public static void ShowSelectionPopup(string msg, string[] options, System.Action<bool, int> returnValue) {
+
+            if (selectionPopupElement == null) {
+                Debug.LogError("ShowSelectionPopup selectionPopupElement == null!\nSet up a UISelectionPopup instance with:\nUIManager.SetUISelectionPopupInstance(UISelectionPopup selectionPopupElement)");
+                returnValue(false, 0);
+                return;
+            }
+            popupOpen = true;
+            SetAllActiveUIsSelectableActive(false);
+            
+            selectionReturnCallback = returnValue;
+
+            selectionPopupElement.SetMessage(msg);
+            
+            ShowUI(selectionPopupElement, 
+                // true, 
+                false);
+            selectionPopupElement.onBaseCancel = OnCancelSelectionUI;
+            selectionPopupElement.SubscribeToSubmitEvent(OnSelectionSubmit);
+            
+            SelectableElement[] allElements = selectionPopupElement.GetAllSelectableElements(options.Length);
+            UIManager.SetSelection(allElements[0].gameObject);
+
+            for (int i = 0 ; i < options.Length; i++) {
+                MakeButton( allElements[i], options[i], new object[] { i } );   
+            }
+        }
+
+        static void OnSelectionSubmit (GameObject[] data, object[] customData, Vector2Int input) {
+            HideUI(selectionPopupElement);
+            SetAllActiveUIsSelectableActive(false);
+            popupOpen = false;
+            
+            
+            if (selectionReturnCallback != null) {
+                selectionReturnCallback(true, (int)customData[0]);
+                selectionReturnCallback = null;
+            }
+        }
+        static void OnCancelSelectionUI () {
+            HideUI(selectionPopupElement);
+            SetAllActiveUIsSelectableActive(false);
+            popupOpen = false;
+            
+            if (selectionReturnCallback != null) {
+                selectionReturnCallback (false, 0);
+                selectionReturnCallback = null;
+            }
+            
+        }
+
+
+        static System.Action<bool, int> sliderReturnCallback;
+        static UISliderPopup sliderElement;
+        public static void SetUISliderPopupInstance(UISliderPopup sliderElement) {
+            UIManager.sliderElement = sliderElement;
+        }
+        public static void ShowIntSliderPopup(string title, int minValue, int maxValue, System.Action<bool, int> returnValue) {
+            if (sliderElement == null) {
+                Debug.LogError("ShowIntSliderPopup sliderElement == null!\nSet up a UISliderPopup instance with:\nUIManager.SetUISliderPopupInstance(UISliderPopup sliderElement)");
+                returnValue(false, 0);
+                return;
+            }
+
+            popupOpen = true;
+            SetAllActiveUIsSelectableActive(false);
+            
+            sliderReturnCallback = returnValue;
+
+            sliderElement.SetTitle(title);
+            sliderElement.slider.wholeNumbers = true;
+            sliderElement.slider.minValue = minValue;
+            sliderElement.slider.maxValue = maxValue;
+
+            ShowUI(sliderElement, 
+                // true, 
+                false);
+            sliderElement.onBaseCancel = OnCancelSliderUI;
+            sliderElement.SubscribeToSubmitEvent(OnSliderSubmit);
+        }
+        static void OnSliderSubmit (GameObject[] data, object[] customData, Vector2Int input) {
+            HideUI(sliderElement);
+            SetAllActiveUIsSelectableActive(false);
+            popupOpen = false;
+            
+            if (sliderReturnCallback != null) {
+                sliderReturnCallback(true, (int)sliderElement.sliderValue);
+                sliderReturnCallback = null;
+            }
+            
+        }
+        static void OnCancelSliderUI () {
+            HideUI(sliderElement);
+            SetAllActiveUIsSelectableActive(false);
+            popupOpen = false;
+            
+            if (sliderReturnCallback != null) {
+                sliderReturnCallback (false, 0);
+                sliderReturnCallback = null;
+            }
+            
+        }
     }
 }

@@ -1,97 +1,66 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-using InventorySystem;
-using SimpleUI;
-namespace GameUI {
+using Game.InventorySystem;
+namespace Game.GameUI {
 
     public class FullTradeUIHandler : InventoryManagementUIHandler
     {
-        protected override bool UsesRadial() { return false; }
-        
-        protected override int MaxUIPages () { return 2; }
-
-
-        // public override string[] GetInputNames () { return new string[] { "Trade", "Trade All", "Use" }; }
         
         // TODO: limit equip ID for consume action to 0 when equipping on ai for instance
         protected override void OnUISelect (GameObject[] data, object[] customData) { }
         
-        // int[] lastSlotsCount = new int[2];
-        protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter) {
-            List<Inventory.InventorySlot> slots = shownInventory.GetFilteredInventory(categoryFilter);
-            // lastSlotsCount[uiIndex] = slots.Count;
-            return slots;
+        protected override List<InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter) {
+            //maybe show all inventory for ui index == 1 (other guy)
+            return shownInventory.GetFilteredInventory(categoryFilter);
         }
-        // protected override int GetUnpaginatedShowCount(object[] updateButtonsParameters) { return lastSlotsCount[(int)updateButtonsParameters[0]]; } 
-
-        protected override void OnInventoryManagementInitiate(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
+        
+        protected override void OnOpenInventoryUI(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
             
-            (uiObject.subHolders[0] as UIPage).SetTitle(inventory.GetDisplayName());
-            (uiObject.subHolders[1] as UIPage).SetTitle(otherInventory.GetDisplayName());
-
-            // CloseAllUIs();            
-            // SetUpButtons ( inventory, otherInventory, 0, true, uiObject.subHolders[0], categoryFilter);
-            // SetUpButtons ( otherInventory, inventory, 1, false, uiObject.subHolders[1], categoryFilter);
-
-
-            BuildButtons(uiObject.subHolders[0], true, new object[] { 0, inventory, otherInventory, categoryFilter });
-            BuildButtons(uiObject.subHolders[1], false, new object[] { 1, otherInventory, inventory, categoryFilter });
+            BuildButtons(inventory.GetDisplayName(), true, 0, new object[] { inventory, otherInventory, categoryFilter });
+            BuildButtons(otherInventory.GetDisplayName(), false, 1, new object[] { otherInventory, inventory, categoryFilter });
         }
 
         const int singleTradeAction = 0, tradeAllAction = 1, consumeAction = 2;
 
-        protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input) {
+        protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
     
         	if (customData != null) {
-                Inventory.InventorySlot item = customData[0] as Inventory.InventorySlot;
+                InventorySlot item = customData[0] as InventorySlot;
 
-                object[] updateButtonsParameters = customData[1] as object[];
+                object[] updateParameters = customData[2] as object[];
                     
                 bool updateButtons = false;
 
-                Inventory highlightedInventory = updateButtonsParameters[1] as Inventory;
-                Inventory otherInventory = updateButtonsParameters[2] as Inventory;
+                Inventory highlightedInventory = updateParameters[0] as Inventory;
+                Inventory otherInventory = updateParameters[1] as Inventory;
                 
                 // single trade
-                if (input.x == singleTradeAction) {
+                if (input.x == singleTradeAction+actionOffset) {
                     if (item != null) {
                         highlightedInventory.TransferItemAlreadyInInventoryTo(item, 1, otherInventory, sendMessage: false);
                         updateButtons = true;
                     }
                 }
                 // take all
-                else if (input.x == tradeAllAction) {   
-
+                else if (input.x == tradeAllAction+actionOffset) {   
                     //TODO: check if any actually transfeerrrd
                     highlightedInventory.TransferInventoryContentsTo(otherInventory, sendMessage: false);
                     updateButtons = true;
                 }
                 //consume on selected inventory
-                else if (input.x == consumeAction) {
+                else if (input.x == consumeAction+actionOffset) {
                     if (item != null) {
-                    
                         int count = 1;
-                
                         if (item.item.OnConsume(highlightedInventory, count, input.y)){
-                
                             updateButtons = true;
                         }
                     }
                 }
                 
                 if (updateButtons){
-                    UpdateUIButtons(
-                        updateButtonsParameters
-                    //     highlightedInventory, otherInventory, (int)customData[3], (int)customData[4], null);
-                    );
-                    UpdateUIButtons(
-                        new object[] { 1 - (int)updateButtonsParameters[0], updateButtonsParameters[2], updateButtonsParameters[1], updateButtonsParameters[3] }
-                    );
-
-
-                    // UpdateUIButtons(
-                    //     otherInventory, highlightedInventory, (int)customData[4], (int)customData[3], null);
+                    UpdateUIButtons( (int)customData[1], updateParameters );
+                    UpdateUIButtons( 1-(int)customData[1], new object[] { updateParameters[1], updateParameters[0], updateParameters[2] } );
                 }
             }
 		}    

@@ -49,6 +49,14 @@ namespace SimpleUI {
 
     public class UIMessageCenter : BaseUIElement
     {
+        public override void SetSelectableActive(bool active) { }
+        
+        public override bool RequiresInput() { return false; }
+
+        protected override bool CurrentSelectedIsOurs(GameObject currentSelected) {
+            return true;
+        }
+
 
         Queue<string> messageQ = new Queue<string>();
         Queue<UIColorScheme> schemesQ = new Queue<UIColorScheme>();
@@ -144,8 +152,9 @@ namespace SimpleUI {
             }
         }
 
-        void Update()
+        protected override void Update()
         {
+            base.Update();
             UpdateShownElements(Time.deltaTime);
         }
     }

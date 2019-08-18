@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
-using ActorSystem;
 using System.Collections.Generic;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace InventorySystem {
+namespace Game.InventorySystem {
 
     [System.Serializable] public class LevelledListItemArray : NeatArrayWrapper<LevelledList.ListItem> { }
     
@@ -16,23 +15,19 @@ namespace InventorySystem {
             public ItemBehavior item;
             public Vector2Int minMax = new Vector2Int(2, 5);
             [Range(0,1)] public float chanceForNone = .5f;
-            [NeatArray] public GameValueConditionArray conditions;
+            [NeatArray] public ActorValueConditionArray conditions;
         }
 
         [Header("Only One List Item Spawned")]
         public bool singleSpawn;
         [NeatArray] public LevelledListItemArray listItems;
 
-
         [Header("ListItems spawned 100% if no original ListItems spawned")]
         [NeatArray] public LevelledListItemArray fallBacks;
 
-        // public LevelledList[] subLists;
+        public List<InventorySlot> SpawnItems (Actor selfActor, Actor suppliedActor) {
 
-
-        public List<Inventory.InventorySlot> SpawnItems (Dictionary<string, GameValue> selfValues, Dictionary<string, GameValue> suppliedValues) {
-
-            List<Inventory.InventorySlot> spawnList = new List<Inventory.InventorySlot>();
+            List<InventorySlot> spawnList = new List<InventorySlot>();
 
             bool didSpawn = false;
             //CHECK FOR INJECTED RUNTIME LISTS ASSOCIATED WITH SUPPLIED LEVELLED LIST HERE
@@ -46,8 +41,8 @@ namespace InventorySystem {
                     int count = Random.Range(listItem.minMax.x, listItem.minMax.y+1);
                     if (count > 0) {
 
-                        if (GameValueCondition.ConditionsMet (listItem.conditions, selfValues, suppliedValues)) {
-                            spawnList.Add(new Inventory.InventorySlot(listItem.item, count));
+                        if (ActorValueCondition.ConditionsMet (listItem.conditions, selfActor, suppliedActor)) {
+                            spawnList.Add(new InventorySlot(listItem.item, count));
                             didSpawn = true;
                             if (singleSpawn) {
                                 break;
@@ -63,12 +58,11 @@ namespace InventorySystem {
                 for (int i =0 ; i < fallBacks.Length; i++) {
                     LevelledList.ListItem listItem = fallBacks[i];
 
-                    if (GameValueCondition.ConditionsMet (listItem.conditions, selfValues, suppliedValues)) {
-                        spawnList.Add(new Inventory.InventorySlot(listItem.item, Random.Range(Mathf.Max(listItem.minMax.x, 1), listItem.minMax.y + 1)));
+                    if (ActorValueCondition.ConditionsMet (listItem.conditions, selfActor, suppliedActor)) {
+                        spawnList.Add(new InventorySlot(listItem.item, Random.Range(Mathf.Max(listItem.minMax.x, 1), listItem.minMax.y + 1)));
                     }
                 }
             }
-
 
             return spawnList;
         }
@@ -78,15 +72,6 @@ namespace InventorySystem {
 
 
 #if UNITY_EDITOR
-    [CustomEditor(typeof(LevelledList))]
-    [CanEditMultipleObjects]
-    public class LevelledListEditor : Editor
-    {   
-        void OnEnable () {
-            InventorySystemEditorUtils.UpdateItemSelector();
-        }
-    }
-    
     [CustomPropertyDrawer(typeof(LevelledList.ListItem))] public class ListItemDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -100,7 +85,7 @@ namespace InventorySystem {
             EditorGUI.indentLevel = 0;
             float x = EditorTools.DrawIndent (oldIndent, position.x);
 
-            InventorySystemEditorUtils.itemSelector.Draw(new Rect(x, position.y, 175, singleLineHeight), property.FindPropertyRelative("item"), GUIContent.none);
+            InventorySystemEditor.itemSelector.Draw(new Rect(x, position.y, 175, singleLineHeight), property.FindPropertyRelative("item"), GUIContent.none);
             x += 175;
             
             EditorGUI.LabelField(new Rect(x, position.y, 60, singleLineHeight), new GUIContent("Min Max:"));

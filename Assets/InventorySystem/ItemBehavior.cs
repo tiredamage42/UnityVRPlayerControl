@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using ActorSystem;
+﻿using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -14,15 +11,10 @@ SEPERATE STASHED ITEM TO HAVE
     ON UNSTASH
 
 CALLBACKS
-
-CAN SEPERATE BUFFS INTO OTHER COMPONENTS
-
-CONSUME ON STASH OPTION FOR ITEM MAYBE
-
 */
 
 
-namespace InventorySystem {
+namespace Game.InventorySystem {
     [CreateAssetMenu(menuName="Inventory System/Item Behavior")]
     public class ItemBehavior : ScriptableObject
     {
@@ -31,15 +23,6 @@ namespace InventorySystem {
         [TextArea]
         public string itemDescription = "No Description Available...";
         
-        // [Header("Set to false for utility items")]
-        // public bool keepOnStash = true;
-        
-        // public bool allowMultipleStashed = true;
-
-
-        // [Header("Cant be dropped from inventory accidentally")]
-        // public bool permanentStash;
-
         public int category;
 
         // stash use logic needs to happen on scriptable objects
@@ -55,7 +38,7 @@ namespace InventorySystem {
         
         [Header("Scene Behavior")]
         public bool canQuickEquip = true;
-        public Item[] scenePrefabVariations;
+        public SceneItem[] scenePrefabVariations;
 
 
         // -1 if set by where equipped from
@@ -66,12 +49,9 @@ namespace InventorySystem {
         [Header("Can one scene instance hold multiple of items ?")]
         public bool stackable;
 
-        public InventoryEqupping.EquipType equipType = InventoryEqupping.EquipType.Normal;
-        public bool hoverLockOnEquip = true;
-
+        public InventoryEquipper.EquipType equipType = InventoryEquipper.EquipType.Normal;
         public TransformBehavior equipTransform;
 
-        
         /*
             TODO: add multiplier values
         */
@@ -85,20 +65,20 @@ namespace InventorySystem {
         }
     }
 
-    [System.Serializable] public class Item_Composition {
+    [System.Serializable] public class ItemComposition {
         public ItemBehavior item;
         public int amount = 1;
-        [NeatArray] public GameValueConditionArray conditions;
+        [NeatArray] public ActorValueConditionArray conditions;
 
-        public Item_Composition () {
+        public ItemComposition () {
             amount = 1;
         }
     }
         
-    [System.Serializable] public class ItemCompositionArray : NeatArrayWrapper<Item_Composition> { }
+    [System.Serializable] public class ItemCompositionArray : NeatArrayWrapper<ItemComposition> { }
         
     #if UNITY_EDITOR
-    [CustomPropertyDrawer(typeof(Item_Composition))] public class ItemCompositionDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(ItemComposition))] public class ItemCompositionDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -111,7 +91,7 @@ namespace InventorySystem {
             EditorGUI.indentLevel = 0;
             float x = EditorTools.DrawIndent (oldIndent, position.x);
                 
-            InventorySystemEditorUtils.itemSelector.Draw(new Rect(x, position.y, 175, singleLine), property.FindPropertyRelative("item"), GUIContent.none);
+            InventorySystemEditor.itemSelector.Draw(new Rect(x, position.y, 175, singleLine), property.FindPropertyRelative("item"), GUIContent.none);
             x += 175-offset;
             
             EditorGUI.LabelField(new Rect(x, position.y, 50, singleLine), "Amount:");

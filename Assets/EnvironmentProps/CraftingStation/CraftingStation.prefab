@@ -1059,7 +1059,6 @@ GameObject:
   - component: {fileID: 386299136}
   - component: {fileID: 386299135}
   - component: {fileID: 386299134}
-  - component: {fileID: 386299133}
   - component: {fileID: 5231040184279279999}
   m_Layer: 0
   m_Name: CraftingStation
@@ -1111,7 +1110,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionNames:
-  - Use
+  - Craft Items
+  - Scrap Objects
+  - Trade
   onlyProximityHover: 0
   available: 1
   useType: 0
@@ -1129,7 +1130,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flashInteractable: 1
   highlightOnHover: 1
-  flashRenderers: []
+  flashRenderers:
+  - {fileID: 1778704117767801671}
 --- !u!114 &386299134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1142,28 +1144,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6bb7aea358524c77ada7652876582dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  contextName: Crafting
   useAction: 0
-  useActionName: Craft Items
-  categoryFilter: ffffffff
-  linkedInventory: {fileID: 0}
---- !u!114 &386299133
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1778704118955773955}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6bb7aea358524c77ada7652876582dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  contextName: Scrapping
-  useAction: 1
-  useActionName: Scrap Objects
-  categoryFilter: 
-  linkedInventory: {fileID: 0}
+  contextName: Crafting
+  suppliedInventory: {fileID: 0}
+  categoryFilter:
+    list: ffffffff
 --- !u!114 &5231040184279279999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1176,11 +1161,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6bb7aea358524c77ada7652876582dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useAction: 1
   contextName: FullTrade
-  useAction: 2
-  useActionName: Trade
-  categoryFilter: 
-  linkedInventory: {fileID: 0}
+  suppliedInventory: {fileID: 0}
+  categoryFilter:
+    list: 
 --- !u!1 &2598541245158453023
 GameObject:
   m_ObjectHideFlags: 0

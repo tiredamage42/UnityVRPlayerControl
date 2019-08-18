@@ -1,12 +1,11 @@
-﻿using System.Collections;
+﻿// using System.Collections;
 using System.Collections.Generic;
 
 
-using System.Reflection;
+// using System.Reflection;
 using UnityEngine;
-using ActorSystem;
-using GameUI;
-namespace QuestSystem {
+// using Game.GameUI;
+namespace Game.QuestSystem {
     /*
         make script quest as monobehaviour on a prefab
 
@@ -83,28 +82,54 @@ namespace QuestSystem {
 
         [HideInInspector] public List<Quest> activeQuests = new List<Quest>(), completedQuests = new List<Quest>();
         [HideInInspector] public Quest selectedQuest;
+
+        public static Quest currentSelectedQuest {
+            get {
+                return instance == null ? null : instance.selectedQuest;
+            }
+            set {
+                if (instance != null) instance.selectedQuest = value;
+            }
+        }
         public float selectedQuestHintsFrequency = 5;
 
-        bool QuestActive (int id, out int index) {
-            for (int i = 0; i< activeQuests.Count; i++) {
-                if (activeQuests[i].questID == id) {
+        static bool QuestActive (int id, out int index) {
+            index = -1;
+            if (instance == null) {
+                Debug.LogError(" Cant check quest active, quest handler instance is null ");
+                return false;
+            }
+            for (int i = 0; i< instance.activeQuests.Count; i++) {
+                if (instance.activeQuests[i].questID == id) {
                     index = i;
                     return true;
                 }
             }
-            index = -1;
             return false;
         }
-        bool QuestCompleted (int id) {
-            for (int i = 0; i< completedQuests.Count; i++) {
-                if (completedQuests[i].questID == id) {
+        static bool QuestCompleted (int id) {
+            if (instance == null) {
+                Debug.LogError(" Cant check quest completion, quest handler instance is null ");
+                return false;
+            }
+            
+            for (int i = 0; i< instance.completedQuests.Count; i++) {
+                if (instance.completedQuests[i].questID == id) {
                     return true;
                 }
             }
             return false;
         }
 
-        public void AddQuestToActiveQuests (Quest questPrefab) {
+        public static void AddQuestToActiveQuests (Quest questPrefab) {
+            if (questPrefab == null) {
+                Debug.LogError(" Cant add quest to active quests... it is null ");
+                return;
+            }
+            if (instance == null) {
+                Debug.LogError(" Cant add quest " + questPrefab.displayName + " to active quests... quest handler instance is null ");
+                return;
+            }
             int id = questPrefab.GetInstanceID();
 
             if (QuestCompleted(id)) {
@@ -118,63 +143,66 @@ namespace QuestSystem {
             }
 
 
-            Quest newQuest = CopyComponent<Quest>(questPrefab, questHolderObj);
-            // Quest newQuest = Instantiate(questPrefab);
-            // newQuest.transform.SetParent(transform);
+            // Quest newQuest = CopyComponent<Quest>(questPrefab, questHolderObj);
 
-            activeQuests.Add(newQuest);
+            Quest newQuest = questPrefab;
+            if (questPrefab.instantiateCopy) {
+                newQuest = Instantiate(questPrefab);
+                newQuest.transform.SetParent(instance.transform);
+            }
+            instance.activeQuests.Add(newQuest);
             newQuest.OnQuestInitialize();
         }
 
 
         // TODO: test out if this actually copies all nested class values...
-        static T CopyComponent<T>(T original, GameObject destination) where T : Component
-        {
+        // static T CopyComponent<T>(T original, GameObject destination) where T : Component
+        // {
 
-            // Debug.Log("copying " + original.name);
-            System.Type type = original.GetType();
+        //     // Debug.Log("copying " + original.name);
+        //     System.Type type = original.GetType();
             
-            var copy = destination.GetComponent(type) as T;
-            if (!copy) copy = destination.AddComponent(type) as T;
+        //     var copy = destination.GetComponent(type) as T;
+        //     if (!copy) copy = destination.AddComponent(type) as T;
 
-            BindingFlags flags = 
-                BindingFlags.Public 
-                | BindingFlags.NonPublic
-                | BindingFlags.Instance
-                | BindingFlags.Default
-                // | BindingFlags.DeclaredOnly
-                // | BindingFlags.FlattenHierarchy //to get fields from inherited types.
-            ;
+        //     BindingFlags flags = 
+        //         BindingFlags.Public 
+        //         | BindingFlags.NonPublic
+        //         | BindingFlags.Instance
+        //         | BindingFlags.Default
+        //         // | BindingFlags.DeclaredOnly
+        //         // | BindingFlags.FlattenHierarchy //to get fields from inherited types.
+        //     ;
          
-            var fields = type.GetFields(flags);
-            foreach (FieldInfo field in fields)
-            {
-                if (field.IsStatic) continue;
-                field.SetValue(copy, field.GetValue(original));
-                // Debug.Log("copying field " + field.Name);
-            }
+        //     var fields = type.GetFields(flags);
+        //     foreach (FieldInfo field in fields)
+        //     {
+        //         if (field.IsStatic) continue;
+        //         field.SetValue(copy, field.GetValue(original));
+        //         // Debug.Log("copying field " + field.Name);
+        //     }
 
-            var props = type.GetProperties(flags);
-            foreach (var prop in props)
-            {
-                bool obsolete = false;
-                IEnumerable attrData = prop.CustomAttributes;
-                foreach (CustomAttributeData data in attrData)
-                {
-                    if (data.AttributeType == typeof(System.ObsoleteAttribute))
-                    {
-                        obsolete = true;
-                        break;
-                    }
-                }
-                if (obsolete) continue;
-                if (!prop.CanWrite || prop.Name == "name" || prop.PropertyType.Equals(typeof(Material)) || prop.PropertyType.Equals(typeof(Material[]))) continue;
-                prop.SetValue(copy, prop.GetValue(original, null), null);
-                // Debug.Log("copying property " + prop.Name);
+        //     var props = type.GetProperties(flags);
+        //     foreach (var prop in props)
+        //     {
+        //         bool obsolete = false;
+        //         IEnumerable attrData = prop.CustomAttributes;
+        //         foreach (CustomAttributeData data in attrData)
+        //         {
+        //             if (data.AttributeType == typeof(System.ObsoleteAttribute))
+        //             {
+        //                 obsolete = true;
+        //                 break;
+        //             }
+        //         }
+        //         if (obsolete) continue;
+        //         if (!prop.CanWrite || prop.Name == "name" || prop.PropertyType.Equals(typeof(Material)) || prop.PropertyType.Equals(typeof(Material[]))) continue;
+        //         prop.SetValue(copy, prop.GetValue(original, null), null);
+        //         // Debug.Log("copying property " + prop.Name);
                     
-            }
-            return copy as T;
-        }
+        //     }
+        //     return copy as T;
+        // }
 
         // public static T GetCopyOf<T>(T original, GameObject destination) where T : MonoBehaviour
         // {
@@ -230,6 +258,8 @@ namespace QuestSystem {
 
     public abstract class Quest : MonoBehaviour
     {
+        [Header("Should be true if using prefab")]
+        public bool instantiateCopy = true;
         [HideInInspector] public int questID;
         public bool isPublic;
         public string displayName;

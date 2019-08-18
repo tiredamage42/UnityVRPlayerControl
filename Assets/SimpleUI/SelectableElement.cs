@@ -7,7 +7,7 @@ using UnityEngine.Events;
 namespace SimpleUI {
 
     [System.Serializable] public class UIButtonClickWData : UnityEvent<GameObject[]> {}
-    [ExecuteInEditMode] public class SelectableElement : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmitHandler
+    [ExecuteInEditMode] public class SelectableElement : MonoBehaviour, ISelectHandler, IDeselectHandler//, ISubmitHandler
     {
         public string elementText;
         public bool selectInvertsTextColor;
@@ -38,7 +38,7 @@ namespace SimpleUI {
             }
         }   
         
-        bool hasRuntimeSubmitCallback { get { return parentHolder.runtimeSubmitHandler != null; } }
+        // bool hasRuntimeSubmitCallback { get { return parentHolder.runtimeSubmitHandler != null; } }
         public GameObject[] data;
         public object[] customData;
         public UIButtonClickWData onClick;
@@ -70,37 +70,37 @@ namespace SimpleUI {
             selected = false;
             UpdateElement();
         }
-        public void OnSubmit(BaseEventData eventData)
-        {
-            if (hasRuntimeSubmitCallback) return;
-            DoSubmit(Vector2Int.zero);
-        }
+        // public void OnSubmit(BaseEventData eventData)
+        // {
+        //     if (hasRuntimeSubmitCallback) return;
+        //     DoSubmit(Vector2Int.zero);
+        // }
 
-        void Update () {
-            if (!Application.isPlaying || !selected || !hasRuntimeSubmitCallback) return;
+        // void Update () {
+        //     if (!Application.isPlaying || !selected || !hasRuntimeSubmitCallback) return;
             
-            Vector2Int alternativeSubmit = parentHolder.runtimeSubmitHandler();
-            if (alternativeSubmit.x >= 0) {
-                DoSubmit(alternativeSubmit);
-            }
-        }
+        //     Vector2Int alternativeSubmit = parentHolder.runtimeSubmitHandler();
+        //     if (alternativeSubmit.x >= 0) {
+        //         DoSubmit(alternativeSubmit);
+        //     }
+        // }
 
 
-        void DoSubmit (Vector2Int submitAction) {
+        public void DoSubmit (Vector2Int submitAction) {
             // Debug.Log("Submitted on " + name);
             
             if (onClick != null) {
                 onClick.Invoke(data);
             }
 
-            parentHolder.BroadcastSubmitEvent(data, customData, submitAction);
+            // parentHolder.BroadcastSubmitEvent(data, customData, submitAction);
 
             // trigger other ui holder active (page switching...)
             if (destination != null) {
                 destination.gameObject.SetActive(true);
 
                 if (!destination.isBase) {
-                    destination.parentHolder = parentHolder;
+                    destination.parentElement = parentHolder;
                 }
                 parentHolder.gameObject.SetActive(false);
             }

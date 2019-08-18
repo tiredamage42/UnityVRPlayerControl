@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using InventorySystem;
+using Game.InventorySystem;
 
 namespace Valve.VR.InteractionSystem.Sample
 {
@@ -22,7 +22,7 @@ namespace Valve.VR.InteractionSystem.Sample
         
         private void FixedUpdate()
         {
-            bool used = GetComponent<Item>().parentInventory != null;
+            bool used = GetComponent<SceneItem>().parentInventory != null;
             // bool used = false;
             // if (interactable != null)
             //     used = interactable.attachedToHand;

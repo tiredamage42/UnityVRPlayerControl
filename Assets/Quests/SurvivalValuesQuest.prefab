@@ -52,9 +52,11 @@ MonoBehaviour:
     questInstanceID: 0
     valueTemplate:
       name: Hunger
+      description: 
       baseValue: 0
       baseMinMax: {x: 0, y: 3}
       initializationRange: {x: 0, y: 0}
+      showInStats: 1
       modifiers: []
     degredations:
       list:
@@ -107,9 +109,11 @@ MonoBehaviour:
     questInstanceID: 0
     valueTemplate:
       name: Thirst
+      description: 
       baseValue: 0
       baseMinMax: {x: 0, y: 3}
       initializationRange: {x: 0, y: 0}
+      showInStats: 1
       modifiers: []
     degredations:
       list:

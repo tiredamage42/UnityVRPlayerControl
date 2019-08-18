@@ -8,7 +8,8 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-using InventorySystem;
+using Game.InventorySystem;
+
 using InteractionSystem;
 using VRPlayer;
 
@@ -242,9 +243,9 @@ namespace Valve.VR.InteractionSystem
 
 		private void FindArrowHand(Inventory inventory)
 		{
-			for (int i =0 ; i< inventory.GetComponent<InventoryEqupping>().equippedSlots.Length; i++) {
-				if (inventory.GetComponent<InventoryEqupping>().equippedSlots[i] != null) {
-					arrowHand = inventory.GetComponent<InventoryEqupping>().equippedSlots[i].sceneItem.GetComponent<ArrowHand>();
+			for (int i =0 ; i< inventory.GetComponent<InventoryEquipper>().equippedSlots.Length; i++) {
+				if (inventory.GetComponent<InventoryEquipper>().equippedSlots[i] != null) {
+					arrowHand = inventory.GetComponent<InventoryEquipper>().equippedSlots[i].sceneItem.GetComponent<ArrowHand>();
 					if (arrowHand != null) {
 						return;
 					}
@@ -288,7 +289,7 @@ namespace Valve.VR.InteractionSystem
 
 
 
-			HandleNockPositioning (arrowHand.GetComponent<Item>().myEquipPoint);// inventory.otherInventory);
+			HandleNockPositioning (arrowHand.GetComponent<SceneItem>().myEquipPoint);// inventory.otherInventory);
 
 
 			if ( nocked )
@@ -418,7 +419,7 @@ namespace Valve.VR.InteractionSystem
 		// private Hand hand;
 		Inventory parentInventory {
 			get {
-				return GetComponent<Item>().parentInventory;
+				return GetComponent<SceneItem>().parentInventory;
 			}
 		}
 		// Interactor parentInventoryInteractor {
@@ -626,17 +627,17 @@ namespace Valve.VR.InteractionSystem
 			if ( parentInventory != null)// && parentInventory.otherInventory.equippedItem != null)
 			
 			{
-				for (int i =0 ; i < parentInventory.GetComponent<InventoryEqupping>().equippedSlots.Length; i++) {
-					if (parentInventory.GetComponent<InventoryEqupping>().equippedSlots[i] != null) {
+				for (int i =0 ; i < parentInventory.GetComponent<InventoryEquipper>().equippedSlots.Length; i++) {
+					if (parentInventory.GetComponent<InventoryEquipper>().equippedSlots[i] != null) {
 
 						// GameObject otherHandCurrentAttached = parentInventory.otherInventory.equippedItem.item.gameObject;
-						GameObject otherHandCurrentAttached = parentInventory.GetComponent<InventoryEqupping>().equippedSlots[i].sceneItem.gameObject;
+						GameObject otherHandCurrentAttached = parentInventory.GetComponent<InventoryEquipper>().equippedSlots[i].sceneItem.gameObject;
 						
 						if ( otherHandCurrentAttached.GetComponent<ItemPackageReference>() != null )
 						{
 							if ( otherHandCurrentAttached.GetComponent<ItemPackageReference>().itemPackage == arrowHandItemPackage )
 							{
-								parentInventory.GetComponent<InventoryEqupping>().UnequipItem(i, false);
+								parentInventory.GetComponent<InventoryEquipper>().UnequipItem(i, false);
 								// parentInventory.otherInventory.UnequipItem( otherHandCurrentAttached.GetComponent<Item>() );
 							}
 						}

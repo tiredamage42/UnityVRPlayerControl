@@ -1,61 +1,49 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-using InventorySystem;
-using SimpleUI;
-namespace GameUI {
+using Game.InventorySystem;
+
+namespace Game.GameUI {
     public class QuickTradeUIHandler : InventoryManagementUIHandler
     {
-        protected override bool UsesRadial() { return false; }
-        
-
-        protected override int MaxUIPages () { return 1; }
-
-        // public override string[] GetInputNames () { return new string[] { "Take", "Take All", "Open Trade" }; }
+        public FullTradeUIHandler fullTradeUIHandler;
         protected override void OnUISelect (GameObject[] data, object[] customData) { }
-        // protected override int GetUnpaginatedShowCount(object[] updateButtonsParameters) { return (updateButtonsParameters[1] as Inventory).allInventory.Count; }
-        protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter) {
-            // Debug.LogError("quick trade here");
+        protected override List<InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter) {
             return shownInventory.allInventory;
         }
-        protected override void OnInventoryManagementInitiate(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
-            // SetUpButtons (otherInventory, inventory, 0, true, null, categoryFilter);
-            BuildButtons(null, true, new object[] { 0, otherInventory, inventory, categoryFilter });
-            (uiObject as UIPage).SetTitle(otherInventory.GetDisplayName());
+        protected override void OnOpenInventoryUI(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
+            BuildButtons(otherInventory.GetDisplayName(), true, 0, new object[] { otherInventory, inventory, categoryFilter });
         }
 
         const int singleTradeAction = 0, tradeAllAction = 1, switchToFullTradeAction = 2;
-        protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input) {
+        protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
     		if (customData != null) {
                 bool updateButtons = false;
 
-                object[] updateButtonsParameters = customData[1] as object[];
-
-                Inventory shownInventory = updateButtonsParameters[1] as Inventory;
-                Inventory taker = updateButtonsParameters[2] as Inventory;
+                object[] updateButtonsParameters = customData[2] as object[];
+                Inventory shownInventory = updateButtonsParameters[0] as Inventory;
+                Inventory taker = updateButtonsParameters[1] as Inventory;
                 
                 // single trade
-                if (input.x == singleTradeAction) {
-                    Inventory.InventorySlot item = customData[0] as Inventory.InventorySlot;
+                if (input.x == singleTradeAction+actionOffset) {
+                    InventorySlot item = customData[0] as InventorySlot;
                     if (item != null) {
                         shownInventory.TransferItemAlreadyInInventoryTo(item, 1, taker, sendMessage: false);
                     }
                 }
                 // take all
-                else if (input.x == tradeAllAction) {
+                else if (input.x == tradeAllAction+actionOffset) {
 
                     // TODO: check if shown inventory has anything
                     shownInventory.TransferInventoryContentsTo(taker, sendMessage: false);
                     updateButtons = true;
                 }
-                else if (input.x == switchToFullTradeAction) {
+                else if (input.x == switchToFullTradeAction+actionOffset) {
                     CloseUI();
-                    // taker.EndInventoryManagement(context, input.y);
-                    taker.InitiateInventoryManagement(Inventory.fullTradeContext, input.y, shownInventory, null);
+                    fullTradeUIHandler.OpenUI(new object[] { taker, input.y, shownInventory, null });
                 }
                 if (updateButtons){
-
-                    UpdateUIButtons(updateButtonsParameters);//shownInventory, taker, 0, 0, null);   
+                    UpdateUIButtons(0, updateButtonsParameters);
                 }
             }
 		}

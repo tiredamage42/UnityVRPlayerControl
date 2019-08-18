@@ -2,10 +2,10 @@
 
 using UnityEngine;
 
-using GameUI;
 using SimpleUI;
 using Valve.VR;
 
+using Game.GameUI;
 namespace VRPlayer.UI {
 
 
@@ -31,15 +31,7 @@ namespace VRPlayer.UI {
             lengthsOK = CheckLength ();
 
             if (lengthsOK) {
-
-                // textOffset = .05f;
-                // trackerSize = new Vector2(2,1);
-                // emptyBackground = false;
-                // textScale = .005f;
-                // UIValueTrackerParameters trackerParams = new UIValueTrackerParameters(.05f, new Vector2(.25f,2f), false, .005f);
-
                 for (int i = 0; i < foundTrackers.Length; i++) {
-
                     UIValueTracker uiObject = VRUIBuilder.MakeValueTrackerUI(foundTrackers[i].gameValueName + "TrackerUI", trackerParams, true);
                     foundTrackers[i].SetUIObject(uiObject);
                     TransformBehavior.AdjustTransform(uiObject.baseObject.transform, Player.instance.GetHand(uiHand).transform, equipBehaviors, i);

@@ -5,7 +5,7 @@ using Valve.VR;
 using Valve.VR.InteractionSystem;
 
 using InteractionSystem;
-using InventorySystem;
+using Game.InventorySystem;
 
 namespace VRPlayer
 {
@@ -103,14 +103,14 @@ namespace VRPlayer
 
 
 
-        void OnItemEquipped (Inventory inventory, Item item, int equipSlot, bool quickEquipped){
+        void OnItemEquipped (Inventory inventory, SceneItem item, int equipSlot, bool quickEquipped){
             if (equipSlot != myEquipIndex) {
                 return;
             }
 
             if (quickEquipped) {
 
-                if (item.itemBehavior.equipType != InventoryEqupping.EquipType.Static && item.rigidbody != null) {
+                if (item.itemBehavior.equipType != InventoryEquipper.EquipType.Static && item.rigidbody != null) {
                     velocityEstimator.BeginEstimatingVelocity();
                 }
             }
@@ -137,14 +137,14 @@ namespace VRPlayer
                 vr_item.activateActionSetOnAttach.Activate(handType);
         }
         
-        void OnItemUnequipped(Inventory inventory, Item item, int slotIndex, bool quickEquipped){
+        void OnItemUnequipped(Inventory inventory, SceneItem item, int slotIndex, bool quickEquipped){
             if (slotIndex != myEquipIndex) {
                 return;
             }
 
             if (quickEquipped) {
 
-                if (item.itemBehavior.equipType != InventoryEqupping.EquipType.Static) {
+                if (item.itemBehavior.equipType != InventoryEquipper.EquipType.Static) {
                     Rigidbody rigidbody = item.rigidbody;
                     if (rigidbody != null) {
 
@@ -297,11 +297,11 @@ namespace VRPlayer
             HideController(true);
         }
 
-        InventoryEqupping equipper;
+        InventoryEquipper equipper;
         protected virtual void OnEnable()
         {
          
-            equipper = Player.instance.GetComponent<InventoryEqupping>();
+            equipper = Player.instance.GetComponent<InventoryEquipper>();
             
             equipper.onEquip += OnItemEquipped;
             equipper.onUnequip += OnItemUnequipped;
@@ -384,7 +384,7 @@ namespace VRPlayer
             }        
         }
 
-        protected virtual void OnEquippedUpdate( Inventory inventory, Item item, int slotIndex, bool quickEquipped )
+        protected virtual void OnEquippedUpdate( Inventory inventory, SceneItem item, int slotIndex, bool quickEquipped )
         {
             if (slotIndex != myEquipIndex) {
                 return;

@@ -2,7 +2,7 @@
 using System.Collections;
 using Valve.VR.InteractionSystem;
 using InteractionSystem;
-using InventorySystem;
+using Game.InventorySystem;
 namespace Valve.VR.InteractionSystem.Sample
 {
     public class JoeJeff : MonoBehaviour
@@ -43,7 +43,7 @@ namespace Valve.VR.InteractionSystem.Sample
 
         private new Rigidbody rigidbody;
         // private Interactable interactable;
-        Item item;
+        SceneItem item;
         
 
         // public FireSource fire;
@@ -54,7 +54,7 @@ namespace Valve.VR.InteractionSystem.Sample
             animator = GetComponent<Animator>();
             rigidbody = GetComponent<Rigidbody>();
             // interactable = GetComponent<Interactable>();
-            item = GetComponent<Item>();
+            item = GetComponent<SceneItem>();
             
             animator.speed = animationSpeed;
         }

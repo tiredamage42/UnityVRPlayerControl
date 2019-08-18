@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using ActorSystem;
 using SimpleUI;
 
-namespace GameUI {
+namespace Game.GameUI {
     public class HUDGameValueTracker : MonoBehaviour
     {
         public UIValueTracker uiObject;
@@ -12,10 +11,8 @@ namespace GameUI {
         public string gameValueName;
         Actor actor;
 
-
-
         void GetActor () {
-            if (actor == null) actor = GetComponent<Actor>();
+            if (actor == null) actor = GetComponent<UIObjectInitializer>().associatedActor;
         }
 
         void Awake () {
@@ -38,10 +35,10 @@ namespace GameUI {
             uiObject.SetText(gameValueName);
             GetActor();
             GameValue gv = actor.GetGameValue(gameValueName);
-            if (gv != null) UpdateUIObject(0, gv.GetValue(), gv.GetMinValue(), gv.GetMaxValue(), null);
+            if (gv != null) UpdateUIObject(0, gv.GetValue(), gv.GetMinValue(), gv.GetMaxValue());
         }
 
-        void UpdateUIObject (float delta, float newValue, float min, float max, string msg) {
+        void UpdateUIObject (float delta, float newValue, float min, float max) {
             
             UIColorScheme scheme = UIColorScheme.Normal;
             int l = Mathf.Min(2, colorSchemeThresholds.list.Length);

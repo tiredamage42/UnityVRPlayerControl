@@ -28,6 +28,12 @@ namespace SimpleUI {
 
     [ExecuteInEditMode] public class UITextPanel : BaseUIElement
     {
+        public override void SetSelectableActive(bool active) { }
+        
+        public override bool RequiresInput() { return false; }
+        protected override bool CurrentSelectedIsOurs (GameObject currentSelected) { return true; }
+
+
         public TextPanelParameters parameters = new TextPanelParameters();
         [TextArea] public string panelText;        
         UIText text;
@@ -59,7 +65,9 @@ namespace SimpleUI {
         }
 
     #if UNITY_EDITOR
-        void Update () {
+        protected override void Update()
+        {
+            base.Update();
             if (!Application.isPlaying) {
                 SetRectSizes();
                 SetText(panelText);

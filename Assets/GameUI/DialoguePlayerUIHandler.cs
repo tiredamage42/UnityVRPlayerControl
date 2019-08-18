@@ -1,102 +1,52 @@
 ﻿using UnityEngine;
-using SimpleUI;
-using DialogueSystem;
 using System.Collections.Generic;
 using System;
 
-namespace GameUI{
+using Game.DialogueSystem;
+namespace Game.GameUI {
 
-    public class DialoguePlayerUIHandler : UISelectableElementHandler<DialogueResponse> {
+    public class DialoguePlayerUIHandler : UISelectableElementHandler{
+    
+        public Action<DialogueResponse> onRespond;
+        protected override int ParamsLength () { return 1; }
+        protected override bool CheckParameters (object[] parameters) {
+            if ((parameters[0] as List<DialogueResponse>) == null) {
+                Debug.LogError("Cant open " + GetType().ToString() + " ui handler, responses null");
+                return false;
+            }
+            return true;
+        }
         
-        protected override int MaxUIPages() { return 1; }
-        protected override int MaxButtons() { return currentMaxButtons; }
-        protected override bool Paginated () { return false; }
-        protected override bool UsesRadial() { return false; }
-        public override void OpenUI() { }
-
-        protected override List<DialogueResponse> BuildButtonObjectsListForDisplay (object[] updateButtonsParams) {
-            return updateButtonsParams[1] as List<DialogueResponse>;
-        }
-
-        protected override string GetDisplayForButtonObject(DialogueResponse obj) {
-            return obj.bark;
-        }
-
-        protected override void OnEnable () {
-            base.OnEnable();
-            GetComponent<DialoguePlayer>().onResponseRequested += OnResponseRequested;
-        }
-        protected override void OnDisable () {
-            base.OnDisable();
-            GetComponent<DialoguePlayer>().onResponseRequested -= OnResponseRequested;
+        protected override void OnOpenUI(object[] parameters) { 
+            maxButtons = (parameters[0] as List<DialogueResponse>).Count;
+            BuildButtons("", true, 0, parameters);
         }
 
         protected override void OnUISelect (GameObject[] data, object[] customData) { }
-
-        protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input) {
-        	if (input.x == 0){
-                onRespond(customData[0] as DialogueResponse);
-            }
-            CloseUI();
-		}
-
-        Action<DialogueResponse> onRespond;
-        Action onResponseCancelled;
-      
         
-        int currentMaxButtons;
-        public void OnResponseRequested (List<DialogueResponse> responses, Action<DialogueResponse> onRespond, Action onResponseCancelled) {
-            this.onResponseCancelled = onResponseCancelled;
-            this.onRespond = onRespond;
-            
+        // dont allow cold open
+        protected override object[] GetDefaultColdOpenParams() { 
+            return null; 
+        }
+        protected override List<object> BuildButtonObjectsListForDisplay (int panelIndex, object[] updateButtonsParams) { 
 
-            object[] parameters = new object[] { responses };
-            // if (UIObjectActive()) return;
-            // if (UIManager.AnyUIOpen()) return;
-
-
-
-            if (OpenUIDenied (parameters)) return;
-
-            StartShow();
-            // UIManager.ShowUI(uiObject, true, true);
-            // uiObject.onBaseCancel = CloseUI;
-            // uiObject.SubscribeToSubmitEvent(OnUIInput);
-
-            (uiObject as UIPage).SetTitle("");
-            
-
-            currentMaxButtons = responses.Count;
-
-
-            object[] updateButtonsParams = new object[] { 0, responses };
-
-            BuildButtons(null, true, updateButtonsParams);
-
-            // buttonReferences[0] = uiObject.GetAllSelectableElements(responses.Count);
-
-            // UpdateUIButtons (new object[] { 0, responses }) ;
-
-            // for (int i = 0 ; i < responses.Count; i++) {
-            //     MakeButton( buttonReferences[0][i], responses[i].bark, new object[] { responses[i] } );
-            // }
-
-            // UIManager.SetSelection(buttonReferences[0][0].gameObject);
-            
-            BroadcastUIOpen(parameters);
+            List<object> r = new List<object>();
+            List<DialogueResponse> s = updateButtonsParams[0] as List<DialogueResponse>; 
+            for (int i = 0; i < s.Count; i++) {
+                r.Add(s[i]);
+            }
+            return r;
         }
 
-        public override void CloseUI() {
-
-            if (UICloseDenied (null)) return;
-            // if (!UIObjectActive()) return;
-
-            HideUIAndReset();
-            
-            if (onResponseCancelled != null) {
-                onResponseCancelled();
-                onResponseCancelled = null;
-            }   
+        protected override string GetDisplayForButtonObject(object obj) { 
+            return (obj as DialogueResponse).bark; 
         }
+
+        protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
+        	if (input.x == actionOffset) {
+                onRespond(customData[0] as DialogueResponse);
+                CloseUI();
+            }
+		}
     }
 }

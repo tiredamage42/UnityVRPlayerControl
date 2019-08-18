@@ -8,7 +8,7 @@ using UnityEngine;
 using System.Collections;
 
 using InteractionSystem;
-using InventorySystem;
+using Game.InventorySystem;
 using VRPlayer;
 namespace Valve.VR.InteractionSystem.Sample
 {

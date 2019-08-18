@@ -60,6 +60,17 @@ namespace VRPlayer.UI {
             t.localPosition = lPos;
         }
 
+        public static UISliderPopup MakeSliderPopup (string goName, UISliderPopupParameters parameters, TransformBehavior equipBehavior) {
+            UISliderPopup msgCenter = GameObject.Instantiate( UIManager.instance.sliderPopupPrefab );
+            msgCenter.parameters = parameters;
+            return InitializeBaseUIElement<UISliderPopup> (msgCenter, BuildCanvasObject(goName, true, equipBehavior), new Vector2(.5f, 1f));
+        }
+        public static UISelectionPopup MakeSelectionPopup (string goName, UISelectionPopupParameters parameters, TransformBehavior equipBehavior) {
+            UISelectionPopup msgCenter = GameObject.Instantiate( UIManager.instance.selectionPopupPrefab );
+            msgCenter.parameters = parameters;
+            return InitializeBaseUIElement<UISelectionPopup> (msgCenter, BuildCanvasObject(goName, true, equipBehavior), new Vector2(.5f, 1f));
+        }
+
         public static UIMessageCenter MakeMessageCenter (string goName, UIMessageCenterParameters parameters, TransformBehavior equipBehavior) {
             UIMessageCenter msgCenter = GameObject.Instantiate( UIManager.instance.messageCenterPrefab );
             msgCenter.parameters = parameters;
@@ -111,10 +122,6 @@ namespace VRPlayer.UI {
             
             UIPage newPage = InstantiatePage (pageParameters);
             
-            // RectTransform childRect = new GameObject(goName+"pagePanel_holder").AddComponent<RectTransform>();
-            // childRect.sizeDelta = Vector2.one;
-            // SetParent(childRect, canvasObject, new Vector2(.5f, 1f));
-
             RectTransform childRect = canvasObject;
 
             float width = pageParameters.elementsSize.x;
@@ -123,7 +130,6 @@ namespace VRPlayer.UI {
             SetParent(newPage.rectTransform, childRect, new Vector2(.5f, 1f), new Vector3(-(width*.5f), 0, 0), new Vector3(0,buildRotationOffset,0));
             SetParent(InstantiateTextPanel(textPanelParams, new UIElementHolder[] { newPage }).rectTransform, childRect, new Vector2(.5f, 1f), new Vector3(width*.5f, -pageParameters.titleHeight, 0), new Vector3(0,-buildRotationOffset,0));
             
-
             newPage.baseObject = canvasObject.gameObject;
             UIManager.HideUI(newPage);
             return newPage;
@@ -133,9 +139,6 @@ namespace VRPlayer.UI {
 
         static T InitializeBaseUIElement<T> (BaseUIElement element, RectTransform baseObject, Vector2 anchor) where T : BaseUIElement {
             element.baseObject = baseObject.gameObject;
-            // Debug.Log(element.name);
-            // Debug.Log(element.rectTransform);
-            
             SetParent(element.rectTransform, baseObject, anchor);
             return element as T;
         }
@@ -144,15 +147,11 @@ namespace VRPlayer.UI {
         public static UIElementHolder MakeFullTradeUI (string goName, UIPageParameters pageParameters, TextPanelParameters textPanelParams, TransformBehavior equipBehavior, float buildRotationOffset){//, float textScale) {
             RectTransform canvasObject = BuildCanvasObject(goName, true, equipBehavior);
 
-            // RectTransform childRect = new GameObject(goName+"_holder").AddComponent<RectTransform>();
-            // SetParent(childRect, canvasObject, new Vector2(.5f, .5f));
             RectTransform childRect = canvasObject;
                     
             ElementHolderCollection collection = childRect.gameObject.AddComponent<ElementHolderCollection>();
             collection.isBase = true;
             collection.baseObject = canvasObject.gameObject;
-
-            // RectTransform collectionT = collection.GetComponent<RectTransform>();
 
             float width = pageParameters.elementsSize.x;
                             
@@ -166,7 +165,7 @@ namespace VRPlayer.UI {
 
             collection.subHolders = new UIElementHolder[] { newPage0 , newPage1 };
 
-            SetParent(InstantiateTextPanel(textPanelParams, new UIElementHolder[] {collection, newPage0 , newPage1 }).rectTransform, collection.rectTransform, anchor, new Vector3(0, -pageParameters.titleHeight, 0));
+            SetParent(InstantiateTextPanel(textPanelParams, new UIElementHolder[] {collection, newPage0 , newPage1 }).rectTransform, collection.rectTransform, anchor, new Vector3(0, -pageParameters.titleHeight, -.1f));
 
             UIManager.HideUI(collection);
             return collection;

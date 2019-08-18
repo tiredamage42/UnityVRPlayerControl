@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-using ActorSystem;
-
-namespace InventorySystem {
+namespace Game.InventorySystem {
     /*
         spawns a levelled list of inventory items to populate an inventory
 
 
         TODO: figure out a way for quick lootables (such as crates) to only spawn when checked
     */
-    [RequireComponent(typeof(Inventory))] public class LevelledListSpawner : MonoBehaviour {
+    [RequireComponent(typeof(Inventory))] 
+    public class LevelledListSpawner : MonoBehaviour {
         public LevelledList levelledList;
 
         [Header("Defaults to player actor if null and no Actor attached to this object")]
@@ -51,7 +50,7 @@ namespace InventorySystem {
                 return;
             }
             inventory.ClearInventory(false);
-            inventory.AddInventory(levelledList.SpawnItems(selfActorForConditions.actorValues, suppliedActorForConditions.actorValues), false);
+            inventory.AddInventory(levelledList.SpawnItems(selfActorForConditions, suppliedActorForConditions), false);
         }
     }
 }

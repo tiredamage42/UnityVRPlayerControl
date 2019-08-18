@@ -2,7 +2,8 @@
 using System.Collections;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
-using InventorySystem;
+using Game.InventorySystem;
+
 using VRPlayer;
 namespace Valve.VR.InteractionSystem.Sample
 {

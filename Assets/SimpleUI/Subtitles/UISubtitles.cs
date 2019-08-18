@@ -24,6 +24,11 @@ namespace SimpleUI {
 
     [ExecuteInEditMode] public class UISubtitles : BaseUIElement
     {
+
+        public override void SetSelectableActive(bool active) { }
+        public override bool RequiresInput() { return false; }
+        protected override bool CurrentSelectedIsOurs (GameObject currentSelected) { return true; }
+
         public UISubtitlesParameters parameters = new UISubtitlesParameters();
         public string speaker;
         [TextArea] public string subtitles;
@@ -78,7 +83,9 @@ namespace SimpleUI {
             baseObject.SetActive(false);
         }
         
-        void Update () {
+        protected override void Update()
+        {
+            base.Update();
 #if UNITY_EDITOR
             if (!Application.isPlaying) {
                 ShowSubtitles(speaker, subtitles);

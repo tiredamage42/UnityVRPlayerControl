@@ -21,14 +21,6 @@ GameObject:
   - component: {fileID: 11465950}
   - component: {fileID: 1686168578}
   - component: {fileID: 3859370353770650318}
-  - component: {fileID: 492762292878809300}
-  - component: {fileID: 579055647788123081}
-  - component: {fileID: 3203987616310123330}
-  - component: {fileID: 107949}
-  - component: {fileID: 107948}
-  - component: {fileID: 894408064}
-  - component: {fileID: 6817886381281038955}
-  - component: {fileID: 8983110594462580038}
   m_Layer: 0
   m_Name: VRPlayer
   m_TagString: Player
@@ -70,6 +62,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventory: {fileID: 0}
+  perkHandler: {fileID: 0}
   actorName: Player
   isPlayer: 1
   actorValuesTemplate: {fileID: 11400000, guid: ee5a4da009a6b46b78f426802d29e3ec,
@@ -104,9 +97,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d21a68a8c4cdc42059085a92e59b7e83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  displayName: Player
   stashAction: 1
-  actor: {fileID: 0}
-  equipping: {fileID: 0}
   scrappableCategories: 000000000100000003000000
   autoScrapCategories: 03000000
   favoriteAbleCategories: 000000000100000002000000
@@ -310,154 +302,6 @@ MonoBehaviour:
   vignetteIntensity: 2
   vignetteSpeed: 10
   vignetteMovementThreshold: 1
---- !u!114 &492762292878809300
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 107946}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43b70a2848beb42ae9db2ec21a010719, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  context: QuickInventory
-  inputNames:
-    list:
-    - Use
-  uiObject: {fileID: 0}
-  maxButtons: 8
---- !u!114 &579055647788123081
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 107946}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83d780d5942b047dd964dcc0773a98ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  context: FullInventory
-  inputNames:
-    list:
-    - Use
-    - Drop
-    - Favorite
-  uiObject: {fileID: 0}
-  maxButtons: 16
-  nextUIHandler: {fileID: 0}
-  previousUIHandler: {fileID: 0}
---- !u!114 &3203987616310123330
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 107946}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc8ddee62a9cc4e1fa3168759054e55a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  context: FullTrade
-  inputNames:
-    list:
-    - Trade
-    - Trade All
-    - Use
-  uiObject: {fileID: 0}
-  maxButtons: 16
---- !u!114 &107949
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 107946}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7475d86d8b05c4bc3950a79ce8c2764f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  context: QuickTrade
-  inputNames:
-    list:
-    - Take
-    - Take All
-    - Trade
-  uiObject: {fileID: 0}
-  maxButtons: 6
---- !u!114 &107948
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 107946}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78e8426fdc7274721bed0d764ffea1b8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  context: Crafting
-  inputNames:
-    list:
-    - Craft/Scrap
-  uiObject: {fileID: 0}
-  maxButtons: 16
---- !u!114 &894408064
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 107946}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba97e2f8239d945bca636598d0cfaaeb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  context: Dialogue
-  inputNames:
-    list: []
-  uiObject: {fileID: 0}
---- !u!114 &6817886381281038955
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 107946}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5754851e507a14914a5b416116c980ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uiObject: {fileID: 0}
-  colorSchemeThresholds:
-    list: []
-  gameValueName: AP
---- !u!114 &8983110594462580038
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 107946}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5754851e507a14914a5b416116c980ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uiObject: {fileID: 0}
-  colorSchemeThresholds:
-    list:
-    - 0.1
-    - 0.25
-  gameValueName: HP
 --- !u!1 &125964
 GameObject:
   m_ObjectHideFlags: 0
@@ -605,8 +449,9 @@ MonoBehaviour:
   startDistance: 7
   fadeRange: 100
   fadeSteepness: 1
+  maxDistance: 750
   downsample: 2
-  blurSize: 5
+  blurSize: 2
   blurIterations: 2
   debugVisuals: 0
 --- !u!124 &12440092
@@ -6936,6 +6781,9 @@ GameObject:
   - component: {fileID: 6344995167655627406}
   - component: {fileID: 4923050673792358427}
   - component: {fileID: 697394373491529384}
+  - component: {fileID: 5866234069077544687}
+  - component: {fileID: 3912555129121487206}
+  - component: {fileID: 1368333123897110847}
   m_Layer: 0
   m_Name: VR_UI
   m_TagString: Untagged
@@ -6990,7 +6838,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20bea63586cae401293454372581c9be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildRotationOffset: 25
+  buildRotationOffset: -15
   pageWithPanelTransform: {fileID: 11400000, guid: 6c1b14d3a33774bc2976ac82ed95cfb6,
     type: 2}
   fullTradeTransform: {fileID: 11400000, guid: 709bf75dbf5a144049c0a926241fb5cd, type: 2}
@@ -7001,7 +6849,7 @@ MonoBehaviour:
     type: 2}
   normalPageParams:
     elementsSize: {x: 3, y: 0.25}
-    titleScale: 0.01
+    titleScale: 0.005
     titleHeight: 0.5
     textAlignment: 3
     textOffset: 0.05
@@ -7013,23 +6861,23 @@ MonoBehaviour:
     maxCharacters: 64
     textAlignment: 0
   radialParams:
-    textScale: 0.0035
-    textOffset: 0.8
+    textScale: 0.002
+    textOffset: 0.6
     selectionSizeOffset: 0.1
   quickTradeParams:
-    elementsSize: {x: 3, y: 0.25}
-    titleScale: 0.01
+    elementsSize: {x: 2.5, y: 0.25}
+    titleScale: 0.005
     titleHeight: 0.5
     textAlignment: 4
     textOffset: 0
     textScale: 0.0025
   dialogueParams:
-    elementsSize: {x: 4, y: 0.25}
+    elementsSize: {x: 4, y: 0.3}
     titleScale: 0.01
     titleHeight: 0.5
     textAlignment: 3
     textOffset: 0.05
-    textScale: 0.0025
+    textScale: 0.0035
   subtitlesParameters:
     textScale: 0.005
     singleLineSize: {x: 9, y: 0.4}
@@ -7039,13 +6887,29 @@ MonoBehaviour:
     textAnchor: 3
     textScale: 0.005
     textMargin: 0.05
-    lineSize: {x: 4, y: 0.5}
+    lineSize: {x: 4, y: -0.5}
     startXOffset: 0.05
     moveSpeed: 1
     duration: 3
     frequency: 1
     fadeInOut: {x: 0.1, y: 0.1}
-  dialogueHand: 2
+  sliderPopupTransform: {fileID: 11400000, guid: df41e7fcfcab0444187f0466c05b8835,
+    type: 2}
+  sliderPopupParameters:
+    panelSize: {x: 2, y: 1}
+    titleTextSize: 0.0025
+    amountTextSize: 0.0025
+    sliderScale: 0.001
+    sliderHeadSize: {x: 0.35, y: 0.45}
+    sliderBGSize: {x: 175, y: 15}
+  selectionPopupTransform: {fileID: 11400000, guid: 83063fd7d540441e597df7ba42d8e9fd,
+    type: 2}
+  selectionPopupParameters:
+    maxCharacters: 30
+    lineSize: 0.16
+    textSize: 0.002
+    panelWidth: 3
+    buttonSize: {x: 1.5, y: 0.175, z: 0.005}
   uiInvToggleAction:
     actionPath: /actions/VRControlActionSet/in/MenuButton
     needsReinit: 0
@@ -7111,7 +6975,7 @@ MonoBehaviour:
   equipBehavior: {fileID: 11400000, guid: 8513159db8c3f4616b20e9f37c0e895c, type: 2}
   context: QuickTrade
   usesSingleHand: 1
-  enforcedEquipID: 1
+  enforcedEquipID: 0
 --- !u!114 &2686377144792058453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7201,6 +7065,14 @@ MonoBehaviour:
   controls:
     list:
     - action:
+        actionPath: /actions/VRControlActionSet/in/TrackpadDPadLeft
+        needsReinit: 0
+      handDependent: 0
+    - action:
+        actionPath: /actions/VRControlActionSet/in/TrackpadDPadRight
+        needsReinit: 0
+      handDependent: 0
+    - action:
         actionPath: /actions/VRControlActionSet/in/TriggerButton
         needsReinit: 0
       handDependent: 1
@@ -7213,7 +7085,7 @@ MonoBehaviour:
         needsReinit: 0
       handDependent: 0
   equipBehavior: {fileID: 0}
-  context: FullInventory
+  context: Inventory
   usesSingleHand: 0
   enforcedEquipID: -1
 --- !u!114 &697394373491529384
@@ -7228,7 +7100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e3774135887745a7a18b0cd6d4a1986, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiTrackersObject: {fileID: 107946}
+  uiTrackersObject: {fileID: 0}
   uiHand: 1
   equipBehaviors: {fileID: 11400000, guid: 8546b5ccc299440d593f78e65e275b12, type: 2}
   trackerParams:
@@ -7236,6 +7108,92 @@ MonoBehaviour:
     textScale: 0.005
     textOffset: 0.05
     emptyBackground: 0
+--- !u!114 &5866234069077544687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3249935728391218245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ae57addfe6204492965e86fc5a36610, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controls:
+    list:
+    - action:
+        actionPath: /actions/VRControlActionSet/in/TrackpadDPadLeft
+        needsReinit: 0
+      handDependent: 0
+    - action:
+        actionPath: /actions/VRControlActionSet/in/TrackpadDPadRight
+        needsReinit: 0
+      handDependent: 0
+  equipBehavior: {fileID: 0}
+  context: Stats
+  usesSingleHand: 0
+  enforcedEquipID: -1
+--- !u!114 &3912555129121487206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3249935728391218245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ae57addfe6204492965e86fc5a36610, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controls:
+    list:
+    - action:
+        actionPath: /actions/VRControlActionSet/in/TrackpadDPadLeft
+        needsReinit: 0
+      handDependent: 0
+    - action:
+        actionPath: /actions/VRControlActionSet/in/TrackpadDPadRight
+        needsReinit: 0
+      handDependent: 0
+    - action:
+        actionPath: /actions/VRControlActionSet/in/TriggerButton
+        needsReinit: 0
+      handDependent: 0
+  equipBehavior: {fileID: 0}
+  context: PerksSpecial
+  usesSingleHand: 0
+  enforcedEquipID: -1
+--- !u!114 &1368333123897110847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3249935728391218245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ae57addfe6204492965e86fc5a36610, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controls:
+    list:
+    - action:
+        actionPath: /actions/VRControlActionSet/in/TrackpadDPadLeft
+        needsReinit: 0
+      handDependent: 0
+    - action:
+        actionPath: /actions/VRControlActionSet/in/TrackpadDPadRight
+        needsReinit: 0
+      handDependent: 0
+    - action:
+        actionPath: /actions/VRControlActionSet/in/TriggerButton
+        needsReinit: 0
+      handDependent: 0
+  equipBehavior: {fileID: 0}
+  context: Quests
+  usesSingleHand: 0
+  enforcedEquipID: -1
 --- !u!1 &3386939201460014694
 GameObject:
   m_ObjectHideFlags: 0

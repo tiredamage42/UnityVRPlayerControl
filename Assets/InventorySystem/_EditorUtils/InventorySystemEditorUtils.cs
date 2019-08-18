@@ -3,28 +3,30 @@
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
-namespace InventorySystem {
-    public static class InventorySystemEditorUtils 
+namespace Game.InventorySystem {
+    public static class InventorySystemEditor 
     {
-        public static AssetSelector<ItemBehavior> itemSelector;
-
-        public static void UpdateItemSelector () {
-            if (itemSelector == null)
-                itemSelector = new AssetSelector<ItemBehavior>(o => "[" + o.category + "] " + o.name, o => o.category);
-            else 
-                itemSelector.UpdateAssetReferences();
+        static AssetSelector<ItemBehavior> _itemSelector;
+        public static AssetSelector<ItemBehavior> itemSelector {
+            get {
+                if (_itemSelector == null) {
+                    Debug.Log("Buildign asset selector for items");
+                    _itemSelector = new AssetSelector<ItemBehavior>(o => "[" + o.category + "] " + o.name, o => o.category);
+                }
+                return _itemSelector;
+            }
         }
     }
 
     
 
-    [CustomEditor(typeof(Item))]
+    [CustomEditor(typeof(SceneItem))]
     [CanEditMultipleObjects]
     public class ItemEditor : Editor
     {   
-        Item item;
+        SceneItem item;
         void OnEnable () {
-            item = target as Item;
+            item = target as SceneItem;
         }
 
         void SaveLocalPositionAndRotation () {
@@ -36,42 +38,18 @@ namespace InventorySystem {
         public override void OnInspectorGUI() {
             base.OnInspectorGUI();
 
-            // if (Application.isPlaying) {
-                EditorGUILayout.Space();
+            EditorGUILayout.Space();
 
-                GUILayout.Label("Playtime Editing:");
+            GUILayout.Label("Playtime Editing:");
 
-                setIndex = EditorGUILayout.IntField( "Equip Settings Index", setIndex);
+            setIndex = EditorGUILayout.IntField( "Equip Settings Index", setIndex);
 
-                if (GUILayout.Button("Save Local Position And Rotation")) {
-                    SaveLocalPositionAndRotation();
-                    EditorUtility.SetDirty(item.itemBehavior.equipTransform);
-                }
-            // }
-
+            if (GUILayout.Button("Save Local Position And Rotation")) {
+                SaveLocalPositionAndRotation();
+                EditorUtility.SetDirty(item.itemBehavior.equipTransform);
+            }
         }
     }
-
-
-
-    [CustomEditor(typeof(ItemBehavior))]
-    [CanEditMultipleObjects]
-    public class ItemBehaviorEditor : Editor
-    {   
-        void OnEnable () {
-            InventorySystemEditorUtils.UpdateItemSelector();
-        }
-    }
-
-    [CustomEditor(typeof(CraftingRecipeBehavior))]
-    [CanEditMultipleObjects]
-    public class CraftingRecipeBehaviorEditor : Editor
-    {   
-        void OnEnable () {
-            InventorySystemEditorUtils.UpdateItemSelector();
-        }
-    }
-    
 }
 
 #endif

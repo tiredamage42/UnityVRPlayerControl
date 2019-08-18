@@ -1,96 +1,58 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-using InventorySystem;
+using Game.InventorySystem;
 using SimpleUI;
-namespace GameUI {
+namespace Game.GameUI {
 
     public class FullInventoryUIHandler : InventoryManagementUIHandler
     {
-        protected override bool UsesRadial() { return false; }
-        
-        protected override int MaxUIPages () { return 1; }
-
-        // public override string[] GetInputNames () { return new string[] { "Use", "Drop", "Favorite" }; }
-        
         
         protected override void OnUISelect (GameObject[] data, object[] customData) {
             if (customData != null) {
-                Inventory.InventorySlot slot;
-                Inventory shownInventory, linkedInventory;
-                int uiIndex;//, otherUIIndex;
-                UnpackButtonData (customData, out slot, out shownInventory, out linkedInventory, out uiIndex);//, out otherUIIndex);
-                if (slot != null) uiObject.textPanel.SetText(slot.item.itemDescription);
+                InventorySlot slot = customData[0] as InventorySlot;
+                if (slot != null) (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText(slot.item.itemDescription);
             }   
         }
 
-        // protected override int GetUnpaginatedShowCount(object[] updateButtonsParameters) { return lastSlotsCount; } 
-
-        // int lastSlotsCount;
-        protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter) {
-            List<Inventory.InventorySlot> slots = shownInventory.GetFilteredInventory(categoryFilter);
-            // lastSlotsCount = slots.Count;
-            return slots;
-        }
-        // protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (Inventory shownInventory, int uiIndex, List<int> categoryFilter) {
-        //     return shownInventory.GetFilteredInventory(categoryFilter);
-        // }
-        
-
-
-        protected override void OnInventoryManagementInitiate(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
-            // SetUpButtons ( inventory, null, 0, true, null, categoryFilter);
-            BuildButtons(null, true, new object[] { 0, inventory, null, categoryFilter });
-
-
-            (uiObject as UIPage).SetTitle("Inventory");
+        protected override List<InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter) {
+            return shownInventory.GetFilteredInventory(categoryFilter);
         }
         
-        const int consumeAction = 0, dropAction = 1, favoriteAction = 2, openPreviousUIHandler = 3, openNextUIHandler = 4;
+        protected override void OnOpenInventoryUI(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
+            BuildButtons("Inventory", true, 0, new object[] { inventory, null, categoryFilter });
+        }
+        
+        const int consumeAction = 0, dropAction = 1, favoriteAction = 2;
 
-        public UIHandler nextUIHandler, previousUIHandler;
-        
-        protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input) {
-        
-            if (input.x == openPreviousUIHandler) {
-                CloseUI();
-                previousUIHandler.OpenUI();
-                return;
-            }
-            else if (input.x == openNextUIHandler) {
-                CloseUI();
-                nextUIHandler.OpenUI();
-                return;
-            }
-    		
+        protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
             if (customData != null) {
 
-                Inventory.InventorySlot item = customData[0] as Inventory.InventorySlot;
+                InventorySlot item = customData[0] as InventorySlot;
                 
                 if (item != null) {
-                    object[] updateButtonsParameters = customData[1] as object[];
+                    object[] updateButtonsParameters = customData[2] as object[];
 
-                    Inventory shownInventory = updateButtonsParameters[1] as Inventory;
+                    Inventory shownInventory = updateButtonsParameters[0] as Inventory;
                     
                     bool updateButtons = false;
-                    if (input.x == consumeAction) {
+                    if (input.x == consumeAction+actionOffset) {
                         if (item.item.OnConsume(shownInventory, count: 1, input.y)){
                             updateButtons = true;
                         }
                     }
                     // drop
-                    else if (input.x == dropAction) {
-                        shownInventory.DropItemAlreadyInInventory(item, 1, true, -1, true, sendMessage: false);
+                    else if (input.x == dropAction+actionOffset) {
+                        shownInventory.DropItem(item, 1, true, -1, true, sendMessage: false);
                         updateButtons = true;
                     }
                     // favorite
-                    else if (input.x == favoriteAction) {
-                        shownInventory.FavoriteItem(item.item);//) {
+                    else if (input.x == favoriteAction+actionOffset) {
+                        shownInventory.FavoriteItem(item.item);
                         updateButtons = true;
                     }
-                    
                     if (updateButtons) {
-                        UpdateUIButtons(updateButtonsParameters);//(Inventory)customData[1], (Inventory)customData[2], (int)customData[3], (int)customData[4], null);
+                        UpdateUIButtons(0, updateButtonsParameters);
                     }
                 }
             }

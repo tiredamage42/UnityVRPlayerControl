@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
-using InventorySystem;
+using Game.InventorySystem;
+
 using VRPlayer;
 
 namespace Valve.VR.InteractionSystem.Sample
@@ -70,7 +71,7 @@ namespace Valve.VR.InteractionSystem.Sample
 
         private void Update()
         {
-            bool isEquipped = GetComponent<Item>().parentInventory != null;
+            bool isEquipped = GetComponent<SceneItem>().parentInventory != null;
 
 
             Vector2 steer = Vector2.zero;
@@ -85,7 +86,7 @@ namespace Valve.VR.InteractionSystem.Sample
 
             if (isEquipped)
             {
-                SteamVR_Input_Sources hand = GetComponent<Item>().parentInventory.GetComponent<Hand>().handType;
+                SteamVR_Input_Sources hand = GetComponent<SceneItem>().parentInventory.GetComponent<Hand>().handType;
                 // SteamVR_Input_Sources hand = interactable.attachedToHand.handType;
 
                 steer = actionSteering.GetAxis(hand);
@@ -174,11 +175,11 @@ namespace Valve.VR.InteractionSystem.Sample
                 buzztimer = 0;
 
 
-                bool isEquipped = GetComponent<Item>().parentInventory != null;
+                bool isEquipped = GetComponent<SceneItem>().parentInventory != null;
 
                 if (isEquipped)
                 {
-                SteamVR_Input_Sources hand = GetComponent<Item>().parentInventory.GetComponent<Hand>().handType;
+                SteamVR_Input_Sources hand = GetComponent<SceneItem>().parentInventory.GetComponent<Hand>().handType;
                     StandardizedVRInput.instance.TriggerHapticPulse(hand,
                     // interactable.attachedToHand.TriggerHapticPulse(
                         (ushort)Mathf.RoundToInt(300 * Mathf.Lerp(1.0f, 0.6f, buggy.mvol)));

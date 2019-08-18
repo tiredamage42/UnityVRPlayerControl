@@ -1,22 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-using InventorySystem;
-using ActorSystem;
+using Game.InventorySystem;
+using Game.InventorySystem.CraftingSystem;
 using SimpleUI;
-
-namespace GameUI {
+namespace Game.GameUI {
     public class CraftingUIHandler : InventoryManagementUIHandler
     {
-
-        protected override bool UsesRadial() { return false; }
-        protected override int MaxUIPages () { return 2; }
-
-        // TODO: check if item is in fact scrappable (not base components)
-
-
-        // public override string[] GetInputNames () { return new string[] { "Craft" }; }
-
         CraftingRecipeBehavior FindCraftingRecipeOnItem (ItemBehavior item) {
             for (int i = 0; i < item.stashedItemBehaviors.Length; i++) {
                 CraftingRecipeBehavior recipe = item.stashedItemBehaviors[i] as CraftingRecipeBehavior;
@@ -26,201 +16,205 @@ namespace GameUI {
         }
         
         protected override void OnUISelect (GameObject[] data, object[] customData) {
-            scrapAttempts = 0;
+            // scrapAttempts = 0;
+            (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText("");
 
-            Inventory.InventorySlot oldSelectedSlot = selectedSlot;
-            selectedSlot = null;
-
-            
-            uiObject.textPanel.SetText("");
-            
             //cehck for empty....
             if (customData == null) {
-                // scrapAttempts = 0;
                 return;
             }
 
-            Inventory shownInventory, linkedInventory;
-            int uiIndex;//, otherUIIndex;
-            UnpackButtonData (customData, out selectedSlot, out shownInventory, out linkedInventory, out uiIndex);//, out otherUIIndex);
+            InventorySlot selectedSlot = customData[0] as InventorySlot;
+            int uiIndex = (int)customData[1];
+            Inventory shownInventory = (customData[2] as object[])[0] as Inventory;
+
             if (selectedSlot == null) {
-                // scrapAttempts = 0;
                 return;
             }
-
-            // if (selectedSlot != oldSelectedSlot) {
-            //     scrapAttempts = 0;
-            // }
-        
 
             //selected on the recipes page...
             if (uiIndex == 0) {
                 CraftingRecipeBehavior recipe = FindCraftingRecipeOnItem(selectedSlot.item);
                 if (recipe == null) {
-                    // Debug.LogError(selectedSlot.item.itemName + " doesnt have a recipe behavior,\nbut is in a crafting category...");
                     return;
                 }
             
-                string text = selectedSlot.item.itemDescription;
-                text += "\n\nRequires:\n";
-            
-                List<Item_Composition> required = Inventory.FilterItemComposition (recipe.requires, shownInventory.actor.actorValues, shownInventory.actor.actorValues);
+                string text = selectedSlot.item.itemDescription + "\n\nRequires:\n";
+                
+                List<ItemComposition> required = Inventory.FilterItemComposition (recipe.requires, shownInventory.actor, shownInventory.actor);
                 for (int i = 0; i < required.Count; i++) {
-                    int hasCount = shownInventory.GetItemCount(required[i].item, true, shownInventory.actor.actorValues, shownInventory.actor.actorValues);
+                    int hasCount = shownInventory.GetItemCountAfterAutoScrap(required[i].item, shownInventory.actor, shownInventory.actor);
                     text += required[i].item.itemName + ":\t" + hasCount + " / " + required[i].amount + "\n";
                 }
-                uiObject.textPanel.SetText(text);            
+                (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText(text);            
             }
             //selected on scrappable categories page
             else {
 
-                string text = selectedSlot.item.itemDescription;
-                text += "\n\nScrap For:\n";
-            
-                List<Item_Composition> composedOf = Inventory.FilterItemComposition (selectedSlot.item.composedOf, shownInventory.actor.actorValues, shownInventory.actor.actorValues);
+                string text = selectedSlot.item.itemDescription + "\n\nScrap For:\n";
+                
+                List<ItemComposition> composedOf = Inventory.FilterItemComposition (selectedSlot.item.composedOf, shownInventory.actor, shownInventory.actor);
                 for (int i = 0; i < composedOf.Count; i++) {
                     text += composedOf[i].item.itemName + ":\t" + composedOf[i].amount + "\n";
                 }
-                uiObject.textPanel.SetText(text);            
+                (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText(text);            
 
             }
         }
 
-        // protected override int GetUnpaginatedShowCount(object[] updateButtonsParameters) { return lastSlotsCount[(int)updateButtonsParameters[0]]; } 
-
-        // int[] lastSlotsCount = new int[2];
-        protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter) {
+        protected override List<InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter) {
             if (uiIndex == 0) {
-                List<Inventory.InventorySlot> slots = shownInventory.GetFilteredInventory(categoryFilter);
-                // lastSlotsCount[0] = slots.Count;
-                return slots;
+                return shownInventory.GetFilteredInventory(categoryFilter);
             }
             else {
-                List<Inventory.InventorySlot> r = shownInventory.GetFilteredInventory(categoryFilter);
+                List<InventorySlot> r = shownInventory.GetFilteredInventory(categoryFilter);
                 for (int i = r.Count - 1; i >= 0; i--) {
+
+                    // check if item is in fact scrappable (not base components)
                     if (r[i].item.composedOf.list.Length == 0) {
                         r.Remove(r[i]);
                     }
                 } 
-                // lastSlotsCount[1] = r.Count;
                 return r;
             }
         }
         
-
-
-
-
-        // protected override List<Inventory.InventorySlot> BuildInventorySlotsForDisplay (Inventory shownInventory, int uiIndex, List<int> categoryFilter) {
-        //     if (uiIndex == 0) {
-
-        //         return shownInventory.GetFilteredInventory(categoryFilter);
-        //     }
-        //     else {
-        //         List<Inventory.InventorySlot> r = shownInventory.GetFilteredInventory(categoryFilter);
-        //         for (int i = r.Count - 1; i >= 0; i--) {
-        //             if (r[i].item.composedOf.list.Length == 0) {
-        //                 r.Remove(r[i]);
-        //             }
-        //         } 
-        //         return r;
-        //     }
-        // }
-
         List<int> categoryFilter;
 
-        protected override void OnInventoryManagementInitiate(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
+        protected override void OnOpenInventoryUI(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
             this.categoryFilter = categoryFilter;
-            (uiObject.subHolders[0] as UIPage).SetTitle("Recipes");
-            (uiObject.subHolders[1] as UIPage).SetTitle("Scrappable Items");
-
-            // SetUpButtons ( inventory, null, 0, 0, true, null);
-            // SetUpButtons ( inventory, inventory, 0, true, uiObject.subHolders[0], categoryFilter);
-            // SetUpButtons ( inventory, inventory, 1, false, uiObject.subHolders[1], inventory.scrappableCategories);
-
-
-            BuildButtons(uiObject.subHolders[0], true, new object[] { 0, inventory, inventory, categoryFilter });
-            BuildButtons(uiObject.subHolders[1], false, new object[] { 1, inventory, inventory, inventory.scrappableCategories });
+            BuildButtons("Recipes", true, 0, new object[] { inventory, inventory, categoryFilter });
+            BuildButtons("Scrappable Items", false, 1, new object[] { inventory, inventory, inventory.scrappableCategories });
 
         }
         
         const int craftAction = 0;
 
-        int scrapAttempts;
-        Inventory.InventorySlot selectedSlot;
-
-        protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input) {
-        
-    		if (customData != null) {
-
-                Inventory.InventorySlot slot;
-                Inventory shownInventory, linkedInventory;
-                int uiIndex;//, otherUIIndex;
-                UnpackButtonData (customData, out slot, out shownInventory, out linkedInventory, out uiIndex);//, out otherUIIndex);
-
-                bool updateButtons = false;
-                if (input.x == craftAction) {
-
-                    if (uiIndex == 0) {
-                        if (shownInventory.actor != null) {
-
-                            CraftingRecipeBehavior recipe = FindCraftingRecipeOnItem(slot.item);
-
-                            if (recipe != null) {
-                                if (shownInventory.ItemCompositionAvailableInInventory (recipe.requires, true, shownInventory.actor.actorValues, shownInventory.actor.actorValues)) {
-                                    if (slot.item.OnConsume(shownInventory, 1, input.y)){
-                                        updateButtons = true;
-
-                                         object[] updateButtonsParameters = customData[1] as object[];
-
-                    UpdateUIButtons(updateButtonsParameters); // (Inventory)customData[1], (Inventory)customData[2], (int)customData[3], (int)customData[4], usingCategoryFilter);
-                    UpdateUIButtons(
-                        new object[] { 1 - (int)updateButtonsParameters[0], updateButtonsParameters[1], updateButtonsParameters[2], inventory.scrappableCategories }
-                    );
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else {
-
-                        if (scrapAttempts == 1) {
-                            scrapAttempts = 0;
-                            Debug.Log("scrpping");
-                            shownInventory.ScrapItemAlreadyInInventory(slot.item, 1, -1, true, sendMessage: true, shownInventory.actor.actorValues, shownInventory.actor.actorValues);
-                        updateButtons = true;
-
-
-                         object[] updateButtonsParameters = customData[1] as object[];
-
-                         UpdateUIButtons(
-                        new object[] { (int)updateButtonsParameters[0], updateButtonsParameters[1], updateButtonsParameters[2], inventory.scrappableCategories }
-                    );
+        // int scrapAttempts;
 
 
 
-                    // UpdateUIButtons(updateButtonsParameters); // (Inventory)customData[1], (Inventory)customData[2], (int)customData[3], (int)customData[4], usingCategoryFilter);
-                    UpdateUIButtons(
-                        new object[] { 1 - (int)updateButtonsParameters[0], updateButtonsParameters[1], updateButtonsParameters[2], categoryFilter }
-                    );
-                        }
-                        else {
-                            uiObject.textPanel.SetText("\n\nAre you sure you want to scrap " + slot.item.itemName + " ?\n\nPress 'Scrap' again to confirm.\nSelect another item to cancel...");
-                        scrapAttempts = 1;
-                        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        void OnConfirmationSelection(bool used, int selectedOption) {
+            if (used && selectedOption == 0) {
+                Inventory shownInventory = currentUpdateParams[0] as Inventory;
+
+                //scrap
+                if (currentPanelIndex == 1) {
+                    shownInventory.ScrapItem(currentSlot.item, 1, -1, true, sendMessage: true, shownInventory.actor, shownInventory.actor);
+
+                    UpdateUIButtons( 1, currentUpdateParams);//new object[] { currentUpdateParams[0], currentUpdateParams[1], shownInventory.scrappableCategories } );
+                    UpdateUIButtons( 0, new object[] { currentUpdateParams[0], currentUpdateParams[1], categoryFilter } );
+                }
+                // craft recipe
+                else {
+                    if (currentSlot.item.OnConsume(shownInventory, 1, 0)){
+                        //update with current button params
+                        UpdateUIButtons(0, currentUpdateParams); 
+                        //update other ui panel, other index, same inventories, scrappable categories
+                        UpdateUIButtons(1, new object[] { currentUpdateParams[0], currentUpdateParams[1], shownInventory.scrappableCategories } );
                     }
 
                 }
 
-                if (updateButtons){
-                    // object[] updateButtonsParameters = customData[1] as object[];
+                
+            }
+        }
 
-                    // UpdateUIButtons(updateButtonsParameters); // (Inventory)customData[1], (Inventory)customData[2], (int)customData[3], (int)customData[4], usingCategoryFilter);
-                    // UpdateUIButtons(
-                    //     new object[] { 1 - (int)updateButtonsParameters[0], updateButtonsParameters[1], updateButtonsParameters[2], updateButtonsParameters[3] }
-                    // );
 
-                    // UpdateUIButtons((Inventory)customData[1], (Inventory)customData[2], (int)customData[3], (int)customData[4], usingCategoryFilter);
+        int currentPanelIndex;
+        // Inventory shownInventory;
+        InventorySlot currentSlot;
+        object[] currentUpdateParams;
+
+        void ShowConfirmationScreen(string msg, int currentPanelIndex, 
+            // Inventory shownInventory, 
+            InventorySlot currentSlot, object[] currentUpdateParams) {
+            this.currentPanelIndex = currentPanelIndex;
+            this.currentUpdateParams = currentUpdateParams;
+            // this.shownInventory = shownInventory;
+            this.currentSlot = currentSlot;
+
+            UIManager.ShowSelectionPopup(msg, new string[] {"Yes", "No"}, OnConfirmationSelection);
+        }
+
+        protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
+        
+    		if (customData != null) {
+
+                InventorySlot slot = customData[0] as InventorySlot;
+                int uiIndex = (int)customData[1];
+
+                object[] updateParameters = customData[2] as object[];
+                Inventory shownInventory = updateParameters[0] as Inventory;
+
+                if (input.x == craftAction+actionOffset) {
+                    // showign crafting recipes
+                    if (uiIndex == 0) {
+                        CraftingRecipeBehavior recipe = FindCraftingRecipeOnItem(slot.item);
+                        if (recipe != null) {
+                            if (shownInventory.ItemCompositionAvailableInInventoryAfterAutoScrap (recipe.requires, shownInventory.actor, shownInventory.actor)) {
+                                
+
+                                string msgText = "\nCraft " + slot.item.itemName + "?\n";
+
+                                List<ItemComposition> required = Inventory.FilterItemComposition (recipe.requires, shownInventory.actor, shownInventory.actor);
+                                for (int i = 0; i < required.Count; i++) {
+                                    msgText += required[i].item.itemName + ":\t" + required[i].amount + "\n";
+                                }
+                
+                                ShowConfirmationScreen(msgText, 0, slot, updateParameters);
+
+                                // if (slot.item.OnConsume(shownInventory, 1, input.y)){
+
+                                //     object[] updateParameters = customData[2] as object[];
+                                //     //update with current button params
+                                //     UpdateUIButtons(0, updateParameters); 
+                                //     //update other ui panel, other index, same inventories, scrappable categories
+                                //     UpdateUIButtons(1, new object[] { updateParameters[0], updateParameters[1], shownInventory.scrappableCategories } );
+                                // }
+                            }
+                        }
+                    }
+                    else {
+                        
+                        string msgText = "\nScrap " + slot.item.itemName + "?\n";
+
+                        List<ItemComposition> composedOf = Inventory.FilterItemComposition (slot.item.composedOf, shownInventory.actor, shownInventory.actor);
+                        for (int i = 0; i < composedOf.Count; i++) {
+                            msgText += composedOf[i].item.itemName + ":\t" + composedOf[i].amount + "\n";
+                        }
+
+                        ShowConfirmationScreen(msgText, 1, slot, updateParameters);
+
+                    
+                        // if (scrapAttempts == 1) {
+                        //     scrapAttempts = 0;
+
+                        //     shownInventory.ScrapItem(slot.item, 1, -1, true, sendMessage: true, shownInventory.actor, shownInventory.actor);
+                        //     object[] updateParameters = customData[2] as object[];
+
+                        //     UpdateUIButtons( 1, updateParameters);//new object[] { updateParameters[0], updateParameters[1], shownInventory.scrappableCategories } );
+                        //     UpdateUIButtons( 0, new object[] { updateParameters[0], updateParameters[1], categoryFilter } );
+
+                        // }
+                        // else {
+                        //     uiObject.textPanel.SetText("\n\nAre you sure you want to scrap " + slot.item.itemName + " ?\n\nPress 'Scrap' again to confirm.\nSelect another item to cancel...");
+                        //     scrapAttempts = 1;
+                        // }
+                    }
                 }                
             }
 		}

@@ -8,7 +8,8 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using InventorySystem;
+using Game.InventorySystem;
+
 using InteractionSystem;
 namespace Valve.VR.InteractionSystem
 {
@@ -401,9 +402,9 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void FindBow(Inventory inventory)
 		{
-			for (int i =0 ; i< inventory.GetComponent<InventoryEqupping>().equippedSlots.Length; i++) {
-				if (inventory.GetComponent<InventoryEqupping>().equippedSlots[i] != null) {
-					bow = inventory.GetComponent<InventoryEqupping>().equippedSlots[i].sceneItem.GetComponent<Longbow>();
+			for (int i =0 ; i< inventory.GetComponent<InventoryEquipper>().equippedSlots.Length; i++) {
+				if (inventory.GetComponent<InventoryEquipper>().equippedSlots[i] != null) {
+					bow = inventory.GetComponent<InventoryEquipper>().equippedSlots[i].sceneItem.GetComponent<Longbow>();
 					if (bow != null) {
 						return;
 					}

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using RenderTricks;
-using InventorySystem;
+using Game.InventorySystem;
 
 namespace VRPlayerDemo
 {

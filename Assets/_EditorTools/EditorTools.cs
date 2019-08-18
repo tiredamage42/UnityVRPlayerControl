@@ -8,28 +8,28 @@ using System;
 using System.Linq;
 
 public class AssetSelector<T> where T : UnityEngine.Object{
-    T[] assets;
+    List<T> assets;
     string[] allNames;
     Func<T, string> namePredicate;
     Func<T,int> orderPredicate;
-
+    GUIContent resetButtonContent;
     public AssetSelector (Func<T, string> namePredicate, Func<T, int> orderPredicate) {
         this.namePredicate = namePredicate;
         this.orderPredicate = orderPredicate;
+        resetButtonContent = new GUIContent("", "Update Asset References");
         UpdateAssetReferences();
     }
 
     public void UpdateAssetReferences () {
-        FindAllAssets();
+        assets = FindAssetsByType(orderPredicate);
+        assets.Insert(0, null);
+        
+        allNames = new string[assets.Count];
+        allNames[0] = " [ Null ] ";
+        for (int i = 1; i < assets.Count; i++) allNames[i] = namePredicate != null ? namePredicate(assets[i]) : assets[i].name;
     }
 
-    void FindAllAssets () {
-        assets = FindAssetsByType(orderPredicate).ToArray();
-        allNames = new string[assets.Length];
-        for (int i = 0; i < assets.Length; i++) allNames[i] = namePredicate != null ? namePredicate(assets[i]) : assets[i].name;
-    }
-
-    public static IEnumerable<T> FindAssetsByType(System.Func<T, int> orderPredicate) //where T : UnityEngine.Object
+    public static List<T> FindAssetsByType(System.Func<T, int> orderPredicate) //where T : UnityEngine.Object
     {
         List<T> assets = new List<T>();
         string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(T)));
@@ -38,7 +38,8 @@ public class AssetSelector<T> where T : UnityEngine.Object{
             T asset = AssetDatabase.LoadAssetAtPath<T>( AssetDatabase.GUIDToAssetPath( guids[i] ) );
             if ( asset != null ) assets.Add(asset);
         }
-        if (orderPredicate != null) return assets.OrderBy(orderPredicate);
+        if (orderPredicate != null) 
+            return assets.OrderBy(orderPredicate).ToList();
         return assets;
     }
 
@@ -51,18 +52,36 @@ public class AssetSelector<T> where T : UnityEngine.Object{
     }
     
     int GetActiveIndex (T current) {
-        for (int i =0 ; i < assets.Length; i++) {
+        for (int i =0 ; i < assets.Count; i++) {
             if (assets[i] == current) return i;
         }
         return -1;
     }
 
+    const float buttonWidth = 12;
+    const float buffer = 12;
+    static readonly Color32 resetButtonColor = new Color32( 100, 100, 255, 255 );
+
     public T Draw (Rect position, T current, GUIContent gui) {
-        int selected = EditorGUI.Popup (position, gui.text, GetActiveIndex(current), allNames);
+        int selected = EditorGUI.Popup (new Rect(position.x, position.y, (position.width - buttonWidth) - buffer, position.height), gui.text, GetActiveIndex(current), allNames);
+        GUI.backgroundColor = resetButtonColor;
+        if (GUI.Button(new Rect(position.x + ((position.width - buttonWidth) - buffer), position.y, buttonWidth, buttonWidth), resetButtonContent, EditorStyles.miniButton)) {
+            UpdateAssetReferences();
+        }
+        GUI.backgroundColor = Color.white;
         return selected < 0 ? null : assets[selected];
     }
     public T Draw (T current, GUIContent gui) {
+        EditorGUILayout.BeginHorizontal();
         int selected = EditorGUILayout.Popup (gui, GetActiveIndex(current), allNames);
+
+        GUI.backgroundColor = resetButtonColor;
+        if (GUILayout.Button(resetButtonContent, EditorStyles.miniButton)) {
+            UpdateAssetReferences();
+        }
+        GUI.backgroundColor = Color.white;
+        EditorGUILayout.EndHorizontal();
+        
         return selected < 0 ? null : assets[selected];
     }
 }

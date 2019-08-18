@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 
 using SimpleUI;
+
+// TODO: switch over to game ui
 namespace VRPlayer.UI {
     [ExecuteInEditMode]
     public class ControllerHintUIElement : MonoBehaviour

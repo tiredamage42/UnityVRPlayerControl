@@ -1,67 +1,176 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-
 using SimpleUI;
 
-namespace GameUI {
-    public abstract class UISelectableElementHandler<T> : UIHandler//MonoBehaviour
+namespace Game.GameUI {
+    public abstract class UISelectableElementHandler : UIHandler//MonoBehaviour
     {
-
+        public int maxButtons = 8;
         
-        protected int[] lastElementsShownCount;
-        protected SelectableElement[][] buttonReferences;
-        protected int[] currentPaginatedOffsets;
+        int[] lastElementsShownCount;
+        SelectableElement[][] buttonReferences;
+        int[] currentPaginatedOffsets;
 
-        protected void ResetPagination () {
-            for(int i = 0; i < currentPaginatedOffsets.Length; i++) currentPaginatedOffsets[i] = 0;
-        }
-        protected void ResetButtonReferences () {
+        protected void HideUIAndReset (object[] parameters) {
+            // UIManager.HideUI(uiObject);
             for(int i = 0; i < buttonReferences.Length; i++) buttonReferences[i] = null;
         }
 
+        protected abstract List<object> BuildButtonObjectsListForDisplay(int panelIndex, object[] updateButtonsParams);
+        protected abstract string GetDisplayForButtonObject(object obj);
+        // protected abstract void OnUISelect (GameObject[] data, object[] customData);
 
-        protected void HideUIAndReset () {
-            UIManager.HideUI(uiObject);
-            ResetButtonReferences();
-            ResetPagination();
-            BroadcastUIClose();
+
+        // protected override GameObject GetUIBaseObject() {
+        //     return uiObject.baseObject;
+        // }
+        // public UIElementHolder uiObject;
+
+        bool isCollection { get { return (uiObject as ElementHolderCollection) != null; } }
+        bool usesRadial { get { return (uiObject as UIRadial) != null; } }
+        bool isPaginated { get { return !usesRadial && maxButtons > 0; } }
+
         
-        }
 
-        protected abstract int MaxUIPages ();
-
-        protected virtual void OnEnable () {
-            buttonReferences = new SelectableElement[MaxUIPages()][];
-            currentPaginatedOffsets = new int[MaxUIPages()];
-            lastElementsShownCount = new int[MaxUIPages()];
+        protected void SetTitle(string title, int panel = 0) {
+            UIPage page = (isCollection ? (uiObject as ElementHolderCollection).subHolders[panel] : uiObject) as UIPage;
+            if (page != null) page.SetTitle(title);
         }
-        protected virtual void OnDisable () {
-
-        }
-
-        protected override GameObject GetUIBaseObject() {
-            return uiObject.baseObject;
-        }
-        public UIElementHolder uiObject;
         
-        public override bool UIObjectActive () {
-            return uiObject.gameObject.activeInHierarchy;
+        // public override bool UIObjectActive () {
+        //     return uiObject.gameObject.activeInHierarchy;
+        // }
+
+
+        protected override void OnSetUIObject () {
+        int maxUIPages = isCollection ? 2 : 1;
+            buttonReferences = new SelectableElement[maxUIPages][];
+            currentPaginatedOffsets = new int[maxUIPages];
+            lastElementsShownCount = new int[maxUIPages];
         }
-        public void SetUIObject (UIElementHolder uiObject) {
-            this.uiObject = uiObject;
-        }
+        // public void SetUIObject (UIElementHolder uiObject) {
+        //     this.uiObject = uiObject;
+        //     int maxUIPages = isCollection ? 2 : 1;
+        //     buttonReferences = new SelectableElement[maxUIPages][];
+        //     currentPaginatedOffsets = new int[maxUIPages];
+        //     lastElementsShownCount = new int[maxUIPages];
+        // }
         protected void MakeButton (SelectableElement element, string text, object[] customData) {
             element.elementText = text;
             element.uiText.SetText(text, -1);
             element.customData = customData;
         }
 
+        // // handle paginated scrolling
+        // protected void OnPaginatedUISelect (GameObject[] data, object[] customData) {
+		// 	if (customData != null) {
+        //         string buttonSelectText = customData[0] as string;
+        //         if (buttonSelectText != null) {
 
-        protected abstract int MaxButtons ();
+        //             int panelIndex = (int)customData[1];
+                    
+        //             object[] updateButtonsParams = customData[2] as object[];
+
+        //             bool updateButtons = false;
+        //             SelectableElement newSelection = null;
+
+        //             // hovered over the page up button
+        //             if (buttonSelectText == "B") {
+        //                 currentPaginatedOffsets[panelIndex]--;
+        //                 if (currentPaginatedOffsets[panelIndex] != 0) {
+        //                     newSelection = buttonReferences[panelIndex][1];
+        //                 }
+        //                 updateButtons = true;
+        //             } 
+                    
+        //             // hovered over the page down button
+        //             else if (buttonSelectText == "F") {
+        //                 currentPaginatedOffsets[panelIndex]++;
+        //                 bool isAtEnd = currentPaginatedOffsets[panelIndex] >= lastElementsShownCount[panelIndex] - maxButtons;
+
+        //                 if (!isAtEnd) {
+        //                     newSelection = buttonReferences[panelIndex][maxButtons - 2];
+        //                 }
+        
+        //                 updateButtons = true;
+        //             }
+
+        //             if (updateButtons){
+        //                 UpdateUIButtons( panelIndex, updateButtonsParams );
+                        
+        //                 if (newSelection != null) {
+        //                     StartCoroutine(SetSelection(newSelection.gameObject));
+        //                 }
+        //             }
+        //         }   
+        //     }
+		// }
+        // IEnumerator SetSelection(GameObject selection) {
+        //     yield return new WaitForEndOfFrame();
+        //     UIManager.SetSelection(selection);
+        // }
 
 
+
+
+        
+            
+
+
+
+
+
+        // protected override void StartShow () {
+        //     UIManager.ShowUI(uiObject, 
+        //     // true, 
+        //     !usesRadial);
+        //     uiObject.onBaseCancel = CloseUI;
+        //     uiObject.runtimeSubmitHandler = customGetInputMethod;
+            
+        //     uiObject.SubscribeToSubmitEvent(_OnUIInput);
+        //     uiObject.SubscribeToSelectEvent(OnUISelect);
+
+        //     if (isPaginated) {
+        //         uiObject.SubscribeToSelectEvent(OnPaginatedUISelect);
+        //         for(int i = 0; i < currentPaginatedOffsets.Length; i++) currentPaginatedOffsets[i] = 0;
+        //     }
+        // }
+
+        protected override void SubscribeToUIObjectEvents() {
+            if (isPaginated) {
+                uiObject.SubscribeToSelectEvent(OnPaginatedUISelect);
+                for(int i = 0; i < currentPaginatedOffsets.Length; i++) currentPaginatedOffsets[i] = 0;
+            }
+        }
+
+        
+        protected override void OnCloseUI(object[] parameters) {
+            HideUIAndReset(parameters);
+        }
+            
+
+        
+        protected void BuildButtons (string title, bool setSelection, int panelIndex, object[] updateButtonsParams) {
+
+            SetTitle(title, panelIndex);
+            
+            UIElementHolder uiObject = this.uiObject as UIElementHolder;
+            if (isCollection) {
+                uiObject = uiObject.subHolders[panelIndex];
+            }
+
+        
+            // int uiIndex = (int)updateButtonsParams[0];
+            // if (uiObject == null) uiObject = this.uiObject;
+
+            // if (buttonReferences[uiIndex] == null) 
+            buttonReferences[panelIndex] = uiObject.GetAllSelectableElements(maxButtons);
+            
+            if (setSelection) SetSelection(buttonReferences[panelIndex][0].gameObject);
+
+            UpdateUIButtons(panelIndex, updateButtonsParams);
+        }
 
         // handle paginated scrolling
         protected void OnPaginatedUISelect (GameObject[] data, object[] customData) {
@@ -69,45 +178,36 @@ namespace GameUI {
                 string buttonSelectText = customData[0] as string;
                 if (buttonSelectText != null) {
 
-                    object[] updateButtonsParams = customData[1] as object[];
+                    int panelIndex = (int)customData[1];
                     
-                    int uiIndex = (int)updateButtonsParams[0];
-                    // int uiIndex = (int)customData[3];
+                    object[] updateButtonsParams = customData[2] as object[];
 
                     bool updateButtons = false;
                     SelectableElement newSelection = null;
 
                     // hovered over the page up button
                     if (buttonSelectText == "B") {
-                        currentPaginatedOffsets[uiIndex]--;
-                        if (currentPaginatedOffsets[uiIndex] != 0) {
-                            newSelection = buttonReferences[uiIndex][1];
+                        currentPaginatedOffsets[panelIndex]--;
+                        if (currentPaginatedOffsets[panelIndex] != 0) {
+                            newSelection = buttonReferences[panelIndex][1];
                         }
                         updateButtons = true;
                     } 
                     
                     // hovered over the page down button
                     else if (buttonSelectText == "F") {
-                        currentPaginatedOffsets[uiIndex]++;
-                        // bool isAtEnd = currentPaginatedOffsets[uiIndex] >= GetUnpaginatedShowCount(updateButtonsParams) - maxButtons;
-                        bool isAtEnd = currentPaginatedOffsets[uiIndex] >= lastElementsShownCount[uiIndex] - MaxButtons();
-
-                        
-                        
+                        currentPaginatedOffsets[panelIndex]++;
+                        bool isAtEnd = currentPaginatedOffsets[panelIndex] >= lastElementsShownCount[panelIndex] - maxButtons;
 
                         if (!isAtEnd) {
-                            newSelection = buttonReferences[uiIndex][MaxButtons() - 2];
+                            newSelection = buttonReferences[panelIndex][maxButtons - 2];
                         }
         
                         updateButtons = true;
                     }
 
                     if (updateButtons){
-                        UpdateUIButtons(
-                            updateButtonsParams
-                            
-                            // (Inventory)customData[1], (Inventory)customData[2], uiIndex, (int)customData[4], usingCategoryFilter
-                        );
+                        UpdateUIButtons( panelIndex, updateButtonsParams );
                         
                         if (newSelection != null) {
                             StartCoroutine(SetSelection(newSelection.gameObject));
@@ -121,100 +221,50 @@ namespace GameUI {
             UIManager.SetSelection(selection);
         }
 
-        protected abstract bool Paginated ();
-        protected abstract bool UsesRadial ();
 
-        protected abstract void OnUIInput (GameObject[] data, object[] customData, Vector2Int input);
-
-
-        // protected System.Func<Vector2Int> customGetInputMethod;
-        // public void SetUIInputCallback (System.Func<Vector2Int> callback) {
-        //     customGetInputMethod = callback;
-        // }
-
-
-
-        protected void StartShow () {
-            UIManager.ShowUI(uiObject, true, !UsesRadial());
-            uiObject.onBaseCancel = CloseUI;
-            uiObject.runtimeSubmitHandler = customGetInputMethod;
-            
-            uiObject.SubscribeToSubmitEvent(OnUIInput);
-            uiObject.SubscribeToSelectEvent(OnUISelect);
-
-            if (Paginated()) uiObject.SubscribeToSelectEvent(OnPaginatedUISelect);
-            
-        }
-
-        protected abstract void OnUISelect (GameObject[] data, object[] customData);
         
 
-
-        protected abstract List<T> BuildButtonObjectsListForDisplay (object[] updateButtonsParams);
-
-        protected abstract string GetDisplayForButtonObject(T obj);
-
-
-        protected void BuildButtons (UIElementHolder uiObject, bool setSelection, object[] updateButtonsParams) {
-
-            int uiIndex = (int)updateButtonsParams[0];
-        
-            if (uiObject == null) uiObject = this.uiObject;
-
-            if (buttonReferences[uiIndex] == null) buttonReferences[uiIndex] = uiObject.GetAllSelectableElements(MaxButtons());
-            
-            if (setSelection) UIManager.SetSelection(buttonReferences[uiIndex][0].gameObject);
-
-
-            UpdateUIButtons(updateButtonsParams);//  forInventory, linkedInventory, uiIndex, otherIndex, categoryFilter);
-        }
-
-        protected void UpdateUIButtons (object[] updateButtonsParams) 
+        protected void UpdateUIButtons (int panelIndex, object[] updateButtonsParams) 
         {
-            int uiIndex = (int)updateButtonsParams[0];
+            // int uiIndex = (int)updateButtonsParams[0];
         
-            bool paginate = Paginated();
-            List<T> buttonObjects = BuildButtonObjectsListForDisplay ( updateButtonsParams );
+            List<object> buttonObjects = BuildButtonObjectsListForDisplay( panelIndex, updateButtonsParams );
             int buttonObjectsCount = buttonObjects.Count;
 
-            lastElementsShownCount[uiIndex] = buttonObjectsCount;
+            lastElementsShownCount[panelIndex] = buttonObjectsCount;
             
 
-            SelectableElement[] elements = buttonReferences[uiIndex];
+            SelectableElement[] elements = buttonReferences[panelIndex];
             
             int start = 0;
-            int end = MaxButtons();
-            if (paginate) {
+            int end = maxButtons;
+            if (isPaginated) {
 
-                bool isAtEnd = currentPaginatedOffsets[uiIndex] >= buttonObjectsCount - MaxButtons();
-                bool isAtBeginning = currentPaginatedOffsets[uiIndex] == 0;
+                bool isAtEnd = currentPaginatedOffsets[panelIndex] >= buttonObjectsCount - maxButtons;
+                bool isAtBeginning = currentPaginatedOffsets[panelIndex] == 0;
 
                 if (!isAtBeginning){
-                    // MakeButton(elements[0], " [ Page Up ] ", new object[]{ "BACK", shownInventory, linkedInventory, uiIndex, otherIndex });
-                    MakeButton(elements[0], " [ Page Up ] ", new object[]{ "B", updateButtonsParams });
+                    MakeButton(elements[0], " [ Page Up ] ", new object[]{ "B", panelIndex, updateButtonsParams });
                     start = 1;
                 }
                 if (!isAtEnd) {
-                    // MakeButton(elements[maxButtons-1], "[ Page Down ] ", new object[]{ "FWD", shownInventory, linkedInventory, uiIndex, otherIndex });
-                    MakeButton(elements[MaxButtons()-1], "[ Page Down ] ", new object[]{ "F", updateButtonsParams });
-                    
-                    end = MaxButtons() - 1;
+                    MakeButton(elements[maxButtons-1], "[ Page Down ] ", new object[]{ "F", panelIndex, updateButtonsParams });
+                    end = maxButtons - 1;
                 }
             }
             
             for (int i = start ; i < end; i++) {
-                int index = paginate ? (i-start) + currentPaginatedOffsets[uiIndex] : i;
+                int index = isPaginated ? (i-start) + currentPaginatedOffsets[panelIndex] : i;
 
                 if (index < buttonObjectsCount) {
-                    // MakeButton( elements[i], invSlots[index].item.itemName + " ( x"+invSlots[index].count+" )", new object[] { invSlots[index], shownInventory, linkedInventory, uiIndex, otherIndex } );
-                    MakeButton( elements[i], GetDisplayForButtonObject(buttonObjects[index]), new object[] { buttonObjects[index], updateButtonsParams } );
+                    MakeButton( elements[i], GetDisplayForButtonObject(buttonObjects[index]), new object[] { buttonObjects[index], panelIndex, updateButtonsParams } );
                 }
                 else {
-                    // MakeButton( elements[i], "Empty", new object[] { null, shownInventory, linkedInventory, uiIndex, otherIndex } );
-                    MakeButton( elements[i], "Empty", new object[] { null, updateButtonsParams } );
+                    MakeButton( elements[i], "Empty", new object[] { null, panelIndex, updateButtonsParams } );
                 }
             }
         }  
-
     }
+
+
 }
