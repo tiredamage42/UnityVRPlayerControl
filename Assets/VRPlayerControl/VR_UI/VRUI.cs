@@ -57,16 +57,21 @@ namespace VRPlayer.UI {
             invUIHandler = uiObject.GetComponent<FullInventoryUIHandler>();
             
             UIElementHolder fullTradeHolder = VRUIBuilder.MakeFullTradeUI("FullTrade", normalPageParams, textPanelParameters, fullTradeTransform, buildRotationOffset, textPanelRotationZOffset);
-
+            UIElementHolder pagepanelui = VRUIBuilder.MakeButtonsPage("PageWPanel", normalPageParams, textPanelParameters, true, pageWithPanelTransform, buildRotationOffset);
             uiObject.GetComponent<CraftingUIHandler>().SetUIObject(fullTradeHolder);
             uiObject.GetComponent<FullTradeUIHandler>().SetUIObject(fullTradeHolder);
             
             quickInvHandler.SetUIObject(VRUIBuilder.MakeRadial("QuickInvRadial", radialParams));
-            invUIHandler.SetUIObject(VRUIBuilder.MakeButtonsPage("PageWPanel", normalPageParams, textPanelParameters, true, pageWithPanelTransform, buildRotationOffset));
+            invUIHandler.SetUIObject(pagepanelui);
             
             uiObject.GetComponent<DialoguePlayerUIHandler>().SetUIObject(VRUIBuilder.MakeButtonsPage("Dialogue", dialogueParams, true, dialogueOptionsTransform));
             uiObject.GetComponent<QuickTradeUIHandler>().SetUIObject(VRUIBuilder.MakeButtonsPage("QuickTrade", quickTradeParams, false, null));
-        
+
+            uiObject.GetComponent<UIGameValuePage>().SetUIObject(pagepanelui);
+            uiObject.GetComponent<UIPerksTable>().SetUIObject(fullTradeHolder);
+            uiObject.GetComponent<UIQuestsPage>().SetUIObject(fullTradeHolder);
+
+            
 
             subtitles = VRUIBuilder.MakeSubtitles("Subtitles", subtitlesParameters, subTitlesTransform);
             msgCenter = VRUIBuilder.MakeMessageCenter ("Message Center", messageCenterParameters, messageCenterTransform);

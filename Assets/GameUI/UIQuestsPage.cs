@@ -21,20 +21,24 @@ namespace Game.GameUI {
         }
 
         protected override void OnUISelect (GameObject[] data, object[] customData) { 
+            (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText("");
 
             if (customData != null) {
-                Quest quest = customData[0] as Quest;   
-                int panelIndex = (int)customData[1];
+                Quest quest = customData[0] as Quest;
+                if (quest != null) {
 
-                string textToShow = quest.displayName;
-                if (panelIndex == 0) {
-                    textToShow += (quest.infinite ? " [ Infinite ]" : "") + ":\n\n" + quest.GetHint();
-                }
-                else {
-                    textToShow += " [ Completed ]";
-                }
+                    int panelIndex = (int)customData[1];
 
-                (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText(textToShow);
+                    string textToShow = quest.displayName;
+                    if (panelIndex == 0) {
+                        textToShow += (quest.infinite ? " [ Infinite ]" : "") + ":\n\n" + quest.GetHint();
+                    }
+                    else {
+                        textToShow += " [ Completed ]";
+                    }
+
+                    (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText(textToShow);
+                }   
             }
         }
         

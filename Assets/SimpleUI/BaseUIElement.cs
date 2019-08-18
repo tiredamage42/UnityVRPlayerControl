@@ -152,8 +152,8 @@ public class SkipNonInteractable : MonoBehaviour, ISelectHandler
                     else {
                         if (UIManager.currentInput.GetButtonDown(UIManager.standaloneInputModule.submitButton)) {
                             DoSubmit(new Vector2Int(0,0));
-
                         }
+                        // Debug.LogError("checking for submit");
                     }
 
                     // check if we hit the cancel button specified in the project's

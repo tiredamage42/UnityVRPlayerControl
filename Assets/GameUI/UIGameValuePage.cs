@@ -43,15 +43,18 @@ namespace Game.GameUI {
         }
 
         protected override void OnUISelect (GameObject[] data, object[] customData) { 
+                    (uiObject as SimpleUI.UIPage).textPanel.SetText("");
 
             if (customData != null) {
                 GameValue g = customData[0] as GameValue;   
+                if (g != null) {
 
-                string textToShow = g.description + "\n\n" + g.GetValue() + " / " + g.GetMaxValue();
-                
-                // TODO: add modifiers to show
+                    string textToShow = g.description + "\n\n" + g.GetValue() + " / " + g.GetMaxValue();
+                    
+                    // TODO: add modifiers to show
 
-                (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText(textToShow);
+                    (uiObject as SimpleUI.UIPage).textPanel.SetText(textToShow);
+                }
             }
         }
 

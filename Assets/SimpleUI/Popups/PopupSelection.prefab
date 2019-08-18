@@ -166,6 +166,7 @@ MonoBehaviour:
   isBase: 1
   baseObject: {fileID: 0}
   parentElement: {fileID: 0}
+  isPopup: 1
   textPanel: {fileID: 0}
   subHolders: []
   allElements: []

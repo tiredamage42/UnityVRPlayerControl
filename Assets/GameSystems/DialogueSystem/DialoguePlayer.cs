@@ -169,8 +169,8 @@ namespace Game.DialogueSystem {
 
 
                             bool stepAvailable = true;
-                            for (int x = 0; x < leadsToStep.stepScripts.list.Length; i++) {
-                                if (!leadsToStep.stepScripts.list[i].StepAvailable (myActor, speakingTo)) {
+                            for (int x = 0; x < leadsToStep.stepScripts.list.Length; x++) {
+                                if (!leadsToStep.stepScripts.list[x].StepAvailable (myActor, speakingTo)) {
                                     stepAvailable = false;
                                     break;
                                 }

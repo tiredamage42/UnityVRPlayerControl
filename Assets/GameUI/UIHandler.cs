@@ -104,18 +104,33 @@ Debug.LogError("ui active");
             if (previousUIHandler != null) {
                 if (input.x == 0) {
                     CloseUI();
-                    previousUIHandler.OpenUI();
+                    StartCoroutine(OpenPrevious());
+                    
+                    // previousUIHandler.OpenUI();
                     return true;
                 }
             }
             if (nextUIHandler != null) {
                 if (input.x == 1) {
                     CloseUI();
-                    nextUIHandler.OpenUI();
+                    StartCoroutine(OpenNext());
+                    // nextUIHandler.OpenUI();
                     return true;
                 }
             }
     		return false;
+        }
+        IEnumerator OpenNext() {
+            yield return null;
+            yield return null;
+            nextUIHandler.OpenUI();
+
+        }
+        IEnumerator OpenPrevious() {
+            yield return null;
+            yield return null;
+            previousUIHandler.OpenUI();
+
         }
 
         protected void _OnUIInput(GameObject[] data, object[] customData, Vector2Int input) {
@@ -136,10 +151,17 @@ Debug.LogError("ui active");
 
         // protected abstract void StartShow();
 
-        void StartShow() {
+        IEnumerator StartUIShow(object[] parameters) {
+
             UIManager.ShowUI(uiObject, 
             // true, 
             usesPage);
+
+            yield return null;
+            yield return null;
+            yield return null;
+            yield return null;
+            yield return null;
             
             uiObject.onBaseCancel = CloseUI;
 
@@ -157,6 +179,9 @@ Debug.LogError("ui active");
             //     uiObject.SubscribeToSelectEvent(OnPaginatedUISelect);
             //     for(int i = 0; i < currentPaginatedOffsets.Length; i++) currentPaginatedOffsets[i] = 0;
             // }
+
+            OnOpenUI(parameters);
+            BroadcastUIOpen(parameters);
         }
 
         protected abstract void SubscribeToUIObjectEvents ();
@@ -296,10 +321,11 @@ Debug.LogError("ui active");
 
                 }
 
-            StartShow();
+            StartCoroutine(StartUIShow(parameters));
             
-            OnOpenUI(parameters);
-            BroadcastUIOpen(parameters);
+            
+            // OnOpenUI(parameters);
+            // BroadcastUIOpen(parameters);
         }
 
         public void CloseUI (object[] parameters) {

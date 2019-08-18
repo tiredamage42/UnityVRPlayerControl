@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 using Game.InventorySystem;
 using Game.InventorySystem.CraftingSystem;
@@ -87,6 +88,8 @@ namespace Game.GameUI {
 
         protected override void OnOpenInventoryUI(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
             this.categoryFilter = categoryFilter;
+            Debug.Log(categoryFilter);
+
             BuildButtons("Recipes", true, 0, new object[] { inventory, inventory, categoryFilter });
             BuildButtons("Scrappable Items", false, 1, new object[] { inventory, inventory, inventory.scrappableCategories });
         }
@@ -113,27 +116,37 @@ namespace Game.GameUI {
 
         void OnConfirmationSelection(bool used, int selectedOption) {
             if (used && selectedOption == 0) {
+                Debug.LogError("woooot");
                 Inventory shownInventory = currentUpdateParams[0] as Inventory;
 
                 //scrap
                 if (currentPanelIndex == 1) {
                     shownInventory.ScrapItem(currentSlot.item, 1, -1, true, sendMessage: true, shownInventory.actor, shownInventory.actor);
-
+                    Debug.LogError("updating buttons scrap");
                     UpdateUIButtons( 1, currentUpdateParams);//new object[] { currentUpdateParams[0], currentUpdateParams[1], shownInventory.scrappableCategories } );
                     UpdateUIButtons( 0, new object[] { currentUpdateParams[0], currentUpdateParams[1], categoryFilter } );
+StartCoroutine(SetSelection(buttonReferences[1][0].gameObject)); // TODO: keep tack of selected index and go back to that one
                 }
                 // craft recipe
                 else {
                     if (currentSlot.item.OnConsume(shownInventory, 1, 0)){
+                    
+                    Debug.LogError("updating buttons craft");
+                    
                         //update with current button params
                         UpdateUIButtons(0, currentUpdateParams); 
                         //update other ui panel, other index, same inventories, scrappable categories
                         UpdateUIButtons(1, new object[] { currentUpdateParams[0], currentUpdateParams[1], shownInventory.scrappableCategories } );
+                    StartCoroutine(SetSelection(buttonReferences[0][0].gameObject));
                     }
 
                 }
 
                 
+            }
+            else {
+                StartCoroutine(SetSelection(buttonReferences[1][0].gameObject)); // TODO: keep tack of selected index and go back to that one
+
             }
         }
 

@@ -18,7 +18,8 @@ public class DialogueStep_OpenFullTradeUI : MonoBehaviour, IDialogueStepScript
         // give the player time to stop
         yield return new WaitForSeconds (stepTime+.1f); 
 
-        dialoguePlayer.GetComponent<FullTradeUIHandler>().OpenUI(
+        // dialoguePlayer.GetComponent
+        GameObject.FindObjectOfType<FullTradeUIHandler>().OpenUI(
             new object[] { dialoguePlayer.inventory, 0, speaker.inventory, categoryFilter }
         );
     }

@@ -281,12 +281,15 @@ namespace SimpleUI {
             SetAllActiveUIsSelectableActive(false);
             
             selectionReturnCallback = returnValue;
-
-            selectionPopupElement.SetMessage(msg);
             
             ShowUI(selectionPopupElement, 
                 // true, 
                 false);
+
+
+                Debug.LogError("showing selection" + msg);
+
+            selectionPopupElement.SetMessage(msg);
             selectionPopupElement.onBaseCancel = OnCancelSelectionUI;
             selectionPopupElement.SubscribeToSubmitEvent(OnSelectionSubmit);
             
@@ -299,8 +302,9 @@ namespace SimpleUI {
         }
 
         static void OnSelectionSubmit (GameObject[] data, object[] customData, Vector2Int input) {
+            Debug.LogError("selected" + (int)customData[0]);
             HideUI(selectionPopupElement);
-            SetAllActiveUIsSelectableActive(false);
+            SetAllActiveUIsSelectableActive(true);
             popupOpen = false;
             
             
@@ -310,8 +314,10 @@ namespace SimpleUI {
             }
         }
         static void OnCancelSelectionUI () {
+                        Debug.LogError("cancelled");
+
             HideUI(selectionPopupElement);
-            SetAllActiveUIsSelectableActive(false);
+            SetAllActiveUIsSelectableActive(true);
             popupOpen = false;
             
             if (selectionReturnCallback != null) {
@@ -352,7 +358,7 @@ namespace SimpleUI {
         }
         static void OnSliderSubmit (GameObject[] data, object[] customData, Vector2Int input) {
             HideUI(sliderElement);
-            SetAllActiveUIsSelectableActive(false);
+            SetAllActiveUIsSelectableActive(true);
             popupOpen = false;
             
             if (sliderReturnCallback != null) {
@@ -363,7 +369,7 @@ namespace SimpleUI {
         }
         static void OnCancelSliderUI () {
             HideUI(sliderElement);
-            SetAllActiveUIsSelectableActive(false);
+            SetAllActiveUIsSelectableActive(true);
             popupOpen = false;
             
             if (sliderReturnCallback != null) {

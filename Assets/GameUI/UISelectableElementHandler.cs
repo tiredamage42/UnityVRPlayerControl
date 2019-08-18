@@ -9,7 +9,7 @@ namespace Game.GameUI {
         public int maxButtons = 8;
         
         int[] lastElementsShownCount;
-        SelectableElement[][] buttonReferences;
+        protected SelectableElement[][] buttonReferences;
         int[] currentPaginatedOffsets;
 
         protected void HideUIAndReset (object[] parameters) {
@@ -166,7 +166,9 @@ namespace Game.GameUI {
 
             // if (buttonReferences[uiIndex] == null) 
             buttonReferences[panelIndex] = uiObject.GetAllSelectableElements(maxButtons);
-            
+
+            Debug.LogError(buttonReferences[panelIndex].Length);
+            Debug.LogError("length");
             if (setSelection) {
                 // SetSelection(buttonReferences[panelIndex][0].gameObject);
                 StartCoroutine(SetSelection(buttonReferences[panelIndex][0].gameObject));
@@ -220,7 +222,7 @@ namespace Game.GameUI {
                 }   
             }
 		}
-        IEnumerator SetSelection(GameObject selection) {
+        protected IEnumerator SetSelection(GameObject selection) {
             yield return new WaitForEndOfFrame();
             // yield return new WaitForEndOfFrame();
             Debug.Log("setting selection " + selection.name);

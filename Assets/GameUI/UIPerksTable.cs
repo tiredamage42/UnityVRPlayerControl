@@ -52,6 +52,9 @@ namespace Game.GameUI {
 
         // int clickAttempts;
         protected override void OnUISelect (GameObject[] data, object[] customData) { 
+            
+                        (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText("");
+                    
             // clickAttempts = 0;
             if (customData != null) {
 
@@ -64,35 +67,42 @@ namespace Game.GameUI {
                 //showing perks
                 if (panelIndex == 0) {
                     PerkHolder perkHolder = customData[0] as PerkHolder;  
-                    
-                    string textToShow = perkHolder.perk.displayName + "\n\n" + perkHolder.perk.description;
-                    
-                    for (int i = 0; i < perkHolder.perk.descriptions.list.Length; i++) {
-                        textToShow += "Level " + (i+1) + ": " + perkHolder.perk.descriptions.list[i] + "\n";
+
+                    if (perkHolder != null) {
+
+                        string textToShow = perkHolder.perk.displayName + "\n\n" + perkHolder.perk.description;
+                        
+                        for (int i = 0; i < perkHolder.perk.descriptions.list.Length; i++) {
+                            textToShow += "Level " + (i+1) + ": " + perkHolder.perk.descriptions.list[i] + "\n";
+                        }
+
+                        textToShow += "Current Level: " + perkHolder.level + " / " + (perkHolder.perk.levels+1);
+
+                        if (perkHandlerController.perkPoints > 0 && perkHolder.level < perkHolder.perk.levels+1) {
+                            textToShow += "\n\nClick To Add Perk Point";
+                        }
+                        
+                        textToShow += "\n\nCurrent Perk Points: " + perkHandlerController.perkPoints;
+
+                        (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText(textToShow);
                     }
-
-                    textToShow += "Current Level: " + perkHolder.level + " / " + (perkHolder.perk.levels+1);
-
-                    if (perkHandlerController.perkPoints > 0 && perkHolder.level < perkHolder.perk.levels+1) {
-                        textToShow += "\n\nClick To Add Perk Point";
-                    }
                     
-                    textToShow += "\n\nCurrent Perk Points: " + perkHandlerController.perkPoints;
-
-                    (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText(textToShow);
                 }
                 // showing special
                 else {
                     GameValue specialValue = customData[0] as GameValue;   
-                    string textToShow = specialValue.description + "\n\n" + specialValue.baseValue + " / " + specialValue.baseMinMax.y;
-                    
-                    if (perkHandlerController.perkPoints > 0 && specialValue.baseValue < specialValue.baseMinMax.y) {
-                        textToShow += "\n\nClick To Add Perk Point";
-                    }
-                    textToShow += "\n\nCurrent Perk Points: " + perkHandlerController.perkPoints;
+                    if (specialValue != null) {
 
-                    // TODO: add modifiers to show
-                    (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText(textToShow);
+                        string textToShow = specialValue.description + "\n\n" + specialValue.baseValue + " / " + specialValue.baseMinMax.y;
+                        
+                        if (perkHandlerController.perkPoints > 0 && specialValue.baseValue < specialValue.baseMinMax.y) {
+                            textToShow += "\n\nClick To Add Perk Point";
+                        }
+                        textToShow += "\n\nCurrent Perk Points: " + perkHandlerController.perkPoints;
+
+                        // TODO: add modifiers to show
+                        (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText(textToShow);
+                    }
 
                 }
             }

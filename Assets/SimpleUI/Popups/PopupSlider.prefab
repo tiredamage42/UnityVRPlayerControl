@@ -316,6 +316,7 @@ MonoBehaviour:
   isBase: 1
   baseObject: {fileID: 0}
   parentElement: {fileID: 0}
+  isPopup: 1
   titleText: {fileID: 7587142844494388625}
   amountText: {fileID: 8071032242023850585}
   sliderRect: {fileID: 7587142843831740737}

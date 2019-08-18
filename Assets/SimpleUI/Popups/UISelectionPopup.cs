@@ -33,8 +33,12 @@ namespace SimpleUI {
 
         
         public void SetMessage (string txt) {
-            if (messageText != null) 
+            msgText = txt;
+            Debug.LogError("setting msage in popup");
+            if (messageText != null) {
+
                 messageText.SetText(txt, parameters.maxCharacters);
+            }
         }
 
         void UpdateLayout () {

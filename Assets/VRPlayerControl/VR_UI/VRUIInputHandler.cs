@@ -28,22 +28,25 @@ namespace VRPlayer.UI {
 
 
         bool UIShouldOpenCheck (object[] parameters){
-            int usingEquipPoint = (int)parameters[1];
-            bool shouldclose = enforcedEquipID == -1 || usingEquipPoint == enforcedEquipID || usingEquipPoint <= -1;            
+            // TODO: NOT ALL PARAMEters include equip point
+            // int usingEquipPoint = (int)parameters[1];
+            bool shouldclose = true;// enforcedEquipID == -1 || usingEquipPoint == enforcedEquipID || usingEquipPoint <= -1;            
 
-            if (!shouldclose) {
-                Debug.LogError("no openCheck check " + usingEquipPoint + " enforces " + enforcedEquipID);
-            }
+            // if (!shouldclose) {
+            //     Debug.LogError("no openCheck check " + usingEquipPoint + " enforces " + enforcedEquipID);
+            // }
             
             return shouldclose;
         }
         bool UIShouldCloseCheck (object[] parameters){
-            int usingEquipPoint = (int)parameters[1];
+            // TODO: NOT ALL PARAMEters include equip point
+            // int usingEquipPoint = (int)parameters[1];
+            
 
-            bool shouldclose = enforcedEquipID == -1 || usingEquipPoint == enforcedEquipID || usingEquipPoint <= -1;
-            if (!shouldclose) {
-                Debug.LogError("no close check " + usingEquipPoint + " enforces " + enforcedEquipID);
-            }
+            bool shouldclose = true;// enforcedEquipID == -1 || usingEquipPoint == enforcedEquipID || usingEquipPoint <= -1;
+            // if (!shouldclose) {
+            //     Debug.LogError("no close check " + usingEquipPoint + " enforces " + enforcedEquipID);
+            // }
             return shouldclose;
         }
 
@@ -100,7 +103,7 @@ namespace VRPlayer.UI {
         int workingWithEquipID;
         void OnOpenUI (GameObject uiObject, object[] parameters) {
         
-            workingWithEquipID = (int)parameters[1];
+            workingWithEquipID = 0;// (int)parameters[1];
         
             SteamVR_Input_Sources hand = needsSingleHandInput ? VRManager.Int2Hand( workingWithEquipID ) : SteamVR_Input_Sources.Any;
 

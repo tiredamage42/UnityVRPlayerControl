@@ -161,6 +161,7 @@ namespace SimpleUI {
         protected virtual void OnDisable () {
             if (isHoldersCollection) return;
             for (int i = 0; i < allElements.Count; i++) {
+                Debug.LogError("enabling buttons");
                 allElements[i].gameObject.SetActive(true);
                 allElements[i].selected = false;
             }
@@ -240,6 +241,11 @@ namespace SimpleUI {
                 for (int i = targetCount; i < c; i++) {
                     Debug.Log("Disabling buttons");
                     allElements[i].gameObject.SetActive(false);
+                }
+                List<SelectableElement> r = new List<SelectableElement>();
+                for (int i = 0; i < targetCount; i++) {
+                    r.Add(allElements[i]);
+                    return r.ToArray();
                 }
             }
             return allElements.ToArray();

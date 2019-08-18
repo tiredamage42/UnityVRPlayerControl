@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 11465950}
   - component: {fileID: 1686168578}
   - component: {fileID: 3859370353770650318}
+  - component: {fileID: 1123761772}
   m_Layer: 0
   m_Name: VRPlayer
   m_TagString: Player
@@ -302,6 +303,20 @@ MonoBehaviour:
   vignetteIntensity: 2
   vignetteSpeed: 10
   vignetteMovementThreshold: 1
+--- !u!114 &1123761772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 107946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c439f9b87d54548ab9adce21a01ae112, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  perkPoints: 0
+  allPerks: []
 --- !u!1 &125964
 GameObject:
   m_ObjectHideFlags: 0
@@ -6839,6 +6854,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buildRotationOffset: -15
+  textPanelRotationZOffset: 0.1
   pageWithPanelTransform: {fileID: 11400000, guid: 6c1b14d3a33774bc2976ac82ed95cfb6,
     type: 2}
   fullTradeTransform: {fileID: 11400000, guid: 709bf75dbf5a144049c0a926241fb5cd, type: 2}
