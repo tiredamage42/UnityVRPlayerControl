@@ -14,6 +14,7 @@ namespace VRPlayer.UI {
     {
         // public GameObject playerObject;
         public float buildRotationOffset = 25;
+        public float textPanelRotationZOffset = .1f;
 
         public TransformBehavior pageWithPanelTransform, fullTradeTransform, subTitlesTransform, dialogueOptionsTransform, messageCenterTransform;
 
@@ -55,7 +56,7 @@ namespace VRPlayer.UI {
             quickInvHandler = uiObject.GetComponent<QuickInventoryUIHandler>();
             invUIHandler = uiObject.GetComponent<FullInventoryUIHandler>();
             
-            UIElementHolder fullTradeHolder = VRUIBuilder.MakeFullTradeUI("FullTrade", normalPageParams, textPanelParameters, fullTradeTransform, buildRotationOffset);
+            UIElementHolder fullTradeHolder = VRUIBuilder.MakeFullTradeUI("FullTrade", normalPageParams, textPanelParameters, fullTradeTransform, buildRotationOffset, textPanelRotationZOffset);
 
             uiObject.GetComponent<CraftingUIHandler>().SetUIObject(fullTradeHolder);
             uiObject.GetComponent<FullTradeUIHandler>().SetUIObject(fullTradeHolder);

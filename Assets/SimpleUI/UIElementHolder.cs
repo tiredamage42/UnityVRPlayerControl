@@ -101,9 +101,18 @@ namespace SimpleUI {
         public List<SelectableElement> allElements = new List<SelectableElement>();
 
         protected override bool CurrentSelectedIsOurs(GameObject currentSelected) {
-            for (int i = 0; i < allElements.Count; i++) {
-                if (allElements[i].gameObject == currentSelected) {
-                    return true;
+            if (isHoldersCollection) {
+                for (int i = 0; i< subHolders.Length; i++) {
+                    if (subHolders[i].CurrentSelectedIsOurs(currentSelected)) {
+                        return true;
+                    }
+                }
+            }
+            else {
+                for (int i = 0; i < allElements.Count; i++) {
+                    if (allElements[i].gameObject == currentSelected) {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -199,6 +208,12 @@ namespace SimpleUI {
 
         public override void SetSelectableActive(bool active) {
             if (!isPopup) {
+                if (isHoldersCollection) {
+                    for (int i =0 ; i< subHolders.Length; i++) {
+                        subHolders[i].SetSelectableActive(active);
+                    }
+                    return;
+                }
                 for (int i = 0; i < allElements.Count; i++) {
                     Button button = allElements[i].GetComponent<Button>();
                     if (button) {

@@ -64,6 +64,10 @@ namespace Game.GameUI {
 
         protected override List<InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter) {
             if (uiIndex == 0) {
+                if (categoryFilter != null && categoryFilter.Count > 0) {
+                    Debug.Log("crafting category filter: ");
+                    Debug.Log(categoryFilter[0]);
+                }
                 return shownInventory.GetFilteredInventory(categoryFilter);
             }
             else {
@@ -85,8 +89,8 @@ namespace Game.GameUI {
             this.categoryFilter = categoryFilter;
             BuildButtons("Recipes", true, 0, new object[] { inventory, inventory, categoryFilter });
             BuildButtons("Scrappable Items", false, 1, new object[] { inventory, inventory, inventory.scrappableCategories });
-
         }
+
         
         const int craftAction = 0;
 

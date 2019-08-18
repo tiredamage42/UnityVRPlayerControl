@@ -26,20 +26,39 @@ public class AssetSelector<T> where T : UnityEngine.Object{
         
         allNames = new string[assets.Count];
         allNames[0] = " [ Null ] ";
-        for (int i = 1; i < assets.Count; i++) allNames[i] = namePredicate != null ? namePredicate(assets[i]) : assets[i].name;
+        for (int i = 1; i < assets.Count; i++) 
+            allNames[i] = namePredicate != null ? namePredicate(assets[i]) : assets[i].name;
     }
 
     public static List<T> FindAssetsByType(System.Func<T, int> orderPredicate) //where T : UnityEngine.Object
     {
+        Debug.Log("finding assets");
         List<T> assets = new List<T>();
-        string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(T)));
+
+        string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(T).FullName));
+
+        Debug.Log("found " + guids.Length + " guids");
         for( int i = 0; i < guids.Length; i++ )
         {
             T asset = AssetDatabase.LoadAssetAtPath<T>( AssetDatabase.GUIDToAssetPath( guids[i] ) );
             if ( asset != null ) assets.Add(asset);
         }
+        Debug.Log("found assets: " + assets.Count);
+
+        T[] resourcesFound = Resources.FindObjectsOfTypeAll<T>();
+
+        for (int i = 0; i < resourcesFound.Length; i++) {
+            if (!assets.Contains(resourcesFound[i])) {
+                assets.Add(resourcesFound[i]);
+                AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(resourcesFound[i]));
+            }
+        }
+
+                Debug.Log("resources found: " + resourcesFound.Length);
+
         if (orderPredicate != null) 
             return assets.OrderBy(orderPredicate).ToList();
+
         return assets;
     }
 

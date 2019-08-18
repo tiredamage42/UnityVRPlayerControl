@@ -148,7 +148,7 @@ namespace VRPlayer.UI {
         }
 
 
-        public static UIElementHolder MakeFullTradeUI (string goName, UIPageParameters pageParameters, TextPanelParameters textPanelParams, TransformBehavior equipBehavior, float buildRotationOffset){//, float textScale) {
+        public static UIElementHolder MakeFullTradeUI (string goName, UIPageParameters pageParameters, TextPanelParameters textPanelParams, TransformBehavior equipBehavior, float buildRotationOffset, float textPanelRotationZOffset){//, float textScale) {
             RectTransform canvasObject = BuildCanvasObject(goName, true, equipBehavior);
 
             RectTransform childRect = canvasObject;
@@ -169,7 +169,7 @@ namespace VRPlayer.UI {
 
             collection.subHolders = new UIElementHolder[] { newPage0 , newPage1 };
 
-            SetParent(InstantiateTextPanel(textPanelParams, new UIElementHolder[] {collection, newPage0 , newPage1 }).rectTransform, collection.rectTransform, anchor, new Vector3(0, -pageParameters.titleHeight, -.1f));
+            SetParent(InstantiateTextPanel(textPanelParams, new UIElementHolder[] {collection, newPage0 , newPage1 }).rectTransform, collection.rectTransform, anchor, new Vector3(0, -pageParameters.titleHeight, textPanelRotationZOffset));
 
             UIManager.HideUI(collection);
             return collection;

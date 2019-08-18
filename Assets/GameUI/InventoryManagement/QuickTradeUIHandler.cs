@@ -29,6 +29,8 @@ namespace Game.GameUI {
                     InventorySlot item = customData[0] as InventorySlot;
                     if (item != null) {
                         shownInventory.TransferItemAlreadyInInventoryTo(item, 1, taker, sendMessage: false);
+                        updateButtons = true;
+
                     }
                 }
                 // take all
@@ -52,9 +54,17 @@ namespace Game.GameUI {
 
                     Debug.Log("opening ull trade");
 
-                    fullTradeUIHandler.OpenUI(new object[] { taker, input.y, shownInventory, null });
+                    // fullTradeUIHandler.OpenUI(new object[] { taker, input.y, shownInventory, null });
+                    StartCoroutine(OpenFullTrade(new object[] { taker, input.y, shownInventory, null }));
                 }
             }
 		}
+
+        System.Collections.IEnumerator OpenFullTrade (object[] parameters) {
+            yield return null;
+            yield return null;
+            fullTradeUIHandler.OpenUI(parameters);
+
+        }
     }
 }

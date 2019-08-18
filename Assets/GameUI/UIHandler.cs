@@ -59,11 +59,11 @@ namespace Game.GameUI {
                 return true;
             }
             
-            // if (UIManager.AnyUIOpen()) 
+            if (UIManager.AnyUIOpen()) 
                 {
-// Debug.LogError("ui active");
+Debug.LogError("ui active");
                 
-                // return true;
+                return true;
                 }
             
             if (shouldOpenCheck != null && !shouldOpenCheck(parameters)) 
