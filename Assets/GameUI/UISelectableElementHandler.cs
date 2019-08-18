@@ -167,7 +167,11 @@ namespace Game.GameUI {
             // if (buttonReferences[uiIndex] == null) 
             buttonReferences[panelIndex] = uiObject.GetAllSelectableElements(maxButtons);
             
-            if (setSelection) SetSelection(buttonReferences[panelIndex][0].gameObject);
+            if (setSelection) {
+                // SetSelection(buttonReferences[panelIndex][0].gameObject);
+                StartCoroutine(SetSelection(buttonReferences[panelIndex][0].gameObject));
+            }
+
 
             UpdateUIButtons(panelIndex, updateButtonsParams);
         }
@@ -218,6 +222,8 @@ namespace Game.GameUI {
 		}
         IEnumerator SetSelection(GameObject selection) {
             yield return new WaitForEndOfFrame();
+            // yield return new WaitForEndOfFrame();
+            Debug.Log("setting selection " + selection.name);
             UIManager.SetSelection(selection);
         }
 

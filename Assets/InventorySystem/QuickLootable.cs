@@ -16,14 +16,14 @@ public class QuickLootable : MonoBehaviour, IInteractable
     public void OnInteractableAvailabilityChange(bool available) { }
     public void OnInteractableInspectedStart (InteractionPoint interactor) {
         if (linkedInventory != null && interactor.inventory != null) {
-            UIHandler.GetUIHandlerByContext(interactor.inventory.gameObject, Inventory.quickTradeContext).OpenUI(
+            UIHandler.GetUIHandlerByContext(GameObject.FindObjectOfType<UIObjectInitializer>().gameObject, Inventory.quickTradeContext).OpenUI(
                 new object[] { interactor.inventory, interactor.interactorID, linkedInventory, null }
             );
         }
     }
     public void OnInteractableInspectedEnd (InteractionPoint interactor) {
         if (linkedInventory != null && interactor.inventory != null)  {
-            UIHandler.GetUIHandlerByContext(interactor.inventory.gameObject, Inventory.quickTradeContext).CloseUI(
+            UIHandler.GetUIHandlerByContext(GameObject.FindObjectOfType<UIObjectInitializer>().gameObject, Inventory.quickTradeContext).CloseUI(
                 new object[] { interactor.inventory, interactor.interactorID, linkedInventory, null }
             );
         }

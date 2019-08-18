@@ -29,11 +29,22 @@ namespace VRPlayer.UI {
 
         bool UIShouldOpenCheck (object[] parameters){
             int usingEquipPoint = (int)parameters[1];
-            return enforcedEquipID == -1 || usingEquipPoint == enforcedEquipID;            
+            bool shouldclose = enforcedEquipID == -1 || usingEquipPoint == enforcedEquipID || usingEquipPoint <= -1;            
+
+            if (!shouldclose) {
+                Debug.LogError("no openCheck check " + usingEquipPoint + " enforces " + enforcedEquipID);
+            }
+            
+            return shouldclose;
         }
         bool UIShouldCloseCheck (object[] parameters){
             int usingEquipPoint = (int)parameters[1];
-            return enforcedEquipID == -1 || usingEquipPoint == enforcedEquipID;
+
+            bool shouldclose = enforcedEquipID == -1 || usingEquipPoint == enforcedEquipID || usingEquipPoint <= -1;
+            if (!shouldclose) {
+                Debug.LogError("no close check " + usingEquipPoint + " enforces " + enforcedEquipID);
+            }
+            return shouldclose;
         }
 
         protected UIHandler myUIHandler;
@@ -93,7 +104,7 @@ namespace VRPlayer.UI {
         
             SteamVR_Input_Sources hand = needsSingleHandInput ? VRManager.Int2Hand( workingWithEquipID ) : SteamVR_Input_Sources.Any;
 
-            string[] inputNames = myUIHandler.inputNames;
+            string[] inputNames = myUIHandler.GetInputNames();
             for (int i = 0; i < controls.list.Length; i++) {
                 StandardizedVRInput.MarkActionOccupied(controls.list[i].action, hand);
                 StandardizedVRInput.instance.ShowHint(hand, controls.list[i].action, inputNames[i]);

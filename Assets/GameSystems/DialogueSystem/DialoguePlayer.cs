@@ -45,7 +45,7 @@ namespace Game.DialogueSystem {
 
         void Awake () {
             myActor = GetComponent<Actor>();
-            uIHandler = GetComponent<DialoguePlayerUIHandler>();
+            uIHandler = GameObject.FindObjectOfType<UIObjectInitializer>().gameObject.GetComponent<DialoguePlayerUIHandler>();
         }
 
         public void Stop () {

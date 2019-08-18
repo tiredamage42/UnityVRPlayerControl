@@ -53,18 +53,34 @@ namespace Game.GameUI {
         public Func<object[], bool> shouldOpenCheck, shouldCloseCheck;
 
         protected bool OpenUIDenied (object[] parameters) {
-            if (UIObjectActive()) return true;
-            if (UIManager.AnyUIOpen()) return true;
-            if (shouldOpenCheck != null && !shouldOpenCheck(parameters)) return true;
+            if (UIObjectActive()) {
+                Debug.LogError("object active");
+                
+                return true;
+            }
+            
+            // if (UIManager.AnyUIOpen()) 
+                {
+// Debug.LogError("ui active");
+                
+                // return true;
+                }
+            
+            if (shouldOpenCheck != null && !shouldOpenCheck(parameters)) 
+                return true;
 
             if (requiresCustomInputMethod) {
-                if (!CheckForGetInputCallback()) return true;
+                if (!CheckForGetInputCallback()) 
+                    return true;
             }
             return false;
         }
 
         protected bool UICloseDenied (object[] parameters) {
-            if (!UIObjectActive()) return true;
+            if (!UIObjectActive()) {
+                Debug.LogError("object not active");
+                return true;
+            } 
             if (shouldCloseCheck != null && !shouldCloseCheck(parameters)) return true;
             return false;
         }
@@ -264,9 +280,21 @@ namespace Game.GameUI {
                 Debug.LogError("Cant open " + GetType().ToString() + " ui handler, params null or not the right length");
                 return;
             }
+
+
+
         
-            if (!CheckParameters(parameters)) return;
-            if (OpenUIDenied(parameters)) return;
+            if (!CheckParameters(parameters)) 
+                {
+                    Debug.LogError("parameter check denied");
+                    return;
+                }
+            if (OpenUIDenied(parameters)) 
+                {
+                    Debug.LogError("ui open denied");
+                return;
+
+                }
 
             StartShow();
             
@@ -276,7 +304,10 @@ namespace Game.GameUI {
 
         public void CloseUI (object[] parameters) {
 
-            if (UICloseDenied (parameters)) return;
+            if (UICloseDenied (parameters)) {
+                Debug.LogError("close denied");
+                return;
+            } 
 
             UIManager.HideUI(uiObject);
             

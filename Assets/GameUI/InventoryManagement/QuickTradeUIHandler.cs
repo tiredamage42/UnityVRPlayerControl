@@ -38,12 +38,21 @@ namespace Game.GameUI {
                     shownInventory.TransferInventoryContentsTo(taker, sendMessage: false);
                     updateButtons = true;
                 }
-                else if (input.x == switchToFullTradeAction+actionOffset) {
-                    CloseUI();
-                    fullTradeUIHandler.OpenUI(new object[] { taker, input.y, shownInventory, null });
-                }
+                // else if (input.x == switchToFullTradeAction+actionOffset) {
+                //     CloseUI();
+                //     fullTradeUIHandler.OpenUI(new object[] { taker, input.y, shownInventory, null });
+                // }
                 if (updateButtons){
                     UpdateUIButtons(0, updateButtonsParameters);
+                }
+
+                if (input.x == switchToFullTradeAction+actionOffset) {
+                    Debug.LogError("closing");
+                    CloseUI();
+
+                    Debug.Log("opening ull trade");
+
+                    fullTradeUIHandler.OpenUI(new object[] { taker, input.y, shownInventory, null });
                 }
             }
 		}

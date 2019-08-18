@@ -63,12 +63,16 @@ namespace VRPlayer.UI {
         public static UISliderPopup MakeSliderPopup (string goName, UISliderPopupParameters parameters, TransformBehavior equipBehavior) {
             UISliderPopup msgCenter = GameObject.Instantiate( UIManager.instance.sliderPopupPrefab );
             msgCenter.parameters = parameters;
-            return InitializeBaseUIElement<UISliderPopup> (msgCenter, BuildCanvasObject(goName, true, equipBehavior), new Vector2(.5f, 1f));
+            msgCenter = InitializeBaseUIElement<UISliderPopup> (msgCenter, BuildCanvasObject(goName, true, equipBehavior), new Vector2(.5f, 1f));
+            UIManager.HideUI(msgCenter);
+            return msgCenter;
         }
         public static UISelectionPopup MakeSelectionPopup (string goName, UISelectionPopupParameters parameters, TransformBehavior equipBehavior) {
             UISelectionPopup msgCenter = GameObject.Instantiate( UIManager.instance.selectionPopupPrefab );
             msgCenter.parameters = parameters;
-            return InitializeBaseUIElement<UISelectionPopup> (msgCenter, BuildCanvasObject(goName, true, equipBehavior), new Vector2(.5f, 1f));
+            msgCenter = InitializeBaseUIElement<UISelectionPopup> (msgCenter, BuildCanvasObject(goName, true, equipBehavior), new Vector2(.5f, 1f));
+            UIManager.HideUI(msgCenter);
+            return msgCenter;
         }
 
         public static UIMessageCenter MakeMessageCenter (string goName, UIMessageCenterParameters parameters, TransformBehavior equipBehavior) {

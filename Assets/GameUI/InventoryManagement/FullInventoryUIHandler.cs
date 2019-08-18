@@ -11,7 +11,7 @@ namespace Game.GameUI {
         protected override void OnUISelect (GameObject[] data, object[] customData) {
             if (customData != null) {
                 InventorySlot slot = customData[0] as InventorySlot;
-                if (slot != null) (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText(slot.item.itemDescription);
+                if (slot != null) (uiObject as SimpleUI.UIPage).textPanel.SetText(slot.item.itemDescription);
             }   
         }
 

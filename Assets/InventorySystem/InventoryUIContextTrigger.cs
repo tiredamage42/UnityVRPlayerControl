@@ -26,7 +26,7 @@ public class InventoryUIContextTrigger : MonoBehaviour, IInteractable
     public void OnInteractableUsedStart (InteractionPoint interactor, int useAction) {
         if (useAction == this.useAction && interactor.inventory != null) {
 
-            UIHandler.GetUIHandlerByContext(interactor.inventory.gameObject, contextName).OpenUI(
+            UIHandler.GetUIHandlerByContext(GameObject.FindObjectOfType<UIObjectInitializer>().gameObject, contextName).OpenUI(
                 new object[] { interactor.inventory, interactor.interactorID, suppliedInventory, categoryFilter }
             );
         }

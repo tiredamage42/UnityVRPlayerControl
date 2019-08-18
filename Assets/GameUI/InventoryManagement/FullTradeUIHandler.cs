@@ -16,7 +16,7 @@ namespace Game.GameUI {
         }
         
         protected override void OnOpenInventoryUI(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
-            
+            Debug.LogError("opening full trade");
             BuildButtons(inventory.GetDisplayName(), true, 0, new object[] { inventory, otherInventory, categoryFilter });
             BuildButtons(otherInventory.GetDisplayName(), false, 1, new object[] { otherInventory, inventory, categoryFilter });
         }
