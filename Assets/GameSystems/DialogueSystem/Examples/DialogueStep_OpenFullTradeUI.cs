@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
-using Game.GameUI;
+using Game.UI;
 using Game.DialogueSystem;
 using Game;
 public class DialogueStep_OpenFullTradeUI : MonoBehaviour, IDialogueStepScript
@@ -18,10 +18,12 @@ public class DialogueStep_OpenFullTradeUI : MonoBehaviour, IDialogueStepScript
         // give the player time to stop
         yield return new WaitForSeconds (stepTime+.1f); 
 
-        // dialoguePlayer.GetComponent
-        GameObject.FindObjectOfType<FullTradeUIHandler>().OpenUI(
-            new object[] { dialoguePlayer.inventory, 0, speaker.inventory, categoryFilter }
-        );
+
+        GameUI.tradeUI.OpenTradUI(dialoguePlayer.inventory, speaker.inventory, categoryFilter);
+        // // dialoguePlayer.GetComponent
+        // GameObject.FindObjectOfType<FullTradeUIHandler>().OpenUI(
+        //     new object[] { 0, speaker.inventory, categoryFilter }
+        // );
     }
             
     public void OnDialogueStep (Actor dialoguePlayer, Actor speaker, float stepTime) {

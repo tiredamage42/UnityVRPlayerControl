@@ -23,6 +23,7 @@ namespace SimpleUI{
 
     [ExecuteInEditMode] public class UIRadial : UIElementHolder
     {
+        protected override bool ShouldWiggleLayoutChanges() { return false; }
         protected override float TextScale() { return parameters.textScale; }
         
         public UIRadialParameters parameters = new UIRadialParameters();
@@ -73,8 +74,9 @@ namespace SimpleUI{
             return transform.GetChild(0);
         }
         
-        protected override void OnDisable () {
-            base.OnDisable();
+        // protected override 
+        void OnDisable () {
+            // base.OnDisable();
             currentSelected = -1;
         }
 

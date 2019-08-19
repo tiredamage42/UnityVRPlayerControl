@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
-
 using UnityEngine.UI;
-
 
 namespace SimpleUI {
 
@@ -57,7 +55,6 @@ namespace SimpleUI {
             return true;
         }
 
-
         Queue<string> messageQ = new Queue<string>();
         Queue<UIColorScheme> schemesQ = new Queue<UIColorScheme>();
         
@@ -70,7 +67,6 @@ namespace SimpleUI {
             newElement.DisableMessage();
             return newElement;
         }
-
 
         UIMessageElement GetAvailableElement () {
             if (elementPool.Count > 0) 
@@ -88,7 +84,6 @@ namespace SimpleUI {
         }
 
         IEnumerator HandleMessageShowing () {
-
             while (true) {
                 if (messageQ.Count > 0) {
                     ShowMessageImmediate(messageQ.Dequeue(), schemesQ.Dequeue());
@@ -98,14 +93,13 @@ namespace SimpleUI {
         }
 
         public void ShowMessage (string message, bool immediate, UIColorScheme scheme) {
-            if (immediate || messageQ.Count == 0) {
+            if (immediate || messageQ.Count == 0 && shownElements.Count == 0) {
                 ShowMessageImmediate(message, scheme);
             }
             else {
                 messageQ.Enqueue(message);
             }
         }
-
 
         public void ShowMessageImmediate (string message, UIColorScheme scheme) {
             if (onShowMessage != null) {
@@ -151,7 +145,6 @@ namespace SimpleUI {
                 }
             }
         }
-
         protected override void Update()
         {
             base.Update();

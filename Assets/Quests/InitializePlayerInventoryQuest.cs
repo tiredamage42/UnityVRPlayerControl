@@ -14,7 +14,7 @@ public class InitializePlayerInventoryQuest : Quest
             CompleteQuest();
         }
         public override void OnUpdateQuest (float deltaTime) { }
-        public override string GetHint () { return null; }
+        public override string GetCurrentTextHint () { return null; }
         public override void OnQuestComplete () { }
     
 }

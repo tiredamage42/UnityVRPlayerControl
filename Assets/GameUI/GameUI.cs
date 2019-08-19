@@ -1,11 +1,15 @@
-﻿using System.Collections;
+﻿// using System.Collections;
+
 using System.Collections.Generic;
 using UnityEngine;
 
+
 using SimpleUI;
+using Game.PerkSystem;
+using Game.DialogueSystem;
 using Game.InventorySystem;
 
-namespace Game.GameUI {
+namespace Game.UI {
 
 
     /*
@@ -216,151 +220,65 @@ namespace Game.GameUI {
             }
                     
     */
-
-
-    /*
-    
-    [System.Serializable] public class PerkHolder {
-        public Perk perk;
-        public int level;
-        public PerkHolder (Perk perk, int level) {
-            this.perk = perk;
-            this.level = level;
-        }
-    }
-
-        
-    public class PerkHandler : MonoBehaviour {
-        public int perkPoints; // maybe make this a game value so we can use it in condition checks ?
-        public List<PerkHolder> allPerks = new List<PerkHolder>();
-
-        public bool HasPerk (Perk perk, out int index) {
-            for (int i = 0; i < allPerks.Count; i++) {
-                if (allPerks[i].perk == perk) {
-                    index = i;
-                    return true;
-                }
-            }
-            index = -1;
-            return false;
-        }
-        public bool HasPerk (string perkDisplayName, int minLevel) {
-            for (int i = 0; i < allPerks.Count; i++) {
-                if (allPerks[i].perk.displayName == perkDisplayName) {
-                    return allPerks[i].level >= minLevel;
-                }
-            }
-            return false;
-        }
-
-        public void AddPerk (Perk perk) {
-            if (HasPerk(perk, out _))
-                return;
-            
-            allPerks.Add(new PerkHolder(perk, 1));
-        }
-
-        public void IncreasePerkLevel (Perk perk) {
-            int index;
-            if (HasPerk(perk, out index)) {
-                allPerks[index].level++;
-            }
-            else {
-                AddPerk(perk);
-            }
-        }
-        public void DecreasePerkLevel (Perk perk) {
-            int index;
-            if (HasPerk(perk, out index)) {
-                allPerks[index].level--;
-                if (allPerks[index].level <= 0) {
-                    allPerks.Remove(allPerks[index]);
-                }
-            }
-        } 
-        public void RemovePerk (Perk perk) {
-            int index;
-            if (HasPerk(perk, out index)) {
-                allPerks.Remove(allPerks[index]);
-            }
-        }
-
-        public object[] QueryPerksForValues ( string queryContext, object[] parameters, object[] originalValues) {
-            for (int i = 0; i < allPerks.Count; i++) {
-                originalValues = allPerks[i].perk.QueryPerkForValues(queryContext, allPerks[i].level, parameters, originalValues);
-            }
-            return originalValues;
-        }
-
-
-
-    }
-
-    // TODO: come up with a system to keep track of query contexts for scripting ease
-    
-    // TODO: come up with a condition check for has perk level
-
-    public abstract class PerkScript : MonoBehaviour {
-        public abstract object[] QueryPerkForValues ( string queryContext, int perkLevel, object[] parameters, object[] originalValues);
-    }
-
-
-    //stored as prefab  
-    public abstract class Perk : MonoBehaviour {
-        public string displayName;
-        [Header("Per Level")] [NeatArray] public NeatStringArray descriptions; // per level
-        public int levels { get { return descriptions.list.Length; } }
-        
-        PerkScript[] scripts;
-        public object[] QueryPerkForValues ( string queryContext, int perkLevel, object[] parameters, object[] originalValues) {
-            if (scripts == null) scripts = GetComponents<PerkScript>();
-
-            for (int i = 0; i < scripts.Length; i++) {
-                originalValues = scripts[i].QueryPerkForValues ( queryContext, perkLevel, parameters, originalValues);
-            }
-            return originalValues;
-        }
-    }
-*/
-
     /*
         TODO: Add close ui on game pause
     */
-
-    public abstract class InventoryManagementUIHandler : UISelectableElementHandler//<Inventory.InventorySlot>
+    
+    public class GameUI
     {
-        protected override void OnOpenUI(object[] parameters) {
-            OnOpenInventoryUI(parameters[0] as Inventory, (int)parameters[1], parameters[2] as Inventory, parameters[3] as List<int>);
+        public static UIPerksTable perksUI { get { return UIPerksTable.instance; } }
+        public static UIGameValuePage gameValuesUI { get { return UIGameValuePage.instance; } }
+        public static DialoguePlayerUIHandler dialogueResponseUI { get { return DialoguePlayerUIHandler.instance; } }
+        public static QuickTradeUIHandler quickTradeUI { get { return QuickTradeUIHandler.instance; } }
+        public static QuickInventoryUIHandler quickInventoryUI { get { return QuickInventoryUIHandler.instance; } }
+        public static FullTradeUIHandler tradeUI { get { return FullTradeUIHandler.instance; } }
+        public static FullInventoryUIHandler inventoryManagementUI { get { return FullInventoryUIHandler.instance; } }        
+        public static CraftingUIHandler craftingUI { get { return CraftingUIHandler.instance; } }
+        public static UIQuestsPage questsUI { get { return UIQuestsPage.instance; } }
+
+        // IN GAME MESSAGES
+        public static void SetUIMessageCenterInstance(UIMessageCenter messagesElement) {
+            UIManager.SetUIMessageCenterInstance ( messagesElement );
+        }
+        public static void ShowInGameMessage(string msg, bool immediate, UIColorScheme schemeType) {
+            UIManager.ShowInGameMessage( msg, immediate, schemeType);
         }
 
-        protected override object[] GetDefaultColdOpenParams () { return new object[] { myActor.inventory, -1, null, null }; }
-        protected override int ParamsLength() { return 4; }
-
-        // TODO: limit cold open for things that need these extra parameters
-        protected override bool CheckParameters (object[] parameters) {
-            if ((parameters[0] as Inventory) == null) {
-                Debug.LogError("Cant open " + GetType().ToString() + " ui handler, suppliedInventory null");
-                return false;
-            }
-            return true;
+        // SUBTITLES
+        public static void SetUISubtitlesInstance(UISubtitles subtitlesElement) {
+            UIManager.SetUISubtitlesInstance ( subtitlesElement );
+        }
+        public static void ShowSubtitles(string speaker, string msg) {
+            UIManager.ShowSubtitles( speaker,  msg);
         }
 
-        protected abstract void OnOpenInventoryUI(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter);
+        // POPUPS SELECTION
+        public static void SetUISelectionPopupInstance(UISelectionPopup selectionPopupElement) {
+            UIManager.SetUISelectionPopupInstance ( selectionPopupElement );
+        }
+        public static void ShowSelectionPopup(string msg, string[] options, System.Action<bool, int> returnValue) {
+            UIManager.ShowSelectionPopup( msg,  options,  returnValue);
+        }
+
+        // POPUPS SLIDER
+        public static void SetUISliderPopupInstance(UISliderPopup sliderElement) {
+            UIManager.SetUISliderPopupInstance( sliderElement );
+        }
+        public static void ShowIntSliderPopup(string title, int minValue, int maxValue, System.Action<bool, int> returnValue) {
+            UIManager.ShowIntSliderPopup( title,  minValue,  maxValue, returnValue);
+        }
+
         
-        protected abstract List<InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter);
-        
-        protected override List<object> BuildButtonObjectsListForDisplay(int panelIndex, object[] updateButtonsParams) {
-            List<InventorySlot> s = BuildInventorySlotsForDisplay(panelIndex, (Inventory)updateButtonsParams[0], (List<int>)updateButtonsParams[2]);
-            List<object> r = new List<object>();
-            for (int i = 0; i < s.Count; i++) {
-                r.Add(s[i]);
-            }
-            return r;
-        }
 
-        protected override string GetDisplayForButtonObject(object buttonObject) {
-            InventorySlot slot = buttonObject as InventorySlot;
-            return slot.item.itemName + " ( x"+slot.count+" )";
-        }
+
+
+
+
+
+
+
+
+
+
     }
 }

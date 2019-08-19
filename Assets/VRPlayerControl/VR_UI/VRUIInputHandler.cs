@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 using Valve.VR;
-using Game.GameUI;
+using Game.UI;
 
 #if UNITY_EDITOR 
 using UnityEditor;
@@ -24,37 +24,29 @@ namespace VRPlayer.UI {
 
         [Header("Input uses only one Hand")]
         public bool usesSingleHand;
-        public int enforcedEquipID = -1;
+        // public int enforcedEquipID = -1;
 
 
-        bool UIShouldOpenCheck (object[] parameters){
-            // TODO: NOT ALL PARAMEters include equip point
-            // int usingEquipPoint = (int)parameters[1];
-            bool shouldclose = true;// enforcedEquipID == -1 || usingEquipPoint == enforcedEquipID || usingEquipPoint <= -1;            
-
-            // if (!shouldclose) {
-            //     Debug.LogError("no openCheck check " + usingEquipPoint + " enforces " + enforcedEquipID);
-            // }
-            
-            return shouldclose;
-        }
-        bool UIShouldCloseCheck (object[] parameters){
-            // TODO: NOT ALL PARAMEters include equip point
-            // int usingEquipPoint = (int)parameters[1];
-            
-
-            bool shouldclose = true;// enforcedEquipID == -1 || usingEquipPoint == enforcedEquipID || usingEquipPoint <= -1;
-            // if (!shouldclose) {
-            //     Debug.LogError("no close check " + usingEquipPoint + " enforces " + enforcedEquipID);
-            // }
-            return shouldclose;
-        }
+        // TODO: NOT ALL PARAMEters include equip point
+        // bool UIShouldOpenCheck (object[] parameters){
+        //     if (enforcedEquipID == -1) return true;
+        //     int usingEquipPoint = (int)parameters[1];
+        //     bool shouldOpen = usingEquipPoint == enforcedEquipID || usingEquipPoint <= -1;            
+        //     if (!shouldOpen) Debug.LogError("no openCheck check " + usingEquipPoint + " enforces " + enforcedEquipID);
+        //     return shouldOpen;
+        // }
+        // bool UIShouldCloseCheck (object[] parameters){
+        //     if (enforcedEquipID == -1) return true;
+        //     int usingEquipPoint = (int)parameters[1];
+        //     bool shouldclose = usingEquipPoint == enforcedEquipID || usingEquipPoint <= -1;
+        //     if (!shouldclose) Debug.LogError("no close check " + usingEquipPoint + " enforces " + enforcedEquipID);
+        //     return shouldclose;
+        // }
 
         protected UIHandler myUIHandler;
         
-        bool needsSingleHandInput { get { return usesSingleHand || enforcedEquipID != -1; } }
+        bool needsSingleHandInput { get { return usesSingleHand; } }// || enforcedEquipID != -1; } }
 
-            
         
         Vector2Int GetUIInputs (){
             int equipID = needsSingleHandInput ? workingWithEquipID : 0;
@@ -69,11 +61,11 @@ namespace VRPlayer.UI {
                             return new Vector2Int(i, b);
                         }
                     }
-
                 }
                 else {
-                    if (controls.list[i].action.GetStateDown(hand)) 
+                    if (controls.list[i].action.GetStateDown(hand)) {
                         return new Vector2Int(i, equipID);
+                    }
                 }
             }
             return new Vector2Int(-1, equipID);        
@@ -81,15 +73,15 @@ namespace VRPlayer.UI {
 
         protected virtual void OnEnable () {
 
-            myUIHandler = UIHandler.GetUIHandlerByContext(GameObject.FindObjectOfType<UIObjectInitializer>().gameObject, context);
+            myUIHandler = UIHandler.GetUIHandlerByContext(context);
 
             if (myUIHandler != null) {
                 myUIHandler.onUIClose += OnCloseUI;
                 myUIHandler.onUIOpen += OnOpenUI;
                 myUIHandler.SetUIInputCallback(GetUIInputs);
 
-                myUIHandler.shouldCloseCheck = UIShouldCloseCheck;
-                myUIHandler.shouldOpenCheck = UIShouldOpenCheck;                
+                // myUIHandler.shouldCloseCheck = UIShouldCloseCheck;
+                // myUIHandler.shouldOpenCheck = UIShouldOpenCheck;                
             }
         }
 
@@ -101,9 +93,12 @@ namespace VRPlayer.UI {
         }
 
         int workingWithEquipID;
-        void OnOpenUI (GameObject uiObject, object[] parameters) {
-        
-            workingWithEquipID = 0;// (int)parameters[1];
+        void OnOpenUI (GameObject uiObject, int interactorID) {
+
+            // if (enforcedEquipID != -1) {
+            //     // TODO: check if parameters are for inventory...(which uses single hand inputs)
+            // }
+            workingWithEquipID = interactorID;// (int)parameters[1];
         
             SteamVR_Input_Sources hand = needsSingleHandInput ? VRManager.Int2Hand( workingWithEquipID ) : SteamVR_Input_Sources.Any;
 
@@ -143,10 +138,10 @@ namespace VRPlayer.UI {
             EditorGUI.indentLevel = 0;
             float x = EditorTools.DrawIndent (oldIndent, position.x);
 
-            EditorGUI.PropertyField(new Rect(x, position.y, 0, singleLineHeight), property.FindPropertyRelative("action"), GUIContent.none);
+            EditorGUI.PropertyField(new Rect(x, position.y, 0, singleLineHeight), property.FindPropertyRelative("action"), noContent);
             
             EditorGUI.LabelField(new Rect(x, position.y, 100, singleLineHeight), new GUIContent("Hand Dependent:"));
-            EditorGUI.PropertyField(new Rect(x + 100, position.y, 32, singleLineHeight), property.FindPropertyRelative("handDependent"), GUIContent.none);
+            EditorGUI.PropertyField(new Rect(x + 100, position.y, 32, singleLineHeight), property.FindPropertyRelative("handDependent"), noContent);
             
             EditorGUI.indentLevel = oldIndent;
             
@@ -163,11 +158,22 @@ namespace VRPlayer.UI {
     public class VRUIInputHandlerEditor : Editor {
         VRUIInputHandler uiHandler;
         string[] actionNames;
+
+        
+        public static string[] GetHandlerInputNames (string context) {
+            UIHandler[] allUIHandlers = GameObject.FindObjectsOfType<UIHandler>();
+            for (int i = 0; i < allUIHandlers.Length; i++) {
+                if (allUIHandlers[i].context == context) {
+                    return allUIHandlers[i].GetInputNames();
+                }
+            }
+            return null;
+        }
         void OnEnable () {
             uiHandler = target as VRUIInputHandler;
-            actionNames = UIHandler.GetHandlerInputNames(GameObject.FindObjectOfType<UIObjectInitializer>().gameObject, uiHandler.context);
-            
+            actionNames = GetHandlerInputNames(uiHandler.context);
         }
+            
         public override void OnInspectorGUI () {
             // TODO: change this game object find
             // string[] actionNames = UIHandler.GetHandlerInputNames(GameObject.FindObjectOfType<UIObjectInitializer>().gameObject, uiHandler.context);

@@ -3,68 +3,82 @@ using UnityEngine;
 
 using Game.InventorySystem;
 
-namespace Game.GameUI {
-    public class QuickTradeUIHandler : InventoryManagementUIHandler
+namespace Game.UI {
+
+    public class QuickTradeUIHandler : UISelectableElementHandler
     {
-        public FullTradeUIHandler fullTradeUIHandler;
-        protected override void OnUISelect (GameObject[] data, object[] customData) { }
-        protected override List<InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter) {
-            return shownInventory.allInventory;
+        Inventory showingInventory, takingInventory;
+
+        static QuickTradeUIHandler _instance;
+        public static QuickTradeUIHandler instance {
+            get {
+                if (_instance == null) _instance = GameObject.FindObjectOfType<QuickTradeUIHandler>();
+                return _instance;
+            }
         }
-        protected override void OnOpenInventoryUI(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
-            BuildButtons(otherInventory.GetDisplayName(), true, 0, new object[] { otherInventory, inventory, categoryFilter });
+        public void OpenQuickTradeUI (int interactorID, Inventory shownInventory, Inventory taker) {
+            OpenUI( interactorID, new object[] { shownInventory, taker } );
         }
 
+        // dont allow cold open
+        protected override object[] GetDefaultColdOpenParams () { return null; }
+            
+        protected override string GetDisplayForButtonObject(object buttonObject) {
+            InventorySlot slot = buttonObject as InventorySlot;
+            return slot.item.itemName + " ( x"+slot.count+" )";
+        }
+
+        protected override void OnUISelect (GameObject selectedObject, GameObject[] data, object[] customData) { 
+
+        }
+        
+        protected override List<object> BuildButtonObjectsListForDisplay(int panelIndex){
+            return ToObjectList(showingInventory.allInventory);
+        }
+
+        protected override void OnOpenUI() {
+            showingInventory = openedWithParams[0] as Inventory;
+            takingInventory = openedWithParams[1] as Inventory;
+
+            BuildButtons(showingInventory.GetDisplayName(), true, 0);
+        }
+        
         const int singleTradeAction = 0, tradeAllAction = 1, switchToFullTradeAction = 2;
-        protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
-    		if (customData != null) {
-                bool updateButtons = false;
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
+            bool updateButtons = false;
 
-                object[] updateButtonsParameters = customData[2] as object[];
-                Inventory shownInventory = updateButtonsParameters[0] as Inventory;
-                Inventory taker = updateButtonsParameters[1] as Inventory;
-                
-                // single trade
-                if (input.x == singleTradeAction+actionOffset) {
+            
+            // single trade
+            if (input.x == singleTradeAction+actionOffset) {
+                if (customData != null) {
                     InventorySlot item = customData[0] as InventorySlot;
                     if (item != null) {
-                        shownInventory.TransferItemAlreadyInInventoryTo(item, 1, taker, sendMessage: false);
+                        showingInventory.TransferItemAlreadyInInventoryTo(item, item.count, takingInventory, sendMessage: false);
                         updateButtons = true;
-
                     }
                 }
-                // take all
-                else if (input.x == tradeAllAction+actionOffset) {
-
-                    // TODO: check if shown inventory has anything
-                    shownInventory.TransferInventoryContentsTo(taker, sendMessage: false);
-                    updateButtons = true;
-                }
-                // else if (input.x == switchToFullTradeAction+actionOffset) {
-                //     CloseUI();
-                //     fullTradeUIHandler.OpenUI(new object[] { taker, input.y, shownInventory, null });
-                // }
-                if (updateButtons){
-                    UpdateUIButtons(0, updateButtonsParameters);
-                }
-
-                if (input.x == switchToFullTradeAction+actionOffset) {
-                    Debug.LogError("closing");
-                    CloseUI();
-
-                    Debug.Log("opening ull trade");
-
-                    // fullTradeUIHandler.OpenUI(new object[] { taker, input.y, shownInventory, null });
-                    StartCoroutine(OpenFullTrade(new object[] { taker, input.y, shownInventory, null }));
-                }
+            }
+            // take all
+            else if (input.x == tradeAllAction+actionOffset) {
+                // TODO: check if shown inventory has anything
+                showingInventory.TransferInventoryContentsTo(takingInventory, sendMessage: false);
+                updateButtons = true;
+            }
+            else if (input.x == switchToFullTradeAction+actionOffset) {
+                CloseUI();
+                StartCoroutine(OpenFullTrade());
+            }
+            
+            if (updateButtons){
+                UpdateUIButtons();
             }
 		}
 
-        System.Collections.IEnumerator OpenFullTrade (object[] parameters) {
+        System.Collections.IEnumerator OpenFullTrade () {
             yield return null;
-            yield return null;
-            fullTradeUIHandler.OpenUI(parameters);
 
+            GameUI.tradeUI.OpenTradUI(takingInventory, showingInventory, null);
+            // FullTradeUIHandler.OpenTradUI(takingInventory, showingInventory, null);
         }
     }
 }

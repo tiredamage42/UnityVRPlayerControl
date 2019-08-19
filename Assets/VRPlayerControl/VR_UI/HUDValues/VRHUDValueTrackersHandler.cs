@@ -5,7 +5,7 @@ using UnityEngine;
 using SimpleUI;
 using Valve.VR;
 
-using Game.GameUI;
+using Game.UI;
 namespace VRPlayer.UI {
 
 

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using InteractionSystem;
 using Game.InventorySystem;
-using Game.GameUI;
+using Game.UI;
 /*
     interactable that lets player user quick trade (trhough ui) with attached inventory
 */
@@ -13,19 +13,33 @@ public class QuickLootable : MonoBehaviour, IInteractable
             linkedInventory = GetComponent<Inventory>();
     }
 
+    void OnEnable () {
+        Interactable interactable = GetComponent<Interactable>();
+        interactable.enforceInteractorID = 0;
+    }
+    void OnDisable () {
+        Interactable interactable = GetComponent<Interactable>();
+        interactable.enforceInteractorID = -1;
+    }
+
     public void OnInteractableAvailabilityChange(bool available) { }
     public void OnInteractableInspectedStart (InteractionPoint interactor) {
         if (linkedInventory != null && interactor.inventory != null) {
-            UIHandler.GetUIHandlerByContext(GameObject.FindObjectOfType<UIObjectInitializer>().gameObject, Inventory.quickTradeContext).OpenUI(
-                new object[] { interactor.inventory, interactor.interactorID, linkedInventory, null }
-            );
+
+            GameUI.quickTradeUI.OpenQuickTradeUI(interactor.interactorID, linkedInventory, interactor.inventory);
+            // UIHandler.GetUIHandlerByContext(GameObject.FindObjectOfType<UIObjectInitializer>().gameObject, Inventory.quickTradeContext).OpenUI(
+            //     new object[] { interactor.interactorID, linkedInventory, null }
+            // );
         }
     }
     public void OnInteractableInspectedEnd (InteractionPoint interactor) {
         if (linkedInventory != null && interactor.inventory != null)  {
-            UIHandler.GetUIHandlerByContext(GameObject.FindObjectOfType<UIObjectInitializer>().gameObject, Inventory.quickTradeContext).CloseUI(
-                new object[] { interactor.inventory, interactor.interactorID, linkedInventory, null }
-            );
+
+            GameUI.quickTradeUI.CloseUI();
+            
+            // UIHandler.GetUIHandlerByContext(GameObject.FindObjectOfType<UIObjectInitializer>().gameObject, Inventory.quickTradeContext).CloseUI(
+            //     new object[] { interactor.interactorID, linkedInventory, null }
+            // );
         }
     }
 

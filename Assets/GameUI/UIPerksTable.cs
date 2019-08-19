@@ -4,7 +4,7 @@ using UnityEngine;
 
 using SimpleUI;
 using Game.PerkSystem;
-namespace Game.GameUI {
+namespace Game.UI {
 
     // TODO: order game value modifiers by :
         // set, add, add percentage, multiply
@@ -19,108 +19,91 @@ namespace Game.GameUI {
 
     public class UIPerksTable : UISelectableElementHandler
     {
+
+        static UIPerksTable _instance;
+        public static UIPerksTable instance {
+            get {
+                if (_instance == null) _instance = GameObject.FindObjectOfType<UIPerksTable>();
+                return _instance;
+            }
+        }
+        public void OpenPerksManagementUI (Actor actorToEdit, PerkHandler perkPointsContainer) {
+            instance.OpenUI (  0, new object[] { actorToEdit, perkPointsContainer } );
+        }
+        protected override object[] GetDefaultColdOpenParams() { 
+            return new object[] {  Actor.playerActor, Actor.playerActor.perkHandler  }; 
+        }
+
+
+
         // TODO: move to game settings
         [NeatArray] public NeatStringArray specialNames;
         GameValueModifier addPerkPointModifier;
-        protected void OnEnable () {
+
+        void OnEnable () {
             addPerkPointModifier = new GameValueModifier (GameValue.GameValueComponent.BaseValue, GameValueModifier.ModifyBehavior.Add, 1.0f);
         }
 
 
-        protected override int ParamsLength () { return 2; }
-        protected override bool CheckParameters (object[] parameters) {
-            if ((parameters[0] as Actor) == null) {
-                Debug.LogError("Cant open " + GetType().ToString() + " ui handler, actorToShow null");
-                return false;
-            }
-            if ((parameters[1] as PerkHandler) == null) {
-                Debug.LogError("Cant open " + GetType().ToString() + " ui handler, perkHandlerController null");
-                return false;
-            }   
-            return true;
+        Actor actorToEdit { get { return openedWithParams[0] as Actor; } }
+        PerkHandler perkPointsContainer { get { return openedWithParams[1] as PerkHandler; } }
+
+        protected override void OnOpenUI() { 
+            BuildButtons(actorToEdit.actorName + " Perks", true, 0);
+            BuildButtons(actorToEdit.actorName + " Special", false, 1);
         }
 
-        protected override void OnOpenUI(object[] parameters) { 
-            Actor actorToShow = parameters[0] as Actor;
-            BuildButtons(actorToShow.actorName + " Perks", true, 0, parameters);
-            BuildButtons(actorToShow.actorName + " Special", false, 1, parameters);
-        }
-
-
-
-        
-
-        // int clickAttempts;
-        protected override void OnUISelect (GameObject[] data, object[] customData) { 
-            
-                        (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText("");
+        protected override void OnUISelect (GameObject selectedObject, GameObject[] data, object[] customData) { 
+            string txt = "";
                     
-            // clickAttempts = 0;
             if (customData != null) {
 
                 int panelIndex = (int)customData[1];
-                object[] updateParams = customData[2] as object[];
-                
-                Actor actorToShow = updateParams[0] as Actor;
-                PerkHandler perkHandlerController = updateParams[1] as PerkHandler;
-            
+                int currentPerkPoints = perkPointsContainer.perkPoints;
+
                 //showing perks
                 if (panelIndex == 0) {
-                    PerkHolder perkHolder = customData[0] as PerkHolder;  
+                    PerkHolder perk = customData[0] as PerkHolder;  
 
-                    if (perkHolder != null) {
+                    if (perk != null) {
 
-                        string textToShow = perkHolder.perk.displayName + "\n\n" + perkHolder.perk.description;
+                        txt = perk.perk.displayName + "\n\n" + perk.perk.description;
                         
-                        for (int i = 0; i < perkHolder.perk.descriptions.list.Length; i++) {
-                            textToShow += "Level " + (i+1) + ": " + perkHolder.perk.descriptions.list[i] + "\n";
-                        }
-
-                        textToShow += "Current Level: " + perkHolder.level + " / " + (perkHolder.perk.levels+1);
-
-                        if (perkHandlerController.perkPoints > 0 && perkHolder.level < perkHolder.perk.levels+1) {
-                            textToShow += "\n\nClick To Add Perk Point";
-                        }
+                        for (int i = 0; i < perk.perk.descriptions.list.Length; i++) txt += "Level " + (i+1) + ": " + perk.perk.descriptions.list[i] + "\n";
                         
-                        textToShow += "\n\nCurrent Perk Points: " + perkHandlerController.perkPoints;
+                        txt += "Current Level: " + perk.level + " / " + (perk.perk.levels+1);
 
-                        (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText(textToShow);
-                    }
-                    
+                        if (currentPerkPoints > 0 && perk.level < perk.perk.levels+1) txt += "\n\nClick To Add Perk Point";
+                        
+                        txt += "\n\nCurrent Perk Points: " + currentPerkPoints;
+                    }   
                 }
                 // showing special
                 else {
-                    GameValue specialValue = customData[0] as GameValue;   
-                    if (specialValue != null) {
+                    GameValue special = customData[0] as GameValue;   
+                    if (special != null) {
 
-                        string textToShow = specialValue.description + "\n\n" + specialValue.baseValue + " / " + specialValue.baseMinMax.y;
+                        txt = special.description + "\n\n" + special.baseValue + " / " + special.baseMinMax.y;
                         
-                        if (perkHandlerController.perkPoints > 0 && specialValue.baseValue < specialValue.baseMinMax.y) {
-                            textToShow += "\n\nClick To Add Perk Point";
-                        }
-                        textToShow += "\n\nCurrent Perk Points: " + perkHandlerController.perkPoints;
+                        if (currentPerkPoints > 0 && special.baseValue < special.baseMinMax.y) txt += "\n\nClick To Add Perk Point";
+                        
+                        txt += "\n\nCurrent Perk Points: " + currentPerkPoints;
 
                         // TODO: add modifiers to show
-                        (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText(textToShow);
                     }
-
                 }
             }
+            (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText(txt);
         }
         
-        protected override object[] GetDefaultColdOpenParams() { 
-            return new object[] {  myActor, myActor.perkHandler }; 
-        }
-
-        protected override List<object> BuildButtonObjectsListForDisplay (int panelIndex, object[] updateButtonsParams) { 
-            
-            Actor actorToShow = updateButtonsParams[0] as Actor;
-            
+        
+        protected override List<object> BuildButtonObjectsListForDisplay (int panelIndex){
+                        
             List<object> r = new List<object>();
 
             //build perks list
             if (panelIndex == 0) {
-                PerkHandler perkHandler = actorToShow.perkHandler;
+                PerkHandler perkHandler = actorToEdit.perkHandler;
                 for (int i = 0; i < perkHandler.allPerks.Count; i++) {
                     if (perkHandler.allPerks[i].perk.playerEdit || perkHandler.allPerks[i].level > 0) {
                         r.Add(perkHandler.allPerks[i]);
@@ -128,12 +111,9 @@ namespace Game.GameUI {
                 }
             }
             else {
-
                 for (int i =0; i < specialNames.list.Length; i++) {
-                    GameValue v = actorToShow.GetGameValue(specialNames.list[i]);
-                    if (v != null) {
-                        r.Add(v);
-                    }
+                    GameValue v = actorToEdit.GetGameValue(specialNames.list[i]);
+                    if (v != null) r.Add(v);
                 }
             }
             return r;
@@ -150,101 +130,45 @@ namespace Game.GameUI {
         }
 
         const int attemptChangeAction = 0;
-
-
-        object[] currentUpdateParams;
         int currentPanelIndex;
         PerkHolder currentPerkHolder;
         GameValue currentGameValue;
         void OnConfirmationSelection(bool used, int selectedOption) {
-            if (used && selectedOption == 0) {
-
-                PerkHandler perkHandlerController = currentUpdateParams[1] as PerkHandler;
-                perkHandlerController.perkPoints--;
+            if (used && selectedOption == 0) {                
+                perkPointsContainer.perkPoints--;
                 if (currentPanelIndex == 0) {
-                    currentPerkHolder.SetLevel(currentPerkHolder.level+1, currentUpdateParams[0] as Actor); 
+                    currentPerkHolder.SetLevel(currentPerkHolder.level+1, actorToEdit); 
                 }
                 else {
                     currentGameValue.AddModifier (addPerkPointModifier, 1, Vector3Int.zero);
                 }
-                UpdateUIButtons( 0, currentUpdateParams );
-                UpdateUIButtons( 1, currentUpdateParams );
+                UpdateUIButtons( );
             }
+
         }
 
-        void ShowConfirmationForPerkPoint(string msg, int currentPanelIndex, GameValue currentGameValue, PerkHolder currentPerkHolder, object[] currentUpdateParams) {
-            this.currentPanelIndex = currentPanelIndex;
-            this.currentUpdateParams = currentUpdateParams;
-            this.currentPerkHolder = currentPerkHolder;
-            this.currentGameValue = currentGameValue;
 
-            UIManager.ShowSelectionPopup(msg, new string[] {"Yes", "No"}, OnConfirmationSelection);
-        }
-
-        
-
-        protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
             if (customData != null) {
-
                 if (input.x == attemptChangeAction+actionOffset) {
-
-                    object[] updateParams = customData[2] as object[];
-                    PerkHandler perkHandlerController = updateParams[1] as PerkHandler;
-                    
-                    if (perkHandlerController.perkPoints > 0) {
-
-                        Actor actorToShow = updateParams[0] as Actor;
-                        int panelIndex = (int)customData[1];
-                        
+                    if (perkPointsContainer.perkPoints > 0) {
+                        currentPanelIndex = (int)customData[1];
                         //showing perks
-                        if (panelIndex == 0) {
-                            PerkHolder perkHolder = customData[0] as PerkHolder;   
-
-                            int currentLevel = perkHolder.level;
-
-                            if (currentLevel < perkHolder.perk.levels+1) {
-
-                                ShowConfirmationForPerkPoint(
-                                    "\n\nAre you sure you want to add a perk point into " + perkHolder.perk.displayName + " ?\n"
-                                    , panelIndex, null, perkHolder, updateParams);
-
-
-                                // if (clickAttempts == 1) {
-                                //     clickAttempts = 0;
-                                //     perkHandlerController.perkPoints--;
-                                //     perkHolder.SetLevel(currentLevel+1, actorToShow); 
-                                //     UpdateUIButtons( 0, updateParams );
-                                //     UpdateUIButtons( 1, updateParams );
-                         
-                                // }
-                                // else {
-                                //     uiObject.textPanel.SetText("\n\nAre you sure you want to add a perk point into " + perkHolder.perk.displayName + " ?\n\nClick again to confirm.\nSelect another Perk to cancel...");
-                                //     clickAttempts = 1;
-                                // }
+                        if (currentPanelIndex == 0) {
+                            currentPerkHolder = customData[0] as PerkHolder;   
+                            if (currentPerkHolder != null) {
+                                if (currentPerkHolder.level < currentPerkHolder.perk.levels+1) {
+                                    UIManager.ShowSelectionPopup("\n\nAre you sure you want to add a perk point into " + currentPerkHolder.perk.displayName + " ?\n", new string[] {"Yes", "No"}, OnConfirmationSelection);
+                                }
                             }
                         }
                         // showing special
                         else {
-                            GameValue specialValue = customData[0] as GameValue;   
-                            if (specialValue.baseValue < specialValue.baseMinMax.y) {
-
-                                ShowConfirmationForPerkPoint(
-                                    "\n\nAre you sure you want to add a perk point into " + specialValue.name + " ?\n"
-                                    , panelIndex, specialValue, null, updateParams);
-
-
-                                // if (clickAttempts == 1) {
-                                //     clickAttempts = 0;
-                                //     perkHandlerController.perkPoints--;
-                                //     specialValue.AddModifier (addPerkPointModifier, 1, Vector3Int.zero);
-
-                                //     UpdateUIButtons( 0, updateParams );
-                                //     UpdateUIButtons( 1, updateParams );
-                                // }
-                                // else {
-                                //     uiObject.textPanel.SetText("\n\nAre you sure you want to add a perk point into " + specialValue.name + " ?\n\nClick again to confirm.\nSelect another Perk to cancel...");
-                                //     clickAttempts = 1;
-                                // }
+                            currentGameValue = customData[0] as GameValue;   
+                            if (currentGameValue != null) {
+                                if (currentGameValue.baseValue < currentGameValue.baseMinMax.y) {
+                                    UIManager.ShowSelectionPopup("\n\nAre you sure you want to add a perk point into " + currentGameValue.name + " ?\n", new string[] {"Yes", "No"}, OnConfirmationSelection);
+                                }
                             }
                         }
                     }

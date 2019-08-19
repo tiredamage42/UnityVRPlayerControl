@@ -50,31 +50,16 @@ namespace Game {
             perkHandler = GetComponent<PerkHandler>();
         }
 
-        public event System.Action<string, bool, UIColorScheme> onShowMessage;
-        public event System.Action<string, string> onShowSubtitles;
-        
-        public void ShowMessage (string msg, UIColorScheme scheme, bool immediate=false) {
-            if (onShowMessage != null) {
-                onShowMessage(msg, immediate, scheme);
-            }
-            // messageCenterUI.ShowMessage(msg, immediate, scheme);
-            // messageInbox.ShowMessage( msg );
-        }
-        public void ShowSubtitles (string speaker, string subtitles) {
-            if (onShowSubtitles != null) {
-                onShowSubtitles(speaker, subtitles);
-            }
-        }
-
         public void StartDialogue (DialogueTemplate template, Actor otherActor, AudioSource actorSource) {
             dialoguePlayer.StartDialogue(otherActor, template, actorSource);
         }
-
 
         public static Actor playerActor;
         public string actorName;
         public bool isPlayer;
         public GameValueTemplate actorValuesTemplate;
+
+        // so we can serialize later...
         [HideInInspector] public List<GameValue> savedActorValues;
         public Dictionary<string, GameValue> actorValues = new Dictionary<string, GameValue>();
 
@@ -101,7 +86,6 @@ namespace Game {
                 return actorValues[template.name]; 
             }
             GameValue value = new GameValue (template);
-            // Debug.LogWarning("adding " + template.name);
             actorValues[template.name] = value;
             savedActorValues.Add(value);
             return value;

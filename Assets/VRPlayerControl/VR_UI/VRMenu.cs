@@ -5,11 +5,22 @@ namespace VRPlayer {
     /*
         Add to a worldspace canvas to make it follow and face the player
     */
-    public class VRMenu : MonoBehaviour
-    {
+
+    [System.Serializable] public class VRMenuFollowerParameters {
         public float angleThreshold = 45;
         public bool matchXRotation;
-        public float followSpeed = 5;
+        public float followSpeed = 20;
+        public float turnSpeed = 20;
+        public VRMenuFollowerParameters () {
+            angleThreshold = 45;
+            followSpeed = 20;
+            turnSpeed = 20;
+        }
+    }
+    [RequireComponent(typeof(Canvas))]
+    public class VRMenu : MonoBehaviour
+    {
+        public VRMenuFollowerParameters parameters = new VRMenuFollowerParameters();
         Transform baseTransform, hmdTransform;
         public TransformBehavior followBehavior;
 
@@ -21,7 +32,7 @@ namespace VRPlayer {
             rotationTarget = hmdTransform.rotation.eulerAngles;
             rotationTarget.z = 0;
             
-            if (!matchXRotation)
+            if (!parameters.matchXRotation)
                 rotationTarget.x = 0;
         }
 
@@ -30,17 +41,17 @@ namespace VRPlayer {
 
             TransformBehavior.AdjustTransform(transform, baseTransform, followBehavior, 0);
             
-            baseTransform.position = Vector3.Lerp(baseTransform.position, hmdTransform.position, deltaTime * followSpeed);
+            baseTransform.position = Vector3.Lerp(baseTransform.position, hmdTransform.position, deltaTime * parameters.followSpeed);
 
-            if (Vector3.Angle(hmdTransform.forward, lastRotationFWD) > angleThreshold) {
+            if (Vector3.Angle(hmdTransform.forward, lastRotationFWD) > parameters.angleThreshold) {
                 lastRotationFWD = hmdTransform.forward;
                 rotationTarget = hmdTransform.rotation.eulerAngles;
                 rotationTarget.z = 0;
-                if (!matchXRotation)
+                if (!parameters.matchXRotation)
                     rotationTarget.x = 0;
             }
                 
-            baseTransform.rotation = Quaternion.Slerp(baseTransform.rotation, Quaternion.Euler(rotationTarget), deltaTime * followSpeed);
+            baseTransform.rotation = Quaternion.Slerp(baseTransform.rotation, Quaternion.Euler(rotationTarget), deltaTime * parameters.turnSpeed);
         }
 
         void Awake () {

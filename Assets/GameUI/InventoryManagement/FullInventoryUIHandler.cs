@@ -3,56 +3,93 @@ using UnityEngine;
 
 using Game.InventorySystem;
 using SimpleUI;
-namespace Game.GameUI {
+namespace Game.UI {
 
-    public class FullInventoryUIHandler : InventoryManagementUIHandler
+
+    public class FullInventoryUIHandler : UISelectableElementHandler
     {
-        
-        protected override void OnUISelect (GameObject[] data, object[] customData) {
+        Inventory showingInventory;
+        protected override object[] GetDefaultColdOpenParams () { return new object[] { Actor.playerActor.inventory, null }; }
+        protected override string GetDisplayForButtonObject(object buttonObject) {
+            InventorySlot slot = buttonObject as InventorySlot;
+            return slot.item.itemName + " ( x"+slot.count+" )";
+        }
+
+        static FullInventoryUIHandler _instance;
+        public static FullInventoryUIHandler instance {
+            get {
+                if (_instance == null) _instance = GameObject.FindObjectOfType<FullInventoryUIHandler>();
+                return _instance;
+            }
+        }
+        public void OpenInventoryManagementUI (Inventory inventory, List<int> categoryFilter) {
+            OpenUI (  0, new object[] { inventory, categoryFilter });
+        }
+
+        protected override void OnUISelect (GameObject selectedObject, GameObject[] data, object[] customData) {
+            string txt = "";
             if (customData != null) {
                 InventorySlot slot = customData[0] as InventorySlot;
-                if (slot != null) (uiObject as SimpleUI.UIPage).textPanel.SetText(slot.item.itemDescription);
+                if (slot != null) txt = slot.item.itemDescription;
             }   
+            (uiObject as SimpleUI.UIPage).textPanel.SetText(txt);
         }
 
-        protected override List<InventorySlot> BuildInventorySlotsForDisplay (int uiIndex, Inventory shownInventory, List<int> categoryFilter) {
-            return shownInventory.GetFilteredInventory(categoryFilter);
+        protected override List<object> BuildButtonObjectsListForDisplay(int panelIndex){
+            return ToObjectList(showingInventory.GetFilteredInventory(openedWithParams[1] as List<int>));
         }
         
-        protected override void OnOpenInventoryUI(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
-            BuildButtons("Inventory", true, 0, new object[] { inventory, null, categoryFilter });
+        protected override void OnOpenUI() {
+            showingInventory = openedWithParams[0] as Inventory;
+            BuildButtons("Inventory", true, 0);
         }
         
-        const int consumeAction = 0, dropAction = 1, favoriteAction = 2;
+        
+        const int consumeAction = 0, dropAction = 1;
+        
+        InventorySlot highlightedItemSlot;
 
-        protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
+        void OnGetDropAmount (bool used, int value) {
+            if (used) {
+                // drop
+                if (value > 0) {       
+                    showingInventory.DropItem(highlightedItemSlot, value, true, -1, true, sendMessage: false);
+                    UpdateUIButtons();
+                }
+            }
+        }
+
+        void OnItemActionSelection(bool used, int value) {
+            if (used) {
+                // drop
+                if (value == 0) {       
+                    // get slider value
+                    UIManager.ShowIntSliderPopup("Drop " + highlightedItemSlot.item.itemName + ":", 0, highlightedItemSlot.count, OnGetDropAmount);
+                }
+                // favorite
+                else if (value == 1) {
+                    showingInventory.FavoriteItem(highlightedItemSlot.item);    
+                    UpdateUIButtons();
+                }
+            }
+
+        }
+
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
             if (customData != null) {
 
-                InventorySlot item = customData[0] as InventorySlot;
+                highlightedItemSlot = customData[0] as InventorySlot;
                 
-                if (item != null) {
-                    object[] updateButtonsParameters = customData[2] as object[];
-
-                    Inventory shownInventory = updateButtonsParameters[0] as Inventory;
-                    
-                    bool updateButtons = false;
+                if (highlightedItemSlot != null) {
+                                    
                     if (input.x == consumeAction+actionOffset) {
-                        if (item.item.OnConsume(shownInventory, count: 1, input.y)){
-                            updateButtons = true;
+                        if (highlightedItemSlot.item.OnConsume(showingInventory, count: 1, input.y)){
+                            UpdateUIButtons();
                         }
                     }
                     // drop
                     else if (input.x == dropAction+actionOffset) {
-                        shownInventory.DropItem(item, 1, true, -1, true, sendMessage: false);
-                        updateButtons = true;
-                    }
-                    // favorite
-                    else if (input.x == favoriteAction+actionOffset) {
-                        shownInventory.FavoriteItem(item.item);
-                        updateButtons = true;
-                    }
-                    if (updateButtons) {
-                        UpdateUIButtons(0, updateButtonsParameters);
+                        UIManager.ShowSelectionPopup(highlightedItemSlot.item.itemName+":", new string[] {"Drop", "Favorite"}, OnItemActionSelection);
                     }
                 }
             }

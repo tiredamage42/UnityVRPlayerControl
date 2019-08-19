@@ -18,10 +18,7 @@ namespace SimpleUI {
                 return _outline;
             }
         }
-        
-
         public int currentLines = 1;
-
         const char lineBreak = '\n';
         const string lineBreakAdd = "-\n";
 
@@ -48,7 +45,7 @@ namespace SimpleUI {
             }
             return adjusted;
         }
-        public static int LineCount (string input) {
+        static int LineCount (string input) {
             int lines = 1;
             int length = input.Length;
             for (int i = 0; i < length; i++) {                

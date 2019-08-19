@@ -25,12 +25,9 @@ namespace SimpleUI {
         }
     }
 
-
     [ExecuteInEditMode] public class UISliderPopup : BaseUIElement
     {
         public override void SetSelectableActive(bool active) { }
-        
-
         public override bool RequiresInput() { return true; }
 
         protected override bool CurrentSelectedIsOurs (GameObject currentSelected) { 
@@ -95,13 +92,20 @@ namespace SimpleUI {
                 UIManager.SetSelection(slider.gameObject);
             }
         }
+
+        public void OnValueChanged (float value) {
+            BroadcastSelectEvent(null, null, null);
+        }
+
         void OnEnable () {
+            slider.onValueChanged.AddListener(OnValueChanged);
             UpdateLayout();
         }
+
         void OnDisable () {
-
+            slider.onValueChanged.RemoveListener(OnValueChanged);
         }
-
+        
     }
 
 }

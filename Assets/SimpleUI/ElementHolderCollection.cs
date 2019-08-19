@@ -6,5 +6,6 @@ namespace SimpleUI{
         protected override float TextScale() { return 1; }
         protected override Transform ElementsParent() { return null; }
         protected override SelectableElement ElementPrefab() { return null; }
+        protected override bool ShouldWiggleLayoutChanges() { return false; }
     }
 }

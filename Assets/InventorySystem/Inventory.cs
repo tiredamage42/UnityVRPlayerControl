@@ -2,6 +2,7 @@
 using UnityEngine;
 using System;
 using InteractionSystem;
+using SimpleUI;
 namespace Game.InventorySystem {
 
 /*
@@ -305,7 +306,7 @@ namespace Game.InventorySystem {
             }
 
             if (sendMessage && actor != null && actor.isPlayer) {
-                actor.ShowMessage("Stashed " + itemBehavior.itemName + " [ x" + count + " ]", UIColorScheme.Normal);
+                UIManager.ShowInGameMessage("Stashed " + itemBehavior.itemName + " [ x" + count + " ]", false, UIColorScheme.Normal);
             }
 
 
@@ -396,7 +397,7 @@ namespace Game.InventorySystem {
             }
 
             if (sendMessage && actor != null && actor.isPlayer) {
-                actor.ShowMessage("Dropped " + slot.item.itemName + " [ x" + countDropped + " ]", UIColorScheme.Normal);
+                UIManager.ShowInGameMessage("Dropped " + slot.item.itemName + " [ x" + countDropped + " ]", false, UIColorScheme.Normal);
             }
 
             //TODO: figure out a way to check if we unequipped an item to drop it (hasModel = true)

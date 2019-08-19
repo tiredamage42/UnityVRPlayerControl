@@ -5,6 +5,7 @@ using System.Collections.Generic;
 // using System.Reflection;
 using UnityEngine;
 // using Game.GameUI;
+using SimpleUI;
 namespace Game.QuestSystem {
     /*
         make script quest as monobehaviour on a prefab
@@ -69,7 +70,7 @@ namespace Game.QuestSystem {
             if (selectedQuest == null)
                 return;
 
-            Actor.playerActor.ShowMessage( selectedQuest.GetHint(), UIColorScheme.Normal );
+            UIManager.ShowInGameMessage( selectedQuest.GetCurrentTextHint(), false, UIColorScheme.Normal );
         }
 
 
@@ -269,7 +270,7 @@ namespace Game.QuestSystem {
             QuestHandler.instance.CompleteQuest(questID);
         }
 
-        public abstract string GetHint ();
+        public abstract string GetCurrentTextHint ();
 
         //maybe have a seperate one for first time quest initializes, 
         //and another for when game is loaded...

@@ -28,14 +28,9 @@ namespace SimpleUI {
     [ExecuteInEditMode] public class UIValueTracker : BaseUIElement
     {
         public override void SetSelectableActive(bool active) { }
-        
-
         public override bool RequiresInput() { return false; }
-
         protected override bool CurrentSelectedIsOurs (GameObject currentSelected) { return true; }
 
-
-        
         public UIValueTrackerParameters parameters = new UIValueTrackerParameters();
         [Range(0,1)] public float value = .5f;
         public string shownText = "Text";

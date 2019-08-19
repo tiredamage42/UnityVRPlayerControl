@@ -22,6 +22,7 @@ namespace SimpleUI {
 
     [ExecuteInEditMode] public class UISelectionPopup : UIElementHolder
     {
+        protected override bool ShouldWiggleLayoutChanges() { return false; }
         protected override Transform ElementsParent () { return transform; }
         protected override float TextScale () { return parameters.textSize; }
         protected override SelectableElement ElementPrefab () { return UIManager.instance.buttonPrefab; }

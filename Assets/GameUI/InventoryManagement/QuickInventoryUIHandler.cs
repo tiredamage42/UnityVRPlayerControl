@@ -2,35 +2,56 @@
 using UnityEngine;
 using Game.InventorySystem;
 
-namespace Game.GameUI {
-    public class QuickInventoryUIHandler : InventoryManagementUIHandler
+namespace Game.UI {
+
+    public class QuickInventoryUIHandler : UISelectableElementHandler
     {
-        protected override List<InventorySlot> BuildInventorySlotsForDisplay ( int uiIndex, Inventory shownInventory, List<int> categoryFilter) {
-            List<InventorySlot> r = new List<InventorySlot>();
-            for (int i = 0; i < shownInventory.favorites.Count; i++) {
-                r.Add(shownInventory.allInventory[shownInventory.favorites[i]]);
+        Inventory showingInventory;
+        protected override string GetDisplayForButtonObject(object buttonObject) {
+            InventorySlot slot = buttonObject as InventorySlot;
+            return slot.item.itemName + " ( x"+slot.count+" )";
+        }
+
+        static QuickInventoryUIHandler _instance;
+        public static QuickInventoryUIHandler instance {
+            get {
+                if (_instance == null) _instance = GameObject.FindObjectOfType<QuickInventoryUIHandler>();
+                return _instance;
+            }
+        }
+        public void OpenQuickInventoryUI (int interactorID, Inventory inventory) {
+            OpenUI(interactorID, new object[] { inventory });
+        }
+
+        // no cold open
+        protected override object[] GetDefaultColdOpenParams () { return null; }
+
+        protected override List<object> BuildButtonObjectsListForDisplay(int panelIndex){
+            List<object> r = new List<object>();
+            for (int i = 0; i < showingInventory.favorites.Count; i++) {
+                r.Add(showingInventory.allInventory[showingInventory.favorites[i]]);
             }
             return r;
         }
 
-        protected override void OnOpenInventoryUI(Inventory inventory, int usingEquipPoint, Inventory otherInventory, List<int> categoryFilter) {
-            BuildButtons("", false, 0, new object[] { inventory, null, categoryFilter });
+        protected override void OnOpenUI() {
+            showingInventory = openedWithParams[0] as Inventory;
+            BuildButtons("", false, 0);
         }
-
-        protected override void OnUISelect (GameObject[] data, object[] customData) {
+        
+        protected override void OnUISelect (GameObject selectedObject, GameObject[] data, object[] customData) {
 
         }
                     
         const int consumeAction = 0;
-        protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
         	if (input.x == consumeAction+actionOffset){
-                InventorySlot item = customData[0] as InventorySlot;
-                if (item != null) {
-                    int count = 1;
-                    item.item.OnConsume((customData[2] as object[])[0] as Inventory, count, input.y);
+                CloseUI();
+                if (customData != null) {
+                    InventorySlot item = customData[0] as InventorySlot;
+                    if (item != null) item.item.OnConsume(showingInventory, count: 1, input.y);
                 }
             }
-            CloseUI();
 		}
     }
 }

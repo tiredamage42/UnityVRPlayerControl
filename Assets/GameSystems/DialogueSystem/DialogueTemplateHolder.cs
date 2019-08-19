@@ -22,7 +22,7 @@ namespace Game.DialogueSystem
 
         public void OnInteractableUsedStart (InteractionPoint interactor, int useAction) {
             if ( useAction == this.useAction ) 
-                interactor.inventory.actor.StartDialogue(template, actor, audioSource);
+                Actor.playerActor.StartDialogue(template, actor, audioSource);
         }
 
         public void OnInteractableUsedEnd (InteractionPoint interactor, int useAction) { }

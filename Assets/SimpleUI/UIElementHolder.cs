@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using System;
 using UnityEngine.UI;
@@ -8,81 +9,16 @@ namespace SimpleUI {
     [ExecuteInEditMode] public abstract class UIElementHolder : BaseUIElement
     {
 
+        bool initialized;
+
         public override bool RequiresInput() { return true; }
 
         protected abstract float TextScale();
      
         public UITextPanel textPanel;
 
-        // public bool isBase;
         public UIElementHolder[] subHolders;
-        // [HideInInspector] public UIElementHolder parentHolder;
-
-
         
-        // Func<Vector2Int> _runtimeSubmitHandler;
-        // public Func<Vector2Int> runtimeSubmitHandler { 
-        //     get { return parentHolder != null ? parentHolder.runtimeSubmitHandler : _runtimeSubmitHandler; } 
-        //     set {
-        //         if (parentHolder != null) {
-        //             parentHolder.runtimeSubmitHandler = value;
-        //         }
-        //         else {
-        //             _runtimeSubmitHandler = value;
-        //         }
-        //     }
-        // }
-
-        // List<Action<GameObject[], object[]>> onSelectdelegates = new List<Action<GameObject[], object[]>>();
-        // event Action<GameObject[], object[]> _onSelect;
-        // public void BroadcastSelectEvent (GameObject[] data, object[] customData) {
-        //     if (parentHolder != null) {
-        //         parentHolder.BroadcastSelectEvent(data, customData);
-        //         return;
-        //     }
-        //     if (_onSelect != null) _onSelect(data, customData);
-        // }
-        // public void SubscribeToSelectEvent (Action<GameObject[], object[]> callback) {
-        //     if (parentHolder != null) {
-        //         parentHolder.SubscribeToSelectEvent(callback);
-        //         return;
-        //     }
-        //     _onSelect += callback;
-        //     onSelectdelegates.Add(callback);
-        // }
-
-        // List<Action<GameObject[], object[], Vector2Int>> onSubmitdelegates = new List<Action<GameObject[], object[], Vector2Int>>();
-        // event Action<GameObject[], object[], Vector2Int> _onSubmit;
-        // public void BroadcastSubmitEvent (GameObject[] data, object[] customData, Vector2Int submit) {
-        //     if (parentHolder != null) {
-        //         parentHolder.BroadcastSubmitEvent(data, customData, submit);
-        //         return;
-        //     }
-        //     if (_onSubmit != null) _onSubmit(data, customData, submit);
-        // }
-        // public void SubscribeToSubmitEvent (Action<GameObject[], object[], Vector2Int> callback) {
-        //     if (parentHolder != null) {
-        //         parentHolder.SubscribeToSubmitEvent(callback);
-        //         return;
-        //     }
-        //     _onSubmit += callback;
-        //     onSubmitdelegates.Add(callback);
-        // }
-
-        // public Action onBaseCancel;
-        
-        
-        // public void RemoveAllEvents()
-        // {
-        //     foreach(var eh in onSelectdelegates) _onSelect -= eh;
-        //     onSelectdelegates.Clear();
-            
-        //     foreach(var  eh in onSubmitdelegates) _onSubmit -= eh;
-        //     onSubmitdelegates.Clear();
-
-        //     runtimeSubmitHandler = null;
-        // }
-
         protected abstract SelectableElement ElementPrefab () ;
 
         bool isHoldersCollection { get { return subHolders != null && subHolders.Length > 0; } }
@@ -119,14 +55,21 @@ namespace SimpleUI {
         }
 
         void GetSelectableElementReferences () {
+                
             if (isHoldersCollection) return;
-                
-            allElements.Clear();
-                
-            SelectableElement[] _allElements = GetComponentsInChildren<SelectableElement>();
-            for (int i = 0; i < _allElements.Length; i++) {
-                _allElements[i].parentHolder = this;
-                allElements.Add(_allElements[i]);                
+
+            if (Application.isPlaying) {
+                initialized = false;
+                allElements.Clear();
+            }
+
+            if (!initialized) {
+                SelectableElement[] _allElements = GetComponentsInChildren<SelectableElement>();
+                for (int i = 0; i < _allElements.Length; i++) {
+                    _allElements[i].parentHolder = this;
+                    allElements.Add(_allElements[i]);                
+                }
+                initialized = true;
             }
         }
 
@@ -157,17 +100,7 @@ namespace SimpleUI {
             InitializeSubSelectableElementHolders();
             InitializeSelectableElements();
         }
-            
-        protected virtual void OnDisable () {
-            if (isHoldersCollection) return;
-            for (int i = 0; i < allElements.Count; i++) {
-                Debug.LogError("enabling buttons");
-                allElements[i].gameObject.SetActive(true);
-                allElements[i].selected = false;
-            }
-            allElements.Clear();
-        }
-           
+               
         // protected virtual void Update () {
         protected override void Update () {
 #if UNITY_EDITOR 
@@ -176,36 +109,8 @@ namespace SimpleUI {
             }
 #endif
             base.Update();
-
-            // if (Application.isPlaying) {
-
-            //     // check if we hit the cancel button specified in the project's
-            //     // standalone input module
-            //     if (UIManager.currentInput.GetButtonDown(UIManager.standaloneInputModule.cancelButton)) {
-            //         if (!isBase) {
-            //             gameObject.SetActive(false);
-            //             parentElement.gameObject.SetActive(true);
-            //         }
-            //         else {
-            //             OnBaseCancel();
-            //         }
-            //     }
-            // }
         }
 
-        // void OnBaseCancel () {
-        //     if (parentElement != null) {
-        //         parentElement.OnBaseCancel();
-        //     }
-        //     else {
-        //         if (onBaseCancel != null) {
-        //             onBaseCancel ();
-        //         }
-        //         else {
-        //             Debug.LogError(name + " has no onBaseCancel");
-        //         }
-        //     }
-        // }
 
         public override void SetSelectableActive(bool active) {
             if (!isPopup) {
@@ -227,27 +132,56 @@ namespace SimpleUI {
         }
 
 
+        protected abstract bool ShouldWiggleLayoutChanges ();
+
+        IEnumerator WiggleActive(int count) {
+
+            // because im using a mix of layout groups and content size fitters, 
+            // layout groups need to be enabled and disabled a few times to show correctly
+            // (unity editor warnings be damned, it's the only way to get the expexted layout behavior unfortunately)
+            
+            if (count%2 != 0) // make sure it's even last set active = true
+                count++;
+
+            for (int i = 0; i < count; i++) {
+                yield return null; baseObject.SetActive(i%2!=0); // false, true, false....
+            }
+        }
+        public void WiggleActive () {
+            if (ShouldWiggleLayoutChanges()) {
+                StartCoroutine(WiggleActive(4));
+            }
+        }
+
+
         public SelectableElement[] GetAllSelectableElements (int targetCount) {
             if (isHoldersCollection) return null;
             
             int c = allElements.Count;
+            for (int i =0 ; i < c; i++) {
+                allElements[i].gameObject.SetActive(true);
+            }
             if (c < targetCount) {
+
                 int cnt = targetCount - c;
-                for (int i = 0 ; i < targetCount - c; i++) {
+                for (int i = 0 ; i < cnt; i++) {
                     AddNewSelectableElement("Adding new", i == (cnt - 1));
                 }
             }
             else if (c > targetCount) {
                 for (int i = targetCount; i < c; i++) {
-                    Debug.Log("Disabling buttons");
                     allElements[i].gameObject.SetActive(false);
                 }
+                WiggleActive();
+
                 List<SelectableElement> r = new List<SelectableElement>();
                 for (int i = 0; i < targetCount; i++) {
                     r.Add(allElements[i]);
-                    return r.ToArray();
                 }
+                return r.ToArray();
             }
+
+            WiggleActive();
             return allElements.ToArray();
         }
 

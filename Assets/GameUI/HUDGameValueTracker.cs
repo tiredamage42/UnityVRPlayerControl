@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using SimpleUI;
 
-namespace Game.GameUI {
+namespace Game.UI {
     public class HUDGameValueTracker : MonoBehaviour
     {
         public UIValueTracker uiObject;
@@ -9,23 +9,14 @@ namespace Game.GameUI {
         [Header("Invalid/Warning Thresholds")]
         [NeatArray] public NeatFloatArray colorSchemeThresholds;
         public string gameValueName;
-        Actor actor;
-
-        void GetActor () {
-            if (actor == null) actor = GetComponent<UIObjectInitializer>().associatedActor;
-        }
-
-        void Awake () {
-            GetActor();
-        }
-
+        
         void Start () {
-            GameValue gv = actor.GetGameValue(gameValueName);
+            GameValue gv = Actor.playerActor.GetGameValue(gameValueName);
             if (gv != null) gv.AddChangeListener(UpdateUIObject);
         }
             
         void OnDisable () {
-            GameValue gv = actor.GetGameValue(gameValueName);
+            GameValue gv = Actor.playerActor.GetGameValue(gameValueName);
             if (gv != null) gv.RemoveChangeListener(UpdateUIObject);
         }
 
@@ -33,8 +24,8 @@ namespace Game.GameUI {
             this.uiObject = uiObject;
             if (uiObject == null) return;
             uiObject.SetText(gameValueName);
-            GetActor();
-            GameValue gv = actor.GetGameValue(gameValueName);
+            // GetActor();
+            GameValue gv = Actor.playerActor.GetGameValue(gameValueName);
             if (gv != null) UpdateUIObject(0, gv.GetValue(), gv.GetMinValue(), gv.GetMaxValue());
         }
 

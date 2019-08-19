@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-using GameUI;
+// using Game.UI;
 using SimpleUI;
 
 namespace VRPlayer.UI {
@@ -8,7 +8,7 @@ namespace VRPlayer.UI {
     public static class VRUIBuilder  {
         
         // build a seperate worldspace canvas for each ui element
-        static RectTransform BuildCanvasObject (string name, bool addVRMenuBehavior, TransformBehavior followBehavior) {
+        static RectTransform BuildCanvasObject (string name, VRMenuFollowerParameters menuBehaviorParams, TransformBehavior followBehavior) {
             GameObject g = new GameObject(name);
             g.layer = LayerMask.NameToLayer("UI");
 
@@ -26,12 +26,9 @@ namespace VRPlayer.UI {
             // gr.ignoreReversedGraphics = true;
             // gr.blockingObjects = UnityEngine.UI.GraphicRaycaster.BlockingObjects.None;
 
-            if (addVRMenuBehavior) {
-
+            if (menuBehaviorParams != null) {
                 VRMenu vrm = g.AddComponent<VRMenu>();
-                vrm.matchXRotation = false;
-                vrm.angleThreshold = 45;
-                vrm.followSpeed = 5;
+                vrm.parameters = menuBehaviorParams;
                 vrm.followBehavior = followBehavior;
             }
 
@@ -60,48 +57,48 @@ namespace VRPlayer.UI {
             t.localPosition = lPos;
         }
 
-        public static UISliderPopup MakeSliderPopup (string goName, UISliderPopupParameters parameters, TransformBehavior equipBehavior) {
+        public static UISliderPopup MakeSliderPopup (string goName, UISliderPopupParameters parameters, TransformBehavior equipBehavior, VRMenuFollowerParameters menuBehaviorParams) {
             UISliderPopup msgCenter = GameObject.Instantiate( UIManager.instance.sliderPopupPrefab );
             msgCenter.parameters = parameters;
-            msgCenter = InitializeBaseUIElement<UISliderPopup> (msgCenter, BuildCanvasObject(goName, true, equipBehavior), new Vector2(.5f, 1f));
+            msgCenter = InitializeBaseUIElement<UISliderPopup> (msgCenter, BuildCanvasObject(goName, menuBehaviorParams, equipBehavior), new Vector2(.5f, 1f));
             UIManager.HideUI(msgCenter);
             return msgCenter;
         }
-        public static UISelectionPopup MakeSelectionPopup (string goName, UISelectionPopupParameters parameters, TransformBehavior equipBehavior) {
+        public static UISelectionPopup MakeSelectionPopup (string goName, UISelectionPopupParameters parameters, TransformBehavior equipBehavior, VRMenuFollowerParameters menuBehaviorParams) {
             UISelectionPopup msgCenter = GameObject.Instantiate( UIManager.instance.selectionPopupPrefab );
             msgCenter.parameters = parameters;
-            msgCenter = InitializeBaseUIElement<UISelectionPopup> (msgCenter, BuildCanvasObject(goName, true, equipBehavior), new Vector2(.5f, 1f));
+            msgCenter = InitializeBaseUIElement<UISelectionPopup> (msgCenter, BuildCanvasObject(goName, menuBehaviorParams, equipBehavior), new Vector2(.5f, 1f));
             UIManager.HideUI(msgCenter);
             return msgCenter;
         }
 
-        public static UIMessageCenter MakeMessageCenter (string goName, UIMessageCenterParameters parameters, TransformBehavior equipBehavior) {
+        public static UIMessageCenter MakeMessageCenter (string goName, UIMessageCenterParameters parameters, TransformBehavior equipBehavior, VRMenuFollowerParameters menuBehaviorParams) {
             UIMessageCenter msgCenter = GameObject.Instantiate( UIManager.instance.messageCenterPrefab );
             msgCenter.parameters = parameters;
-            return InitializeBaseUIElement<UIMessageCenter> (msgCenter, BuildCanvasObject(goName, true, equipBehavior), new Vector2(.5f, .5f));
+            return InitializeBaseUIElement<UIMessageCenter> (msgCenter, BuildCanvasObject(goName, menuBehaviorParams, equipBehavior), new Vector2(.5f, .5f));
         }
-        public static UISubtitles MakeSubtitles ( string goName, UISubtitlesParameters parameters, TransformBehavior equipBehavior ) {
+        public static UISubtitles MakeSubtitles ( string goName, UISubtitlesParameters parameters, TransformBehavior equipBehavior, VRMenuFollowerParameters menuBehaviorParams) {
             UISubtitles returnElement = GameObject.Instantiate( UIManager.instance.subtitlesPrefab );
             returnElement.parameters = parameters;
-            return InitializeBaseUIElement<UISubtitles> (returnElement, BuildCanvasObject(goName, true, equipBehavior), new Vector2(.5f, .5f));
+            return InitializeBaseUIElement<UISubtitles> (returnElement, BuildCanvasObject(goName, menuBehaviorParams, equipBehavior), new Vector2(.5f, .5f));
         }
 
         public static UIValueTracker MakeValueTrackerUI (string goName, UIValueTrackerParameters parameters, bool useVertical) {
             UIValueTracker newValueTracker = GameObject.Instantiate( useVertical ? UIManager.instance.valueTrackerVerticalPrefab : UIManager.instance.valueTrackerHorizontalPrefab );
             newValueTracker.parameters = parameters;
             newValueTracker.UpdateLayout();
-            return InitializeBaseUIElement<UIValueTracker> (newValueTracker, BuildCanvasObject(goName, false, null), new Vector2(.5f, .5f));
+            return InitializeBaseUIElement<UIValueTracker> (newValueTracker, BuildCanvasObject(goName, null, null), new Vector2(.5f, .5f));
         }
 
         public static UIElementHolder MakeRadial (string goName, UIRadialParameters radialParameters){
-            UIRadial newRadial = InitializeBaseUIElement<UIRadial> (GameObject.Instantiate( UIManager.instance.radialPrefab ), BuildCanvasObject(goName, false, null), new Vector2(.5f, .5f));
+            UIRadial newRadial = InitializeBaseUIElement<UIRadial> (GameObject.Instantiate( UIManager.instance.radialPrefab ), BuildCanvasObject(goName, null, null), new Vector2(.5f, .5f));
             newRadial.parameters = radialParameters;
             newRadial.isBase = true;
             UIManager.HideUI(newRadial);
             return newRadial;
         }
-        public static UIElementHolder MakeButtonsPage (string goName, UIPageParameters pageParameters, bool addVRMenuBehavior, TransformBehavior equipBehavior){
-            UIPage newPage = InitializeBaseUIElement<UIPage> (InstantiatePage (pageParameters), BuildCanvasObject(goName, addVRMenuBehavior, equipBehavior), new Vector2(.5f, 1f));
+        public static UIElementHolder MakeButtonsPage (string goName, UIPageParameters pageParameters, TransformBehavior equipBehavior, VRMenuFollowerParameters menuBehaviorParams){
+            UIPage newPage = InitializeBaseUIElement<UIPage> (InstantiatePage (pageParameters), BuildCanvasObject(goName, menuBehaviorParams, equipBehavior), new Vector2(.5f, 1f));
             UIManager.HideUI(newPage);
             return newPage;
         }
@@ -119,20 +116,17 @@ namespace VRPlayer.UI {
             newPage.parameters = parameters;
             return newPage;
         }
-
         
-        public static UIElementHolder MakeButtonsPage (string goName, UIPageParameters pageParameters, TextPanelParameters textPanelParams, bool addVRMenuBehavior, TransformBehavior equipBehavior, float buildRotationOffset){
-            RectTransform canvasObject = BuildCanvasObject(goName, addVRMenuBehavior, equipBehavior);
+        public static UIElementHolder MakeButtonsPage (string goName, UIPageParameters pageParameters, TextPanelParameters textPanelParams, TransformBehavior equipBehavior, VRMenuFollowerParameters menuBehaviorParams, float buildRotationOffset){
+            RectTransform canvasObject = BuildCanvasObject(goName, menuBehaviorParams, equipBehavior);
             
             UIPage newPage = InstantiatePage (pageParameters);
             
-            RectTransform childRect = canvasObject;
-
             float width = pageParameters.elementsSize.x;
             float titleHeight = pageParameters.titleHeight;
 
-            SetParent(newPage.rectTransform, childRect, new Vector2(.5f, 1f), new Vector3(-(width*.5f), 0, 0), new Vector3(0,buildRotationOffset,0));
-            SetParent(InstantiateTextPanel(textPanelParams, new UIElementHolder[] { newPage }).rectTransform, childRect, new Vector2(.5f, 1f), new Vector3(width*.5f, -pageParameters.titleHeight, 0), new Vector3(0,-buildRotationOffset,0));
+            SetParent(newPage.rectTransform, canvasObject, new Vector2(.5f, 1f), new Vector3(-(width*.5f), 0, 0), new Vector3(0,buildRotationOffset,0));
+            SetParent(InstantiateTextPanel(textPanelParams, new UIElementHolder[] { newPage }).rectTransform, canvasObject, new Vector2(.5f, 1f), new Vector3(width*.5f, -pageParameters.titleHeight, 0), new Vector3(0,-buildRotationOffset,0));
             
             newPage.baseObject = canvasObject.gameObject;
             UIManager.HideUI(newPage);
@@ -140,7 +134,6 @@ namespace VRPlayer.UI {
         }
 
         
-
         static T InitializeBaseUIElement<T> (BaseUIElement element, RectTransform baseObject, Vector2 anchor) where T : BaseUIElement {
             element.baseObject = baseObject.gameObject;
             SetParent(element.rectTransform, baseObject, anchor);
@@ -148,12 +141,10 @@ namespace VRPlayer.UI {
         }
 
 
-        public static UIElementHolder MakeFullTradeUI (string goName, UIPageParameters pageParameters, TextPanelParameters textPanelParams, TransformBehavior equipBehavior, float buildRotationOffset, float textPanelRotationZOffset){//, float textScale) {
-            RectTransform canvasObject = BuildCanvasObject(goName, true, equipBehavior);
+        public static UIElementHolder MakeFullTradeUI (string goName, UIPageParameters pageParameters, TextPanelParameters textPanelParams, TransformBehavior equipBehavior, VRMenuFollowerParameters menuBehaviorParams, float buildRotationOffset, float textPanelRotationZOffset){//, float textScale) {
+            RectTransform canvasObject = BuildCanvasObject(goName, menuBehaviorParams, equipBehavior);
 
-            RectTransform childRect = canvasObject;
-                    
-            ElementHolderCollection collection = childRect.gameObject.AddComponent<ElementHolderCollection>();
+            ElementHolderCollection collection = canvasObject.gameObject.AddComponent<ElementHolderCollection>();
             collection.isBase = true;
             collection.baseObject = canvasObject.gameObject;
 

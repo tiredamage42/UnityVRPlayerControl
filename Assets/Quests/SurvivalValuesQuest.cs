@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 
 using Game.QuestSystem;
-using Game.GameUI;
+using Game.UI;
 using Game;
-
 public class SurvivalValuesQuest : Quest {
 
     [System.Serializable] public class SurviveValue {
@@ -40,13 +39,13 @@ public class SurvivalValuesQuest : Quest {
         void OnValueChange(float delta, float current, float min, float max) {
             //value relief
             if (delta < 0) {
-                playerActor.ShowMessage (runtimeValue.name + " " + delta, UIColorScheme.Normal);
+                GameUI.ShowInGameMessage (runtimeValue.name + " " + delta, false, UIColorScheme.Normal);
             }
             
             int v = (int)current;
             if (lastThresholdValue != v) {
 
-                playerActor.ShowMessage (runtimeValue.name + " Level :: " + v + (v == 0 ? "" : hintMessage), thresholdMessageColorSchemes.list[v]);
+                GameUI.ShowInGameMessage (runtimeValue.name + " Level :: " + v + (v == 0 ? "" : hintMessage), false, thresholdMessageColorSchemes.list[v]);
                 playerActor.RemoveBuffs(thresholdPenalties.list[lastThresholdValue], 1, questInstanceID, survivalValueID);
                 playerActor.AddBuffs(thresholdPenalties.list[v], 1, questInstanceID, survivalValueID, false, playerActor, playerActor);
                 
@@ -77,6 +76,6 @@ public class SurvivalValuesQuest : Quest {
         }
     }
 
-    public override string GetHint () { return null; }
+    public override string GetCurrentTextHint () { return null; }
     public override void OnQuestComplete () { }
 }

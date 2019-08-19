@@ -15,15 +15,10 @@ public enum UIColorScheme { Normal = 0, Warning = 1, Invalid = 2 };
 
 namespace SimpleUI {
     
-    // TODO: add working / error color system...
-    // TODO: abstract ui element class
     // TODO: button flair (e.g. square next to equipped item, heart next to favorited)
 
 
     // [RequireComponent(typeof(StandaloneInputModule))]
-
-    
-
     public class UIManager : MonoBehaviour
     {
         public static void SetSelection(GameObject selection) {
@@ -152,87 +147,48 @@ namespace SimpleUI {
 
 
         static HashSet<BaseUIElement> shownUIsWithInput = new HashSet<BaseUIElement>();
-
-        static IEnumerator _ShowUI (GameObject uiObject, BaseUIElement uiObjectC, 
-            // bool needsInput, 
-            bool tryRepeat) {
+        static void _ShowUI (GameObject uiObject, BaseUIElement uiObjectC) {
             
             if (uiObjectC.RequiresInput()) {
-            // if (needsInput) {
                 standaloneInputModule.gameObject.SetActive(true);
                 shownUIsWithInput.Add(uiObjectC);
             }
             
             uiObject.SetActive(true);
             
-            // because im using a mix of layout groups and content size fitters, 
-            // layout groups need to be enabled and disabled a few times to show correctly
-            // (unity editor warnings be damned, it's the only way to get the expexted layout behavior unfortunately)
-            if (tryRepeat) {
-                yield return null; uiObject.SetActive(false);
-                yield return null; uiObject.SetActive(true);
-                yield return null; uiObject.SetActive(false);
-                yield return null; uiObject.SetActive(true);
-            }
-
             if (uiObjectC.RequiresInput()) {
                 uiObjectC.SetSelectableActive(true);
 
                 if (onAnyUISelect != null) {
                     foreach (var d in onAnyUISelect.GetInvocationList()) {
-                        uiObjectC.SubscribeToSelectEvent((System.Action<GameObject[], object[]>)d);
+                        uiObjectC.SubscribeToSelectEvent((System.Action<GameObject, GameObject[], object[]>)d);
                     }
                 }
 
                 if (onAnyUISubmit != null) {
                     foreach (var d in onAnyUISubmit.GetInvocationList()) {
-                        uiObjectC.SubscribeToSubmitEvent((System.Action<GameObject[], object[], Vector2Int>)d);
+                        uiObjectC.SubscribeToSubmitEvent((System.Action<GameObject, GameObject[], object[], Vector2Int>)d);
                     }
                 }
             }
         }
 
-        public static event System.Action<GameObject[], object[]> onAnyUISelect;
-        public static event System.Action<GameObject[], object[], Vector2Int> onAnyUISubmit;
+        public static event System.Action<GameObject, GameObject[], object[]> onAnyUISelect;
+        public static event System.Action<GameObject, GameObject[], object[], Vector2Int> onAnyUISubmit;
         
-        static void ShowUI (GameObject uiObject, BaseUIElement uiObjectC, 
-            // bool needsInput, 
-            bool tryRepeat) {
-            //set active so we can call coroutines on it    
-            instance.StartCoroutine(_ShowUI(uiObject, uiObjectC, 
-            // needsInput, 
-            tryRepeat));
+        static void ShowUI (GameObject uiObject, BaseUIElement uiObjectC) {
+            _ShowUI(uiObject, uiObjectC);
         }
             
         static GameObject GetUIObj (BaseUIElement uiObject) {
             return uiObject.baseObject != null ? uiObject.baseObject : uiObject.gameObject;
         }
-
-
-
-        // static bool uiOpenCheck;
-        // public static event System.Action<int> onUIOpenCheck;
-        // public static void DeclareUIOpen () {
-        //     uiOpenCheck = true;
-        // }
-        // public static bool AnyUIOpen(int data) {
-        //     uiOpenCheck = false;
-        //     if (onUIOpenCheck!=null) {
-        //         onUIOpenCheck(data);
-        //     }
-        //     return uiOpenCheck;
-        // }
-            
+   
         public static bool AnyUIOpen() {
-            return uiInputActive;//instance.shownUIsWithInput.Count != 0;
+            return uiInputActive;
         }
-        
-        public static void ShowUI(BaseUIElement uiObject, 
-            // bool needsInput, 
-            bool tryRepeat) {
-            ShowUI(GetUIObj(uiObject), uiObject, 
-            // needsInput, 
-            tryRepeat);
+        public static void ShowUI(BaseUIElement uiObject) {
+            ShowUI(GetUIObj(uiObject), uiObject);
         }
 
         public static void HideUI (BaseUIElement uiObject) {
@@ -254,9 +210,53 @@ namespace SimpleUI {
             }
         }   
 
+        // IN GAME MESSAGES
+        static UIMessageCenter messagesElement;
+        public static void SetUIMessageCenterInstance(UIMessageCenter messagesElement) {
+            UIManager.messagesElement = messagesElement;
+        }
+        public static void ShowInGameMessage(string msg, bool immediate, UIColorScheme schemeType) {
+            if (messagesElement == null) {
+                Debug.LogError("ShowInGameMessage messagesElement == null!\nSet up a UIMessageCenter instance with:\nUIManager.SetUIMessageCenterInstance(UIMessageCenter messagesElement)");
+                return;
+            }
+            messagesElement.ShowMessage(msg, immediate, schemeType);
+        }
+
+
+        // SUBTITLES
+        static UISubtitles subtitlesElement;
+        public static void SetUISubtitlesInstance(UISubtitles subtitlesElement) {
+            UIManager.subtitlesElement = subtitlesElement;
+        }
+        public static void ShowSubtitles(string speaker, string msg) {
+            if (subtitlesElement == null) {
+                Debug.LogError("ShowSubtitles subtitlesElement == null!\nSet up a UISubtitles instance with:\nUIManager.SetUISubtitlesInstance(UISubtitles subtitlesElement)");
+                return;
+            }
+            subtitlesElement.ShowSubtitles(speaker, msg);
+        }
+
+        // POPUPS
+
         public static bool popupOpen;
+        static GameObject selectedWhenPoppedUp;
 
-
+        static void HidePopup (BaseUIElement popup) {
+            HideUI(popup);
+            SetAllActiveUIsSelectableActive(true);
+            popupOpen = false;
+            SetSelection(selectedWhenPoppedUp);
+            selectedWhenPoppedUp = null;
+        }
+        static void ShowPopup (BaseUIElement popup, System.Action onCancel, System.Action<GameObject, GameObject[], object[], Vector2Int> onSubmit) {
+            selectedWhenPoppedUp = CurrentSelected();
+            ShowUI(popup);
+            SetAllActiveUIsSelectableActive(false);
+            popupOpen = true;
+            popup.onBaseCancel = onCancel;
+            popup.SubscribeToSubmitEvent(onSubmit);
+        }
 
         static System.Action<bool, int> selectionReturnCallback;
         static UISelectionPopup selectionPopupElement;
@@ -265,7 +265,6 @@ namespace SimpleUI {
         }
 
         static void MakeButton (SelectableElement element, string text, object[] customData) {
-            element.elementText = text;
             element.uiText.SetText(text, -1);
             element.customData = customData;
         }
@@ -277,54 +276,33 @@ namespace SimpleUI {
                 returnValue(false, 0);
                 return;
             }
-            popupOpen = true;
-            SetAllActiveUIsSelectableActive(false);
             
+            ShowPopup (selectionPopupElement, OnCancelSelectionUI, OnSelectionSubmit);
+
             selectionReturnCallback = returnValue;
-            
-            ShowUI(selectionPopupElement, 
-                // true, 
-                false);
-
-
-                Debug.LogError("showing selection" + msg);
 
             selectionPopupElement.SetMessage(msg);
-            selectionPopupElement.onBaseCancel = OnCancelSelectionUI;
-            selectionPopupElement.SubscribeToSubmitEvent(OnSelectionSubmit);
-            
-            SelectableElement[] allElements = selectionPopupElement.GetAllSelectableElements(options.Length);
-            UIManager.SetSelection(allElements[0].gameObject);
 
+            SelectableElement[] allElements = selectionPopupElement.GetAllSelectableElements(options.Length);
+            SetSelection(allElements[0].gameObject);
             for (int i = 0 ; i < options.Length; i++) {
                 MakeButton( allElements[i], options[i], new object[] { i } );   
             }
         }
 
-        static void OnSelectionSubmit (GameObject[] data, object[] customData, Vector2Int input) {
-            Debug.LogError("selected" + (int)customData[0]);
-            HideUI(selectionPopupElement);
-            SetAllActiveUIsSelectableActive(true);
-            popupOpen = false;
-            
-            
+        static void OnSelectionSubmit (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input) {
+            HidePopup(selectionPopupElement);
             if (selectionReturnCallback != null) {
                 selectionReturnCallback(true, (int)customData[0]);
                 selectionReturnCallback = null;
             }
         }
         static void OnCancelSelectionUI () {
-                        Debug.LogError("cancelled");
-
-            HideUI(selectionPopupElement);
-            SetAllActiveUIsSelectableActive(true);
-            popupOpen = false;
-            
+            HidePopup(selectionPopupElement);
             if (selectionReturnCallback != null) {
                 selectionReturnCallback (false, 0);
                 selectionReturnCallback = null;
             }
-            
         }
 
 
@@ -333,6 +311,7 @@ namespace SimpleUI {
         public static void SetUISliderPopupInstance(UISliderPopup sliderElement) {
             UIManager.sliderElement = sliderElement;
         }
+
         public static void ShowIntSliderPopup(string title, int minValue, int maxValue, System.Action<bool, int> returnValue) {
             if (sliderElement == null) {
                 Debug.LogError("ShowIntSliderPopup sliderElement == null!\nSet up a UISliderPopup instance with:\nUIManager.SetUISliderPopupInstance(UISliderPopup sliderElement)");
@@ -340,43 +319,28 @@ namespace SimpleUI {
                 return;
             }
 
-            popupOpen = true;
-            SetAllActiveUIsSelectableActive(false);
-            
-            sliderReturnCallback = returnValue;
+            ShowPopup (selectionPopupElement, OnCancelSliderUI, OnSliderSubmit);
 
+            sliderReturnCallback = returnValue;
             sliderElement.SetTitle(title);
             sliderElement.slider.wholeNumbers = true;
             sliderElement.slider.minValue = minValue;
             sliderElement.slider.maxValue = maxValue;
-
-            ShowUI(sliderElement, 
-                // true, 
-                false);
-            sliderElement.onBaseCancel = OnCancelSliderUI;
-            sliderElement.SubscribeToSubmitEvent(OnSliderSubmit);
         }
-        static void OnSliderSubmit (GameObject[] data, object[] customData, Vector2Int input) {
-            HideUI(sliderElement);
-            SetAllActiveUIsSelectableActive(true);
-            popupOpen = false;
-            
+
+        static void OnSliderSubmit (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input) {
+            HidePopup(sliderElement);
             if (sliderReturnCallback != null) {
                 sliderReturnCallback(true, (int)sliderElement.sliderValue);
                 sliderReturnCallback = null;
             }
-            
         }
         static void OnCancelSliderUI () {
-            HideUI(sliderElement);
-            SetAllActiveUIsSelectableActive(true);
-            popupOpen = false;
-            
+            HidePopup(sliderElement);
             if (sliderReturnCallback != null) {
                 sliderReturnCallback (false, 0);
                 sliderReturnCallback = null;
             }
-            
         }
     }
 }

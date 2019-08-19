@@ -2,54 +2,50 @@
 using UnityEngine;
 
 using Game.QuestSystem;
+using SimpleUI;
 
-namespace Game.GameUI {
+namespace Game.UI {
 
     public class UIQuestsPage : UISelectableElementHandler
     {
-        protected override int ParamsLength () { 
-            return 0; 
+        static UIQuestsPage _instance;
+        public static UIQuestsPage instance {
+            get {
+                if (_instance == null) _instance = GameObject.FindObjectOfType<UIQuestsPage>();
+                return _instance;
+            }
         }
-        
-        protected override bool CheckParameters (object[] parameters) {
-            return true;
-        }
-
-        protected override void OnOpenUI(object[] parameters) { 
-            BuildButtons("Active Quests", true, 0, null);
-            BuildButtons("Completed Quests", false, 1, null);
+        public void OpenQuestManagementUI () {
+            OpenUI ( 0, new object[] { } );
         }
 
-        protected override void OnUISelect (GameObject[] data, object[] customData) { 
-            (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText("");
+        protected override void OnOpenUI() { 
+            BuildButtons("Active Quests", true, 0);
+            BuildButtons("Completed Quests", false, 1);
+        }
 
+        protected override void OnUISelect (GameObject selectedObject, GameObject[] data, object[] customData) { 
+            string txt = "";
             if (customData != null) {
                 Quest quest = customData[0] as Quest;
                 if (quest != null) {
-
+                    txt = quest.displayName;
                     int panelIndex = (int)customData[1];
-
-                    string textToShow = quest.displayName;
                     if (panelIndex == 0) {
-                        textToShow += (quest.infinite ? " [ Infinite ]" : "") + ":\n\n" + quest.GetHint();
+                        txt += (quest.infinite ? " [ Infinite ]" : "") + ":\n\n" + quest.GetCurrentTextHint();
                     }
                     else {
-                        textToShow += " [ Completed ]";
+                        txt += " [ Completed ]";
                     }
-
-                    (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText(textToShow);
                 }   
             }
+            (uiObject as SimpleUI.ElementHolderCollection).textPanel.SetText(txt);
         }
         
-        protected override object[] GetDefaultColdOpenParams() { 
-            return new object[] { }; 
-        }
-
-        protected override List<object> BuildButtonObjectsListForDisplay (int panelIndex, object[] updateButtonsParams) { 
+        protected override object[] GetDefaultColdOpenParams() { return new object[] { }; }
+        protected override List<object> BuildButtonObjectsListForDisplay (int panelIndex){
             List<object> r = new List<object>();
             List<Quest> listToUse = panelIndex == 0 ? QuestHandler.instance.activeQuests : QuestHandler.instance.completedQuests;
-            
             for (int i = 0; i < listToUse.Count; i++) {
                 if (listToUse[i].isPublic) {
                     r.Add(listToUse[i]);
@@ -64,21 +60,18 @@ namespace Game.GameUI {
 
         const int selectQuestAction = 0;
 
-        protected override void OnUIInput (GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
             
-            if (customData != null) {
-                if (input.x == selectQuestAction+actionOffset) {
-                    
+            if (input.x == selectQuestAction+actionOffset) {
+                if (customData != null) {
                     Quest quest = customData[0] as Quest;
-                    int panelIndex = (int)customData[1];
-                    
-                    if (panelIndex == 0) {
-                        
-                        if (quest != null) {
+                    if (quest != null) {
+                        int panelIndex = (int)customData[1];
+                        if (panelIndex == 0) {
                             QuestHandler.currentSelectedQuest = QuestHandler.currentSelectedQuest == quest ? null : quest;
-                            UpdateUIButtons( 0, null );
+                            UpdateUIButtons( );
                         }
-                    }
+                    }    
                 }    
             }
 		}

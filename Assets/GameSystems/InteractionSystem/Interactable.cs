@@ -1,6 +1,6 @@
 ﻿
 using UnityEngine;
-using UnityEngine.Events;
+// using UnityEngine.Events;
 using System.Collections.Generic;
 
 namespace InteractionSystem
@@ -38,10 +38,11 @@ namespace InteractionSystem
             InteractableElement[] elements = GetComponentsInChildren<InteractableElement>();
             for (int i = 0; i < elements.Length; i++) elements[i].interactable = this;
         }
+
+        public int enforceInteractorID = -1;
         
         
-        private void Awake()
-        {
+        void Awake() {
             InitializeListeners();
             SetInteractableElements();
         }
@@ -55,25 +56,30 @@ namespace InteractionSystem
             for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableAvailabilityChange(available);
         }
         public void OnInspectedStart (InteractionPoint interactor) {
+            if (enforceInteractorID != -1 && enforceInteractorID != interactor.interactorID) return;
             currentHoveringIDs.Add(interactor.GetInstanceID());
             for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableInspectedStart(interactor);
         }
         public void OnInspectedEnd (InteractionPoint interactor) {
+            if (enforceInteractorID != -1 && enforceInteractorID != interactor.interactorID) return;
             currentHoveringIDs.Remove(interactor.GetInstanceID());
             for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableInspectedEnd(interactor);
         }
         public void OnInspectedUpdate(InteractionPoint interactor) {
+            if (enforceInteractorID != -1 && enforceInteractorID != interactor.interactorID) return;
             for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableInspectedUpdate(interactor);
         }
         public void OnUsedStart (InteractionPoint interactor, int useIndex) {
+            if (enforceInteractorID != -1 && enforceInteractorID != interactor.interactorID) return;
             for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableUsedStart(interactor, useIndex);
         }
         public void OnUsedEnd (InteractionPoint interactor, int useIndex) {
+            if (enforceInteractorID != -1 && enforceInteractorID != interactor.interactorID) return;
             for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableUsedEnd(interactor, useIndex);
         }
         public void OnUsedUpdate(InteractionPoint interactor, int useIndex) {
+            if (enforceInteractorID != -1 && enforceInteractorID != interactor.interactorID) return;
             for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableUsedUpdate(interactor, useIndex);
         }
-        
     }
 }

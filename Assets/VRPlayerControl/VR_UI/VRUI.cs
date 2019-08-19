@@ -6,8 +6,10 @@ using SimpleUI;
 using Valve.VR;
 using GameBase;
 using Game;
-using Game.GameUI;
+// using Game.GameUI;
 using Game.InventorySystem;
+
+using Game.UI;
 namespace VRPlayer.UI {
 
     public class VRUI : MonoBehaviour
@@ -18,6 +20,10 @@ namespace VRPlayer.UI {
 
         public TransformBehavior pageWithPanelTransform, fullTradeTransform, subTitlesTransform, dialogueOptionsTransform, messageCenterTransform;
 
+        public VRMenuFollowerParameters normalVRMenuFollowParams = new VRMenuFollowerParameters();
+        public VRMenuFollowerParameters messagesVRMenuFollowParams = new VRMenuFollowerParameters();
+        
+        
         [Header("Normal Page Params")]
         public UIPageParameters normalPageParams = new UIPageParameters(new Vector2(3, .25f), .5f, .01f, TextAnchor.MiddleLeft, .05f, .0025f);
         
@@ -51,44 +57,32 @@ namespace VRPlayer.UI {
 
 
         //TODO: get ui stuff out of actor script...
-        void BuildUIs (Actor playerActor, GameObject uiObject) {
+        void BuildUIs (){//Actor playerActor, GameObject uiObject) {
 
-            quickInvHandler = uiObject.GetComponent<QuickInventoryUIHandler>();
-            invUIHandler = uiObject.GetComponent<FullInventoryUIHandler>();
+            // quickInvHandler = uiObject.GetComponent<QuickInventoryUIHandler>();
+            // invUIHandler = uiObject.GetComponent<FullInventoryUIHandler>();
             
-            UIElementHolder fullTradeHolder = VRUIBuilder.MakeFullTradeUI("FullTrade", normalPageParams, textPanelParameters, fullTradeTransform, buildRotationOffset, textPanelRotationZOffset);
-            UIElementHolder pagepanelui = VRUIBuilder.MakeButtonsPage("PageWPanel", normalPageParams, textPanelParameters, true, pageWithPanelTransform, buildRotationOffset);
-            uiObject.GetComponent<CraftingUIHandler>().SetUIObject(fullTradeHolder);
-            uiObject.GetComponent<FullTradeUIHandler>().SetUIObject(fullTradeHolder);
+            UIElementHolder fullTradeHolder = VRUIBuilder.MakeFullTradeUI("Page2Panel", normalPageParams, textPanelParameters, fullTradeTransform, normalVRMenuFollowParams, buildRotationOffset, textPanelRotationZOffset);
+            UIElementHolder pagepanelui = VRUIBuilder.MakeButtonsPage("PageWPanel", normalPageParams, textPanelParameters, pageWithPanelTransform, normalVRMenuFollowParams, buildRotationOffset);
             
-            quickInvHandler.SetUIObject(VRUIBuilder.MakeRadial("QuickInvRadial", radialParams));
-            invUIHandler.SetUIObject(pagepanelui);
+            GameUI.craftingUI.SetUIObject(fullTradeHolder);
+            GameUI.tradeUI.SetUIObject(fullTradeHolder);
             
-            uiObject.GetComponent<DialoguePlayerUIHandler>().SetUIObject(VRUIBuilder.MakeButtonsPage("Dialogue", dialogueParams, true, dialogueOptionsTransform));
-            uiObject.GetComponent<QuickTradeUIHandler>().SetUIObject(VRUIBuilder.MakeButtonsPage("QuickTrade", quickTradeParams, false, null));
-
-            uiObject.GetComponent<UIGameValuePage>().SetUIObject(pagepanelui);
-            uiObject.GetComponent<UIPerksTable>().SetUIObject(fullTradeHolder);
-            uiObject.GetComponent<UIQuestsPage>().SetUIObject(fullTradeHolder);
-
+            GameUI.quickInventoryUI.SetUIObject(VRUIBuilder.MakeRadial("QuickInvRadial", radialParams));
+            GameUI.inventoryManagementUI.SetUIObject(pagepanelui);
             
+            GameUI.quickTradeUI.SetUIObject(VRUIBuilder.MakeButtonsPage("QuickTrade", quickTradeParams, null, null));
 
-            subtitles = VRUIBuilder.MakeSubtitles("Subtitles", subtitlesParameters, subTitlesTransform);
-            msgCenter = VRUIBuilder.MakeMessageCenter ("Message Center", messageCenterParameters, messageCenterTransform);
 
-            //link the subtitles and msg center showers to the player
-            playerActor.onShowMessage += msgCenter.ShowMessage;
-            playerActor.onShowSubtitles += subtitles.ShowSubtitles;
+            GameUI.dialogueResponseUI.SetUIObject(VRUIBuilder.MakeButtonsPage("Dialogue", dialogueParams, dialogueOptionsTransform, normalVRMenuFollowParams));
+            GameUI.gameValuesUI.SetUIObject(pagepanelui);
+            GameUI.perksUI.SetUIObject(fullTradeHolder);
+            GameUI.questsUI.SetUIObject(fullTradeHolder);
 
-            UIManager.SetUISelectionPopupInstance(VRUIBuilder.MakeSelectionPopup("SelectionPopup", selectionPopupParameters, selectionPopupTransform));
-            UIManager.SetUISliderPopupInstance(VRUIBuilder.MakeSliderPopup("SliderPopup", sliderPopupParameters, sliderPopupTransform));
-        }
-
-        UISubtitles subtitles;
-        UIMessageCenter msgCenter;
-        void UninitializeUIs (Actor playerActor) {
-            playerActor.onShowMessage -= msgCenter.ShowMessage;
-            playerActor.onShowSubtitles -= subtitles.ShowSubtitles;
+            GameUI.SetUIMessageCenterInstance ( VRUIBuilder.MakeMessageCenter ("Message Center", messageCenterParameters, messageCenterTransform, messagesVRMenuFollowParams) );
+            GameUI.SetUISubtitlesInstance( VRUIBuilder.MakeSubtitles("Subtitles", subtitlesParameters, subTitlesTransform, normalVRMenuFollowParams) );
+            GameUI.SetUISelectionPopupInstance( VRUIBuilder.MakeSelectionPopup("SelectionPopup", selectionPopupParameters, selectionPopupTransform, normalVRMenuFollowParams));
+            GameUI.SetUISliderPopupInstance( VRUIBuilder.MakeSliderPopup("SliderPopup", sliderPopupParameters, sliderPopupTransform, normalVRMenuFollowParams));
         }
 
 
@@ -96,7 +90,7 @@ namespace VRPlayer.UI {
         
         void OnEnable () {
             inventory = Player.instance.GetComponent<Inventory>();    
-            BuildUIs(inventory.actor, GameObject.FindObjectOfType<UIObjectInitializer>().gameObject);
+            BuildUIs();//inventory.actor);//, GameObject.FindObjectOfType<UIObjectInitializer>().gameObject);
 
             GameManager.onPauseRoutineStart += OnGamePaused;
             UIManager.onAnyUISelect += OnUISelection;            
@@ -106,10 +100,9 @@ namespace VRPlayer.UI {
             GameManager.onPauseRoutineStart -= OnGamePaused;
             UIManager.onAnyUISelect -= OnUISelection;
             
-            UninitializeUIs(inventory.actor);
         }
 
-        void OnUISelection (GameObject[] data, object[] customData) {
+        void OnUISelection (GameObject selectedObject, GameObject[] data, object[] customData) {
             // float duration,  float frequency, float amplitude
             StandardizedVRInput.instance.TriggerHapticPulse( VRUIInput.GetUIHand (), .1f, 1.0f, 1.0f );   
         }
@@ -128,16 +121,17 @@ namespace VRPlayer.UI {
         }
          
         [Space] public SteamVR_Action_Boolean uiInvToggleAction;
-        FullInventoryUIHandler invUIHandler;
-        QuickInventoryUIHandler quickInvHandler;
+        // FullInventoryUIHandler invUIHandler;
+        // QuickInventoryUIHandler quickInvHandler;
 
         // open full inventory logic
         void UpdateNormalInventory () {
             if (uiInvToggleAction.GetStateDown(VRManager.instance.mainHand)) {
-                if (invUIHandler.UIObjectActive())
-                    invUIHandler.CloseUI();
+                // if (invUIHandler.UIObjectActive())
+                if (GameUI.inventoryManagementUI.UIObjectActive(true))
+                    GameUI.inventoryManagementUI.CloseUI();
                 else
-                    invUIHandler.OpenUI();
+                    GameUI.inventoryManagementUI.OpenInventoryManagementUI(inventory, null);
             }
         } 
 
@@ -146,7 +140,11 @@ namespace VRPlayer.UI {
         // Opening quick invnetory logic
         bool CheckHandForWristRadialOpen (SteamVR_Input_Sources hand) {
 			if (uiQuickInvToggleAction.GetStateDown(hand)) {
-                quickInvHandler.OpenUI(new object[] { inventory, VRManager.Hand2Int(hand), null, null });
+
+
+                GameUI.quickInventoryUI.OpenQuickInventoryUI(VRManager.Hand2Int(hand), inventory);
+                // GameUI.OpenQuickInventoryUI(inventory, VRManager.Hand2Int(hand));
+                // quickInvHandler.OpenUI(new object[] { inventory, VRManager.Hand2Int(hand), null, null });
                 return true;
 			}
 			return false;

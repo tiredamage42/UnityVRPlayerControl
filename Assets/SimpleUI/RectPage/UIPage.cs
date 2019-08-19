@@ -36,6 +36,7 @@ namespace SimpleUI {
     [ExecuteInEditMode] public class UIPage : UIElementHolder
     {
 
+        protected override bool ShouldWiggleLayoutChanges() { return true; }
         protected override float TextScale() { return parameters.textScale; }
         
         public string pageTitleText = "Window Title";

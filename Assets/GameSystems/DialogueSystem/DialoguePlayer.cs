@@ -22,7 +22,8 @@ using UnityEngine;
 // using InventorySystem;
 // using QuestSystem;
 
-using Game.GameUI;
+using Game.UI;
+using SimpleUI;
 
 #if UNITY_EDITOR 
 using UnityEditor;
@@ -41,11 +42,11 @@ namespace Game.DialogueSystem {
         int phase, currentStepID;
         float phaseTimer, phaseTime;
         
-        DialoguePlayerUIHandler uIHandler;
+        // DialoguePlayerUIHandler uIHandler;
 
         void Awake () {
             myActor = GetComponent<Actor>();
-            uIHandler = GameObject.FindObjectOfType<UIObjectInitializer>().gameObject.GetComponent<DialoguePlayerUIHandler>();
+            // uIHandler = GameObject.FindObjectOfType<UIObjectInitializer>().gameObject.GetComponent<DialoguePlayerUIHandler>();
         }
 
         public void Stop () {
@@ -83,8 +84,7 @@ namespace Game.DialogueSystem {
             
             // Speaking to begins first...
             
-            // show subtitles
-            myActor.ShowSubtitles (speakingTo.actorName, step.bark);
+            UIManager.ShowSubtitles (speakingTo.actorName, step.bark);
             
             // play audio
             if (speakerSource != null) {
@@ -189,9 +189,12 @@ namespace Game.DialogueSystem {
                 //set up the ui to show potential responses (TODO: fade out instead of hard close on response...)
                 waitingForResponse = true;
 
-                uIHandler.onUIClose += OnResponseCancelled;
-                uIHandler.onRespond = OnResponseChosen;
-                uIHandler.OpenUI( new object[] { usedResponses } );
+                
+                GameUI.dialogueResponseUI.onUIClose += OnResponseCancelled;
+                // GameUI.dialogueResponseUI.onRespond = OnResponseChosen;
+                GameUI.dialogueResponseUI.OpenDialogueResponseUI(usedResponses, OnResponseChosen);
+                
+                // uIHandler.OpenUI( new object[] { usedResponses } );
                 // onResponseRequested(usedResponses, OnResponseChosen, OnResponseCancelled);
             }
                 
@@ -212,7 +215,7 @@ namespace Game.DialogueSystem {
             waitingForResponse = false;
 
             // player "speaks"
-            myActor.ShowSubtitles (myActor.actorName, chosenResponse.bark);
+            UIManager.ShowSubtitles (myActor.actorName, chosenResponse.bark);
             
             if (audioSource != null && chosenResponse.associatedAudio != null) {
                 audioSource.clip = chosenResponse.associatedAudio;
@@ -224,7 +227,8 @@ namespace Game.DialogueSystem {
         }
 
         void OnResponseCancelled (GameObject uiObject) {
-            uIHandler.onUIClose -= OnResponseCancelled;
+            // uIHandler
+            GameUI.dialogueResponseUI.onUIClose -= OnResponseCancelled;
             // if we closed the ui without choosing a response, just stop the convo
             if (waitingForResponse) {
                 Stop();
