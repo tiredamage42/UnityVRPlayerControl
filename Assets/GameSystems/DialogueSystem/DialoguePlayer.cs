@@ -114,14 +114,15 @@ namespace Game.DialogueSystem {
             phaseTimer = 0;
             phase = newPhase;
             this.phaseTime = phaseTime;
+            Debug.LogError("set phase " + phase);
         }
 
         void Update () {
             if (inDialogue) {
-
                 if (phase == 0 || phase == 2) {
                     phaseTimer += Time.deltaTime;
                     if (phaseTimer >= phaseTime) {
+                        Debug.LogError("phase end" + phase);
                         phaseTimer = 0;
                         phase++;
                         OnPhaseEnd();
@@ -201,6 +202,7 @@ namespace Game.DialogueSystem {
             
             // we chose a response and let the audio play
             else if (phase == 3) {
+                Debug.LogError("playing new step");
                 PlayStep(stepIDtoStep[currentStepID]);
                 return;
             }
@@ -213,7 +215,7 @@ namespace Game.DialogueSystem {
 
         void OnResponseChosen (DialogueResponse chosenResponse) {
             waitingForResponse = false;
-
+            Debug.LogError("chose response");
             // player "speaks"
             UIManager.ShowSubtitles (myActor.actorName, chosenResponse.bark);
             
@@ -231,6 +233,7 @@ namespace Game.DialogueSystem {
             GameUI.dialogueResponseUI.onUIClose -= OnResponseCancelled;
             // if we closed the ui without choosing a response, just stop the convo
             if (waitingForResponse) {
+                Debug.LogError("stopped because of cancel");
                 Stop();
             }
         }

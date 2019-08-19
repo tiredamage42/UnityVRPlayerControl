@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 namespace SimpleUI {
 
+    // TODO: unselect on disable
+
     [ExecuteInEditMode] public abstract class UIElementHolder : BaseUIElement
     {
 
@@ -140,16 +142,25 @@ namespace SimpleUI {
             // layout groups need to be enabled and disabled a few times to show correctly
             // (unity editor warnings be damned, it's the only way to get the expexted layout behavior unfortunately)
             
-            if (count%2 != 0) // make sure it's even last set active = true
-                count++;
+            // if (count%2 != 0) // make sure it's even last set active = true
+            //     count++;
 
-            for (int i = 0; i < count; i++) {
-                yield return null; baseObject.SetActive(i%2!=0); // false, true, false....
-            }
+            // for (int i = 0; i < count; i++) {
+            //     yield return null; baseObject.SetActive(i%2!=0); // false, true, false....
+            //     Debug.LogError("setting active " + (i%2!=0));
+            // }
+
+
+            yield return null; (parentElement != null ? parentElement.baseObject : baseObject).SetActive(false); // false, true, false....
+            yield return null; (parentElement != null ? parentElement.baseObject : baseObject).SetActive(true); // false, true, false....
+            yield return null; (parentElement != null ? parentElement.baseObject : baseObject).SetActive(false); // false, true, false....
+            yield return null; (parentElement != null ? parentElement.baseObject : baseObject).SetActive(true); // false, true, false....
+                // Debug.LogError("setting active " );
+
         }
         public void WiggleActive () {
             if (ShouldWiggleLayoutChanges()) {
-                StartCoroutine(WiggleActive(4));
+                UIManager.instance.StartCoroutine(WiggleActive(4));
             }
         }
 

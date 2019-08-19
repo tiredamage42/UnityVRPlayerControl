@@ -8,11 +8,12 @@ using SimpleUI;
 namespace Game.UI {
     public abstract class UIHandler : MonoBehaviour
     {
-        static List<UIHandler> allUIHandlers = new List<UIHandler>();
+        // static List<UIHandler> allUIHandlers = new List<UIHandler>();
         public BaseUIElement uiObject;
         public string context;
         public static UIHandler GetUIHandlerByContext (string context) {
-            for (int i = 0; i < allUIHandlers.Count; i++) {
+            UIHandler[] allUIHandlers = GameObject.FindObjectsOfType<UIHandler>();
+            for (int i = 0; i < allUIHandlers.Length; i++) {
                 if (allUIHandlers[i].context == context) {
                     return allUIHandlers[i];
                 }
@@ -39,8 +40,9 @@ namespace Game.UI {
                 Debug.LogError("object active");
                 return true;
             }
-            if (UIManager.AnyUIOpen()) {
-                Debug.LogError("ui active");    
+            string nm;
+            if (UIManager.AnyUIOpen(out nm)) {
+                Debug.LogError(nm + " any ui active");    
                 return true;
             }
             if (requiresCustomInputMethod) {
@@ -96,17 +98,33 @@ namespace Game.UI {
 
         protected abstract void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int actionOffset);
         
+
+        protected bool CheckActiveRecursive(UIHandler baseHandler) {
+            if (baseHandler == this) {
+                return uiObject.gameObject.activeInHierarchy;
+            }
+            if (previousUIHandler != null && previousUIHandler.UIObjectActive(true)) {
+                return true;
+            }
+            if (nextUIHandler != null && nextUIHandler.UIObjectActive(true)) {
+                return true;
+            }
+            return uiObject.gameObject.activeInHierarchy;
+
+        }
         public bool UIObjectActive(bool checkLinked) {
             if (uiObject.gameObject.activeInHierarchy) {
                 return true;
             }
             if (checkLinked) {
-                if (previousUIHandler != null && previousUIHandler.UIObjectActive(true)) {
+                if (CheckActiveRecursive(this))
                     return true;
-                }
-                if (nextUIHandler != null && nextUIHandler.UIObjectActive(true)) {
-                    return true;
-                }
+                // if (previousUIHandler != null && previousUIHandler.UIObjectActive(true)) {
+                //     return true;
+                // }
+                // if (nextUIHandler != null && nextUIHandler.UIObjectActive(true)) {
+                //     return true;
+                // }
             }
             return false;
         }
@@ -190,10 +208,19 @@ namespace Game.UI {
 
         protected abstract void OnOpenUI ();
         
+        protected void CloseUIRecursive (UIHandler startHandler) {
+            if (startHandler == this) 
+                return;
+
+            if (previousUIHandler != null) previousUIHandler.CloseUIRecursive(startHandler);
+            if (nextUIHandler != null) nextUIHandler.CloseUIRecursive(startHandler);
+            
+        }
         public void CloseUI () {
 
-            if (previousUIHandler != null) previousUIHandler.CloseUI();
-            if (nextUIHandler != null) nextUIHandler.CloseUI();
+            CloseUIRecursive(this);
+            // if (previousUIHandler != null) previousUIHandler.CloseUI();
+            // if (nextUIHandler != null) nextUIHandler.CloseUI();
             
             if (!UIObjectActive(false)) {
                 Debug.LogError("object not active");

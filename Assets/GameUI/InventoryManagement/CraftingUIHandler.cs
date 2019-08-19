@@ -147,12 +147,12 @@ namespace Game.UI {
                         CraftingRecipeBehavior recipe = FindCraftingRecipeOnItem(currentSlot.item);
                         if (recipe != null) {
                             if (showingInventory.ItemCompositionAvailableInInventoryAfterAutoScrap (recipe.requires, showingInventory.actor, showingInventory.actor)) {
-                                UIManager.ShowSelectionPopup(BuildConfirmationText("Craft "), new string[] {"Yes", "No"}, OnConfirmationSelection);
+                                UIManager.ShowSelectionPopup(true, BuildConfirmationText("Craft "), new string[] {"Yes", "No"}, OnConfirmationSelection);
                             }
                         }
                     }
                     else {
-                        UIManager.ShowSelectionPopup(BuildConfirmationText("Scrap "), new string[] {"Yes", "No"}, OnConfirmationSelection);
+                        UIManager.ShowSelectionPopup(true, BuildConfirmationText("Scrap "), new string[] {"Yes", "No"}, OnConfirmationSelection);
                     }
                 }                
             }

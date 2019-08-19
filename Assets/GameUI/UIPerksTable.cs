@@ -158,7 +158,7 @@ namespace Game.UI {
                             currentPerkHolder = customData[0] as PerkHolder;   
                             if (currentPerkHolder != null) {
                                 if (currentPerkHolder.level < currentPerkHolder.perk.levels+1) {
-                                    UIManager.ShowSelectionPopup("\n\nAre you sure you want to add a perk point into " + currentPerkHolder.perk.displayName + " ?\n", new string[] {"Yes", "No"}, OnConfirmationSelection);
+                                    UIManager.ShowSelectionPopup(true, "\n\nAre you sure you want to add a perk point into " + currentPerkHolder.perk.displayName + " ?\n", new string[] {"Yes", "No"}, OnConfirmationSelection);
                                 }
                             }
                         }
@@ -167,7 +167,7 @@ namespace Game.UI {
                             currentGameValue = customData[0] as GameValue;   
                             if (currentGameValue != null) {
                                 if (currentGameValue.baseValue < currentGameValue.baseMinMax.y) {
-                                    UIManager.ShowSelectionPopup("\n\nAre you sure you want to add a perk point into " + currentGameValue.name + " ?\n", new string[] {"Yes", "No"}, OnConfirmationSelection);
+                                    UIManager.ShowSelectionPopup(true, "\n\nAre you sure you want to add a perk point into " + currentGameValue.name + " ?\n", new string[] {"Yes", "No"}, OnConfirmationSelection);
                                 }
                             }
                         }

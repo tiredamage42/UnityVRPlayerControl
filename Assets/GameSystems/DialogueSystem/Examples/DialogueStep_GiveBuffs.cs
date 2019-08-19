@@ -18,7 +18,7 @@ public class DialogueStep_GiveBuffs : MonoBehaviour, IDialogueStepScript
     }
 
     public void OnDialogueStep (Actor dialoguePlayer, Actor speaker, float stepTime) {
-
+        Debug.LogError("adding buffs confo");
         // add any buffs associated with this step to the player
         dialoguePlayer.AddBuffs(playerBuffs, 1, 0, 0, true, dialoguePlayer, speaker);
 

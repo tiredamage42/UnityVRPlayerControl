@@ -150,7 +150,7 @@ namespace VRPlayer.UI {
 			return false;
 		}
         void UpdateQuickInventory () {
-            if (UIManager.AnyUIOpen())
+            if (UIManager.AnyUIOpen(out _))
                 return;
             
 			if (Player.instance.handsTogether) {

@@ -100,6 +100,7 @@ namespace SimpleUI {
         void OnEnable () {
             slider.onValueChanged.AddListener(OnValueChanged);
             UpdateLayout();
+            Debug.LogError("showing slideer");
         }
 
         void OnDisable () {

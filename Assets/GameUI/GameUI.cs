@@ -256,16 +256,16 @@ namespace Game.UI {
         public static void SetUISelectionPopupInstance(UISelectionPopup selectionPopupElement) {
             UIManager.SetUISelectionPopupInstance ( selectionPopupElement );
         }
-        public static void ShowSelectionPopup(string msg, string[] options, System.Action<bool, int> returnValue) {
-            UIManager.ShowSelectionPopup( msg,  options,  returnValue);
+        public static void ShowSelectionPopup(bool saveSelect, string msg, string[] options, System.Action<bool, int> returnValue) {
+            UIManager.ShowSelectionPopup(saveSelect, msg,  options,  returnValue);
         }
 
         // POPUPS SLIDER
         public static void SetUISliderPopupInstance(UISliderPopup sliderElement) {
             UIManager.SetUISliderPopupInstance( sliderElement );
         }
-        public static void ShowIntSliderPopup(string title, int minValue, int maxValue, System.Action<bool, int> returnValue) {
-            UIManager.ShowIntSliderPopup( title,  minValue,  maxValue, returnValue);
+        public static void ShowIntSliderPopup(bool saveSelect, string title, int minValue, int maxValue, System.Action<bool, int> returnValue) {
+            UIManager.ShowIntSliderPopup( saveSelect,title,  minValue,  maxValue, returnValue);
         }
 
         

@@ -34,7 +34,7 @@ namespace SimpleUI {
                 selected.DoSubmit(submitAction);
             }
         
-            BroadcastSubmitEvent(selected.gameObject, data, customData, submitAction);
+            BroadcastSubmitEvent(null, data, customData, submitAction);
         }
 
         public abstract void SetSelectableActive(bool active);

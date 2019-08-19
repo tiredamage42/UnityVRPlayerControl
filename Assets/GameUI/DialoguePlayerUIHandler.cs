@@ -42,8 +42,8 @@ namespace Game.UI {
 
         protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
         	if (input.x == actionOffset) {
-                CloseUI();
                 onRespond(customData[0] as DialogueResponse);
+                CloseUI();
             }
 		}
     }

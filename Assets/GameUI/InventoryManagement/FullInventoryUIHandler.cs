@@ -64,7 +64,8 @@ namespace Game.UI {
                 // drop
                 if (value == 0) {       
                     // get slider value
-                    UIManager.ShowIntSliderPopup("Drop " + highlightedItemSlot.item.itemName + ":", 0, highlightedItemSlot.count, OnGetDropAmount);
+                    Debug.LogError("show slider in inv ui");
+                    UIManager.ShowIntSliderPopup(false, "\n\nDrop " + highlightedItemSlot.item.itemName + ":", 0, highlightedItemSlot.count, OnGetDropAmount);
                 }
                 // favorite
                 else if (value == 1) {
@@ -89,7 +90,7 @@ namespace Game.UI {
                     }
                     // drop
                     else if (input.x == dropAction+actionOffset) {
-                        UIManager.ShowSelectionPopup(highlightedItemSlot.item.itemName+":", new string[] {"Drop", "Favorite"}, OnItemActionSelection);
+                        UIManager.ShowSelectionPopup(true, "\n\n"+highlightedItemSlot.item.itemName+":", new string[] {"Drop", "Favorite"}, OnItemActionSelection);
                     }
                 }
             }

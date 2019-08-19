@@ -184,7 +184,14 @@ namespace SimpleUI {
             return uiObject.baseObject != null ? uiObject.baseObject : uiObject.gameObject;
         }
    
-        public static bool AnyUIOpen() {
+        public static bool AnyUIOpen(out string name) {
+            name = "";
+            if (shownUIsWithInput.Count > 0) {
+                foreach (var ui in shownUIsWithInput) {
+                    name = ui.name;
+                    break;
+                }
+            }
             return uiInputActive;
         }
         public static void ShowUI(BaseUIElement uiObject) {
@@ -242,15 +249,36 @@ namespace SimpleUI {
         public static bool popupOpen;
         static GameObject selectedWhenPoppedUp;
 
-        static void HidePopup (BaseUIElement popup) {
+        static void HidePopup ( BaseUIElement popup) {
             HideUI(popup);
             SetAllActiveUIsSelectableActive(true);
             popupOpen = false;
-            SetSelection(selectedWhenPoppedUp);
-            selectedWhenPoppedUp = null;
+
+            // Debug.LogError("setting selection back to " + selectedWhenPoppedUp);
+            // SetSelection(selectedWhenPoppedUp);
+            // SetSelection(selectedWhenPoppedUp);
+
+            // if (setbackselect)
+                instance.StartCoroutine(SetSelectionBack());
+
+            // selectedWhenPoppedUp = null;
         }
-        static void ShowPopup (BaseUIElement popup, System.Action onCancel, System.Action<GameObject, GameObject[], object[], Vector2Int> onSubmit) {
+
+        static IEnumerator SetSelectionBack() {
+            yield return null;
+            Debug.LogError("setting selection back to " + selectedWhenPoppedUp);
+
+                        SetSelection(selectedWhenPoppedUp);
+            // selectedWhenPoppedUp = null;
+
+        }
+        static void ShowPopup (bool saveSelection, BaseUIElement popup, System.Action onCancel, System.Action<GameObject, GameObject[], object[], Vector2Int> onSubmit) {
+            if (saveSelection) {
+
             selectedWhenPoppedUp = CurrentSelected();
+            Debug.LogError("saving selected " + selectedWhenPoppedUp);
+            }
+
             ShowUI(popup);
             SetAllActiveUIsSelectableActive(false);
             popupOpen = true;
@@ -269,7 +297,7 @@ namespace SimpleUI {
             element.customData = customData;
         }
 
-        public static void ShowSelectionPopup(string msg, string[] options, System.Action<bool, int> returnValue) {
+        public static void ShowSelectionPopup(bool saveCurrentSelection, string msg, string[] options, System.Action<bool, int> returnValue) {
 
             if (selectionPopupElement == null) {
                 Debug.LogError("ShowSelectionPopup selectionPopupElement == null!\nSet up a UISelectionPopup instance with:\nUIManager.SetUISelectionPopupInstance(UISelectionPopup selectionPopupElement)");
@@ -277,7 +305,7 @@ namespace SimpleUI {
                 return;
             }
             
-            ShowPopup (selectionPopupElement, OnCancelSelectionUI, OnSelectionSubmit);
+            ShowPopup (saveCurrentSelection, selectionPopupElement, OnCancelSelectionUI, OnSelectionSubmit);
 
             selectionReturnCallback = returnValue;
 
@@ -298,7 +326,7 @@ namespace SimpleUI {
             }
         }
         static void OnCancelSelectionUI () {
-            HidePopup(selectionPopupElement);
+            HidePopup( selectionPopupElement);
             if (selectionReturnCallback != null) {
                 selectionReturnCallback (false, 0);
                 selectionReturnCallback = null;
@@ -312,14 +340,16 @@ namespace SimpleUI {
             UIManager.sliderElement = sliderElement;
         }
 
-        public static void ShowIntSliderPopup(string title, int minValue, int maxValue, System.Action<bool, int> returnValue) {
+        public static void ShowIntSliderPopup(bool saveCurrentSelection, string title, int minValue, int maxValue, System.Action<bool, int> returnValue) {
             if (sliderElement == null) {
                 Debug.LogError("ShowIntSliderPopup sliderElement == null!\nSet up a UISliderPopup instance with:\nUIManager.SetUISliderPopupInstance(UISliderPopup sliderElement)");
                 returnValue(false, 0);
                 return;
             }
 
-            ShowPopup (selectionPopupElement, OnCancelSliderUI, OnSliderSubmit);
+            Debug.LogError("show slider int");
+
+            ShowPopup (saveCurrentSelection, sliderElement, OnCancelSliderUI, OnSliderSubmit);
 
             sliderReturnCallback = returnValue;
             sliderElement.SetTitle(title);
@@ -336,7 +366,7 @@ namespace SimpleUI {
             }
         }
         static void OnCancelSliderUI () {
-            HidePopup(sliderElement);
+            HidePopup( sliderElement);
             if (sliderReturnCallback != null) {
                 sliderReturnCallback (false, 0);
                 sliderReturnCallback = null;

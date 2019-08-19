@@ -83,6 +83,9 @@ namespace VRPlayer.UI {
                 // myUIHandler.shouldCloseCheck = UIShouldCloseCheck;
                 // myUIHandler.shouldOpenCheck = UIShouldOpenCheck;                
             }
+            else {
+                Debug.LogError(context + " handler is null");
+            }
         }
 
         protected virtual void OnDisable () {

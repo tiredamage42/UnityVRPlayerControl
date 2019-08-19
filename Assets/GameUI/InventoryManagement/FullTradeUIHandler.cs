@@ -78,7 +78,7 @@ namespace Game.UI {
                         // get count from slider
                         if (highlightedItem.count > 5) {
                             Debug.Log("sinle Trade in full trade handler!!!!");
-                            UIManager.ShowIntSliderPopup("Trade " + highlightedItem.item.itemName + ":", 0, highlightedItem.count, OnDropSliderReturnValue);
+                            UIManager.ShowIntSliderPopup(true, "Trade " + highlightedItem.item.itemName + ":", 0, highlightedItem.count, OnDropSliderReturnValue);
                         }
                         else {
                             giver.TransferItemAlreadyInInventoryTo(highlightedItem, 1, receiver, sendMessage: false);

@@ -35,7 +35,7 @@ namespace SimpleUI {
         
         public void SetMessage (string txt) {
             msgText = txt;
-            Debug.LogError("setting msage in popup");
+            // Debug.LogError("setting msage in popup");
             if (messageText != null) {
 
                 messageText.SetText(txt, parameters.maxCharacters);
