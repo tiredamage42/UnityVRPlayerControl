@@ -17,6 +17,8 @@ namespace GameBase//Valve.VR.InteractionSystem
 	[RequireComponent( typeof( Interactable ) )]
 	public class CircularDrive : MonoBehaviour, IInteractable
 	{
+		public int GetInteractionMode () { return 0; }
+        
 		public void OnInteractableAvailabilityChange(bool available) {
 			
 		}

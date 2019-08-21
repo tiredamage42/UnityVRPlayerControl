@@ -42,11 +42,8 @@ namespace Game.DialogueSystem {
         int phase, currentStepID;
         float phaseTimer, phaseTime;
         
-        // DialoguePlayerUIHandler uIHandler;
-
         void Awake () {
             myActor = GetComponent<Actor>();
-            // uIHandler = GameObject.FindObjectOfType<UIObjectInitializer>().gameObject.GetComponent<DialoguePlayerUIHandler>();
         }
 
         public void Stop () {
@@ -60,6 +57,10 @@ namespace Game.DialogueSystem {
                 }
             }
             inDialogue = false;
+            if (onDialogueEnded != null) {
+                onDialogueEnded();
+                onDialogueEnded = null;
+            }
         }
         
         
@@ -69,8 +70,10 @@ namespace Game.DialogueSystem {
                 stepIDtoStep.Add(template.allSteps[i].stepID, template.allSteps[i]);
             }
         }
-        public void StartDialogue (Actor speakingTo, DialogueTemplate template, AudioSource speakerSource) {
 
+        System.Action onDialogueEnded;
+        public void StartDialogue (Actor speakingTo, DialogueTemplate template, AudioSource speakerSource, System.Action onDialogueEnded) {
+            this.onDialogueEnded = onDialogueEnded;
             this.speakingTo = speakingTo;
             this.template = template;
             this.speakerSource = speakerSource;
@@ -78,34 +81,77 @@ namespace Game.DialogueSystem {
             inDialogue = true;
             currentStepID = 0;
             BuildStepIDDictionary();
+            playNextInitialBark = true;
             PlayStep(stepIDtoStep[currentStepID]);
         }
+        bool playNextInitialBark;
         void PlayStep (DialogueStep step) {
             
             // Speaking to begins first...
-            
-            UIManager.ShowSubtitles (speakingTo.actorName, step.bark);
-            
-            // play audio
-            if (speakerSource != null) {
-                if (step.associatedAudio != null) {
-                    speakerSource.clip = step.associatedAudio;
-                    audioSource.Play();
-                }
-            }
 
             closesConvo = false;
-            for (int i = 0; i < step.stepScripts.list.Length; i++) {
-                step.stepScripts.list[i].OnDialogueStep (myActor, speakingTo, step.barkTime);
-                if (step.stepScripts.list[i].ClosesConversation()) {
-                    closesConvo = true;
+            bool leadsToStep = false;
+
+            if (playNextInitialBark) {
+                List<DialogueResponse> usedResponses = FilterResponses (step.initialBarks, false);
+
+                if (usedResponses.Count == 0) {
+                    Debug.LogError("no initial step bark for step on template " + template.name + " step id: " +currentStepID);
+                    Stop();
+                    return;
+                }
+                // chose random bark:
+                DialogueResponse initialBark = usedResponses[Random.Range(0, usedResponses.Count)];
+                
+                UIManager.ShowSubtitles (speakingTo.actorName, initialBark.bark);// step.bark);
+                
+                // play audio
+                if (speakerSource != null) {
+                    if (initialBark.associatedAudio != null) {
+                        speakerSource.clip = initialBark.associatedAudio;
+                        audioSource.Play();
+                    }
+                }
+                leadsToStep = stepIDtoStep.ContainsKey(initialBark.nextDialogueStepID);    
+                
+                for (int i = 0; i < step.stepScripts.list.Length; i++) {
+                    step.stepScripts.list[i].OnDialogueStep (myActor, speakingTo, initialBark.barkTime);
+                    if (step.stepScripts.list[i].ClosesConversation()) {
+                        closesConvo = true;
+                    }
+                }
+                if (leadsToStep && !closesConvo) {
+
+                    // if we want to actually play the step bark:
+                    SetPhase(2, initialBark.barkTime);
+                    currentStepID = initialBark.nextDialogueStepID;
+                    playNextInitialBark = initialBark.playBarkOnStep;
+
+                    // else
+                    // SetPhase(1, initialBark.barkTime);
+                    // currentStepID = initialBark.nextDialogueStepID;
+
+                    
+
+
+                }
+
+                else {
+                    //set phase to 0, and let the speaker bark timer go
+                    SetPhase(0, initialBark.barkTime);                
+                    workingStep = step;
                 }
             }
+            else {
+                    //set phase to 0, and let the speaker bark timer go
+                    SetPhase(0, 1);                
+                    workingStep = step;
+                
 
-            //set phase to 0, and let the speaker bark timer go
-            SetPhase(0, step.barkTime);
+            }
+                    
             
-            workingStep = step;
+
         }
         bool closesConvo;
 
@@ -114,7 +160,7 @@ namespace Game.DialogueSystem {
             phaseTimer = 0;
             phase = newPhase;
             this.phaseTime = phaseTime;
-            Debug.LogError("set phase " + phase);
+            // Debug.LogError("set phase " + phase);
         }
 
         void Update () {
@@ -122,7 +168,7 @@ namespace Game.DialogueSystem {
                 if (phase == 0 || phase == 2) {
                     phaseTimer += Time.deltaTime;
                     if (phaseTimer >= phaseTime) {
-                        Debug.LogError("phase end" + phase);
+                        // Debug.LogError("phase end" + phase);
                         phaseTimer = 0;
                         phase++;
                         OnPhaseEnd();
@@ -132,56 +178,61 @@ namespace Game.DialogueSystem {
         }
 
         DialogueStep workingStep;
+
+
+        List<DialogueResponse> FilterResponses (DialogueResponse[] choices, bool checkingInitialBark) {
+            List<DialogueResponse> usedResponses = new List<DialogueResponse>();
+            for (int i = 0; i < choices.Length; i++) {
+
+                //check the response for editor conditions chekcs...
+                if (ActorValueCondition.ConditionsMet(choices[i].conditions, myActor, speakingTo)) {
+
+                    int nextStepID = choices[i].nextDialogueStepID;
+
+                    bool leadsToStep = stepIDtoStep.ContainsKey(nextStepID);    
+                    // if the next next dialogue step id for the response exists...
+                    // or we're checking the initial bark which doesnt have to lead to a nother step
+                    
+                    
+                    if (leadsToStep || checkingInitialBark) {
+
+                        // also check if the response leads to transferring form the player inventory to the speaker,
+                        // that the player inventory has enough components
+
+                        bool stepAvailable = true;
+                        if (leadsToStep) {
+                            DialogueStep stepResponseLeadsTo = stepIDtoStep[nextStepID];
+                            for (int x = 0; x < stepResponseLeadsTo.stepScripts.list.Length; x++) {
+                                if (!stepResponseLeadsTo.stepScripts.list[x].StepAvailable (myActor, speakingTo)) {
+                                    stepAvailable = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if (stepAvailable) {
+                            usedResponses.Add(choices[i]);
+                        }
+                    }
+                }
+            }
+            return usedResponses;
+        }
+
+        
         
         void OnPhaseEnd () {
             // done waiting for speaking to to finish bark 
             // now we start to wait for the player response
             if (phase == 1) {
 
-                if (closesConvo) {
-                    Stop();
-                    return;
-                }
-                
-                // start to set up the player response ui
                 bool hasResponses = workingStep.responses.list.Length > 0;
-                if (!hasResponses) {
+                if (closesConvo || !hasResponses) {
                     Stop();
                     return;
                 }
-
                 
-                DialogueResponse[] responses = workingStep.responses;
-                List<DialogueResponse> usedResponses = new List<DialogueResponse>();
+                List<DialogueResponse> usedResponses = FilterResponses (workingStep.responses, false);
 
-                for (int i = 0; i < responses.Length; i++) {
-
-                    //check the response for editor conditions chekcs...
-                    if (ActorValueCondition.ConditionsMet(responses[i].conditions, myActor, speakingTo)) {
-                        
-                        int nextStepID = responses[i].nextDialogueStepID;
-
-                        // if the next next dialogue step id for the response exists...
-                        if (stepIDtoStep.ContainsKey(nextStepID)) {
-
-                            // also check if the response leads to transferring form the player inventory to the speaker,
-                            // that the player inventory has enough components
-                            DialogueStep leadsToStep = stepIDtoStep[nextStepID];
-
-
-                            bool stepAvailable = true;
-                            for (int x = 0; x < leadsToStep.stepScripts.list.Length; x++) {
-                                if (!leadsToStep.stepScripts.list[x].StepAvailable (myActor, speakingTo)) {
-                                    stepAvailable = false;
-                                    break;
-                                }
-                            }
-                            if (stepAvailable) {
-                                usedResponses.Add(responses[i]);
-                            }
-                        }
-                    }
-                }
                 if (usedResponses.Count == 0) {
                     Stop();
                     return;
@@ -189,33 +240,23 @@ namespace Game.DialogueSystem {
 
                 //set up the ui to show potential responses (TODO: fade out instead of hard close on response...)
                 waitingForResponse = true;
-
                 
                 GameUI.dialogueResponseUI.onUIClose += OnResponseCancelled;
-                // GameUI.dialogueResponseUI.onRespond = OnResponseChosen;
                 GameUI.dialogueResponseUI.OpenDialogueResponseUI(usedResponses, OnResponseChosen);
-                
-                // uIHandler.OpenUI( new object[] { usedResponses } );
-                // onResponseRequested(usedResponses, OnResponseChosen, OnResponseCancelled);
             }
                 
             
             // we chose a response and let the audio play
             else if (phase == 3) {
-                Debug.LogError("playing new step");
+                // Debug.LogError("playing new step");
                 PlayStep(stepIDtoStep[currentStepID]);
                 return;
             }
         }
 
-
-
-
-        // public event System.Action<List<DialogueResponse>, System.Action<DialogueResponse>, System.Action> onResponseRequested;
-
         void OnResponseChosen (DialogueResponse chosenResponse) {
             waitingForResponse = false;
-            Debug.LogError("chose response");
+            // Debug.LogError("chose response");
             // player "speaks"
             UIManager.ShowSubtitles (myActor.actorName, chosenResponse.bark);
             
@@ -226,6 +267,8 @@ namespace Game.DialogueSystem {
 
             SetPhase(2, chosenResponse.barkTime);
             currentStepID = chosenResponse.nextDialogueStepID;
+
+            playNextInitialBark = chosenResponse.playBarkOnStep;
         }
 
         void OnResponseCancelled (GameObject uiObject) {

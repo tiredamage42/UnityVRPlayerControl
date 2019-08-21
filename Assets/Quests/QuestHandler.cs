@@ -70,7 +70,10 @@ namespace Game.QuestSystem {
             if (selectedQuest == null)
                 return;
 
-            UIManager.ShowInGameMessage( selectedQuest.GetCurrentTextHint(), false, UIColorScheme.Normal );
+            string hint = selectedQuest.GetCurrentTextHint();
+            if (hint != null) {
+                UIManager.ShowInGameMessage( hint, false, UIColorScheme.Normal );
+            }
         }
 
 
@@ -142,7 +145,6 @@ namespace Game.QuestSystem {
                 Debug.Log(questPrefab.name + " is already active!");
                 return;
             }
-
 
             // Quest newQuest = CopyComponent<Quest>(questPrefab, questHolderObj);
 
@@ -238,6 +240,31 @@ namespace Game.QuestSystem {
         //     return copy as T;
         // }
 
+        public enum QuestCompletionLevel {
+            Inactive, Active, Completed 
+        };
+        
+        public static QuestCompletionLevel GetQuestCompletionLevel (string displayName) {
+            for (int i =0 ; i < instance.activeQuests.Count; i++) {
+                if (instance.activeQuests[i].displayName == displayName) return QuestCompletionLevel.Active;
+            }
+            for (int i =0 ; i < instance.completedQuests.Count; i++) {
+                if (instance.completedQuests[i].displayName == displayName) return QuestCompletionLevel.Completed;
+            }
+            return QuestCompletionLevel.Inactive;
+        }
+        public static int GetInternalKey (string displayName) {
+            for (int i =0 ; i < instance.activeQuests.Count; i++) {
+                if (instance.activeQuests[i].displayName == displayName) return instance.activeQuests[i].internalKey;
+            }
+            for (int i =0 ; i < instance.completedQuests.Count; i++) {
+                if (instance.completedQuests[i].displayName == displayName) return instance.completedQuests[i].internalKey;
+            }
+            Debug.LogError("Quest " + displayName + " not found in active or completed quests");
+            return 0;
+        }
+
+
         public void CompleteQuest (int questID) {
             int questIndex;
             if (!QuestActive(questID, out questIndex)) {
@@ -266,6 +293,8 @@ namespace Game.QuestSystem {
         public string displayName;
         public bool infinite;
 
+        [HideInInspector] public int internalKey;
+
         protected void CompleteQuest () {
             QuestHandler.instance.CompleteQuest(questID);
         }
@@ -275,7 +304,9 @@ namespace Game.QuestSystem {
         //maybe have a seperate one for first time quest initializes, 
         //and another for when game is loaded...
         public abstract void OnQuestInitialize ();
+
         public abstract void OnUpdateQuest (float deltaTime);
+        
         public abstract void OnQuestComplete ();
 
     }

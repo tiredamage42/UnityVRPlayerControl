@@ -7,6 +7,37 @@ using SimpleUI;
 namespace Game.UI {
     public class CraftingUIHandler : UISelectableElementHandler
     {
+
+        
+
+        public static string BuildConfirmationText(ItemComposition[] compositionsToShow, string actionPrefix, string objectName, Actor actorValues) {
+            string msgText = "\n " + actionPrefix + " " + objectName + "?\n";
+            List<ItemComposition> filteredComposition = Inventory.FilterItemComposition (compositionsToShow, actorValues, actorValues);
+            for (int i = 0; i < filteredComposition.Count; i++) {
+                msgText += filteredComposition[i].item.itemName + ":\t" + filteredComposition[i].amount + "\n";
+            }
+            return msgText;
+        }
+
+        public static string BuildRequiredComponentsText(ItemComposition[] requiredComposition, ItemBehavior buildItem, Inventory inventory, Actor actorValues) {
+            string txt = buildItem.itemDescription + "\n\nRequires:\n";
+                            
+            List<ItemComposition> required = Inventory.FilterItemComposition (requiredComposition, actorValues, actorValues);
+            for (int i = 0; i < required.Count; i++) {
+                int hasCount = inventory.GetItemCountAfterAutoScrap(required[i].item, actorValues, actorValues);
+                txt += required[i].item.itemName + ":\t" + hasCount + " / " + required[i].amount + "\n";
+            }
+            return txt;
+        }
+        public static string BuildBreakdownComponentsText (ItemComposition[] compositions, ItemBehavior scrapItem, Actor actorValues) {
+            string msgText = scrapItem.itemDescription + "\n\nScrap For:\n";
+            List<ItemComposition> composedOf = Inventory.FilterItemComposition (compositions, actorValues, actorValues);
+            for (int i = 0; i < composedOf.Count; i++) {
+                msgText += composedOf[i].item.itemName + ":\t" + composedOf[i].amount + "\n";
+            }
+            return msgText;
+        }
+        
         Inventory showingInventory;
         // dont allow cold open
         protected override object[] GetDefaultColdOpenParams () { return null; }
@@ -15,20 +46,9 @@ namespace Game.UI {
             InventorySlot slot = buttonObject as InventorySlot;
             return slot.item.itemName + " ( x"+slot.count+" )";
         }
-
-
-        CraftingRecipeBehavior FindCraftingRecipeOnItem (ItemBehavior item) {
-            for (int i = 0; i < item.stashedItemBehaviors.Length; i++) {
-                CraftingRecipeBehavior recipe = item.stashedItemBehaviors[i] as CraftingRecipeBehavior;
-                if (recipe != null) return recipe;
-            }
-            return null;
-        }
         
         protected override void OnUISelect (GameObject selectedObject, GameObject[] data, object[] customData) {
             string txt = "";
-            Actor actor = showingInventory.actor;
-            
             
             //cehck for empty....
             if (customData != null) {
@@ -38,26 +58,14 @@ namespace Game.UI {
                     int uiIndex = (int)customData[1];
                     //selected on the recipes page...
                     if (uiIndex == 0) {
-                        CraftingRecipeBehavior recipe = FindCraftingRecipeOnItem(selectedSlot.item);
+                        CraftingRecipeBehavior recipe = selectedSlot.item.FindItemBehavior<CraftingRecipeBehavior>();
                         if (recipe != null) {
-                            txt = selectedSlot.item.itemDescription + "\n\nRequires:\n";
-                            
-                            List<ItemComposition> required = Inventory.FilterItemComposition (recipe.requires, actor, actor);
-                            for (int i = 0; i < required.Count; i++) {
-                                int hasCount = showingInventory.GetItemCountAfterAutoScrap(required[i].item, actor, actor);
-                                txt += required[i].item.itemName + ":\t" + hasCount + " / " + required[i].amount + "\n";
-                            }
+                            txt = BuildRequiredComponentsText(recipe.requires, selectedSlot.item, showingInventory, showingInventory.actor);
                         }
                     }
                     //selected on scrappable categories page
                     else {
-
-                        txt = selectedSlot.item.itemDescription + "\n\nScrap For:\n";
-                        
-                        List<ItemComposition> composedOf = Inventory.FilterItemComposition (selectedSlot.item.composedOf, actor, actor);
-                        for (int i = 0; i < composedOf.Count; i++) {
-                            txt += composedOf[i].item.itemName + ":\t" + composedOf[i].amount + "\n";
-                        }
+                        txt = BuildBreakdownComponentsText (selectedSlot.item.composedOf, selectedSlot.item, showingInventory.actor);
                     }
                 }
             }
@@ -121,19 +129,6 @@ namespace Game.UI {
         int currentPanelIndex;
         InventorySlot currentSlot;
 
-
-        string BuildConfirmationText(string craftOrSrap) {
-            Actor actor = (openedWithParams[0] as Inventory).actor;
-
-            string msgText = "\n " + craftOrSrap + currentSlot.item.itemName + "?\n";
-            List<ItemComposition> composedOf = Inventory.FilterItemComposition (currentSlot.item.composedOf, actor, actor);
-
-            for (int i = 0; i < composedOf.Count; i++) {
-                msgText += composedOf[i].item.itemName + ":\t" + composedOf[i].amount + "\n";
-            }
-            return msgText;
-        }
-        
         protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
         
     		if (customData != null) {
@@ -144,15 +139,15 @@ namespace Game.UI {
                 
                     // showign crafting recipes
                     if (currentPanelIndex == 0) {
-                        CraftingRecipeBehavior recipe = FindCraftingRecipeOnItem(currentSlot.item);
+                        CraftingRecipeBehavior recipe = currentSlot.item.FindItemBehavior<CraftingRecipeBehavior>();
                         if (recipe != null) {
                             if (showingInventory.ItemCompositionAvailableInInventoryAfterAutoScrap (recipe.requires, showingInventory.actor, showingInventory.actor)) {
-                                UIManager.ShowSelectionPopup(true, BuildConfirmationText("Craft "), new string[] {"Yes", "No"}, OnConfirmationSelection);
+                                UIManager.ShowSelectionPopup(true, BuildConfirmationText(recipe.requires, "Craft", currentSlot.item.itemName, (openedWithParams[0] as Inventory).actor), new string[] {"Yes", "No"}, OnConfirmationSelection);
                             }
                         }
                     }
                     else {
-                        UIManager.ShowSelectionPopup(true, BuildConfirmationText("Scrap "), new string[] {"Yes", "No"}, OnConfirmationSelection);
+                        UIManager.ShowSelectionPopup(true, BuildConfirmationText(currentSlot.item.composedOf, "Scrap", currentSlot.item.itemName, (openedWithParams[0] as Inventory).actor), new string[] {"Yes", "No"}, OnConfirmationSelection);
                     }
                 }                
             }

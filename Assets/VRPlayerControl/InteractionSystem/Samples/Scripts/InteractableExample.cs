@@ -16,6 +16,8 @@ namespace Valve.VR.InteractionSystem.Sample
 	[RequireComponent( typeof( Interactable ) )]
 	public class InteractableExample : MonoBehaviour, ISceneItem, IInteractable
     {
+		public int GetInteractionMode () { return 0; }
+        
 		public void OnInteractableAvailabilityChange(bool available) {
             
         }

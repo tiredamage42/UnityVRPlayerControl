@@ -20,10 +20,6 @@ public class DialogueStep_OpenFullTradeUI : MonoBehaviour, IDialogueStepScript
         Debug.LogError("opening trade convo");
 
         GameUI.tradeUI.OpenTradUI(dialoguePlayer.inventory, speaker.inventory, categoryFilter);
-        // // dialoguePlayer.GetComponent
-        // GameObject.FindObjectOfType<FullTradeUIHandler>().OpenUI(
-        //     new object[] { 0, speaker.inventory, categoryFilter }
-        // );
     }
             
     public void OnDialogueStep (Actor dialoguePlayer, Actor speaker, float stepTime) {

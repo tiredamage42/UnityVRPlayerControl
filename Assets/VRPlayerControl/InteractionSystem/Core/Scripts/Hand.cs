@@ -301,8 +301,8 @@ namespace VRPlayer
         protected virtual void OnEnable()
         {
          
-            equipper = Player.instance.GetComponent<InventoryEquipper>();
             
+            equipper = Player.instance.GetComponent<InventoryEquipper>();
             equipper.onEquip += OnItemEquipped;
             equipper.onUnequip += OnItemUnequipped;
             equipper.onEquipUpdate += OnEquippedUpdate;
@@ -342,47 +342,42 @@ namespace VRPlayer
         }
 
 
-
         void OnInspectEnd (InteractionPoint interactor, Interactable hoveringInteractable) {
             for (int i = 0; i < Player.instance.actions.Length; i++) {
                 StandardizedVRInput.instance.HideHint(handType, Player.instance.actions[i]);
             }
         }
 
-
-        void ControlInteractorAndEquipper (SteamVR_Action_Boolean action, int actionKey) {
-            bool useDown = action.GetStateDown(handType);
-            bool useUp = action.GetStateUp(handType);
-            bool useHeld = action.GetState(handType);
+        // void ControlInteractorAndEquipper (SteamVR_Action_Boolean action, int actionKey) {
+        //     bool useDown = action.GetStateDown(handType);
+        //     bool useUp = action.GetStateUp(handType);
+        //     bool useHeld = action.GetState(handType);
                 
-            if (useDown) {
-                StandardizedVRInput.instance.HideHint(handType, action);
-                interactor.OnUseStart(actionKey);
-                equipper.OnActionStart(myEquipIndex, actionKey);
-            }
-            if (useUp) {
-                interactor.OnUseEnd(actionKey);
-                equipper.OnActionEnd(myEquipIndex, actionKey);
-            }
-            if (useHeld) {
-                interactor.OnUseUpdate(actionKey);
-                equipper.OnActionUpdate(myEquipIndex, actionKey);
-            }         
-        }
+        //     if (useDown) {
+        //         StandardizedVRInput.instance.HideHint(handType, action);
+        //         // interactor.OnUseStart(actionKey);
+        //     }
+        //     if (useUp) {
+        //         // interactor.OnUseEnd(actionKey);
+        //     }
+        //     if (useHeld) {
+        //         // interactor.OnUseUpdate(actionKey);
+        //     }         
+        // }
 
             
 
 
-        protected virtual void Update()
-        {
-            bool handOccupied = VRUIInput.HandOccupied(handType);
-            if (handOccupied)
-                return;
+        // protected virtual void Update()
+        // {
+        //     bool handOccupied = VRUIInput.HandOccupied(handType);
+        //     if (handOccupied)
+        //         return;
 
-            for (int i = 0; i < Player.instance.actions.Length; i++) {
-                ControlInteractorAndEquipper (Player.instance.actions[i], i);
-            }        
-        }
+        //     for (int i = 0; i < Player.instance.actions.Length; i++) {
+        //         ControlInteractorAndEquipper (Player.instance.actions[i], i);
+        //     }        
+        // }
 
         protected virtual void OnEquippedUpdate( Inventory inventory, SceneItem item, int slotIndex, bool quickEquipped )
         {

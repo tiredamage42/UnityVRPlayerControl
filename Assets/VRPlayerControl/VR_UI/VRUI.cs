@@ -53,7 +53,10 @@ namespace VRPlayer.UI {
         public TransformBehavior selectionPopupTransform;
         public UISelectionPopupParameters selectionPopupParameters = new UISelectionPopupParameters();
         
-
+        [Header("Workshop UI Params")]
+        public UIPageParameters workshopPageParams = new UIPageParameters(new Vector2(3, .25f), .5f, .01f, TextAnchor.MiddleCenter, 0, .0025f);
+        public TextPanelParameters workshopPanelParams = new TextPanelParameters(new Vector2(3, 4), new Vector2(.1f, .1f), .0025f, TextAnchor.UpperLeft, 64);
+        
 
 
         //TODO: get ui stuff out of actor script...
@@ -73,7 +76,7 @@ namespace VRPlayer.UI {
             
             GameUI.quickTradeUI.SetUIObject(VRUIBuilder.MakeButtonsPage("QuickTrade", quickTradeParams, null, null));
 
-
+            GameUI.workshopUI.SetUIObject(VRUIBuilder.MakeButtonsPage("Workshop", workshopPageParams, workshopPanelParams, null, null, 0));
             GameUI.dialogueResponseUI.SetUIObject(VRUIBuilder.MakeButtonsPage("Dialogue", dialogueParams, dialogueOptionsTransform, normalVRMenuFollowParams));
             GameUI.gameValuesUI.SetUIObject(pagepanelui);
             GameUI.perksUI.SetUIObject(fullTradeHolder);
@@ -116,24 +119,24 @@ namespace VRPlayer.UI {
         void Update()
         { 
             if (GameManager.isPaused) return;
-            UpdateNormalInventory();
+            // UpdateNormalInventory();
             UpdateQuickInventory();
         }
          
-        [Space] public SteamVR_Action_Boolean uiInvToggleAction;
+        // [Space] public SteamVR_Action_Boolean uiInvToggleAction;
         // FullInventoryUIHandler invUIHandler;
         // QuickInventoryUIHandler quickInvHandler;
 
         // open full inventory logic
-        void UpdateNormalInventory () {
-            if (uiInvToggleAction.GetStateDown(VRManager.instance.mainHand)) {
-                // if (invUIHandler.UIObjectActive())
-                if (GameUI.inventoryManagementUI.UIObjectActive(true))
-                    GameUI.inventoryManagementUI.CloseUI();
-                else
-                    GameUI.inventoryManagementUI.OpenInventoryManagementUI(inventory, null);
-            }
-        } 
+        // void UpdateNormalInventory () {
+        //     if (uiInvToggleAction.GetStateDown(VRManager.instance.mainHand)) {
+        //         // if (invUIHandler.UIObjectActive())
+        //         if (GameUI.inventoryManagementUI.UIObjectActive(true))
+        //             GameUI.inventoryManagementUI.CloseUI();
+        //         else
+        //             GameUI.inventoryManagementUI.OpenInventoryManagementUI(inventory, null);
+        //     }
+        // } 
 
         [Space] public SteamVR_Action_Boolean uiQuickInvToggleAction;
         

@@ -33,7 +33,7 @@ Transform:
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 2.00957, y: 0, z: -7.819085}
-  m_LocalScale: {x: 1.2500004, y: 1.25, z: 1.2500005}
+  m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
   m_Children:
   - {fileID: 7730915863946481957}
   m_Father: {fileID: 0}
@@ -129,8 +129,9 @@ MonoBehaviour:
   actionNames:
   - Use
   onlyProximityHover: 0
-  available: 1
+  isAvailable: 1
   useType: 0
+  enforceInteractorID: -1
 --- !u!114 &7675389908402188198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,7 +147,7 @@ MonoBehaviour:
   itemCount: 1
   itemBehavior: {fileID: 11400000, guid: 760ba9aa4bd3e42eca24cd7974c47624, type: 2}
   rigidbody: {fileID: 0}
-  linkedInventory: {fileID: 0}
+  parentInventory: {fileID: 0}
   myEquipPoint: {fileID: 0}
 --- !u!114 &2871107041852800418
 MonoBehaviour:
@@ -179,8 +180,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: febe6797aba6345fc98e3f74b3fa9904, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flashInteractable: 1
-  highlightOnHover: 1
   flashRenderers: []
 --- !u!1 &8588569936351698278
 GameObject:
@@ -226,6 +225,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1863d409d31f44e95ad19f5d9f4272ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactable: {fileID: 0}
 --- !u!64 &1300781646506773017
 MeshCollider:
   m_ObjectHideFlags: 0

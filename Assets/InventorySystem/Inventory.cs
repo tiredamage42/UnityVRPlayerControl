@@ -127,6 +127,8 @@ namespace Game.InventorySystem {
         public List<int> autoScrapCategories = new List<int> () { 3 };
         // weapons, armor, meds
         public List<int> favoriteAbleCategories = new List<int>() { 0, 1, 2 };
+
+        public List<int> workshopItemsFilter = new List<int> () { -10 };
             
         //TODO: move to equipper
         public const string equippedItemLayer = "EquippedItem";
@@ -338,10 +340,10 @@ namespace Game.InventorySystem {
             }
         }
 
-        public void DropItem (ItemBehavior itemBehavior, int countDropped, bool getScene, int slotIndex, bool removeEmpty, bool sendMessage) {
+        public SceneItem DropItem (ItemBehavior itemBehavior, int countDropped, bool getScene, int slotIndex, bool removeEmpty, bool sendMessage) {
             if (slotIndex < 0) slotIndex = GetSlotIndex(itemBehavior);
-            if (slotIndex < 0) return;
-            DropItem(allInventory[slotIndex], countDropped, getScene, slotIndex, removeEmpty, sendMessage);
+            if (slotIndex < 0) return null;
+            return DropItem(allInventory[slotIndex], countDropped, getScene, slotIndex, removeEmpty, sendMessage);
         }
             
         public int GetSlotIndex (InventorySlot slot) {
@@ -357,15 +359,20 @@ namespace Game.InventorySystem {
             return -1;
         }
 
+        public bool ContainsItem (ItemBehavior item, out int slotIndex) {
+            slotIndex = GetSlotIndex(item);
+            return slotIndex >= 0;
+        }
+
         public void RemoveEmpties () {
             for (int i = allInventory.Count-1; i >= 0; i--) {
                 if (allInventory[i].count == 0) allInventory.Remove(allInventory[i]);
             }
         }
 
-        public void DropItem (InventorySlot slot, int countDropped, bool getScene, int slotIndex, bool removeEmpty, bool sendMessage) {
+        public SceneItem DropItem (InventorySlot slot, int countDropped, bool getScene, int slotIndex, bool removeEmpty, bool sendMessage) {
             if (slotIndex < 0) slotIndex = GetSlotIndex(slot);
-            if (slotIndex < 0) return;
+            if (slotIndex < 0) return null;
             
             countDropped = Mathf.Min(countDropped, slot.count);
             slot.count -= countDropped;
@@ -408,8 +415,10 @@ namespace Game.InventorySystem {
                     sceneItem.transform.position = transform.TransformPoint(dropLocalPoint);
                     sceneItem.transform.rotation = Quaternion.Euler(UnityEngine.Random.Range(0,360), UnityEngine.Random.Range(0,360), UnityEngine.Random.Range(0,360));
                     sceneItem.gameObject.SetActive(true);
+                    return sceneItem;
                 }
             }
+            return null;
         }
     }
 }

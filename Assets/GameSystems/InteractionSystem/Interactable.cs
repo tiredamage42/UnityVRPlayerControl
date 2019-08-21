@@ -7,6 +7,8 @@ namespace InteractionSystem
 {
 
     public interface IInteractable {
+        int GetInteractionMode ();
+
         void OnInteractableInspectedStart(InteractionPoint interactor);
         void OnInteractableInspectedEnd(InteractionPoint interactor);
         void OnInteractableInspectedUpdate(InteractionPoint interactor);
@@ -21,12 +23,14 @@ namespace InteractionSystem
         public static int interactTriggerMask { get { return 1 << LayerMask.NameToLayer(interactableLayerName); } }
         public string[] actionNames = new string [] { "Use" };
         public bool onlyProximityHover;
-        public bool available = true;        
+        public bool isAvailable = true;        
         public enum UseType { Normal, Scripted };
         public UseType useType;
         HashSet<int> currentHoveringIDs = new HashSet<int>();
         public bool isHovering { get { return currentHoveringIDs.Count != 0; } }
+        
         List<IInteractable> listeners = new List<IInteractable>();
+
         public void AddListener (IInteractable listener) {
             listeners.Add(listener);
         }
@@ -48,38 +52,49 @@ namespace InteractionSystem
         }
 
         void Start () {
-            SetAvailable(available);
+            SetAvailable(isAvailable);
+        }
+        public bool IsAvailable (int currentInteractionMode) {
+            if (!isAvailable) {
+                return false;
+            }
+            for (int i = 0; i < listeners.Count; i++) {
+                if (listeners[i].GetInteractionMode() == currentInteractionMode) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void SetAvailable (bool available) {
-            this.available = available;
+            this.isAvailable = available;
             for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableAvailabilityChange(available);
         }
-        public void OnInspectedStart (InteractionPoint interactor) {
+        public void OnInspectedStart (InteractionPoint interactor, int currentInteractionMode) {
             if (enforceInteractorID != -1 && enforceInteractorID != interactor.interactorID) return;
             currentHoveringIDs.Add(interactor.GetInstanceID());
-            for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableInspectedStart(interactor);
+            for (int i = 0; i < listeners.Count; i++) if (listeners[i].GetInteractionMode() == currentInteractionMode) listeners[i].OnInteractableInspectedStart(interactor);
         }
-        public void OnInspectedEnd (InteractionPoint interactor) {
+        public void OnInspectedEnd (InteractionPoint interactor, int currentInteractionMode) {
             if (enforceInteractorID != -1 && enforceInteractorID != interactor.interactorID) return;
             currentHoveringIDs.Remove(interactor.GetInstanceID());
-            for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableInspectedEnd(interactor);
+            for (int i = 0; i < listeners.Count; i++) if (listeners[i].GetInteractionMode() == currentInteractionMode) listeners[i].OnInteractableInspectedEnd(interactor);
         }
-        public void OnInspectedUpdate(InteractionPoint interactor) {
+        public void OnInspectedUpdate(InteractionPoint interactor, int currentInteractionMode) {
             if (enforceInteractorID != -1 && enforceInteractorID != interactor.interactorID) return;
-            for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableInspectedUpdate(interactor);
+            for (int i = 0; i < listeners.Count; i++) if (listeners[i].GetInteractionMode() == currentInteractionMode) listeners[i].OnInteractableInspectedUpdate(interactor);
         }
-        public void OnUsedStart (InteractionPoint interactor, int useIndex) {
+        public void OnUsedStart (InteractionPoint interactor, int currentInteractionMode, int useIndex) {
             if (enforceInteractorID != -1 && enforceInteractorID != interactor.interactorID) return;
-            for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableUsedStart(interactor, useIndex);
+            for (int i = 0; i < listeners.Count; i++) if (listeners[i].GetInteractionMode() == currentInteractionMode) listeners[i].OnInteractableUsedStart(interactor, useIndex);
         }
-        public void OnUsedEnd (InteractionPoint interactor, int useIndex) {
+        public void OnUsedEnd (InteractionPoint interactor, int currentInteractionMode, int useIndex) {
             if (enforceInteractorID != -1 && enforceInteractorID != interactor.interactorID) return;
-            for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableUsedEnd(interactor, useIndex);
+            for (int i = 0; i < listeners.Count; i++) if (listeners[i].GetInteractionMode() == currentInteractionMode) listeners[i].OnInteractableUsedEnd(interactor, useIndex);
         }
-        public void OnUsedUpdate(InteractionPoint interactor, int useIndex) {
+        public void OnUsedUpdate(InteractionPoint interactor, int currentInteractionMode, int useIndex) {
             if (enforceInteractorID != -1 && enforceInteractorID != interactor.interactorID) return;
-            for (int i = 0; i < listeners.Count; i++) listeners[i].OnInteractableUsedUpdate(interactor, useIndex);
+            for (int i = 0; i < listeners.Count; i++) if (listeners[i].GetInteractionMode() == currentInteractionMode) listeners[i].OnInteractableUsedUpdate(interactor, useIndex);
         }
     }
 }

@@ -35,23 +35,71 @@ using SimpleUI;
 using Game.InventorySystem;
 using Game.DialogueSystem;
 using Game.PerkSystem;
+using InteractionSystem;
 using System;
 
 namespace Game {
     public class Actor : MonoBehaviour {
 
+        // TODO: override with player camera or ai head
+
+
+        public Vector3 GetPosition () {
+            return transform.position;
+        }
+        public Vector3 GetForward () {
+            return transform.forward;
+        }
+        public Vector3 GetUp () {
+            return transform.up;
+        }
+        public Vector3 GetRight () {
+            return transform.right;
+        }
+        
+
+
+
+
+        [HideInInspector] public Interactor interactor;
         [HideInInspector] public Inventory inventory;
         DialoguePlayer dialoguePlayer;
         [HideInInspector] public PerkHandler perkHandler;
 
+
+        public event System.Action<int, int> onActionStart, onActionEnd, onActionUpdate;
+
+
+        // player only
+        public void BroadcastActionStart (int controllerIndex, int action) {
+            if (onActionStart != null) {
+                onActionStart(controllerIndex, action);
+            }
+        }
+        public void BroadcastActionEnd (int controllerIndex, int action) {
+            if (onActionEnd != null) {
+                onActionEnd(controllerIndex, action);
+            }
+        }
+        public void BroadcastActionUpdate (int controllerIndex, int action) {
+            if (onActionUpdate != null) {
+                onActionUpdate(controllerIndex, action);
+            }
+        }
+
+
         void InitializeComponents () {
-            inventory = GetComponent<Inventory>();
+            //player only
             dialoguePlayer = GetComponent<DialoguePlayer>();
+            interactor = GetComponent<Interactor>();
+            
+            
+            inventory = GetComponent<Inventory>();
             perkHandler = GetComponent<PerkHandler>();
         }
 
-        public void StartDialogue (DialogueTemplate template, Actor otherActor, AudioSource actorSource) {
-            dialoguePlayer.StartDialogue(otherActor, template, actorSource);
+        public void StartDialogue (DialogueTemplate template, Actor otherActor, AudioSource actorSource, System.Action onDialogueEnded) {
+            dialoguePlayer.StartDialogue(otherActor, template, actorSource, onDialogueEnded);
         }
 
         public static Actor playerActor;

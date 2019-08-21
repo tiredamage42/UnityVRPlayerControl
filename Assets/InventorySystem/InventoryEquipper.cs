@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using UnityEngine;
-
+using InteractionSystem;
 namespace Game.InventorySystem {
 
     /*
@@ -21,16 +21,20 @@ namespace Game.InventorySystem {
         public int quickEquipAction = 0;
         
         Inventory attachedInventory;
+        
         void Awake () {
             attachedInventory = GetComponent<Inventory>();
+            
         }
         void OnEnable () {
             attachedInventory.onDrop += OnDrop;
             attachedInventory.onSceneItemActionStart += OnSceneItemActionStart;
+            InitializeActionsReceiver();
         }
         void OnDisable () {
             attachedInventory.onDrop -= OnDrop;
             attachedInventory.onSceneItemActionStart -= OnSceneItemActionStart;
+            UninitializeActionsReceiver();
         }
 
         void OnSceneItemActionStart (SceneItem sceneItem, int interactorID, int actionIndex) {
@@ -59,18 +63,29 @@ namespace Game.InventorySystem {
             return true;
         }
 
-        public void OnActionStart (int equipSlot, int actionIndex) {
+        void InitializeActionsReceiver () {
+            attachedInventory.actor.onActionStart += OnActionStart;
+            attachedInventory.actor.onActionUpdate += OnActionUpdate;
+            attachedInventory.actor.onActionEnd += OnActionEnd;
+        }
+        void UninitializeActionsReceiver () {
+            attachedInventory.actor.onActionStart -= OnActionStart;
+            attachedInventory.actor.onActionUpdate -= OnActionUpdate;
+            attachedInventory.actor.onActionEnd -= OnActionEnd;
+        }
+
+        void OnActionStart (int equipSlot, int actionIndex) {
             if (!EquipSlotValid(equipSlot)) return;            
             EquipSlot slot = equippedSlots[equipSlot];
             if (slot != null) slot.sceneItem.OnEquippedUseStart(attachedInventory, actionIndex);
         }
-        public void OnActionUpdate (int equipSlot, int actionIndex) {
+        void OnActionUpdate (int equipSlot, int actionIndex) {
             if (!EquipSlotValid(equipSlot)) return;
             EquipSlot slot = equippedSlots[equipSlot];
             if (slot != null) slot.sceneItem.OnEquippedUseEnd(attachedInventory, actionIndex);
         }
 
-        public void OnActionEnd (int equipSlot, int actionIndex) {
+        void OnActionEnd (int equipSlot, int actionIndex) {
             if (!EquipSlotValid(equipSlot)) return;
             
             EquipSlot slot = equippedSlots[equipSlot];
@@ -144,6 +159,9 @@ namespace Game.InventorySystem {
         public void SetEquipPoint (int atIndex, EquipPoint equipPoint) {
             equipPoints[atIndex] = equipPoint;
         }
+
+        public List<int> mainSlots = new List<int>() { 0, 1 };
+
 
 
         void Update () {
@@ -350,6 +368,54 @@ namespace Game.InventorySystem {
                 }
             }
         }
+
+        public void UnequipMainItemsTemp () {
+            for (int i =0 ; i < mainSlots.Count; i++) {
+                UnequipItemTemp(mainSlots[i]);
+            }
+        }
+        public void EquipMainItemsTemp () {
+            for (int i =0 ; i < mainSlots.Count; i++) {
+                EquipItemTemp(mainSlots[i]);
+            }
+        }
+
+
+
+        public void UnequipItemTemp (int slotIndex) {
+            if (!EquipSlotValid(slotIndex)) return;
+            InitializeTempHolders();
+            tempSlots[slotIndex] = null;
+            
+            if (equippedSlots[slotIndex] == null) return;
+            EquipSlot slot = equippedSlots[slotIndex];
+            if (slot.isQuickEquipped) {
+                UnequipItem(slotIndex, true);
+                return;
+            }
+            tempSlots[slotIndex] = slot.sceneItem.itemBehavior;
+            UnequipItem(slotIndex, false);
+        }
+        public void EquipItemTemp (int slotIndex) {
+            if (!EquipSlotValid(slotIndex)) return;
+            InitializeTempHolders();
+            if (tempSlots[slotIndex] != null) {
+                EquipItem(tempSlots[slotIndex], slotIndex, null);
+                tempSlots[slotIndex] = null;
+            }
+        }
+
+        ItemBehavior[] tempSlots;
+        void InitializeTempHolders () {
+            if (tempSlots == null || tempSlots.Length != equippedSlots.Length) {
+                tempSlots = new ItemBehavior[tempSlots.Length];
+            }
+
+
+        }
+
+
+            
 
         public void UnequipItem(int slotIndex, bool showScene)
         {

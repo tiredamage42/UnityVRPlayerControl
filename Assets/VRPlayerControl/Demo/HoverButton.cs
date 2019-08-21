@@ -11,6 +11,8 @@ namespace GameBase//Valve.VR.InteractionSystem
     [RequireComponent(typeof(Interactable))]
     public class HoverButton : MonoBehaviour, IInteractable
     {
+        public int GetInteractionMode () { return 0; }
+        
         public int useActionIndex = 0;
 
 
@@ -128,11 +130,11 @@ namespace GameBase//Valve.VR.InteractionSystem
             buttonUp = wasEngaged == true && isEngaged == false;
 
             if (buttonDown)
-                interactable.OnUsedStart(lastInspector, useActionIndex);
+                interactable.OnUsedStart(lastInspector, GetInteractionMode(), useActionIndex);
             if (isEngaged)
-                interactable.OnUsedUpdate(lastInspector, useActionIndex);
+                interactable.OnUsedUpdate(lastInspector, GetInteractionMode(), useActionIndex);
             if (buttonUp)
-                interactable.OnUsedEnd(lastInspector, useActionIndex);
+                interactable.OnUsedEnd(lastInspector, GetInteractionMode(), useActionIndex);
         }
     }
 }

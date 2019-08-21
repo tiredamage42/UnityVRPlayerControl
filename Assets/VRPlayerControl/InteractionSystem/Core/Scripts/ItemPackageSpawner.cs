@@ -24,6 +24,8 @@ namespace Valve.VR.InteractionSystem
 	[RequireComponent( typeof( Interactable ) )]
 	public class ItemPackageSpawner : MonoBehaviour, IInteractable
 	{
+		public int GetInteractionMode () { return 0; }
+        
 		public void OnInteractableAvailabilityChange(bool available) {
             
         }
@@ -49,7 +51,7 @@ namespace Valve.VR.InteractionSystem
 
 		}
         public void OnInteractableInspectedEnd(InteractionPoint interactor){
-						justPickedUpItem = false;
+			justPickedUpItem = false;
 
 
 		}

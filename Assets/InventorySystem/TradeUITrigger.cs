@@ -7,6 +7,9 @@ using Game.InventorySystem;
 using Game.UI;
 public class TradeUITrigger : MonoBehaviour, IInteractable
 {
+
+    public int GetInteractionMode() { return 0; }
+    
     public int useAction = 0;
     public Inventory suppliedInventory;
     [NeatArray] public NeatIntList categoryFilter;
@@ -23,10 +26,6 @@ public class TradeUITrigger : MonoBehaviour, IInteractable
     public void OnInteractableUsedStart (InteractionPoint interactor, int useAction) {
         if (useAction == this.useAction && interactor.inventory != null) {
             GameUI.tradeUI.OpenTradUI( interactor.inventory, suppliedInventory, categoryFilter );
-
-            // UIHandler.GetUIHandlerByContext(GameObject.FindObjectOfType<UIObjectInitializer>().gameObject, contextName).OpenUI(
-            //     new object[] { interactor.interactorID, suppliedInventory, categoryFilter.list }
-            // );
         }
     }
 

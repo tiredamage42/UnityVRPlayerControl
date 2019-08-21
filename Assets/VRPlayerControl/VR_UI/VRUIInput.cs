@@ -64,57 +64,56 @@ namespace VRPlayer{
         public SteamVR_Action_Boolean submitButton;
         public SteamVR_Action_Boolean cancelButton;      
         
-        [Tooltip(".15f is a good setting when\nstandalone input module has 60 actions per second")]  
-        // public float deltaThresholdForScroll = .15f;
-        public Vector2 deltaThresholdForScroll = new Vector2(.15f, .15f);
+        // [Tooltip(".15f is a good setting when\nstandalone input module has 60 actions per second")]  
+        // public Vector2 deltaThresholdForScroll = new Vector2(.15f, .15f);
         static SteamVR_Action_Vector2 selectionAxis { get { return StandardizedVRInput.instance.TrackpadAxis; } }
         static SteamVR_Input_Sources lastUsedUIHand = SteamVR_Input_Sources.Any;
         static SteamVR_Input_Sources currentUIHand = SteamVR_Input_Sources.Any;
 
         public override Vector2 mousePosition { get { return selectionAxis.GetAxis( currentUIHand ); } }
 
-        bool checkedFrameX, checkedFramey;
-        Vector2 savedAxis, lastAxis;
-        void LateUpdate () {
-            checkedFrameX = false;
-            checkedFramey = false;
-        }
+        // bool checkedFrameX, checkedFramey;
+        // Vector2 savedAxis, lastAxis;
+        // void LateUpdate () {
+        //     checkedFrameX = false;
+        //     checkedFramey = false;
+        // }
 
 
-        /*
-            make axis react to scrolling action on trackpad
-        */
-        float GetAxisRaw(int axisIndex, Vector2 currentAxis, ref bool checkedFrame) {
+        // /*
+        //     make axis react to scrolling action on trackpad
+        // */
+        // float GetAxisRaw(int axisIndex, Vector2 currentAxis, ref bool checkedFrame) {
 
-            if (checkedFrame) {
-                return savedAxis[axisIndex];
-            }
-            float delta = currentAxis[axisIndex] - lastAxis[axisIndex];
-            float returnAxis = 0;
+        //     if (checkedFrame) {
+        //         return savedAxis[axisIndex];
+        //     }
+        //     float delta = currentAxis[axisIndex] - lastAxis[axisIndex];
+        //     float returnAxis = 0;
 
-            if (delta != 0 && Mathf.Abs(delta) >= deltaThresholdForScroll[axisIndex]) {
-                if (lastAxis[axisIndex] == 0 || currentAxis[axisIndex] == 0) {
-                    if (lastAxis[axisIndex] == 0) {
-                        // Debug.LogError("on scroll start");
-                    }
-                    else {
-                        // Debug.LogError("on scroll end");
-                    }
-                }
-                else {
-                    returnAxis = Mathf.Clamp(delta * 99999, -1, 1);
-                }
-                lastAxis[axisIndex] = currentAxis[axisIndex];
-            }
-            checkedFrame = true;
-            savedAxis[axisIndex] = returnAxis;
-            return returnAxis;
-        }
+        //     if (delta != 0 && Mathf.Abs(delta) >= deltaThresholdForScroll[axisIndex]) {
+        //         if (lastAxis[axisIndex] == 0 || currentAxis[axisIndex] == 0) {
+        //             if (lastAxis[axisIndex] == 0) {
+        //                 // Debug.LogError("on scroll start");
+        //             }
+        //             else {
+        //                 // Debug.LogError("on scroll end");
+        //             }
+        //         }
+        //         else {
+        //             returnAxis = Mathf.Clamp(delta * 99999, -1, 1);
+        //         }
+        //         lastAxis[axisIndex] = currentAxis[axisIndex];
+        //     }
+        //     checkedFrame = true;
+        //     savedAxis[axisIndex] = returnAxis;
+        //     return returnAxis;
+        // }
 
 
         public override float GetAxisRaw(string axisName) {
 
-            Vector2 axis = selectionAxis.GetAxis(currentUIHand);
+            // Vector2 axis = selectionAxis.GetAxis(currentUIHand);
             if (currentUIHand == SteamVR_Input_Sources.Any) {
                 lastUsedUIHand = selectionAxis.GetAxis(SteamVR_Input_Sources.RightHand) != Vector2.zero ? 
                     SteamVR_Input_Sources.RightHand : 
@@ -122,10 +121,13 @@ namespace VRPlayer{
             }
 
             if (axisName == inputModule.horizontalAxis){ 
-                return GetAxisRaw(0, axis, ref checkedFrameX);
+                return StandardizedVRInput.instance.GetScrollDelta(currentUIHand).x;
+                // return GetAxisRaw(0, axis, ref checkedFrameX);
             }
             else if (axisName == inputModule.verticalAxis){
-                return GetAxisRaw(1, axis, ref checkedFramey);
+                return StandardizedVRInput.instance.GetScrollDelta(currentUIHand).y;
+                // return GetAxisRaw(1, axis, ref checkedFramey);
+                
             }   
             return 0;
         }

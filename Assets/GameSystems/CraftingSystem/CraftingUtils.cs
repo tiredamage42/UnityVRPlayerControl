@@ -9,14 +9,19 @@ using UnityEngine;
 namespace Game.InventorySystem.CraftingSystem {
     public static class CraftingUtils
     {
+
+        public static void ScrapItem (this Inventory inventory, ItemBehavior item, int count, bool sendMessage, Actor selfActor, Actor suppliedActor) {
+            for (int i = 0; i< count; i++) {
+                inventory.AddItemComposition(item.composedOf, sendMessage, selfActor, suppliedActor);
+            }
+        }     
+
         public static void ScrapItem (this Inventory inventory, ItemBehavior item, int count, int slotIndex, bool removeEmpty, bool sendMessage, Actor selfActor, Actor suppliedActor) {
             
             if (slotIndex == -1) slotIndex = inventory.GetSlotIndex(item);
             if (slotIndex != -1) {
                 inventory.DropItem(item, count, false, slotIndex, removeEmpty, sendMessage);
-                for (int i = 0; i< count; i++) {
-                    inventory.AddItemComposition(item.composedOf, sendMessage, selfActor, suppliedActor);
-                }
+                inventory.ScrapItem(item, count, sendMessage, selfActor, suppliedActor);
             }
         }     
 

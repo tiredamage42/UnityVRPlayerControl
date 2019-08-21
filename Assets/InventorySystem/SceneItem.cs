@@ -19,8 +19,33 @@ namespace Game.InventorySystem {
     */
     public class SceneItem : MonoBehaviour, IInteractable
     {
+        public int GetInteractionMode() { return itemBehavior.onlyWorkshop ? 1 : 0; }
+
+
+        public static List<SceneItem> allSceneItems = new List<SceneItem>();
+
+        static void RemoveSceneItem (SceneItem sceneItem) {
+            allSceneItems.Remove(sceneItem);
+        }
+        static void AddSceneItem (SceneItem sceneItem) {
+            if (!allSceneItems.Contains(sceneItem)) {
+                allSceneItems.Add(sceneItem);
+            }
+        }
+
+        void OnEnable () {
+            AddSceneItem(this);
+        }
+        void OnDestroy () {
+            RemoveSceneItem(this);
+        }
+        void OnDiable () {
+            RemoveSceneItem(this);
+        }
+    
 
         static Dictionary<int, HashSet<SceneItem>> itemPoolsPerPrefab = new Dictionary<int, HashSet<SceneItem>>();
+        
         
         // TODO: add a way to ensure scene variation
         // TODO: add count
@@ -37,6 +62,8 @@ namespace Game.InventorySystem {
                 foreach (var it in itemPoolsPerPrefab[instanceID]) {
                     if (!it.gameObject.activeInHierarchy) {
                         sceneItem = it;
+
+                        // turn on and unparent
                         break;
                     }
                 }
@@ -91,8 +118,10 @@ namespace Game.InventorySystem {
 
         // when an action is performed on the item while it's in its interactable (unequipped) state
         public void OnInteractableUsedStart(InteractionPoint interactor, int useIndex) {
-            if (interactor.inventory != null) 
-                interactor.inventory.OnSceneItemActionStart (this, interactor.interactorID, useIndex);
+            if (!itemBehavior.onlyWorkshop) { // dont allow interaction with workshop only items
+                if (interactor.inventory != null) 
+                    interactor.inventory.OnSceneItemActionStart (this, interactor.interactorID, useIndex);
+            }
         }
         public void OnInteractableUsedEnd(InteractionPoint interactor, int useIndex) {
 

@@ -9,15 +9,11 @@ using Game.UI;
 */
 public class CraftingUITrigger : MonoBehaviour, IInteractable
 {
+    public int GetInteractionMode() { return 0; }
+    
     public int useAction = 0;
-    // public string contextName;
-    // public Inventory suppliedInventory;
     [NeatArray] public NeatIntList categoryFilter;
-    void Awake () {
-        // if (suppliedInventory == null) 
-        //     suppliedInventory = GetComponent<Inventory>();
-    }
-
+    
     public void OnInteractableAvailabilityChange(bool available) { }
     public void OnInteractableInspectedStart (InteractionPoint interactor) { }
     public void OnInteractableInspectedEnd (InteractionPoint interactor) { }
@@ -25,12 +21,7 @@ public class CraftingUITrigger : MonoBehaviour, IInteractable
 
     public void OnInteractableUsedStart (InteractionPoint interactor, int useAction) {
         if (useAction == this.useAction && interactor.inventory != null) {
-
             GameUI.craftingUI.OpenCraftingUI(interactor.inventory, categoryFilter);
-
-            // UIHandler.GetUIHandlerByContext(GameObject.FindObjectOfType<UIObjectInitializer>().gameObject, contextName).OpenUI(
-            //     new object[] { interactor.interactorID, suppliedInventory, categoryFilter.list }
-            // );
         }
     }
 

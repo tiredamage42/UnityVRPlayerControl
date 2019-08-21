@@ -309,7 +309,7 @@ namespace SimpleUI {
 
             selectionReturnCallback = returnValue;
 
-            selectionPopupElement.SetMessage(msg);
+            selectionPopupElement.SetMessage( "\n\n" + msg + "\n\n");
 
             SelectableElement[] allElements = selectionPopupElement.GetAllSelectableElements(options.Length);
             SetSelection(allElements[0].gameObject);

@@ -24,28 +24,11 @@ namespace VRPlayer.UI {
 
         [Header("Input uses only one Hand")]
         public bool usesSingleHand;
-        // public int enforcedEquipID = -1;
-
-
-        // TODO: NOT ALL PARAMEters include equip point
-        // bool UIShouldOpenCheck (object[] parameters){
-        //     if (enforcedEquipID == -1) return true;
-        //     int usingEquipPoint = (int)parameters[1];
-        //     bool shouldOpen = usingEquipPoint == enforcedEquipID || usingEquipPoint <= -1;            
-        //     if (!shouldOpen) Debug.LogError("no openCheck check " + usingEquipPoint + " enforces " + enforcedEquipID);
-        //     return shouldOpen;
-        // }
-        // bool UIShouldCloseCheck (object[] parameters){
-        //     if (enforcedEquipID == -1) return true;
-        //     int usingEquipPoint = (int)parameters[1];
-        //     bool shouldclose = usingEquipPoint == enforcedEquipID || usingEquipPoint <= -1;
-        //     if (!shouldclose) Debug.LogError("no close check " + usingEquipPoint + " enforces " + enforcedEquipID);
-        //     return shouldclose;
-        // }
+        
 
         protected UIHandler myUIHandler;
         
-        bool needsSingleHandInput { get { return usesSingleHand; } }// || enforcedEquipID != -1; } }
+        bool needsSingleHandInput { get { return usesSingleHand; } }
 
         
         Vector2Int GetUIInputs (){
@@ -79,9 +62,6 @@ namespace VRPlayer.UI {
                 myUIHandler.onUIClose += OnCloseUI;
                 myUIHandler.onUIOpen += OnOpenUI;
                 myUIHandler.SetUIInputCallback(GetUIInputs);
-
-                // myUIHandler.shouldCloseCheck = UIShouldCloseCheck;
-                // myUIHandler.shouldOpenCheck = UIShouldOpenCheck;                
             }
             else {
                 Debug.LogError(context + " handler is null");

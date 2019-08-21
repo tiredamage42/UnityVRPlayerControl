@@ -22,6 +22,9 @@ namespace VRPlayer {
         }
 
         public bool headsetIsOnPlayerHead;
+        [Tooltip(".15f is a good setting when\nstandalone input module has 60 actions per second")]  
+        public Vector2 deltaThresholdForScroll = new Vector2(.15f, .15f);
+        
 
         void Update()
         {
@@ -36,7 +39,74 @@ namespace VRPlayer {
             else if (headsetOnHead.GetState(SteamVR_Input_Sources.Head)) {
                 headsetIsOnPlayerHead = true;
             }
+            CalculateScrollDeltas();
         }
+
+
+
+        public Vector2 GetScrollDelta (SteamVR_Input_Sources hand) {
+            int handOffset = VRManager.Hand2Int(hand);
+            return new Vector2(savedAxis[2*handOffset], savedAxis[2*handOffset+1]);
+        }
+        Vector4 savedAxis, lastAxis;
+
+        void CalculateScrollDeltas () {
+            for (int i = 0; i < 2; i++) {
+                SteamVR_Input_Sources hand = VRManager.Int2Hand(i);
+                int handInt = VRManager.Hand2Int(hand);
+                int startIndex = 2*handInt;
+
+                Vector2 current = TrackpadAxis.GetAxis(hand);
+
+                savedAxis[startIndex] = GetAxisRaw(startIndex, current.x);
+                savedAxis[startIndex+1] = GetAxisRaw(startIndex+1, current.y);
+            }
+        }
+
+        /*
+            make axis react to scrolling action on trackpad
+        */
+        float GetAxisRaw(int axisIndex, float currentAxis) {
+
+            float delta = currentAxis - lastAxis[axisIndex];
+            float returnAxis = 0;
+
+            if (delta != 0 && Mathf.Abs(delta) >= deltaThresholdForScroll[axisIndex]) {
+                if (lastAxis[axisIndex] == 0 || currentAxis == 0) {
+                    if (lastAxis[axisIndex] == 0) {
+                        // Debug.LogError("on scroll start");
+                    }
+                    else {
+                        // Debug.LogError("on scroll end");
+                    }
+                }
+                else {
+                    returnAxis = Mathf.Clamp(delta * 99999, -1, 1);
+                }
+                lastAxis[axisIndex] = currentAxis;
+            }
+            return returnAxis;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         static Dictionary<SteamVR_Action, SteamVR_Input_Sources> occupiedActions = new Dictionary<SteamVR_Action, SteamVR_Input_Sources>();

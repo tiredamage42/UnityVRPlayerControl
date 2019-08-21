@@ -129,8 +129,9 @@ MonoBehaviour:
   actionNames:
   - Use
   onlyProximityHover: 0
-  available: 1
+  isAvailable: 1
   useType: 0
+  enforceInteractorID: -1
 --- !u!114 &3782446068247926477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,7 +147,7 @@ MonoBehaviour:
   itemCount: 1
   itemBehavior: {fileID: 11400000, guid: 760ba9aa4bd3e42eca24cd7974c47624, type: 2}
   rigidbody: {fileID: 0}
-  linkedInventory: {fileID: 0}
+  parentInventory: {fileID: 0}
   myEquipPoint: {fileID: 0}
 --- !u!114 &447489744721927532
 MonoBehaviour:
@@ -179,8 +180,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: febe6797aba6345fc98e3f74b3fa9904, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flashInteractable: 1
-  highlightOnHover: 1
   flashRenderers: []
 --- !u!1 &7274394031978351470
 GameObject:
@@ -226,6 +225,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1863d409d31f44e95ad19f5d9f4272ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactable: {fileID: 0}
 --- !u!64 &1425019309450239409
 MeshCollider:
   m_ObjectHideFlags: 0

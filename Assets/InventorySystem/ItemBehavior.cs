@@ -18,6 +18,7 @@ namespace Game.InventorySystem {
     [CreateAssetMenu(menuName="Inventory System/Item Behavior")]
     public class ItemBehavior : ScriptableObject
     {
+        public bool onlyWorkshop;
         public string itemName;
 
         [TextArea]
@@ -30,11 +31,21 @@ namespace Game.InventorySystem {
         // (to prevent having multiple gameObjects of the same item in bloated inventories)
         public StashedItemBehavior[] stashedItemBehaviors;
 
+        public T FindItemBehavior<T> ( ) where T : StashedItemBehavior {
+            for (int i = 0; i < stashedItemBehaviors.Length; i++) {
+                T behavior = stashedItemBehaviors[i] as T;
+                if (behavior != null) return behavior;
+            }
+            return null;
+        }
+        
+
         public float weight = 1;
         [Range(0,100)] public float value = 50;
 
         [NeatArray] public ItemCompositionArray composedOf;
 
+        public Transform previewTransform;
         
         [Header("Scene Behavior")]
         public bool canQuickEquip = true;
@@ -99,8 +110,6 @@ namespace Game.InventorySystem {
             
             EditorGUI.PropertyField(new Rect(x, position.y, 135, singleLine), property.FindPropertyRelative("amount"), GUIContent.none);
             
-
-
             EditorGUI.indentLevel = oldIndent + 1;
             SerializedProperty conditionsProp = property.FindPropertyRelative("conditions");
             EditorGUI.PropertyField(new Rect(position.x, position.y + singleLine, position.width, (EditorGUI.GetPropertyHeight(conditionsProp, true))), conditionsProp, new GUIContent("Conditions"));

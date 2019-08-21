@@ -5,6 +5,8 @@ using Valve.VR;
 
 using GameBase;
 
+
+using Game;
 namespace VRPlayer
 {
 	
@@ -132,8 +134,12 @@ namespace VRPlayer
 		// Guess for the world-space position of the player's feet, directly beneath the HMD.
 		public Vector3 feetPositionGuess { get { return transform.position + Vector3.ProjectOnPlane( VRManager.hmd_Transform.position - transform.position, transform.up ); } }
 
+
+		Actor actor;
 		void Awake()
 		{
+			actor = GetComponent<Actor>();
+
 			moveScript = GetComponent<SimpleCharacterController>();			
 		}
 
@@ -146,8 +152,37 @@ namespace VRPlayer
 			CheckForInitialScaling();
 			
 			handsTogether = Vector3.SqrMagnitude(hands[0].transform.position - hands[1].transform.position) <= (handsTogetherThreshold * handsTogetherThreshold);
-			
+
+			UpdateInputActions();
         }
+
+		void ControlInteractorAndEquipper (SteamVR_Input_Sources hand, int handID, SteamVR_Action_Boolean action, int actionKey) {
+            bool useDown = action.GetStateDown(hand);
+            bool useUp = action.GetStateUp(hand);
+            bool useHeld = action.GetState(hand);
+                
+            if (useDown) actor.BroadcastActionStart(handID, actionKey);
+            if (useUp) actor.BroadcastActionEnd(handID, actionKey);
+            if (useHeld) actor.BroadcastActionUpdate(handID, actionKey);
+        }
+
+            
+
+
+        void UpdateInputActions()
+        {
+			for (int i = 0; i < 2; i++) {
+				SteamVR_Input_Sources hand = VRManager.Int2Hand(i);
+				
+				bool handOccupied = VRUIInput.HandOccupied(hand);
+				if (handOccupied)
+					continue;
+
+				for (int x = 0; x < actions.Length; x++) {
+					ControlInteractorAndEquipper (hand, i, actions[x], x);
+				}        
+			}
+        }	
 	}
 }
 

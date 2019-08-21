@@ -4,6 +4,9 @@ using UnityEngine;
 namespace InteractionSystem {
     public class TaggerInteractable : MonoBehaviour, IInteractable
     {
+
+        public int GetInteractionMode() { return 0; }
+    
         public void OnInteractableAvailabilityChange(bool available) {
 			
 		}

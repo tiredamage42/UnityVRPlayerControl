@@ -5,6 +5,8 @@ namespace Valve.VR.InteractionSystem.Sample
 {
     public class ButtonExample : MonoBehaviour, IInteractable
     {
+        public int GetInteractionMode () { return 0; }
+        
         public void OnInteractableAvailabilityChange(bool available) {
             
         }

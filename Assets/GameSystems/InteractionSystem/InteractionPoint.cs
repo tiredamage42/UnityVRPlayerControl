@@ -71,8 +71,8 @@ namespace InteractionSystem {
             // Hover on this one
             hoveringInteractable = closestInteractable;
         }
-        public System.Action<bool, Vector3, Vector3, bool, int> onRayCheckUpdate;
 
+        public System.Action<bool, Vector3, Vector3, bool, int> onRayCheckUpdate;
 
         
         void UpdateHovering(Vector3 hoverPosition, float hoverRadius, ref float closestDistance, ref Interactable closestInteractable)
@@ -95,7 +95,7 @@ namespace InteractionSystem {
 
                 Interactable contacting = c.interactable;
                 
-                if (contacting == null || !contacting.available)
+                if (contacting == null || !contacting.IsAvailable(baseInteractor.interactionMode))
                     continue;
 
                 // Best candidate so far...
@@ -118,7 +118,7 @@ namespace InteractionSystem {
                     return;
 
                 Interactable contacting = c.interactable;
-                if (contacting == null || !contacting.available)
+                if (contacting == null || !contacting.IsAvailable(baseInteractor.interactionMode))
                     return;
 
                 if (contacting.onlyProximityHover && !baseInteractor.godModeInteractor)
@@ -135,10 +135,14 @@ namespace InteractionSystem {
             if (findInteractables) {
                 FindInteractables();
             }   
+            else {
+                hoveringInteractable = null;
+                hoverLocked = false;
+            }
          
             if (hoveringInteractable)
             {  
-                hoveringInteractable.OnInspectedUpdate(this);
+                hoveringInteractable.OnInspectedUpdate(this, baseInteractor.interactionMode);
 
                 if (onInspectUpdate != null){
                     onInspectUpdate(this, hoveringInteractable);
@@ -157,7 +161,7 @@ namespace InteractionSystem {
                 {
                     if (oldInteractable != null)
                     {
-                        oldInteractable.OnInspectedEnd(this);
+                        oldInteractable.OnInspectedEnd(this, baseInteractor.interactionMode);
                         if (onInspectEnd != null) {
                             onInspectEnd(this, oldInteractable);
                         }
@@ -167,7 +171,7 @@ namespace InteractionSystem {
 
                     if (newInteractable != null)
                     {
-                        newInteractable.OnInspectedStart(this);
+                        newInteractable.OnInspectedStart(this, baseInteractor.interactionMode);
                         if (onInspectStart != null) {
                             onInspectStart(this, newInteractable);
                         }
@@ -195,37 +199,26 @@ namespace InteractionSystem {
                 hoverLocked = false;
         }
 
-        public void OnUseStart (int useIndex) {
-            if (hoveringInteractable != null) {
-                bool isUseable = hoveringInteractable.useType != Interactable.UseType.Scripted;
-                if (isUseable) {
-                    hoveringInteractable.OnUsedStart(this, useIndex);
-                }
-            }
-            // if (onUseStart != null) {
-            //     onUseStart (this, useIndex, hoveringInteractable);
-            // }
-        }
-
-        public void OnUseEnd (int useIndex) {
+        public void OnActionStart (int interactionMode, int actionIndex) {
             if (hoveringInteractable != null) {
                 if (hoveringInteractable.useType != Interactable.UseType.Scripted) {
-                    hoveringInteractable.OnUsedEnd(this, useIndex);
+                    hoveringInteractable.OnUsedStart(this, interactionMode, actionIndex);
                 }
             }
-            // if (onUseEnd != null) {
-            //     onUseEnd (this, useIndex, hoveringInteractable);
-            // }
         }
-        public void OnUseUpdate (int useIndex) {
+        public void OnActionEnd (int interactionMode, int actionIndex) {
             if (hoveringInteractable != null) {
                 if (hoveringInteractable.useType != Interactable.UseType.Scripted) {
-                    hoveringInteractable.OnUsedUpdate(this, useIndex);
+                    hoveringInteractable.OnUsedEnd(this, interactionMode, actionIndex);
                 }
             }
-            // if (onUseUpdate != null) {
-            //     onUseUpdate (this, useIndex, hoveringInteractable);
-            // }
+        }
+        public void OnActionUpdate (int interactionMode, int actionIndex) {
+            if (hoveringInteractable != null) {
+                if (hoveringInteractable.useType != Interactable.UseType.Scripted) {
+                    hoveringInteractable.OnUsedUpdate(this, interactionMode, actionIndex);
+                }
+            }
         }
         
         List<string> BuildSuffixedTags(List<string> tags) {

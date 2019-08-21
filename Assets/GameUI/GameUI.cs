@@ -136,88 +136,7 @@ namespace Game.UI {
 
                 player actor has radio ("pip boy")
 
-            Radio {
-                station 
-
-                is on;
-
-                void OnSwitchSong (clip newSong, RadioManager.StationManager stationManager) {
-                    audioSource.stop();
-                    audio source play (currentsong)
-                }
-
-                void SwitchStation(Station newStation) {
-                    if (is on) {
-                        RadioManager.UnsubscribeFromSTation(OnSwitchSong);
-                    }
-                    station = newStation
-                    TurnOn()
-                }
-
-                void OnDisable () {
-                    RadioManager.UnsubscribeFromSTations(OnSwitchSong);
-
-                }
-                void OnEnable () {
-                    if (ison) {
-                        TurnOn ();
-                    }
-                }
-
-                void TurnOff () {
-
-                    RadioManager.UnsubscribeFromSTations(OnSwitchSong);
-
-                    effectSource.Play(radio stopEffect);
-                    audioSource.Stop();
-                }
-                void TurnOn () {
-                    effectSource.Play(radio startEffect);
-
-                    radio start delay;
-
-                    if (RadioManager.instance.RadioWithinStationRange(radioposition, station)) {
-
-                        float currentsong timer = RadioManager.QueryPlayTime(station);
-                        clip currentsong = RadioManager.QuerySong(station);
-                        RadioManager.SubscribeToSTation(station, OnSwitchSong);
-
-
-                        audioSource.stop();
-                        audio source play (currentsong, currentsong timer)
-
-                    }
-                    else {
-                        play static effect
-                    }
-                }
-            }
-
-
-            Radio Manager {
-                update stations[]
-
-
-                QueryStationTime (station) {
-                    return update stations(station).currentsong timer
-                }
-
-                void Update () {
-                    foreach station in update stations:
-
-
-                        currentSongTimer += time.delta time;
-                        if (currentSongTimer >= currentsongDuration) {
-                            int choosenew song = choose from station
-                            newCurrentSongDuration = station.songs[choosnewsong].duration;
-                            currentSongTimer = 0;
-
-                            on switch song(new song chosen)
-                        }
-
-
-                }
-            }
+            
                     
     */
     /*
@@ -235,6 +154,7 @@ namespace Game.UI {
         public static FullInventoryUIHandler inventoryManagementUI { get { return FullInventoryUIHandler.instance; } }        
         public static CraftingUIHandler craftingUI { get { return CraftingUIHandler.instance; } }
         public static UIQuestsPage questsUI { get { return UIQuestsPage.instance; } }
+        public static WorkshopUIHandler workshopUI { get { return WorkshopUIHandler.instance; } }
 
         // IN GAME MESSAGES
         public static void SetUIMessageCenterInstance(UIMessageCenter messagesElement) {

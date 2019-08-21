@@ -31,6 +31,7 @@ namespace Game.DialogueSystem {
         public float barkTime = 1;
         public AudioClip associatedAudio;
         public int nextDialogueStepID = -1;
+        public bool playBarkOnStep;
         [NeatArray] public ActorValueConditionArray conditions;
         public DialogueResponse() {
             nextDialogueStepID = -1;
@@ -40,12 +41,20 @@ namespace Game.DialogueSystem {
     }
 
     // TODO: dialogue step lead to other step
+    // TODO: dialogue initial barks as list of dialogue resoonses, choose first based on conditions
         
     [System.Serializable] public class DialogueStep {
         public int stepID;
-        [TextArea] public string bark;
-        public float barkTime = 1;
-        public AudioClip associatedAudio;
+        // [TextArea] public string bark;
+        // public float barkTime = 1;
+        // public AudioClip associatedAudio;
+
+        [Header("Needs at least one")] [NeatArray] public DialogueResponseArray initialBarks;
+        
+
+
+
+        
         [Header("Dialogue ends if no responses")] [NeatArray] public DialogueResponseArray responses;
         [NeatArray] public DialogueStepScriptArray stepScripts;
     }
@@ -80,7 +89,7 @@ namespace Game.DialogueSystem {
 
             SerializedProperty barkProp = property.FindPropertyRelative("bark");
             string s = barkProp.stringValue;
-            if (string.IsNullOrEmpty(s) || string.IsNullOrWhiteSpace(s)) barkProp.stringValue = DialogueTemplateEditor.emptyResponsePrompt;
+            // if (string.IsNullOrEmpty(s) || string.IsNullOrWhiteSpace(s)) barkProp.stringValue = DialogueTemplateEditor.emptyResponsePrompt;
             
             EditorGUI.PropertyField(new Rect(x, y, position.width, singleLineHeight * 3), barkProp, noContent);
             y += singleLineHeight * 3;
@@ -117,7 +126,8 @@ namespace Game.DialogueSystem {
                     //dont allow self...
                     if (newIDindex == DialogueTemplateEditor.instance.currentStepID) {
                         Debug.LogWarning("Response cant lead to current step...");
-                        if (nextStepIDProp.intValue == newIDindex) nextStepIDProp.intValue = -1;
+                        // if (nextStepIDProp.intValue == newIDindex) 
+                            nextStepIDProp.intValue = -1;
                     }
                     else {                    
                         nextStepIDProp.intValue = allIDs[newIDindex];
@@ -131,6 +141,15 @@ namespace Game.DialogueSystem {
                     nextStepIDProp.intValue = -1;
                 }
             }
+
+
+            GUIContent playBarkLbl = new GUIContent("Play Bark On Step:");
+            float playbarkw = EditorStyles.label.CalcSize(playBarkLbl).x;
+            EditorGUI.LabelField(new Rect(x + 70 + position.width * .5f, y, playbarkw, singleLineHeight), playBarkLbl);
+
+            SerializedProperty playBarkOnStepProp = property.FindPropertyRelative("playBarkOnStep");
+            EditorGUI.PropertyField(new Rect(x + 70 + (position.width * .5f) + playbarkw, y, position.width, singleLineHeight), playBarkOnStepProp, GUIContent.none);//, new GUIContent("Conditions"));
+
 
             EditorGUI.indentLevel = oldIndent + 1;
             SerializedProperty conditionsProp = property.FindPropertyRelative("conditions");
@@ -159,7 +178,14 @@ namespace Game.DialogueSystem {
                 SerializedProperty stepProp = allStepsProp.GetArrayElementAtIndex(i);
                 int id = stepProp.FindPropertyRelative("stepID").intValue;
                 r.Add(id);
-                names.Add("[" + id + "] " + stepProp.FindPropertyRelative("bark").stringValue);   
+
+                string bark = "";
+                SerializedProperty initialBarksProp = stepProp.FindPropertyRelative("initialBarks").FindPropertyRelative("list");
+                for (int x = 0; x < initialBarksProp.arraySize; x++) {
+                    bark += initialBarksProp.GetArrayElementAtIndex(x).FindPropertyRelative("bark").stringValue + " | ";
+                }
+            
+                names.Add("[" + id + "] " + bark);//stepProp.FindPropertyRelative("bark").stringValue);   
             }
             names.Add("New Step...");
             allNames = names.ToArray();
@@ -231,7 +257,16 @@ namespace Game.DialogueSystem {
 
         public void GoForwardStep (int newID, string fromResponseBark) {
             SerializedProperty currentStepIDProp = ID2StepProp(currentStepID);
-            string currentBark = currentStepIDProp.FindPropertyRelative("bark").stringValue;
+
+
+            string currentBark = "";
+            SerializedProperty initialBarksProp = currentStepIDProp.FindPropertyRelative("initialBarks").FindPropertyRelative("list");
+            for (int i = 0; i < initialBarksProp.arraySize; i++) {
+                currentBark += initialBarksProp.GetArrayElementAtIndex(i).FindPropertyRelative("bark").stringValue + " | ";
+            }
+                        
+            // string currentBark = currentStepIDProp.FindPropertyRelative("bark").stringValue;
+
             previousBarks.Add(currentBark + " >> " + fromResponseBark);
             previousStepIDs.Add(currentStepID);
             currentStepID = newID;
@@ -266,47 +301,54 @@ namespace Game.DialogueSystem {
             
         void ResetStepProp (SerializedProperty stepProp, int newID) {
             stepProp.FindPropertyRelative("stepID").intValue = newID;
-            stepProp.FindPropertyRelative("bark").stringValue = "[ Dialogue Step: " + newID + " ]";
-            stepProp.FindPropertyRelative("barkTime").floatValue = 1;
+
+
+
+            ClearNeatArray(stepProp.FindPropertyRelative("initialBarks"));
             
-            stepProp.FindPropertyRelative("associatedAudio").objectReferenceValue = null;
+            // stepProp.FindPropertyRelative("bark").stringValue = "[ Dialogue Step: " + newID + " ]";
+            // stepProp.FindPropertyRelative("barkTime").floatValue = 1;
+            // stepProp.FindPropertyRelative("associatedAudio").objectReferenceValue = null;
+            
 
             ClearNeatArray(stepProp.FindPropertyRelative("responses"));
 
             ClearNeatArray(stepProp.FindPropertyRelative("stepScripts"));
             
-
-
-            // ClearNeatArray(stepProp.FindPropertyRelative("speakerBuffs"));
-            // ClearNeatArray(stepProp.FindPropertyRelative("playerBuffs"));
-            // ClearNeatArray(stepProp.FindPropertyRelative("transferToSpeaker"));
-            // ClearNeatArray(stepProp.FindPropertyRelative("transferToPlayer"));
-            // ClearNeatArray(stepProp.FindPropertyRelative("categoryFilter"));
-            
-            // stepProp.FindPropertyRelative("contextName").stringValue = "";
-            
-            // stepProp.FindPropertyRelative("startQuest").objectReferenceValue = null;
         }
 
-        public const string emptyResponsePromptCheck = "[ Response ";
-        public const string emptyResponsePrompt = emptyResponsePromptCheck + "]";
+        // public const string emptyResponsePromptCheck = "[ Response ";
+        // public const string emptyResponsePrompt = emptyResponsePromptCheck + "]";
 
         void DrawDialogueStep(SerializedProperty stepProp) {
             if (stepProp == null)
                 return;
 
-            EditorGUILayout.PropertyField (stepProp.FindPropertyRelative("bark"));
-            EditorGUILayout.PropertyField (stepProp.FindPropertyRelative("associatedAudio"), GUIContent.none);
-            EditorGUILayout.PropertyField (stepProp.FindPropertyRelative("barkTime"));
+            int stepID = stepProp.FindPropertyRelative("stepID").intValue;
+
+            // EditorGUILayout.PropertyField (stepProp.FindPropertyRelative("bark"));
+            // EditorGUILayout.PropertyField (stepProp.FindPropertyRelative("associatedAudio"), GUIContent.none);
+            // EditorGUILayout.PropertyField (stepProp.FindPropertyRelative("barkTime"));
+            SerializedProperty initialBarksProp = stepProp.FindPropertyRelative("initialBarks");
+            EditorGUILayout.PropertyField (initialBarksProp);
+            
+            
+            // initialBarksProp = initialBarksProp.FindPropertyRelative("list");
+            // for (int i = 0; i < initialBarksProp.arraySize; i++) {
+            //     SerializedProperty barkProp = initialBarksProp.GetArrayElementAtIndex(i).FindPropertyRelative("bark");
+            //     if (barkProp.stringValue.StartsWith(emptyResponsePromptCheck)) barkProp.stringValue = "[ Dialogue Step: " + stepID + "/" + i + " ]";
+            // }
+
+
 
             SerializedProperty responseProp = stepProp.FindPropertyRelative("responses");
             EditorGUILayout.PropertyField (responseProp);
             
-            responseProp = responseProp.FindPropertyRelative("list");
-            for (int i = 0; i < responseProp.arraySize; i++) {
-                SerializedProperty barkProp = responseProp.GetArrayElementAtIndex(i).FindPropertyRelative("bark");
-                if (barkProp.stringValue.StartsWith(emptyResponsePromptCheck)) barkProp.stringValue = emptyResponsePromptCheck + i + " ]";
-            }
+            // responseProp = responseProp.FindPropertyRelative("list");
+            // for (int i = 0; i < responseProp.arraySize; i++) {
+            //     SerializedProperty barkProp = responseProp.GetArrayElementAtIndex(i).FindPropertyRelative("bark");
+            //     if (barkProp.stringValue.StartsWith(emptyResponsePromptCheck)) barkProp.stringValue = emptyResponsePromptCheck + i + " ]";
+            // }
 
 
             
