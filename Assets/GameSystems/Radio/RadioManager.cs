@@ -151,10 +151,12 @@ namespace Game.RadioSystem {
             for (int i = 0; i< allTowers.Count; i++) {
                 if (allTowers[i].isOn) {
                     if (Vector3.SqrMagnitude(radioPosition - allTowers[i].transform.position) <= allTowers[i].range * allTowers[i].range) {
+                        // Debug.LogError("HEY");
                         return true;
                     }
                 }
             }
+            // Debug.LogError("awww");
             return false;
         }
 

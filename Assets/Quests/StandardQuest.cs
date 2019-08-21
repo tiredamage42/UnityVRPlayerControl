@@ -48,11 +48,12 @@ namespace Game.QuestSystem {
         [Header("In Order")]
         public ObjectiveScript[] objectives;
 
-        ObjectiveScript currentObjective;
+        // ObjectiveScript currentObjective;
 
         int introducedLast = -1;
 
         void UpdateObjectives (float deltaTime) {
+            // Debug.LogError("updating objective");
             int lastActive = -1;
             for (int i = 0; i < objectives.Length; i++) {
                 if (i > introducedLast) {
@@ -74,7 +75,7 @@ namespace Game.QuestSystem {
             }
 
             if (lastActive != -1) {
-                currentObjective = objectives[lastActive];
+                // currentObjective = objectives[lastActive];
                 if (internalKey != lastActive) {
                     objectives[internalKey].OnDisableActiveState();
                     internalKey = lastActive;
@@ -97,7 +98,7 @@ namespace Game.QuestSystem {
         }
 
         public override string GetCurrentTextHint () { 
-            return currentObjective.GetCurrentTextHint(); 
+            return objectives[internalKey].GetCurrentTextHint(); 
         }
         
         public override void OnQuestComplete () { 

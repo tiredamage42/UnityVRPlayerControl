@@ -266,7 +266,7 @@ namespace SimpleUI {
 
         static IEnumerator SetSelectionBack() {
             yield return null;
-            Debug.LogError("setting selection back to " + selectedWhenPoppedUp);
+            // Debug.LogError("setting selection back to " + selectedWhenPoppedUp);
 
                         SetSelection(selectedWhenPoppedUp);
             // selectedWhenPoppedUp = null;
@@ -276,7 +276,7 @@ namespace SimpleUI {
             if (saveSelection) {
 
             selectedWhenPoppedUp = CurrentSelected();
-            Debug.LogError("saving selected " + selectedWhenPoppedUp);
+            // Debug.LogError("saving selected " + selectedWhenPoppedUp);
             }
 
             ShowUI(popup);
@@ -320,16 +320,19 @@ namespace SimpleUI {
 
         static void OnSelectionSubmit (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input) {
             HidePopup(selectionPopupElement);
+                            Debug.LogError("SHPULD CALLBACK");
+
             if (selectionReturnCallback != null) {
+                Debug.LogError("CALLBACK");
                 selectionReturnCallback(true, (int)customData[0]);
-                selectionReturnCallback = null;
+                // selectionReturnCallback = null;
             }
         }
         static void OnCancelSelectionUI () {
             HidePopup( selectionPopupElement);
             if (selectionReturnCallback != null) {
                 selectionReturnCallback (false, 0);
-                selectionReturnCallback = null;
+                // selectionReturnCallback = null;
             }
         }
 
@@ -362,14 +365,14 @@ namespace SimpleUI {
             HidePopup(sliderElement);
             if (sliderReturnCallback != null) {
                 sliderReturnCallback(true, (int)sliderElement.sliderValue);
-                sliderReturnCallback = null;
+                // sliderReturnCallback = null;
             }
         }
         static void OnCancelSliderUI () {
             HidePopup( sliderElement);
             if (sliderReturnCallback != null) {
                 sliderReturnCallback (false, 0);
-                sliderReturnCallback = null;
+                // sliderReturnCallback = null;
             }
         }
     }

@@ -76,6 +76,7 @@ GameObject:
   - component: {fileID: 4253900334017238657}
   - component: {fileID: 7556414317397326387}
   - component: {fileID: 4633860988618942930}
+  - component: {fileID: 736796254}
   m_Layer: 0
   m_Name: Mushrooms
   m_TagString: Untagged
@@ -240,3 +241,16 @@ MonoBehaviour:
   setRangeOfMotionOnPickup: -1
   usePose: 1
   poseToUse: {fileID: 11400000, guid: e96c29fda3e3ff54aab137f40441d68e, type: 2}
+--- !u!114 &736796254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5545195401415697092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c0088052bb854282b4d774a5e78ff23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashRenderers: []

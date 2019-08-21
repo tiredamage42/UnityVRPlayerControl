@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 4417822710243179157}
   - component: {fileID: 692616961288446769}
   - component: {fileID: 1717798145717484546}
+  - component: {fileID: 1070876783}
   m_Layer: 0
   m_Name: BackPack_07
   m_TagString: Untagged
@@ -33,7 +34,7 @@ Transform:
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -0.62758183, y: 0, z: -9.247605}
-  m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
+  m_LocalScale: {x: 1.2500014, y: 1.25, z: 1.2500014}
   m_Children:
   - {fileID: 7187358544678963939}
   m_Father: {fileID: 0}
@@ -178,6 +179,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: febe6797aba6345fc98e3f74b3fa9904, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashRenderers: []
+--- !u!114 &1070876783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c0088052bb854282b4d774a5e78ff23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   flashRenderers: []

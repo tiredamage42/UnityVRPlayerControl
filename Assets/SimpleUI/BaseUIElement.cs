@@ -24,7 +24,10 @@ namespace SimpleUI {
 
         void DoSubmit (Vector2Int submitAction) {
             // Debug.Log("Submitted on " + name);
-        
+            if (parentElement != null) {
+                parentElement.DoSubmit(submitAction);
+                return;                
+            }
             
             GameObject[] data;
             object[] customData;
@@ -41,7 +44,7 @@ namespace SimpleUI {
         
         protected virtual void Update () {
 
-            if (RequiresInput()) {
+            if (parentElement == null && RequiresInput()) {
 
                 if (Application.isPlaying) {
                     if (!UIManager.popupOpen || isPopup) {

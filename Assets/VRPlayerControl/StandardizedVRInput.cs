@@ -45,6 +45,9 @@ namespace VRPlayer {
 
 
         public Vector2 GetScrollDelta (SteamVR_Input_Sources hand) {
+            if (hand == SteamVR_Input_Sources.Any) {
+                return new Vector2(savedAxis[0], savedAxis[1]) + new Vector2(savedAxis[2], savedAxis[3]);
+            }
             int handOffset = VRManager.Hand2Int(hand);
             return new Vector2(savedAxis[2*handOffset], savedAxis[2*handOffset+1]);
         }
@@ -58,20 +61,20 @@ namespace VRPlayer {
 
                 Vector2 current = TrackpadAxis.GetAxis(hand);
 
-                savedAxis[startIndex] = GetAxisRaw(startIndex, current.x);
-                savedAxis[startIndex+1] = GetAxisRaw(startIndex+1, current.y);
+                savedAxis[startIndex] = GetAxisRaw(startIndex, current.x, deltaThresholdForScroll.x);
+                savedAxis[startIndex+1] = GetAxisRaw(startIndex+1, current.y, deltaThresholdForScroll.y);
             }
         }
 
         /*
             make axis react to scrolling action on trackpad
         */
-        float GetAxisRaw(int axisIndex, float currentAxis) {
+        float GetAxisRaw(int axisIndex, float currentAxis, float currentThreshold) {
 
             float delta = currentAxis - lastAxis[axisIndex];
             float returnAxis = 0;
 
-            if (delta != 0 && Mathf.Abs(delta) >= deltaThresholdForScroll[axisIndex]) {
+            if (delta != 0 && Mathf.Abs(delta) >= currentThreshold){//deltaThresholdForScroll[axisIndex]) {
                 if (lastAxis[axisIndex] == 0 || currentAxis == 0) {
                     if (lastAxis[axisIndex] == 0) {
                         // Debug.LogError("on scroll start");

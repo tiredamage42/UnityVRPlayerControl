@@ -105,6 +105,7 @@ GameObject:
   - component: {fileID: 205765612341792673}
   - component: {fileID: 8408475696410345739}
   - component: {fileID: 5854503659686530830}
+  - component: {fileID: 1005399098}
   m_Layer: 0
   m_Name: matchbox
   m_TagString: Untagged
@@ -121,7 +122,7 @@ Transform:
   m_GameObject: {fileID: 1124578452033744}
   m_LocalRotation: {x: -0, y: -0.95019805, z: 0, w: -0.31164664}
   m_LocalPosition: {x: 0.063099995, y: 0.07253002, z: -0.10430001}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.50000024, y: 0.5, z: 0.50000024}
   m_Children:
   - {fileID: 4818373313548278}
   - {fileID: 4901791542767454}
@@ -164,8 +165,9 @@ MonoBehaviour:
   actionNames:
   - Use
   onlyProximityHover: 0
-  available: 1
+  isAvailable: 1
   useType: 0
+  enforceInteractorID: -1
 --- !u!114 &205765612341792673
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,8 +180,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: febe6797aba6345fc98e3f74b3fa9904, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flashInteractable: 1
-  highlightOnHover: 1
   flashRenderers: []
 --- !u!114 &8408475696410345739
 MonoBehaviour:
@@ -196,7 +196,7 @@ MonoBehaviour:
   itemCount: 1
   itemBehavior: {fileID: 11400000, guid: 3ef53be07fb9a4def872f125a220d247, type: 2}
   rigidbody: {fileID: 0}
-  linkedInventory: {fileID: 0}
+  parentInventory: {fileID: 0}
   myEquipPoint: {fileID: 0}
 --- !u!114 &5854503659686530830
 MonoBehaviour:
@@ -217,6 +217,19 @@ MonoBehaviour:
   setRangeOfMotionOnPickup: -1
   usePose: 1
   poseToUse: {fileID: 11400000, guid: 51373f35dc917fd46801b1771471345e, type: 2}
+--- !u!114 &1005399098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124578452033744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c0088052bb854282b4d774a5e78ff23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashRenderers: []
 --- !u!1 &1236496385884828
 GameObject:
   m_ObjectHideFlags: 0
@@ -646,6 +659,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1863d409d31f44e95ad19f5d9f4272ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactable: {fileID: 0}
 --- !u!65 &132843130590600384
 BoxCollider:
   m_ObjectHideFlags: 0

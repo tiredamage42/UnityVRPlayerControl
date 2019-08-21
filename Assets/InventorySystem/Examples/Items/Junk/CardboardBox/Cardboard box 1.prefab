@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 1378997561719618862}
   - component: {fileID: 8345083026966956181}
   - component: {fileID: 675376093356942066}
+  - component: {fileID: 916473782}
   m_Layer: 0
   m_Name: Cardboard box 1
   m_TagString: Untagged
@@ -128,8 +129,9 @@ MonoBehaviour:
   actionNames:
   - Use
   onlyProximityHover: 0
-  available: 1
+  isAvailable: 1
   useType: 0
+  enforceInteractorID: -1
 --- !u!114 &1378997561719618862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -142,8 +144,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: febe6797aba6345fc98e3f74b3fa9904, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flashInteractable: 1
-  highlightOnHover: 1
   flashRenderers: []
 --- !u!114 &8345083026966956181
 MonoBehaviour:
@@ -160,7 +160,7 @@ MonoBehaviour:
   itemCount: 1
   itemBehavior: {fileID: 11400000, guid: 136d8db01c0fd433c800105a5531d5a8, type: 2}
   rigidbody: {fileID: 0}
-  linkedInventory: {fileID: 0}
+  parentInventory: {fileID: 0}
   myEquipPoint: {fileID: 0}
 --- !u!114 &675376093356942066
 MonoBehaviour:
@@ -181,6 +181,19 @@ MonoBehaviour:
   setRangeOfMotionOnPickup: -1
   usePose: 1
   poseToUse: {fileID: 11400000, guid: 7fa5b27ff6bb95c4fb87ebc54a6cf5ad, type: 2}
+--- !u!114 &916473782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 146272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c0088052bb854282b4d774a5e78ff23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashRenderers: []
 --- !u!1 &3356230231907160407
 GameObject:
   m_ObjectHideFlags: 0
@@ -225,6 +238,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1863d409d31f44e95ad19f5d9f4272ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactable: {fileID: 0}
 --- !u!65 &5452550581955191449
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 1260625258110790143}
   - component: {fileID: 8741439175150908138}
   - component: {fileID: 354464832}
+  - component: {fileID: 1467562102}
   m_Layer: 0
   m_Name: Axe 1
   m_TagString: Untagged
@@ -129,8 +130,9 @@ MonoBehaviour:
   actionNames:
   - Use
   onlyProximityHover: 0
-  available: 1
+  isAvailable: 1
   useType: 0
+  enforceInteractorID: -1
 --- !u!114 &1260625258110790143
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,7 +148,7 @@ MonoBehaviour:
   itemCount: 1
   itemBehavior: {fileID: 11400000, guid: 5ad210c8286a04ee7963963faecbb32d, type: 2}
   rigidbody: {fileID: 0}
-  linkedInventory: {fileID: 0}
+  parentInventory: {fileID: 0}
   myEquipPoint: {fileID: 0}
 --- !u!114 &8741439175150908138
 MonoBehaviour:
@@ -179,8 +181,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: febe6797aba6345fc98e3f74b3fa9904, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flashInteractable: 1
-  highlightOnHover: 1
+  flashRenderers: []
+--- !u!114 &1467562102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1260625257575830696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c0088052bb854282b4d774a5e78ff23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   flashRenderers: []
 --- !u!1 &3375995931861133387
 GameObject:
@@ -226,6 +239,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1863d409d31f44e95ad19f5d9f4272ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactable: {fileID: 0}
 --- !u!64 &3303096738113205667
 MeshCollider:
   m_ObjectHideFlags: 0

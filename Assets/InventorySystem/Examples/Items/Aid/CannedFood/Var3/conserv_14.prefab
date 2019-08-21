@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5100987927760743300}
   - component: {fileID: 9085122727992794275}
   - component: {fileID: 1453067010419214594}
+  - component: {fileID: 536058655}
   m_Layer: 0
   m_Name: conserv_14
   m_TagString: Untagged
@@ -32,7 +33,7 @@ Transform:
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -2.137951, y: 0, z: -3.4636793}
-  m_LocalScale: {x: 0.015, y: 0.015, z: 0.015}
+  m_LocalScale: {x: 0.015, y: 0.015000015, z: 0.015000015}
   m_Children:
   - {fileID: 7979992552611334889}
   m_Father: {fileID: 0}
@@ -128,8 +129,9 @@ MonoBehaviour:
   actionNames:
   - Use
   onlyProximityHover: 0
-  available: 1
+  isAvailable: 1
   useType: 0
+  enforceInteractorID: -1
 --- !u!114 &9085122727992794275
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -145,7 +147,7 @@ MonoBehaviour:
   itemCount: 1
   itemBehavior: {fileID: 11400000, guid: 467a3e3c8c7094636901f3dfb394a5f0, type: 2}
   rigidbody: {fileID: 0}
-  linkedInventory: {fileID: 0}
+  parentInventory: {fileID: 0}
   myEquipPoint: {fileID: 0}
 --- !u!114 &1453067010419214594
 MonoBehaviour:
@@ -166,6 +168,19 @@ MonoBehaviour:
   setRangeOfMotionOnPickup: -1
   usePose: 1
   poseToUse: {fileID: 11400000, guid: 7fa5b27ff6bb95c4fb87ebc54a6cf5ad, type: 2}
+--- !u!114 &536058655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c0088052bb854282b4d774a5e78ff23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashRenderers: []
 --- !u!1 &5694005629382370976
 GameObject:
   m_ObjectHideFlags: 0
@@ -210,6 +225,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1863d409d31f44e95ad19f5d9f4272ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactable: {fileID: 0}
 --- !u!64 &8974056468888069045
 MeshCollider:
   m_ObjectHideFlags: 0

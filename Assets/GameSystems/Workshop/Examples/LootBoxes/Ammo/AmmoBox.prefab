@@ -19,8 +19,9 @@ GameObject:
   - component: {fileID: 5107106082444260924}
   - component: {fileID: 1515771960}
   - component: {fileID: 1254874900972370931}
+  - component: {fileID: 1225791777906466752}
   m_Layer: 0
-  m_Name: ammobox_4
+  m_Name: AmmoBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -210,10 +211,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemCount: 1
-  itemBehavior: {fileID: 11400000, guid: 7065f556361ed4e778bf5413ea0ada07, type: 2}
+  itemBehavior: {fileID: 11400000, guid: e9fc643a9e1d943a9af728779d3dfd38, type: 2}
   rigidbody: {fileID: 0}
   parentInventory: {fileID: 0}
   myEquipPoint: {fileID: 0}
+--- !u!114 &1225791777906466752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c0088052bb854282b4d774a5e78ff23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashRenderers: []
 --- !u!1 &8621264501825505838
 GameObject:
   m_ObjectHideFlags: 0

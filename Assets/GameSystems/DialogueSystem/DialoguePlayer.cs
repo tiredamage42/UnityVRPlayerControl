@@ -93,7 +93,7 @@ namespace Game.DialogueSystem {
             bool leadsToStep = false;
 
             if (playNextInitialBark) {
-                List<DialogueResponse> usedResponses = FilterResponses (step.initialBarks, false);
+                List<DialogueResponse> usedResponses = FilterResponses (step.initialBarks, true);
 
                 if (usedResponses.Count == 0) {
                     Debug.LogError("no initial step bark for step on template " + template.name + " step id: " +currentStepID);

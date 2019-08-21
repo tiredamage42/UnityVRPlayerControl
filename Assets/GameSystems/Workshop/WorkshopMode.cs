@@ -31,8 +31,8 @@ namespace Game.InventorySystem.WorkshopSystem {
         void Update () {
             if (inBuildMode || isMovingObject) {
 
-                yAngle += axisDeltas.x * turnSpeed;
-                zDistance += axisDeltas.y * moveSpeed;
+                yAngle += axisDeltas.x * turnSpeed * Time.deltaTime;
+                zDistance += axisDeltas.y * moveSpeed * Time.deltaTime;
 
 
                 Transform referenceTransform = actor.interactor.mainInteractor.referenceTransform;
@@ -255,6 +255,14 @@ namespace Game.InventorySystem.WorkshopSystem {
                     // enter build mode
                     else {
                         if (currentSelectedRecipeItem != null) {
+                            if (currentSelectedWorkshopRecipe == null) {
+                                    Debug.LogError("null recipe item for" + currentSelectedRecipeItem.name);
+
+                            }
+                            if (currentSelectedWorkshopRecipe.returnItem == null) {
+                                Debug.LogError("null return item for" + currentSelectedWorkshopRecipe.name);
+                            }
+                            
                             SetNewPreviewTransform(currentSelectedWorkshopRecipe.returnItem.previewTransform);
                         }
                     }
@@ -274,26 +282,36 @@ namespace Game.InventorySystem.WorkshopSystem {
                 currentSelectedRecipeItem = slot.item;
             }
             
-            if (inBuildMode) {
+            // if (inBuildMode) {
                 if (currentSelectedRecipeItem == null) {
+                 if (inBuildMode) {
+            
                     DestroyCurrentPreview();
+                 }
                     return;
                 }
                 currentSelectedWorkshopRecipe = currentSelectedRecipeItem.FindItemBehavior<WorkshopRecipe>();
                 if (currentSelectedWorkshopRecipe == null) {
                     currentSelectedRecipeItem = null;
+
+                    if (inBuildMode) {
+            
                     DestroyCurrentPreview();
+                    }
                     Debug.LogError("workShopRecipe == null");
                     return;
                 }
+                if (inBuildMode) {
+            
                 Transform newPreviewPrefab = currentSelectedWorkshopRecipe.returnItem.previewTransform;
                 int id = newPreviewPrefab.GetInstanceID();
                 if (id != currentPreviewID) {
-                    Destroy(currentPreviewTransform);
+                    Destroy(currentPreviewTransform.gameObject);
                     currentPreviewTransform = GameObject.Instantiate(newPreviewPrefab);
                     currentPreviewID = id;
                 }
-            }
+                }
+            // }
         }
 
     
@@ -310,7 +328,7 @@ namespace Game.InventorySystem.WorkshopSystem {
         bool inBuildMode { get { return currentPreviewTransform != null && !isMovingObject; } }
 
         void DestroyCurrentPreview () {
-            Destroy(currentPreviewTransform);
+            Destroy(currentPreviewTransform.gameObject);
             currentPreviewTransform = null;        
             currentPreviewID = -1;
             actor.interactor.mainInteractor.findInteractables = true;

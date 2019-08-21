@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 4445270251483246609}
   - component: {fileID: 3097908675468565455}
   - component: {fileID: 972250834}
+  - component: {fileID: 1394069411}
   m_Layer: 0
   m_Name: conserv_16
   m_TagString: Untagged
@@ -33,7 +34,7 @@ Transform:
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -1.7587559, y: 0, z: -2.0612664}
-  m_LocalScale: {x: 0.015, y: 0.015000007, z: 0.015000007}
+  m_LocalScale: {x: 0.015, y: 0.015000022, z: 0.015000022}
   m_Children:
   - {fileID: 1031212544057505268}
   m_Father: {fileID: 0}
@@ -129,8 +130,9 @@ MonoBehaviour:
   actionNames:
   - Use
   onlyProximityHover: 0
-  available: 1
+  isAvailable: 1
   useType: 0
+  enforceInteractorID: -1
 --- !u!114 &4445270251483246609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,7 +148,7 @@ MonoBehaviour:
   itemCount: 1
   itemBehavior: {fileID: 11400000, guid: f67ad9b003aa94fa8bb9e5fc6e24118d, type: 2}
   rigidbody: {fileID: 0}
-  linkedInventory: {fileID: 0}
+  parentInventory: {fileID: 0}
   myEquipPoint: {fileID: 0}
 --- !u!114 &3097908675468565455
 MonoBehaviour:
@@ -179,8 +181,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: febe6797aba6345fc98e3f74b3fa9904, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flashInteractable: 1
-  highlightOnHover: 1
+  flashRenderers: []
+--- !u!114 &1394069411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c0088052bb854282b4d774a5e78ff23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   flashRenderers: []
 --- !u!1 &4007669570680212156
 GameObject:
@@ -226,6 +239,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1863d409d31f44e95ad19f5d9f4272ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactable: {fileID: 0}
 --- !u!64 &3330810241943366818
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -154,6 +154,9 @@ namespace Game.RadioSystem {
             }
             return RadioManager.RadioWithinAnyTowerRange(transform.position);
         }
+        void Update(){
+            UpdateRadioCheck();
+        }
 
         void UpdateRadioCheck () {
             if (isOn) {

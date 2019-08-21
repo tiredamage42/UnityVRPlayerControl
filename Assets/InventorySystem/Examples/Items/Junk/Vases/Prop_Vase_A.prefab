@@ -93,6 +93,7 @@ GameObject:
   - component: {fileID: 1031567409598528378}
   - component: {fileID: 1659967418089421560}
   - component: {fileID: 7908861033320446813}
+  - component: {fileID: 236524581}
   m_Layer: 0
   m_Name: Prop_Vase_A
   m_TagString: Untagged
@@ -152,7 +153,7 @@ MeshCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Convex: 1
-  m_CookingOptions: 14
+  m_CookingOptions: -1
   m_Mesh: {fileID: 4300002, guid: 33f33dc868f91ef4dbcd8e056f537976, type: 3}
 --- !u!54 &1025209191362690641
 Rigidbody:
@@ -185,8 +186,9 @@ MonoBehaviour:
   actionNames:
   - Use
   onlyProximityHover: 0
-  available: 1
+  isAvailable: 1
   useType: 0
+  enforceInteractorID: -1
 --- !u!114 &1031567409598528378
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,8 +201,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: febe6797aba6345fc98e3f74b3fa9904, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flashInteractable: 1
-  highlightOnHover: 1
   flashRenderers: []
 --- !u!114 &1659967418089421560
 MonoBehaviour:
@@ -217,7 +217,7 @@ MonoBehaviour:
   itemCount: 1
   itemBehavior: {fileID: 11400000, guid: 36a7ea9f2d4a846d19e2da8b969b97ab, type: 2}
   rigidbody: {fileID: 0}
-  linkedInventory: {fileID: 0}
+  parentInventory: {fileID: 0}
   myEquipPoint: {fileID: 0}
 --- !u!114 &7908861033320446813
 MonoBehaviour:
@@ -238,6 +238,19 @@ MonoBehaviour:
   setRangeOfMotionOnPickup: -1
   usePose: 1
   poseToUse: {fileID: 11400000, guid: 407b1f2c7b826ca4bad322afcda1243f, type: 2}
+--- !u!114 &236524581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 113612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c0088052bb854282b4d774a5e78ff23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashRenderers: []
 --- !u!1 &177394
 GameObject:
   m_ObjectHideFlags: 0
@@ -359,6 +372,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1863d409d31f44e95ad19f5d9f4272ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactable: {fileID: 0}
 --- !u!64 &2156123657566747628
 MeshCollider:
   m_ObjectHideFlags: 0

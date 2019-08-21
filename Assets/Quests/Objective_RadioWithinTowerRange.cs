@@ -21,7 +21,14 @@ namespace Game.QuestSystem {
 
         public override bool UpdateObjective (float deltaTime) { 
             if (station == null) {
-                return radioToCheck.WithinAnyRadioTower(); 
+                bool done = radioToCheck.WithinAnyRadioTower();
+                if (done) {
+                    // Debug.LogError("done with objective 1");
+                } 
+                else {{
+                    // Debug.LogError("not done with objective 1");
+                } }
+                return done;
             }
             return radioToCheck.StationAvailable(station);
         }

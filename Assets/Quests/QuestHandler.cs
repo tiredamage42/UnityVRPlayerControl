@@ -153,6 +153,7 @@ namespace Game.QuestSystem {
                 newQuest = Instantiate(questPrefab);
                 newQuest.transform.SetParent(instance.transform);
             }
+            newQuest.questID = id;
             instance.activeQuests.Add(newQuest);
             newQuest.OnQuestInitialize();
         }

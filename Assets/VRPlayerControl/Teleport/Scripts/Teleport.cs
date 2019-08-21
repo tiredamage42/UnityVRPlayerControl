@@ -7,6 +7,7 @@
 using UnityEngine;
 using Valve.VR;
 using GameBase;
+using InteractionSystem;
 namespace VRPlayer
 {
 	public class Teleport : MonoBehaviour
@@ -179,7 +180,7 @@ namespace VRPlayer
 				}
 				if (!GameManager.isPaused) {
 
-					if (!StandardizedVRInput.ActionOccupied(teleportAction, teleportHand) && teleportAction.GetStateDown(teleportHand) )
+					if ((!StandardizedVRInput.ActionOccupied(teleportAction, teleportHand) || Player.instance.GetComponent<Interactor>().interactionMode == 1) && teleportAction.GetStateDown(teleportHand) )
 					{
 						teleportNewlyPressed = true;
 					}

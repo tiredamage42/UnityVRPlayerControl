@@ -23,6 +23,6 @@ public class DialogueStep_OpenFullTradeUI : MonoBehaviour, IDialogueStepScript
     }
             
     public void OnDialogueStep (Actor dialoguePlayer, Actor speaker, float stepTime) {
-        StartCoroutine( OpenTrade ( dialoguePlayer, speaker, stepTime) );
+        dialoguePlayer.StartCoroutine( OpenTrade ( dialoguePlayer, speaker, stepTime) );
     }
 }

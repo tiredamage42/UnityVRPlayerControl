@@ -31,9 +31,11 @@ namespace Game.RadioSystem {
     public void OnInteractableUsedStart (InteractionPoint interactor, int useAction) { 
 
         if (useAction == enableAction) {
+            Debug.LogError("toggling state");
             ToggleState();
         }
         else  if (useAction == optionsAction) {
+            Debug.LogError("options");
             BringUpOptionsMenu();
         }
     }
@@ -68,7 +70,10 @@ namespace Game.RadioSystem {
         }
 
         void OnRadioStationAddChosen (bool used, int index) {
+            Debug.LogError("chose station maybe used");
+                
             if (used) {
+                Debug.LogError("chose station");
                 RadioStation added = RadioManager.instance.allAvailableRadioStations[index].station;
                 if (!stationsToBroadcast.Contains(added)) {
                     OnAddStation(added);
@@ -91,6 +96,7 @@ namespace Game.RadioSystem {
             return r;
         }
         public void BringUpStationAddUI () {
+
             Game.UI.GameUI.ShowSelectionPopup(true, "Add Station:", BuildStationAddNames(), OnRadioStationAddChosen);
         }
 
@@ -134,6 +140,7 @@ namespace Game.RadioSystem {
         public bool isOn;
 
         void OnAddStation (RadioStation station) {
+            Debug.LogError("addign station " + station.name);
             stationsToBroadcast.Add(station);
         }
         void OnRemoveStation (RadioStation station) {

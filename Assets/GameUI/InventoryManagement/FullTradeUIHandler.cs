@@ -69,15 +69,15 @@ namespace Game.UI {
                 int panelIndex = (int)customData[1];
 
                 giver = invs[panelIndex];
-                receiver = invs[panelIndex-1];
+                receiver = invs[1-panelIndex];
 
                 // single trade
                 if (input.x == singleTradeAction+actionOffset) {
                     if (highlightedItem != null) {
 
+                            Debug.Log("sinle Trade in full trade handler!!!!");
                         // get count from slider
                         if (highlightedItem.count > 5) {
-                            Debug.Log("sinle Trade in full trade handler!!!!");
                             UIManager.ShowIntSliderPopup(true, "Trade " + highlightedItem.item.itemName + ":", 0, highlightedItem.count, OnDropSliderReturnValue);
                         }
                         else {

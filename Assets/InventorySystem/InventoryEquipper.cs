@@ -408,7 +408,7 @@ namespace Game.InventorySystem {
         ItemBehavior[] tempSlots;
         void InitializeTempHolders () {
             if (tempSlots == null || tempSlots.Length != equippedSlots.Length) {
-                tempSlots = new ItemBehavior[tempSlots.Length];
+                tempSlots = new ItemBehavior[equippedSlots.Length];
             }
 
 
