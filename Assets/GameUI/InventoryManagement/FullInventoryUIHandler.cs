@@ -45,7 +45,7 @@ namespace Game.UI {
         }
         
         
-        const int consumeAction = 0, dropAction = 1;
+        // const int consumeAction = 0, dropAction = 1;
         
         InventorySlot highlightedItemSlot;
 
@@ -73,23 +73,35 @@ namespace Game.UI {
                     UpdateUIButtons();
                 }
             }
-
         }
 
-        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
+
+
+        // protected override bool RequiresCustomInputMethod () { return true; }
+        public int consumeAction = 0;
+        public int optionsAction = 1;
+
+        protected override List<int> InitializeInputsAndNames (out List<string> names) {
+            names = new List<string>() { "Use", "Options" };
+            return new List<int>() { consumeAction, optionsAction };//, UIManager.instance.cancelAction };
+        }
+
+
+
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){//, int actionOffset) {
             if (customData != null) {
 
                 highlightedItemSlot = customData[0] as InventorySlot;
                 
                 if (highlightedItemSlot != null) {
                                     
-                    if (input.x == consumeAction+actionOffset) {
+                    if (input.x == consumeAction){//+actionOffset) {
                         if (highlightedItemSlot.item.OnConsume(showingInventory, count: 1, input.y)){
                             UpdateUIButtons();
                         }
                     }
                     // drop
-                    else if (input.x == dropAction+actionOffset) {
+                    else if (input.x == optionsAction){//+actionOffset) {
                         UIManager.ShowSelectionPopup(true, "\n\n"+highlightedItemSlot.item.itemName+":", new string[] {"Drop", "Favorite"}, OnItemActionSelection);
                     }
                 }

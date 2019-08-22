@@ -40,8 +40,19 @@ namespace Game.UI {
             return (obj as DialogueResponse).bark; 
         }
 
-        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
-        	if (input.x == actionOffset) {
+
+        // protected override bool RequiresCustomInputMethod () { return false; }
+        public int selectAction;
+        protected override List<int> InitializeInputsAndNames (out List<string> names) {
+            names = new List<string>() { "Select" };
+            return new List<int>() { selectAction };
+        }
+
+
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){//, int actionOffset) {
+        	// if (input.x == actionOffset) {
+            if (input.x == selectAction) {
+            
                 onRespond(customData[0] as DialogueResponse);
                 CloseUI();
             }

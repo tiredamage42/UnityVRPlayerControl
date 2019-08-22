@@ -4,6 +4,10 @@ using GameBase;
 
 namespace Game.UI {
 
+    // TODO: main menu is destroyed... needs a ton of work
+    // maybe a ui handler that takes in a list of main menu items... some of them re update with 
+    // menu item.children
+
     public class MainMenu : MonoBehaviour
     {
         public UIPage mainMenuBasePage;
@@ -17,7 +21,7 @@ namespace Game.UI {
             GameManager.onPauseRoutineEnd += OnPauseRoutineEnd;
 
 
-            mainMenuBasePage.onBaseCancel = OnCancelMainMenuPage;
+            // mainMenuBasePage.onBaseCancel = OnCancelMainMenuPage;
             // mainMenuBasePage.onBaseCancel += OnCancelMainMenuPage;
         }
         void OnDisable ()  {

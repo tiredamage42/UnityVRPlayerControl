@@ -23,7 +23,33 @@ namespace VRPlayer.UI {
         public VRMenuFollowerParameters normalVRMenuFollowParams = new VRMenuFollowerParameters();
         public VRMenuFollowerParameters messagesVRMenuFollowParams = new VRMenuFollowerParameters();
         
+        [Header("Full Trade Controls Panel")]
+        public Vector3 controlsPanelPositionTrade;
+        public ControllerHintsPanelParameters controlsPanelParamsTrade = new ControllerHintsPanelParameters();
+
+        [Header("Page Panel Controls Panel")]
+        public Vector3 controlsPanelPositionPagePanel;
+        public ControllerHintsPanelParameters controlsPanelParamsPagePanel = new ControllerHintsPanelParameters();
         
+        [Header("Quick Trade Controls Panel")]
+        public Vector3 controlsPanelPositionQuickTrade;
+        public ControllerHintsPanelParameters controlsPanelParamsQuickTrade = new ControllerHintsPanelParameters();
+        
+        [Header("Workshop Controls Panel")]
+        public Vector3 controlsPanelPositionWorkshop;
+        public ControllerHintsPanelParameters controlsPanelParamsWorkshop = new ControllerHintsPanelParameters();
+        
+        [Header("Dialogue Controls Panel")]
+        public Vector3 controlsPanelPositionDialogue;
+        public ControllerHintsPanelParameters controlsPanelParamsDialogue = new ControllerHintsPanelParameters();
+        
+        [Header("Quick Inventory Controls Panel")]
+        public Vector3 controlsPanelPositionQuickInv;
+        public ControllerHintsPanelParameters controlsPanelParamsQuickInv = new ControllerHintsPanelParameters();
+        
+        [Header("Interactor Controls Panel")]
+        public ControllerHintsPanelParameters controlsPanelParamsInteractor = new ControllerHintsPanelParameters();
+
         [Header("Normal Page Params")]
         public UIPageParameters normalPageParams = new UIPageParameters(new Vector2(3, .25f), .5f, .01f, TextAnchor.MiddleLeft, .05f, .0025f);
         
@@ -59,25 +85,52 @@ namespace VRPlayer.UI {
         
 
 
+        // TODO: build interactor controller hints panels,
+        // TODO: build controller hints panels on all ui elements above 
+
         //TODO: get ui stuff out of actor script...
         void BuildUIs (){//Actor playerActor, GameObject uiObject) {
 
             // quickInvHandler = uiObject.GetComponent<QuickInventoryUIHandler>();
             // invUIHandler = uiObject.GetComponent<FullInventoryUIHandler>();
             
-            UIElementHolder fullTradeHolder = VRUIBuilder.MakeFullTradeUI("Page2Panel", normalPageParams, textPanelParameters, fullTradeTransform, normalVRMenuFollowParams, buildRotationOffset, textPanelRotationZOffset);
-            UIElementHolder pagepanelui = VRUIBuilder.MakeButtonsPage("PageWPanel", normalPageParams, textPanelParameters, pageWithPanelTransform, normalVRMenuFollowParams, buildRotationOffset);
+            UIElementHolder fullTradeHolder = VRUIBuilder.MakeFullTradeUI("Page2Panel", normalPageParams, textPanelParameters, fullTradeTransform, normalVRMenuFollowParams, buildRotationOffset, textPanelRotationZOffset, controlsPanelPositionTrade, controlsPanelParamsTrade);// = new ControllerHintsPanelParameters();
+
             
+            
+            UIElementHolder pagepanelui = VRUIBuilder.MakeButtonsPage("PageWPanel", normalPageParams, textPanelParameters, pageWithPanelTransform, normalVRMenuFollowParams, buildRotationOffset, controlsPanelPositionTrade, controlsPanelParamsTrade);// = new ControllerHintsPanelParameters();
+
+
+
+
+
+
             GameUI.craftingUI.SetUIObject(fullTradeHolder);
             GameUI.tradeUI.SetUIObject(fullTradeHolder);
             
-            GameUI.quickInventoryUI.SetUIObject(VRUIBuilder.MakeRadial("QuickInvRadial", radialParams));
+            GameUI.quickInventoryUI.SetUIObject(VRUIBuilder.MakeRadial("QuickInvRadial", radialParams, controlsPanelPositionQuickInv, controlsPanelParamsQuickInv));// = new ControllerHintsPanelParameters();
+        
+            
+            
+            
             GameUI.inventoryManagementUI.SetUIObject(pagepanelui);
             
-            GameUI.quickTradeUI.SetUIObject(VRUIBuilder.MakeButtonsPage("QuickTrade", quickTradeParams, null, null));
+            GameUI.quickTradeUI.SetUIObject(VRUIBuilder.MakeButtonsPage("QuickTrade", quickTradeParams, null, null, controlsPanelPositionQuickTrade, controlsPanelParamsQuickTrade));// = new ControllerHintsPanelParameters();
+        
+            GameUI.workshopUI.SetUIObject(VRUIBuilder.MakeButtonsPage("Workshop", workshopPageParams, workshopPanelParams, null, null, 0, controlsPanelPositionWorkshop, controlsPanelParamsWorkshop));// = new ControllerHintsPanelParameters();
+        
+            
+            
+            GameUI.dialogueResponseUI.SetUIObject(VRUIBuilder.MakeButtonsPage("Dialogue", dialogueParams, dialogueOptionsTransform, normalVRMenuFollowParams, controlsPanelPositionDialogue, controlsPanelParamsDialogue));//
+        
+            for (int i = 0; i < 2; i++) {
+                GameUI.AddInteractorControllerHintsPanel(
+                    VRUIBuilder.InstantiateControllerPanelFull ("InteractorHints" + i, controlsPanelParamsInteractor)
+                );
+            }
+        
 
-            GameUI.workshopUI.SetUIObject(VRUIBuilder.MakeButtonsPage("Workshop", workshopPageParams, workshopPanelParams, null, null, 0));
-            GameUI.dialogueResponseUI.SetUIObject(VRUIBuilder.MakeButtonsPage("Dialogue", dialogueParams, dialogueOptionsTransform, normalVRMenuFollowParams));
+
             GameUI.gameValuesUI.SetUIObject(pagepanelui);
             GameUI.perksUI.SetUIObject(fullTradeHolder);
             GameUI.questsUI.SetUIObject(fullTradeHolder);
@@ -97,13 +150,22 @@ namespace VRPlayer.UI {
 
             GameManager.onPauseRoutineStart += OnGamePaused;
             UIManager.onAnyUISelect += OnUISelection;            
+
+            GameUI.onOpenInteractionHint += OnOpenInteractorHint;
         }
             
         void OnDisable () {
             GameManager.onPauseRoutineStart -= OnGamePaused;
             UIManager.onAnyUISelect -= OnUISelection;
-            
+            GameUI.onOpenInteractionHint -= OnOpenInteractorHint;
         }
+
+        public TransformBehavior interactionHintTransform;
+
+        void OnOpenInteractorHint (GameObject uiObject, int controllerIndex) {
+            TransformBehavior.AdjustTransform(uiObject.transform, Player.instance.GetHand(VRManager.Int2Hand( controllerIndex )).transform, interactionHintTransform, controllerIndex);
+        }
+            
 
         void OnUISelection (GameObject selectedObject, GameObject[] data, object[] customData) {
             // float duration,  float frequency, float amplitude

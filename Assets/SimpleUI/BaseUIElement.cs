@@ -8,6 +8,30 @@ namespace SimpleUI {
     public abstract class BaseUIElement : MonoBehaviour
     {
         public bool isBase;
+        public ControllerHintsPanel controlHintsPanel;
+
+        public void AddControllerHints (List<int> actionHints, List<string> hintNames) {
+            if (controlHintsPanel != null) {
+
+                controlHintsPanel.AddHintElements (actionHints, hintNames);
+
+                // controlHintsPanel.AddControllerHint(hint, text);
+            }
+            // else {
+            //     Debug.LogError("cant add hint for " + name + " contorl hint panel == null");
+            // }
+        }
+        public void RemoveAllControllerHints () {
+            if (controlHintsPanel != null) {
+                controlHintsPanel.RemoveAllControllerHints();
+            }
+            // else {
+            //     Debug.LogError("cant add hint for " + name + " contorl hint panel == null");
+            // }
+        }
+
+
+
         public GameObject baseObject;
         RectTransform _rectTransform;
         public RectTransform rectTransform {
@@ -41,6 +65,19 @@ namespace SimpleUI {
         }
 
         public abstract void SetSelectableActive(bool active);
+
+        // TODO: figure out main menu handler later...
+        // void OnCancelAction () {
+        //     // if we're not the base element (page), then "switch pages" to our parent one
+        //     if (!isBase) {
+        //         gameObject.SetActive(false);
+        //         parentElement.gameObject.SetActive(true);
+        //     }
+        //     else {
+        //         OnBaseCancel();
+        //     }
+
+        // }
         
         protected virtual void Update () {
 
@@ -48,51 +85,45 @@ namespace SimpleUI {
 
                 if (Application.isPlaying) {
                     if (!UIManager.popupOpen || isPopup) {
-                        if (runtimeSubmitHandler != null) {
+                        // if (runtimeSubmitHandler != null) {
                             Vector2Int alternativeSubmit = runtimeSubmitHandler();
                             if (alternativeSubmit.x >= 0) {
                                 DoSubmit(alternativeSubmit);
                             }
-                        }
-                        else {
-                            if (UIManager.currentInput.GetButtonDown(UIManager.standaloneInputModule.submitButton)) {
-                                DoSubmit(new Vector2Int(0,0));
-                            }
-                        }
+                        // }
+                        // else {
+                        //     if (UIManager.currentInput.GetButtonDown(UIManager.standaloneInputModule.submitButton)) {
+                            
+                        //         DoSubmit(new Vector2Int(0,0));
+                        //     }
+                        // }
 
                         // check if we hit the cancel button specified in the project's
                         // standalone input module
-                        if (UIManager.currentInput.GetButtonDown(UIManager.standaloneInputModule.cancelButton)) {
-                            // if we're not the base element (page), then "switch pages" to our parent one
-                            if (!isBase) {
-                                gameObject.SetActive(false);
-                                parentElement.gameObject.SetActive(true);
-                            }
-                            else {
-                                OnBaseCancel();
-                            }
-                        }
+                        // if (UIManager.currentInput.GetButtonDown(UIManager.standaloneInputModule.cancelButton)) {
+                        //     OnCancelAction();
+                        // }
                     }  
                 }
             }
         }
 
 
-        void OnBaseCancel () {
-            if (RequiresInput()) {
-                if (parentElement != null) {
-                    parentElement.OnBaseCancel();
-                }
-                else {
-                    if (onBaseCancel != null) {
-                        onBaseCancel ();
-                    }
-                    else {
-                        Debug.LogError(name + " has no onBaseCancel");
-                    }
-                }
-            }
-        }
+        // void OnBaseCancel () {
+        //     if (RequiresInput()) {
+        //         if (parentElement != null) {
+        //             parentElement.OnBaseCancel();
+        //         }
+        //         else {
+        //             if (onBaseCancel != null) {
+        //                 onBaseCancel ();
+        //             }
+        //             else {
+        //                 Debug.LogError(name + " has no onBaseCancel");
+        //             }
+        //         }
+        //     }
+        // }
 
         Func<Vector2Int> _runtimeSubmitHandler;
         public Func<Vector2Int> runtimeSubmitHandler { 
@@ -176,7 +207,7 @@ namespace SimpleUI {
             }
         }
 
-        public Action onBaseCancel;
+        // public Action onBaseCancel;
         
         public void RemoveAllEvents()
         {

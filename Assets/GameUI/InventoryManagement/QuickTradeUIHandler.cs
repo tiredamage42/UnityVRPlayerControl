@@ -42,14 +42,22 @@ namespace Game.UI {
 
             BuildButtons(showingInventory.GetDisplayName(), true, 0);
         }
-        
-        const int singleTradeAction = 0, tradeAllAction = 1, switchToFullTradeAction = 2;
-        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
+
+
+        // protected override bool RequiresCustomInputMethod () { return true; }
+
+        protected override List<int> InitializeInputsAndNames (out List<string> names) {
+            names = new List<string>() { "Take", "Take All", "Trade" };
+            return new List<int>() { singleTradeAction, tradeAllAction, switchToFullTradeAction };
+        }
+
+        public int singleTradeAction = 0, tradeAllAction = 1, switchToFullTradeAction = 2;
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){//, int actionOffset) {
             bool updateButtons = false;
 
             
             // single trade
-            if (input.x == singleTradeAction+actionOffset) {
+            if (input.x == singleTradeAction){//+actionOffset) {
                 if (customData != null) {
                     InventorySlot item = customData[0] as InventorySlot;
                     if (item != null) {
@@ -59,12 +67,12 @@ namespace Game.UI {
                 }
             }
             // take all
-            else if (input.x == tradeAllAction+actionOffset) {
+            else if (input.x == tradeAllAction){//+actionOffset) {
                 // TODO: check if shown inventory has anything
                 showingInventory.TransferInventoryContentsTo(takingInventory, sendMessage: false);
                 updateButtons = true;
             }
-            else if (input.x == switchToFullTradeAction+actionOffset) {
+            else if (input.x == switchToFullTradeAction){//+actionOffset) {
                 CloseUI();
                 StartCoroutine(OpenFullTrade());
             }
@@ -76,9 +84,7 @@ namespace Game.UI {
 
         System.Collections.IEnumerator OpenFullTrade () {
             yield return null;
-
             GameUI.tradeUI.OpenTradUI(takingInventory, showingInventory, null);
-            // FullTradeUIHandler.OpenTradUI(takingInventory, showingInventory, null);
         }
     }
 }

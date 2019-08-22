@@ -19,6 +19,38 @@ namespace VRPlayer
 	{
 
 		public SteamVR_Action_Boolean[] actions = new SteamVR_Action_Boolean[3];
+
+
+		bool CheckAction (int action) {
+			if (action < 0 || action >= actions.Length) {
+				Debug.LogError("action  " + action + " is not defined in player");
+				return false;
+			}
+			return true;
+		}
+		public bool GetActionStart (int action, int controllerIndex) {
+			if (!CheckAction(action)) return false;
+			SteamVR_Input_Sources hand = SteamVR_Input_Sources.Any;
+			if (controllerIndex != -1) hand = VRManager.Int2Hand(controllerIndex);
+			return actions[action].GetStateDown(hand);
+		}
+		public bool GetActionUpdate (int action, int controllerIndex) {
+			if (!CheckAction(action)) return false;
+			SteamVR_Input_Sources hand = SteamVR_Input_Sources.Any;
+			if (controllerIndex != -1) hand = VRManager.Int2Hand(controllerIndex);
+			return actions[action].GetState(hand);
+		}
+		public bool GetActionEnd (int action, int controllerIndex) {
+			if (!CheckAction(action)) return false;
+			SteamVR_Input_Sources hand = SteamVR_Input_Sources.Any;
+			if (controllerIndex != -1) hand = VRManager.Int2Hand(controllerIndex);
+			return actions[action].GetStateUp(hand);
+		}
+
+		void InitializeControls () {
+			ControlsManager.instance.InitializeActionGetters (GetActionStart, GetActionUpdate, GetActionEnd);
+		}
+
 		public float handsTogetherThreshold = .25f;
 		[HideInInspector] public bool handsTogether;
 
@@ -140,7 +172,10 @@ namespace VRPlayer
 		{
 			actor = GetComponent<Actor>();
 
-			moveScript = GetComponent<SimpleCharacterController>();			
+			moveScript = GetComponent<SimpleCharacterController>();		
+
+
+			InitializeControls();	
 		}
 
 

@@ -181,11 +181,10 @@ public static class EditorTools {
 
     public class NeatArrayAttribute : PropertyAttribute { }
     [System.Serializable] public class NeatIntList : NeatListWrapper<int> {}
+    [System.Serializable] public class NeatStringList : NeatListWrapper<string> {}
     [System.Serializable] public class NeatStringArray : NeatArrayWrapper<string> {}
     [System.Serializable] public class NeatFloatArray : NeatArrayWrapper<float> {}
 
-    
-    
     public class NeatArrayWrapper<T> {
         public T[] list;
         public static implicit operator T[](NeatArrayWrapper<T> c) { return c.list; }

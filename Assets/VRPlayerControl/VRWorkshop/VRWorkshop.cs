@@ -13,8 +13,6 @@ namespace VRPlayer {
     {
         
 
-
-        
         public SteamVR_Action_Boolean newTeleportButton;
     //     // public SteamVR_Input_Sources newTeleportHand;
 
@@ -57,12 +55,13 @@ namespace VRPlayer {
 
             TransformBehavior.AdjustTransform(uiObject.transform, Player.instance.GetHand(uiHand).transform, workshopUITransform, 0);
         
-            SteamVR_Input_Sources inputHand = SteamVR_Input_Sources.RightHand;
+            // SteamVR_Input_Sources inputHand = SteamVR_Input_Sources.RightHand;
         
             // StandardizedVRInput.MarkActionOccupied(controls.list[i].action, hand);
-            StandardizedVRInput.instance.ShowHint(inputHand, Player.instance.actions[Player.instance.GetComponent<ControlsManager>().inGameMenuAction.x], "Exit");
-            StandardizedVRInput.instance.ShowHint(inputHand, Player.instance.actions[workshop.cancelAction], "Scrap / Store / Cancel");
-            StandardizedVRInput.instance.ShowHint(inputHand, Player.instance.actions[workshop.submitAction], "Build / Select");
+            // StandardizedVRInput.instance.ShowHint(inputHand, Player.instance.actions[Player.instance.GetComponent<ControlsManager>().inGameMenuAction.x], "Exit");
+            
+            // StandardizedVRInput.instance.ShowHint(inputHand, Player.instance.actions[workshop.cancelAction], "Scrap / Store / Cancel");
+            // StandardizedVRInput.instance.ShowHint(inputHand, Player.instance.actions[workshop.submitAction], "Build / Select");
 
 
 
@@ -91,9 +90,9 @@ namespace VRPlayer {
 
 
             // StandardizedVRInput.MarkActionUnoccupied(controls.list[i].action);
-            StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, Player.instance.actions[Player.instance.GetComponent<ControlsManager>().inGameMenuAction.x]);    
-            StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, Player.instance.actions[workshop.cancelAction]);    
-            StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, Player.instance.actions[workshop.submitAction]);    
+            // StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, Player.instance.actions[Player.instance.GetComponent<ControlsManager>().inGameMenuAction.x]);    
+            // StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, Player.instance.actions[workshop.cancelAction]);    
+            // StandardizedVRInput.instance.HideHint(SteamVR_Input_Sources.Any, Player.instance.actions[workshop.submitAction]);    
         
             if (Teleport.instance != null) {
                 Teleport.instance.teleportAction = oldTeleportButton;

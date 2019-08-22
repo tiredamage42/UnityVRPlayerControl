@@ -121,6 +121,11 @@ namespace SimpleUI {
         public UISliderPopup sliderPopupPrefab;
         public UISelectionPopup selectionPopupPrefab;
 
+        [Header("Controller Hints")]
+        public ControllerHintsPanel controllerHintsPanelPrefab;
+        public ControllerUIHintPrefab[] controllerHints;
+
+
 
         static System.Func<Vector2> getSelectionAxis;
         public static void OverrideSelectionAxis (System.Func<Vector2> getAxis) {
@@ -204,10 +209,40 @@ namespace SimpleUI {
             }
             HideUI(GetUIObj(uiObject));
             uiObject.RemoveAllEvents();
+            uiObject.RemoveAllControllerHints();
         }
         static void HideUI (GameObject baseUIObject) {
             baseUIObject.SetActive(false);
         }
+        public int cancelAction;
+        public int submitAction;
+        System.Func<int, int, bool> getActionCallback;
+        int maxControllers;
+        public static void InitializeGetActionCallback (System.Func<int, int, bool> getActionCallback, int maxControllers) {
+            instance.getActionCallback = getActionCallback;
+            instance.maxControllers = maxControllers;
+        }
+
+        static Vector2Int DefaultUIInputs (){
+            if (instance.getActionCallback == null) {
+                Debug.LogError("No get action callback supplied for ui manager, call InitializeGetActionCallback to set one");
+                return new Vector2Int(-1, 0);        
+            }
+
+            List<int> actions = new List<int> { instance.cancelAction, instance.submitAction };
+            for (int i = 0; i < actions.Count; i++) {
+                int action = actions[i];
+                for (int controller = 0; controller < instance.maxControllers; controller++) {
+                    if (instance.getActionCallback(action, controller)) {
+                        return new Vector2Int(action, controller);
+                    }
+                }
+            }
+            return new Vector2Int(-1, 0);        
+        }
+
+
+        
 
         // remove input module control in late update, so we dont use inputs
         // the same frame they're closing
@@ -246,10 +281,15 @@ namespace SimpleUI {
 
         // POPUPS
 
+        public static event System.Action onPopupOpen, onPopupClose;
+
         public static bool popupOpen;
         static GameObject selectedWhenPoppedUp;
 
         static void HidePopup ( BaseUIElement popup) {
+            if (onPopupClose != null) {
+                onPopupClose();
+            }
             HideUI(popup);
             SetAllActiveUIsSelectableActive(true);
             popupOpen = false;
@@ -272,7 +312,13 @@ namespace SimpleUI {
             // selectedWhenPoppedUp = null;
 
         }
-        static void ShowPopup (bool saveSelection, BaseUIElement popup, System.Action onCancel, System.Action<GameObject, GameObject[], object[], Vector2Int> onSubmit) {
+        static void ShowPopup (bool saveSelection, BaseUIElement popup, 
+            // System.Action onCancel, 
+            System.Action<GameObject, GameObject[], object[], Vector2Int> onSubmit) {
+            if (onPopupOpen != null) {
+                onPopupOpen();
+            }
+            
             if (saveSelection) {
 
             selectedWhenPoppedUp = CurrentSelected();
@@ -280,9 +326,18 @@ namespace SimpleUI {
             }
 
             ShowUI(popup);
+
+            popup.AddControllerHints (new List<int> () { instance.submitAction, instance.cancelAction }, new List<string> () { "Confirm", "Cancel" });
+
             SetAllActiveUIsSelectableActive(false);
             popupOpen = true;
-            popup.onBaseCancel = onCancel;
+
+            // popup.onBaseCancel = onCancel;
+
+            popup.runtimeSubmitHandler = DefaultUIInputs;
+            
+
+
             popup.SubscribeToSubmitEvent(onSubmit);
         }
 
@@ -305,7 +360,9 @@ namespace SimpleUI {
                 return;
             }
             
-            ShowPopup (saveCurrentSelection, selectionPopupElement, OnCancelSelectionUI, OnSelectionSubmit);
+            ShowPopup (saveCurrentSelection, selectionPopupElement, 
+            // OnCancelSelectionUI, 
+            OnSelectionSubmit);
 
             selectionReturnCallback = returnValue;
 
@@ -319,14 +376,27 @@ namespace SimpleUI {
         }
 
         static void OnSelectionSubmit (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input) {
-            HidePopup(selectionPopupElement);
-                            Debug.LogError("SHPULD CALLBACK");
-
-            if (selectionReturnCallback != null) {
-                Debug.LogError("CALLBACK");
-                selectionReturnCallback(true, (int)customData[0]);
-                // selectionReturnCallback = null;
+            if (input.x == instance.cancelAction) {
+                OnCancelSelectionUI();
+                return;
             }
+            else if (input.x == instance.submitAction) {
+                
+                HidePopup(selectionPopupElement);
+                Debug.LogError("SHPULD CALLBACK");
+
+                if (selectionReturnCallback != null) {
+                    // Debug.LogError("CALLBACK");
+                    selectionReturnCallback(true, (int)customData[0]);
+
+                    // not setting to null because callback might bring up another popup...
+                    // selectionReturnCallback = null;
+                }
+            }
+            
+            
+            
+            
         }
         static void OnCancelSelectionUI () {
             HidePopup( selectionPopupElement);
@@ -352,7 +422,11 @@ namespace SimpleUI {
 
             Debug.LogError("show slider int");
 
-            ShowPopup (saveCurrentSelection, sliderElement, OnCancelSliderUI, OnSliderSubmit);
+            ShowPopup (saveCurrentSelection, sliderElement, 
+            // OnCancelSliderUI, 
+            OnSliderSubmit);
+
+
 
             sliderReturnCallback = returnValue;
             sliderElement.SetTitle(title);
@@ -362,11 +436,19 @@ namespace SimpleUI {
         }
 
         static void OnSliderSubmit (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input) {
-            HidePopup(sliderElement);
-            if (sliderReturnCallback != null) {
-                sliderReturnCallback(true, (int)sliderElement.sliderValue);
-                // sliderReturnCallback = null;
+            if (input.x == instance.cancelAction) {
+                OnCancelSliderUI();
+                return;
             }
+            else if (input.x == instance.submitAction) {
+                HidePopup(sliderElement);
+                if (sliderReturnCallback != null) {
+                    sliderReturnCallback(true, (int)sliderElement.sliderValue);
+                    // sliderReturnCallback = null;
+                }
+
+            }
+            
         }
         static void OnCancelSliderUI () {
             HidePopup( sliderElement);

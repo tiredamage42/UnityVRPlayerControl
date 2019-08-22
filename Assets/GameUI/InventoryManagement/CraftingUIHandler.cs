@@ -109,7 +109,7 @@ namespace Game.UI {
             BuildButtons("Scrappable", false, 1);
         }
         
-        const int craftAction = 0;
+        // const int craftAction = 0;
 
         void OnConfirmationSelection(bool used, int selectedOption) {
             if (used && selectedOption == 0) {
@@ -126,16 +126,28 @@ namespace Game.UI {
         }
 
 
+
+
+
         int currentPanelIndex;
         InventorySlot currentSlot;
 
-        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
+        // protected override bool RequiresCustomInputMethod () { return false; }
+
+        public int craftAction;
+        protected override List<int> InitializeInputsAndNames (out List<string> names) {
+            names = new List<string>() { "Craft / Scrap" };
+            return new List<int>() { craftAction };//, UIManager.instance.cancelAction };
+        }
+
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){//, int actionOffset) {
         
     		if (customData != null) {
                 currentSlot = customData[0] as InventorySlot;
                 currentPanelIndex = (int)customData[1];
 
-                if (input.x == craftAction+actionOffset) {
+                if (input.x == craftAction) {
+                // if (input.x == craftAction+actionOffset) {
                 
                     // showign crafting recipes
                     if (currentPanelIndex == 0) {

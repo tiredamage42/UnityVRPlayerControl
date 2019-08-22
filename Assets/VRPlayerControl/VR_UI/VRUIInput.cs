@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using Valve.VR;
 
 using StandaloneInputModule = SimpleUI.StandaloneInputModule;
-
+using SimpleUI;
 namespace VRPlayer{
 
     /*
@@ -27,7 +27,8 @@ namespace VRPlayer{
         }
         public static bool ActionOccupied (SteamVR_Action action, SteamVR_Input_Sources forHand) {
             return HandOccupied(forHand) && (
-                (action == instance.submitButton) || (action == instance.cancelButton) || (action == selectionAxis) 
+                (action == Player.instance.actions[UIManager.instance.submitAction]) || (action == Player.instance.actions[UIManager.instance.cancelAction]) || (action == selectionAxis) 
+                // (action == instance.submitButton) || (action == instance.cancelButton) || (action == selectionAxis) 
             );
         }
         
@@ -42,8 +43,28 @@ namespace VRPlayer{
                 Debug.LogError(" vr ui input couldnt find a standalone input module in the scene ");
             }
         }
-      
+        protected override void OnEnable () {
+            base.OnEnable();
+            UIManager.onPopupOpen += OnPopupOpen;
+            UIManager.onPopupClose += OnPopupClose;
+        }
+        protected override void OnDisable () {
+            base.OnDisable();
+            UIManager.onPopupOpen -= OnPopupOpen;
+            UIManager.onPopupClose -= OnPopupClose;
+        }
 
+
+        SteamVR_Input_Sources uiHandBeforePopup;
+        void OnPopupOpen () {
+            uiHandBeforePopup = currentUIHand;
+            SetUIHand(SteamVR_Input_Sources.Any);
+        }
+
+        void OnPopupClose () {
+            SetUIHand(uiHandBeforePopup);
+        }
+      
         public static SteamVR_Input_Sources GetUIHand () {
             return currentUIHand != SteamVR_Input_Sources.Any ? currentUIHand : lastUsedUIHand;
         }
@@ -61,8 +82,8 @@ namespace VRPlayer{
             currentUIHand = hand;
         }
 
-        public SteamVR_Action_Boolean submitButton;
-        public SteamVR_Action_Boolean cancelButton;      
+        // public SteamVR_Action_Boolean submitButton;
+        // public SteamVR_Action_Boolean cancelButton;      
         
         // [Tooltip(".15f is a good setting when\nstandalone input module has 60 actions per second")]  
         // public Vector2 deltaThresholdForScroll = new Vector2(.15f, .15f);
@@ -133,11 +154,11 @@ namespace VRPlayer{
         }
     
         public override bool GetButtonDown(string buttonName) {
-            if (buttonName==inputModule.submitButton) {
-                return submitButton.GetStateDown( currentUIHand );
-            } else if (buttonName==inputModule.cancelButton) {
-                return cancelButton.GetStateDown( currentUIHand );
-            }
+            // if (buttonName==inputModule.submitButton) {
+            //     return submitButton.GetStateDown( currentUIHand );
+            // } else if (buttonName==inputModule.cancelButton) {
+            //     return cancelButton.GetStateDown( currentUIHand );
+            // }
             return false;
         }
     }

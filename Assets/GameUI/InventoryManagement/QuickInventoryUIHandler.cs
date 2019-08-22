@@ -43,9 +43,21 @@ namespace Game.UI {
 
         }
                     
-        const int consumeAction = 0;
-        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
-        	if (input.x == consumeAction+actionOffset){
+
+        // protected override bool RequiresCustomInputMethod () { return false; }
+
+        // const int consumeAction = 0;
+
+        public int useAction;
+        protected override List<int> InitializeInputsAndNames (out List<string> names) {
+            names = new List<string>() { "Use" };
+            return new List<int>() { useAction };
+        }
+
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){//, int actionOffset) {
+        	// if (input.x == consumeAction+actionOffset){
+            if (input.x == useAction) {
+                
                 CloseUI();
                 if (customData != null) {
                     InventorySlot item = customData[0] as InventorySlot;

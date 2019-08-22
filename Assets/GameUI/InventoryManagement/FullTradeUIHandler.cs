@@ -47,7 +47,7 @@ namespace Game.UI {
         }
         
 
-        const int singleTradeAction = 0, tradeAllAction = 1, consumeAction = 2;
+        // const int singleTradeAction = 0, tradeAllAction = 1, consumeAction = 2;
 
         Inventory giver, receiver;
         InventorySlot highlightedItem;
@@ -60,7 +60,23 @@ namespace Game.UI {
             }       
         }
 
-        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
+
+        // protected override bool RequiresCustomInputMethod () { return true; }
+
+        public int tradeAction = 0;
+        public int tradeAllAction = 1;
+        public int consumeAction = 2;
+
+        protected override List<int> InitializeInputsAndNames (out List<string> names) {
+            names = new List<string>() { "Trade", "Trade All", "Use" };
+            return new List<int>() { tradeAction, tradeAllAction, consumeAction };
+        }
+
+
+        
+
+
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){//, int actionOffset) {
     
         	if (customData != null) {
                 highlightedItem = customData[0] as InventorySlot;
@@ -72,10 +88,8 @@ namespace Game.UI {
                 receiver = invs[1-panelIndex];
 
                 // single trade
-                if (input.x == singleTradeAction+actionOffset) {
+                if (input.x == tradeAction){//+actionOffset) {
                     if (highlightedItem != null) {
-
-                            Debug.Log("sinle Trade in full trade handler!!!!");
                         // get count from slider
                         if (highlightedItem.count > 5) {
                             UIManager.ShowIntSliderPopup(true, "Trade " + highlightedItem.item.itemName + ":", 0, highlightedItem.count, OnDropSliderReturnValue);
@@ -87,14 +101,14 @@ namespace Game.UI {
                     }
                 }
                 // take all
-                else if (input.x == tradeAllAction+actionOffset) {   
+                else if (input.x == tradeAllAction){//+actionOffset) {   
                     //TODO: check if any actually transfeerrrd
                     giver.TransferInventoryContentsTo(receiver, sendMessage: false);
                     updateButtons = true;
                 }
 
                 //consume on selected inventory (limit to other inventory)
-                else if (input.x == consumeAction+actionOffset) {
+                else if (input.x == consumeAction){//+actionOffset) {
                     if (highlightedItem != null) {
                         if (highlightedItem.item.OnConsume(giver, count: 1, input.y)){
                             updateButtons = true;

@@ -40,7 +40,8 @@ namespace Game.UI {
         [NeatArray] public NeatStringArray specialNames;
         GameValueModifier addPerkPointModifier;
 
-        void OnEnable () {
+        protected override void OnEnable () {
+            base.OnEnable();
             addPerkPointModifier = new GameValueModifier (GameValue.GameValueComponent.BaseValue, GameValueModifier.ModifyBehavior.Add, 1.0f);
         }
 
@@ -147,10 +148,21 @@ namespace Game.UI {
 
         }
 
+        public int upgradeAction = 0;
+        protected override List<int> InitializeInputsAndNames (out List<string> names) {
+            names = new List<string>() { "Upgrade" };
+            return new List<int>() { upgradeAction };
+        }
 
-        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
+
+
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){//, int actionOffset) {
             if (customData != null) {
-                if (input.x == attemptChangeAction+actionOffset) {
+
+
+                if (input.x == upgradeAction) {
+                // if (input.x == attemptChangeAction+actionOffset) {
+                
                     if (perkPointsContainer.perkPoints > 0) {
                         currentPanelIndex = (int)customData[1];
                         //showing perks

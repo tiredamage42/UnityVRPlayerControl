@@ -16,7 +16,7 @@ namespace Game.UI {
             }
         }
         public void OpenQuestManagementUI () {
-            OpenUI ( 0, new object[] { } );
+            OpenUI ( -1, new object[] { } );
         }
 
         protected override void OnOpenUI() { 
@@ -58,11 +58,20 @@ namespace Game.UI {
             return (obj as Quest).displayName; 
         }
 
-        const int selectQuestAction = 0;
+        // const int selectQuestAction = 0;
 
-        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int actionOffset) {
+        public int selectAction = 0;
+        protected override List<int> InitializeInputsAndNames (out List<string> names) {
+            names = new List<string>() { "Select" };
+            return new List<int>() { selectAction };
+        }
+
+
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){//, int actionOffset) {
             
-            if (input.x == selectQuestAction+actionOffset) {
+            // if (input.x == selectQuestAction+actionOffset) {
+            if (input.x == selectAction) {
+                
                 if (customData != null) {
                     Quest quest = customData[0] as Quest;
                     if (quest != null) {

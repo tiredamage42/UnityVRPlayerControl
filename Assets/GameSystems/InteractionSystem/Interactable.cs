@@ -21,7 +21,7 @@ namespace InteractionSystem
     {
         public const string interactableLayerName = "InteractableTrigger";
         public static int interactTriggerMask { get { return 1 << LayerMask.NameToLayer(interactableLayerName); } }
-        public string[] actionNames = new string [] { "Use" };
+        // public string[] actionNames = new string [] { "Use" };
         public bool onlyProximityHover;
         public bool isAvailable = true;        
         public enum UseType { Normal, Scripted };
@@ -84,6 +84,19 @@ namespace InteractionSystem
             if (enforceInteractorID != -1 && enforceInteractorID != interactor.interactorID) return;
             for (int i = 0; i < listeners.Count; i++) if (listeners[i].GetInteractionMode() == currentInteractionMode) listeners[i].OnInteractableInspectedUpdate(interactor);
         }
+
+
+        
+
+
+
+
+
+
+
+
+
+
         public void OnUsedStart (InteractionPoint interactor, int currentInteractionMode, int useIndex) {
             if (enforceInteractorID != -1 && enforceInteractorID != interactor.interactorID) return;
             for (int i = 0; i < listeners.Count; i++) if (listeners[i].GetInteractionMode() == currentInteractionMode) listeners[i].OnInteractableUsedStart(interactor, useIndex);

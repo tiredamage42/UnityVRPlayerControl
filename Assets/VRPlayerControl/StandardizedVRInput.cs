@@ -133,26 +133,26 @@ namespace VRPlayer {
                 return false;
             }
         }
-        public enum ButtonState {
-            None, Down, Held, Up
-        };
+        // public enum ButtonState {
+        //     None, Down, Held, Up
+        // };
 
-        public void GetInputActionInfo(SteamVR_Action_Boolean action, out ButtonState[] buttonStates) {
-            buttonStates = new ButtonState[] { ButtonState.None, ButtonState.None };
+        // public void GetInputActionInfo(SteamVR_Action_Boolean action, out ButtonState[] buttonStates) {
+        //     buttonStates = new ButtonState[] { ButtonState.None, ButtonState.None };
         
-            for (int i = 0; i < 2; i++) {
-                SteamVR_Input_Sources hand = VRManager.Int2Hand(i);
-                if (action.GetStateDown(hand)) {
-                    buttonStates[i] = ButtonState.Down;
-                }
-                else if (action.GetStateUp(hand)) {
-                    buttonStates[i] = ButtonState.Up;
-                }
-                else if (action.GetState(hand)) {
-                    buttonStates[i] = ButtonState.Held;
-                }
-            }
-        }
+        //     for (int i = 0; i < 2; i++) {
+        //         SteamVR_Input_Sources hand = VRManager.Int2Hand(i);
+        //         if (action.GetStateDown(hand)) {
+        //             buttonStates[i] = ButtonState.Down;
+        //         }
+        //         else if (action.GetStateUp(hand)) {
+        //             buttonStates[i] = ButtonState.Up;
+        //         }
+        //         else if (action.GetState(hand)) {
+        //             buttonStates[i] = ButtonState.Held;
+        //         }
+        //     }
+        // }
 
 
 
@@ -251,15 +251,15 @@ namespace VRPlayer {
             hapticAction.Execute(0, duration, frequency, amplitude, hand);
         }
 
-        public void HideHint(SteamVR_Input_Sources hand, SteamVR_Action action)
-        {
-            VRPlayer.UI.VRControllerHintsUI.HideHint(Action2InputType(action), hand);
-        }
+        // public void HideHint(SteamVR_Input_Sources hand, SteamVR_Action action)
+        // {
+        //     VRPlayer.UI.VRControllerHintsUI.HideHint(Action2InputType(action), hand);
+        // }
 
-        public void ShowHint(SteamVR_Input_Sources hand, SteamVR_Action action, string text)
-        {
-            VRPlayer.UI.VRControllerHintsUI.ShowHint(Action2InputType(action), hand, text);
-        }
+        // public void ShowHint(SteamVR_Input_Sources hand, SteamVR_Action action, string text)
+        // {
+        //     VRPlayer.UI.VRControllerHintsUI.ShowHint(Action2InputType(action), hand, text);
+        // }
 
         IEnumerator HintRoutine (ControllerLayoutHintRoutine routine) {
             Player player = Player.instance;

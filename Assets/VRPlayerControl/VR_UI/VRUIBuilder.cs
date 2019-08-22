@@ -57,6 +57,26 @@ namespace VRPlayer.UI {
             t.localPosition = lPos;
         }
 
+        public static ControllerHintsPanel InstantiateControllerPanelFull (string goName, ControllerHintsPanelParameters parameters) {
+            ControllerHintsPanel newPanel = GameObject.Instantiate (UIManager.instance.controllerHintsPanelPrefab);
+            newPanel.parameters = parameters;
+            newPanel = InitializeBaseUIElement<ControllerHintsPanel> (newPanel, BuildCanvasObject(goName, null, null), new Vector2(.5f, .5f));
+            UIManager.HideUI(newPanel);
+            return newPanel;
+        } 
+
+
+        public static ControllerHintsPanel InstantiateControllerPanel (RectTransform parent, Vector3 controllerHintsLocalPos, ControllerHintsPanelParameters parameters, UIElementHolder[] associatedHolders) {
+            ControllerHintsPanel newPanel = GameObject.Instantiate (UIManager.instance.controllerHintsPanelPrefab);
+            newPanel.parameters = parameters;
+
+            SetParent(newPanel.rectTransform, parent, new Vector2(.5f, .5f), controllerHintsLocalPos);
+            
+            for (int i = 0; i < associatedHolders.Length; i++) associatedHolders[i].controlHintsPanel = newPanel;
+
+            return newPanel;
+        } 
+
         public static UISliderPopup MakeSliderPopup (string goName, UISliderPopupParameters parameters, TransformBehavior equipBehavior, VRMenuFollowerParameters menuBehaviorParams) {
             UISliderPopup msgCenter = GameObject.Instantiate( UIManager.instance.sliderPopupPrefab );
             msgCenter.parameters = parameters;
@@ -71,6 +91,7 @@ namespace VRPlayer.UI {
             UIManager.HideUI(msgCenter);
             return msgCenter;
         }
+
 
         public static UIMessageCenter MakeMessageCenter (string goName, UIMessageCenterParameters parameters, TransformBehavior equipBehavior, VRMenuFollowerParameters menuBehaviorParams) {
             UIMessageCenter msgCenter = GameObject.Instantiate( UIManager.instance.messageCenterPrefab );
@@ -90,15 +111,21 @@ namespace VRPlayer.UI {
             return InitializeBaseUIElement<UIValueTracker> (newValueTracker, BuildCanvasObject(goName, null, null), new Vector2(.5f, .5f));
         }
 
-        public static UIElementHolder MakeRadial (string goName, UIRadialParameters radialParameters){
+        public static UIElementHolder MakeRadial (string goName, UIRadialParameters radialParameters, Vector3 controllerHintsLocalPos, ControllerHintsPanelParameters controllerHintsParameters){
             UIRadial newRadial = InitializeBaseUIElement<UIRadial> (GameObject.Instantiate( UIManager.instance.radialPrefab ), BuildCanvasObject(goName, null, null), new Vector2(.5f, .5f));
             newRadial.parameters = radialParameters;
             newRadial.isBase = true;
+
+            InstantiateControllerPanel (newRadial.rectTransform, controllerHintsLocalPos, controllerHintsParameters, new UIElementHolder[] { newRadial });
+
             UIManager.HideUI(newRadial);
             return newRadial;
         }
-        public static UIElementHolder MakeButtonsPage (string goName, UIPageParameters pageParameters, TransformBehavior equipBehavior, VRMenuFollowerParameters menuBehaviorParams){
+        public static UIElementHolder MakeButtonsPage (string goName, UIPageParameters pageParameters, TransformBehavior equipBehavior, VRMenuFollowerParameters menuBehaviorParams, Vector3 controllerHintsLocalPos, ControllerHintsPanelParameters controllerHintsParameters){
             UIPage newPage = InitializeBaseUIElement<UIPage> (InstantiatePage (pageParameters), BuildCanvasObject(goName, menuBehaviorParams, equipBehavior), new Vector2(.5f, 1f));
+            
+            InstantiateControllerPanel (newPage.rectTransform, controllerHintsLocalPos, controllerHintsParameters, new UIElementHolder[] { newPage });
+
             UIManager.HideUI(newPage);
             return newPage;
         }
@@ -117,7 +144,7 @@ namespace VRPlayer.UI {
             return newPage;
         }
         
-        public static UIElementHolder MakeButtonsPage (string goName, UIPageParameters pageParameters, TextPanelParameters textPanelParams, TransformBehavior equipBehavior, VRMenuFollowerParameters menuBehaviorParams, float buildRotationOffset){
+        public static UIElementHolder MakeButtonsPage (string goName, UIPageParameters pageParameters, TextPanelParameters textPanelParams, TransformBehavior equipBehavior, VRMenuFollowerParameters menuBehaviorParams, float buildRotationOffset, Vector3 controllerHintsLocalPos, ControllerHintsPanelParameters controllerHintsParameters){
             RectTransform canvasObject = BuildCanvasObject(goName, menuBehaviorParams, equipBehavior);
             
             UIPage newPage = InstantiatePage (pageParameters);
@@ -128,6 +155,8 @@ namespace VRPlayer.UI {
             SetParent(newPage.rectTransform, canvasObject, new Vector2(.5f, 1f), new Vector3(-(width*.5f), 0, 0), new Vector3(0,buildRotationOffset,0));
             SetParent(InstantiateTextPanel(textPanelParams, new UIElementHolder[] { newPage }).rectTransform, canvasObject, new Vector2(.5f, 1f), new Vector3(width*.5f, -pageParameters.titleHeight, 0), new Vector3(0,-buildRotationOffset,0));
             
+            InstantiateControllerPanel (canvasObject, controllerHintsLocalPos, controllerHintsParameters, new UIElementHolder[] { newPage });
+
             newPage.baseObject = canvasObject.gameObject;
             UIManager.HideUI(newPage);
             return newPage;
@@ -141,7 +170,7 @@ namespace VRPlayer.UI {
         }
 
 
-        public static UIElementHolder MakeFullTradeUI (string goName, UIPageParameters pageParameters, TextPanelParameters textPanelParams, TransformBehavior equipBehavior, VRMenuFollowerParameters menuBehaviorParams, float buildRotationOffset, float textPanelRotationZOffset){//, float textScale) {
+        public static UIElementHolder MakeFullTradeUI (string goName, UIPageParameters pageParameters, TextPanelParameters textPanelParams, TransformBehavior equipBehavior, VRMenuFollowerParameters menuBehaviorParams, float buildRotationOffset, float textPanelRotationZOffset, Vector3 controllerHintsLocalPos, ControllerHintsPanelParameters controllerHintsParameters){//, float textScale) {
             RectTransform canvasObject = BuildCanvasObject(goName, menuBehaviorParams, equipBehavior);
 
             ElementHolderCollection collection = canvasObject.gameObject.AddComponent<ElementHolderCollection>();
@@ -161,6 +190,9 @@ namespace VRPlayer.UI {
             collection.subHolders = new UIElementHolder[] { newPage0 , newPage1 };
 
             SetParent(InstantiateTextPanel(textPanelParams, new UIElementHolder[] {collection, newPage0 , newPage1 }).rectTransform, collection.rectTransform, anchor, new Vector3(0, -pageParameters.titleHeight, textPanelRotationZOffset));
+            
+
+            InstantiateControllerPanel (collection.rectTransform, controllerHintsLocalPos, controllerHintsParameters, new UIElementHolder[] { collection, newPage0 , newPage1 });
 
             UIManager.HideUI(collection);
             return collection;

@@ -156,6 +156,83 @@ namespace Game.UI {
         public static UIQuestsPage questsUI { get { return UIQuestsPage.instance; } }
         public static WorkshopUIHandler workshopUI { get { return WorkshopUIHandler.instance; } }
 
+        public static event System.Action<GameObject, int> onOpenInteractionHint;
+
+        public static List<ControllerHintsPanel> interactorHintsPanels = new List<ControllerHintsPanel>();
+        public static void AddInteractorControllerHintsPanel (ControllerHintsPanel newPanel) {
+            interactorHintsPanels.Add(newPanel);
+        }
+
+        static bool CheckInteractionUIIndex (int controllerIndex) {
+            if (controllerIndex < 0 || controllerIndex >= interactorHintsPanels.Count) {
+                Debug.LogError("cant show interaction hint " + controllerIndex + ", interaction hints panels count = " + interactorHintsPanels.Count);
+                return false;
+            }
+            return true;
+        }
+
+        public static void ShowInteractionHint (int controllerIndex, string message, List<int> actions, List<string> names) {
+
+            if (!CheckInteractionUIIndex ( controllerIndex)) return;
+
+
+            ControllerHintsPanel panel = interactorHintsPanels[controllerIndex];
+            UIManager.ShowUI(panel);
+
+            panel.AddHintElements (actions, names);
+
+            panel.SetText( message );
+
+            if (onOpenInteractionHint != null) {
+                onOpenInteractionHint(panel.baseObject, controllerIndex);
+            }
+        }
+        public static void HideInteractionHint (int controllerIndex) {
+            if (!CheckInteractionUIIndex ( controllerIndex)) return;
+            
+            ControllerHintsPanel panel = interactorHintsPanels[controllerIndex];
+            panel.RemoveAllHintElements();
+            UIManager.HideUI(panel);
+            
+        }
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         // IN GAME MESSAGES
         public static void SetUIMessageCenterInstance(UIMessageCenter messagesElement) {
             UIManager.SetUIMessageCenterInstance ( messagesElement );
@@ -187,6 +264,9 @@ namespace Game.UI {
         public static void ShowIntSliderPopup(bool saveSelect, string title, int minValue, int maxValue, System.Action<bool, int> returnValue) {
             UIManager.ShowIntSliderPopup( saveSelect,title,  minValue,  maxValue, returnValue);
         }
+
+
+
 
         
 

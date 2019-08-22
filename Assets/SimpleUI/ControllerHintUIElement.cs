@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
-using SimpleUI;
+// using SimpleUI;
 
 // TODO: switch over to game ui
-namespace VRPlayer.UI {
+namespace SimpleUI {
     [ExecuteInEditMode]
     public class ControllerHintUIElement : MonoBehaviour
     {
@@ -20,32 +20,42 @@ namespace VRPlayer.UI {
                 Hide();
             }
         }
+        public void SetLayoutValues (float textScale, Vector3 textOffset, TextAnchor textAnchor) {
+            this.textScale = textScale;
+            this.textOffset = textOffset;
+            this.textAnchor = textAnchor;
+            UpdateTextValues();
+        }
+        public void SetText (string txt) {
+            if (text == null) text = GetComponentInChildren<UIText>();
+            text.SetText(txt, -1);
+        }
 
         void UpdateTextValues () {
             if (text == null) text = GetComponentInChildren<UIText>();
     
-            if (text != null) {
-                text.SetAnchor(textAnchor);
-                text.transform.localPosition = textOffset;
-                text.transform.localScale = Vector3.one * textScale; 
-            }
+            text.SetAnchor(textAnchor);
+            text.transform.localPosition = textOffset;
+            text.transform.localScale = Vector3.one * textScale; 
+            // if (text != null) {
+            // }
         }
 
-        void Update () {
 #if UNITY_EDITOR
+        void Update () {
             UpdateTextValues();
-#endif
         }
+#endif
         
         public void Hide () {
             gameObject.SetActive(false);
         }
         public void Show (string message) {
             UpdateTextValues();
-            if (text != null) {
-                gameObject.SetActive(true);
-                text.SetText(message, -1);
-            }
+            gameObject.SetActive(true);
+            text.SetText(message, -1);
+            // if (text != null) {
+            // }
         }
     }
 }

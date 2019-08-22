@@ -95,7 +95,7 @@ namespace Game.InventorySystem {
             rigidbody = GetComponent<Rigidbody>();
             itemColliders = GetComponentsInChildren<Collider>();
 
-            interactable.actionNames = new string[] { "Grab", "Stash" };
+            // interactable.actionNames = new string[] { "Grab", "Stash" };
 
             InitializeListeners();
         }

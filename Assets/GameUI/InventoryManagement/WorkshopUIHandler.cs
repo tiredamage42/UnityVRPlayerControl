@@ -4,11 +4,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// using SimpleUI;
 using Game.InventorySystem;
-// using Game.InventorySystem.CraftingSystem;
 using Game.InventorySystem.WorkshopSystem;
-// using Game.WorkshopSystem;
 namespace Game.UI {
 
     public class WorkshopUIHandler : UISelectableElementHandler
@@ -26,10 +23,24 @@ namespace Game.UI {
             }
         }
         public void OpenWorkshopUI (Inventory inventory, List<int> categoryFilter) {
-            OpenUI (  0, new object[] { inventory, categoryFilter });
+            OpenUI ( -1, new object[] { inventory, categoryFilter });
         }
 
-        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input, int inputOffset) { }
+        // protected override bool RequiresCustomInputMethod () { return false; }
+
+        
+
+        [Header("Sync actions with workshop mode actions...")]
+        public int buildAction;
+        public int exitAction = 7;
+        protected override List<int> InitializeInputsAndNames (out List<string> names) {
+            names = new List<string>() { "Build", "Scrap", "Exit" };
+            return new List<int>() { buildAction, cancelAction, exitAction };
+        }
+
+
+
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){}//, int inputOffset) { }
         
         protected override void OnUISelect (GameObject selectedObject, GameObject[] data, object[] customData) {
             string txt = "";
@@ -61,20 +72,4 @@ namespace Game.UI {
             BuildButtons("Workshop Items", true, 0);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

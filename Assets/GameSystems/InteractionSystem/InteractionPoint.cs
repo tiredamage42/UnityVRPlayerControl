@@ -29,8 +29,43 @@ namespace InteractionSystem {
             inventory = baseInteractor.GetComponent<Inventory>();
         }
         
+        [HideInInspector] public bool usingRay;
+        [HideInInspector] public Vector3 rayHitPoint;
+
+        // bool findEnvironmentPoint;
+        // LayerMask environmentMask;
+
+        // public void FindEnvironmentPointWithRay (LayerMask environmentMask) {
+        //     findEnvironmentPoint = true;
+        //     this.environmentMask = environmentMask;
+        // }
+        // public void StopFindingEnvironmentPoint () {
+        //     findEnvironmentPoint = false;
+        // }
+
+        // void FindEnvironmentPoint () {
+        //     usingRay = true;
+            
+        //     if (referenceTransform == null) {
+        //         Debug.LogError("no interactor reference transform supplied for " + name);
+        //         return;
+        //     }
+            
+        //     RaycastHit hit;
+        //     //maybe raycast all
+        //     if (Physics.Raycast(new Ray(referenceTransform.position, referenceTransform.forward), out hit, baseInteractor.rayCheckDistance, environmentMask, QueryTriggerInteraction.Ignore)) {
+        //         rayHitPoint = hit.point;
+        //     }
+        //     else {
+        //         rayHitPoint = referenceTransform.position + referenceTransform.forward * baseInteractor.rayCheckDistance;
+        //     }
+        // }
+
 
         void FindInteractables () {
+            usingRay = false;
+            
+
             if (hoverLocked)
                 return;
 
@@ -52,27 +87,30 @@ namespace InteractionSystem {
                 }
             }
 
-            bool rayEnabled = closestInteractable == null && baseInteractor.useRayCheck;
-            Vector3 hitPos = Vector3.zero;
+            usingRay = closestInteractable == null && baseInteractor.useRayCheck;
             
-            if (rayEnabled) {
-                UpdateRayCheck(referenceTransform.position, referenceTransform.forward, baseInteractor.rayCheckDistance, out hitPos, ref closestInteractable);
+            // Vector3 hitPos = Vector3.zero;
+            // rayHitPoint = referenceTransform.position + referenceTransform.forward * baseInteractor.rayCheckDistance;
+            if (usingRay) {
+            
+                rayHitPoint = referenceTransform.position + referenceTransform.forward * baseInteractor.rayCheckDistance;
+                UpdateRayCheck(referenceTransform.position, referenceTransform.forward, baseInteractor.rayCheckDistance, ref rayHitPoint, ref closestInteractable);
                 
                 if (closestInteractable != null) {
-                    lastInteractionPoint = hitPos;
+                    lastInteractionPoint = rayHitPoint;
                 }
             }
             
             //for visualization....
-            if (onRayCheckUpdate != null) {
-                onRayCheckUpdate(rayEnabled, referenceTransform.position, hitPos, closestInteractable != null, interactorID);
-            }
+            // if (onRayCheckUpdate != null) {
+            //     onRayCheckUpdate(rayEnabled, referenceTransform.position, hitPos, closestInteractable != null, interactorID);
+            // }
 
             // Hover on this one
             hoveringInteractable = closestInteractable;
         }
 
-        public System.Action<bool, Vector3, Vector3, bool, int> onRayCheckUpdate;
+        // public System.Action<bool, Vector3, Vector3, bool, int> onRayCheckUpdate;
 
         
         void UpdateHovering(Vector3 hoverPosition, float hoverRadius, ref float closestDistance, ref Interactable closestInteractable)
@@ -107,7 +145,7 @@ namespace InteractionSystem {
                 }
             }
         }
-        void UpdateRayCheck(Vector3 origin, Vector3 direction, float distance, out Vector3 hitPos, ref Interactable closestInteractable) {
+        void UpdateRayCheck(Vector3 origin, Vector3 direction, float distance, ref Vector3 hitPos, ref Interactable closestInteractable) {
             RaycastHit hit;
             //maybe raycast all
             if (Physics.Raycast(new Ray(origin, direction), out hit, distance, Interactable.interactTriggerMask, QueryTriggerInteraction.Collide)){
@@ -126,19 +164,25 @@ namespace InteractionSystem {
                 
                 closestInteractable = contacting;
             }
-            else {
-                hitPos = origin + direction * distance;
-            }
+            // else {
+            //     hitPos = origin + direction * distance;
+            // }
         }
         void Update()
         {         
+            // rayHitPoint = referenceTransform.position;
             if (findInteractables) {
                 FindInteractables();
             }   
             else {
                 hoveringInteractable = null;
                 hoverLocked = false;
+                usingRay = false;
             }
+            // if (findEnvironmentPoint) {
+            //     FindEnvironmentPoint();
+            // }
+
          
             if (hoveringInteractable)
             {  
@@ -148,6 +192,7 @@ namespace InteractionSystem {
                     onInspectUpdate(this, hoveringInteractable);
                 }
             }
+
         }
 
         public Interactable hoveringInteractable

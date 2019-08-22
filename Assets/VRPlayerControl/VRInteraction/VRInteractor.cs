@@ -42,12 +42,35 @@ namespace VRPlayer {
             }
         }
 
-#if UNITY_EDITOR
         void Update()
         {
+#if UNITY_EDITOR
             UpdateInteractorReferenceTransform();
-        }
 #endif
+
+
+            for (int i = 0; i < interactionPoints.Length; i++) {
+                InteractionPoint p = interactionPoints[i];
+            
+                interactRays[p.interactorID].enabled = p.usingRay;
+                
+                if (p.usingRay) {   
+
+                    bool isHitting = p.hoveringInteractable != null;// || p.baseInteractor.interactionMode == 1;    
+                    Color color = isHitting ? interactRayColor : interactRayNullColor;
+                    interactRays[p.interactorID].startColor = color;
+                    interactRays[p.interactorID].endColor = color;
+                
+                    interactRays[p.interactorID].startWidth = interactRayWidth;
+                    interactRays[p.interactorID].endWidth = interactRayWidth;
+
+                    interactRays[p.interactorID].SetPosition(0, p.referenceTransform.position);
+                    interactRays[p.interactorID].SetPosition(1, p.rayHitPoint);
+                }
+            }
+
+
+        }
 
         void BuildLineRenderers () {
             Material interactionShowMaterial = new Material(Shader.Find("Mobile/Particles/Additive"));
@@ -62,31 +85,31 @@ namespace VRPlayer {
 
         void OnEnable () {
             GetInteractionPoints();
-            for (int i = 0; i < interactionPoints.Length; i++) {
-                if (interactionPoints[i] != null) interactionPoints[i].onRayCheckUpdate += OnInteractionRayUpdate;
-            }
+            // for (int i = 0; i < interactionPoints.Length; i++) {
+            //     if (interactionPoints[i] != null) interactionPoints[i].onRayCheckUpdate += OnInteractionRayUpdate;
+            // }
         }
-        void OnDisable () {
-            for (int i = 0; i < interactionPoints.Length; i++) {
-                if (interactionPoints[i] != null) interactionPoints[i].onRayCheckUpdate -= OnInteractionRayUpdate;
-            }   
-        }
+        // void OnDisable () {
+        //     for (int i = 0; i < interactionPoints.Length; i++) {
+        //         if (interactionPoints[i] != null) interactionPoints[i].onRayCheckUpdate -= OnInteractionRayUpdate;
+        //     }   
+        // }
 
-        void OnInteractionRayUpdate (bool rayEnabled, Vector3 origin, Vector3 end, bool isHitting, int interactionPointID) {
-             interactRays[interactionPointID].enabled = rayEnabled;
+        // void OnInteractionRayUpdate (bool rayEnabled, Vector3 origin, Vector3 end, bool isHitting, int interactionPointID) {
+        //      interactRays[interactionPointID].enabled = rayEnabled;
                 
-             if (rayEnabled) {       
+        //      if (rayEnabled) {       
                 
-                interactRays[interactionPointID].startWidth = interactRayWidth;
-                interactRays[interactionPointID].endWidth = interactRayWidth;
+        //         interactRays[interactionPointID].startWidth = interactRayWidth;
+        //         interactRays[interactionPointID].endWidth = interactRayWidth;
 
-                Color color = isHitting ? interactRayColor : interactRayNullColor;
-                interactRays[interactionPointID].startColor = color;
-                interactRays[interactionPointID].endColor = color;
+        //         Color color = isHitting ? interactRayColor : interactRayNullColor;
+        //         interactRays[interactionPointID].startColor = color;
+        //         interactRays[interactionPointID].endColor = color;
 
-                interactRays[interactionPointID].SetPosition(0, origin);
-                interactRays[interactionPointID].SetPosition(1, end);
-            }
-        }
+        //         interactRays[interactionPointID].SetPosition(0, origin);
+        //         interactRays[interactionPointID].SetPosition(1, end);
+        //     }
+        // }
     }
 }

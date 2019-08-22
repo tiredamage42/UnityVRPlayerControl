@@ -332,20 +332,20 @@ namespace VRPlayer
         
         }
         void OnInspectStart (InteractionPoint interactor, Interactable hoveringInteractable) {
-            for (int i = 0; i < Player.instance.actions.Length; i++) {
-                if (hoveringInteractable.actionNames.Length > i) {
-                    if (i != equipper.quickEquipAction || equipper.equippedSlots[myEquipIndex] == null) {
-                        StandardizedVRInput.instance.ShowHint(handType, Player.instance.actions[i], hoveringInteractable.actionNames[i]);
-                    }
-                }
-            }
+            // for (int i = 0; i < Player.instance.actions.Length; i++) {
+            //     if (hoveringInteractable.actionNames.Length > i) {
+            //         if (i != equipper.quickEquipAction || equipper.equippedSlots[myEquipIndex] == null) {
+            //             StandardizedVRInput.instance.ShowHint(handType, Player.instance.actions[i], hoveringInteractable.actionNames[i]);
+            //         }
+            //     }
+            // }
         }
 
 
         void OnInspectEnd (InteractionPoint interactor, Interactable hoveringInteractable) {
-            for (int i = 0; i < Player.instance.actions.Length; i++) {
-                StandardizedVRInput.instance.HideHint(handType, Player.instance.actions[i]);
-            }
+            // for (int i = 0; i < Player.instance.actions.Length; i++) {
+            //     StandardizedVRInput.instance.HideHint(handType, Player.instance.actions[i]);
+            // }
         }
 
         // void ControlInteractorAndEquipper (SteamVR_Action_Boolean action, int actionKey) {

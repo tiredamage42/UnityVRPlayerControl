@@ -4,10 +4,13 @@ using UnityEngine;
 
 using Game.UI;
 using SimpleUI;
+
+using InteractionSystem;
 using Game.InventorySystem.CraftingSystem;
 namespace Game.InventorySystem.WorkshopSystem {
     
     public class WorkshopMode : MonoBehaviour {
+        public int highlightGroup = 0;
         public float interactRayDistance = 10;
         public int submitAction, cancelAction = 3;
         public float gridSnap = .1f;
@@ -25,7 +28,39 @@ namespace Game.InventorySystem.WorkshopSystem {
 
         public void ProvideAxisDeltas (Vector2 axisDeltas) {
             this.axisDeltas = axisDeltas;
+        }
 
+        Vector3 environmentHitPoint;
+        bool hittingPoint;
+
+        void FindEnvironmentPoint () {
+
+            InteractionPoint point = actor.interactor.mainInteractor;
+            Transform refT = point.referenceTransform;
+
+            RaycastHit hit;
+            if (Physics.Raycast(new Ray(refT.position, refT.forward), out hit, zDistance, groundMask, QueryTriggerInteraction.Ignore)) {
+                environmentHitPoint = hit.point;
+                hittingPoint = true;
+            }
+            else {
+                environmentHitPoint = refT.position + refT.forward * zDistance;
+                hittingPoint = false;
+            }
+
+            // setting interaction point values for VR show....
+            point.rayHitPoint = environmentHitPoint;
+            point.usingRay = true;
+
+        }
+
+        static float SnapValue(float raw, float snap, float current, ref bool changed) {
+            int grid = (int)(raw / snap);
+            float snapped = (((raw % snap) / snap) < .5f ? grid : grid + 1) * snap;
+            if (current != snapped) {
+                changed = true;
+            }
+            return snapped;
         }
 
         void Update () {
@@ -34,48 +69,78 @@ namespace Game.InventorySystem.WorkshopSystem {
                 yAngle += axisDeltas.x * turnSpeed * Time.deltaTime;
                 zDistance += axisDeltas.y * moveSpeed * Time.deltaTime;
 
+                FindEnvironmentPoint();
 
                 Transform referenceTransform = actor.interactor.mainInteractor.referenceTransform;
                 
-                bool isPointingUp = Vector3.Angle(Vector3.up, referenceTransform.forward) <= 90;
+                // bool isPointingUp = Vector3.Angle(Vector3.up, referenceTransform.forward) <= 90;
 
-                bool stickToGround = !isPointingUp;
-                Vector3 rawSpace = referenceTransform.position + referenceTransform.forward * zDistance;
+                
 
-                int xGrid = (int)(rawSpace.x / gridSnap);
-                float xSnap = ((rawSpace.x % gridSnap) / gridSnap) < .5f ? xGrid : xGrid + 1;
-                xSnap *= gridSnap;
+                // bool stickToGround = !isPointingUp;
+                Vector3 rawSpace = environmentHitPoint;// referenceTransform.position + referenceTransform.forward * zDistance;
+                // rawSpace.y = referenceTransform.position.y;
 
-                int zGrid = (int)(rawSpace.z / gridSnap);
-                float zSnap = ((rawSpace.z % gridSnap) / gridSnap) < .5f ? zGrid : zGrid + 1;
-                zSnap *= gridSnap;
+
+                Vector3 currentPreviewPos = currentPreviewTransform.position;
+                float currentYAngle = currentPreviewTransform.rotation.eulerAngles.y;
+                bool changedSnap = false;
+
+                // int xGrid = (int)(rawSpace.x / gridSnap);
+                // float xSnap = ((rawSpace.x % gridSnap) / gridSnap) < .5f ? xGrid : xGrid + 1;
+                // xSnap *= gridSnap;
+                // if (currentPreviewPos.x != xSnap) {
+                //     changedSnap = true;
+                // }
+                float xSnap = SnapValue(rawSpace.x, gridSnap, currentPreviewPos.x, ref changedSnap);
+
+
+                // int zGrid = (int)(rawSpace.z / gridSnap);
+                // float zSnap = ((rawSpace.z % gridSnap) / gridSnap) < .5f ? zGrid : zGrid + 1;
+                // zSnap *= gridSnap;
+
+                float zSnap = SnapValue(rawSpace.z, gridSnap, currentPreviewPos.z, ref changedSnap);
+
 
                 float ySnap  = rawSpace.y;
-                if (stickToGround) {
-                    RaycastHit hit;
-                    if (Physics.Raycast(new Vector3(xSnap, rawSpace.y, zSnap), Vector3.down, out hit, 100, groundMask, QueryTriggerInteraction.Ignore)) {
-                        ySnap = hit.point.y;
-                    }
+                // if (stickToGround) {
+                if (hittingPoint) {
+                    // RaycastHit hit;
+                    // if (Physics.Raycast(new Vector3(xSnap, rawSpace.y, zSnap), Vector3.down, out hit, 100, groundMask, QueryTriggerInteraction.Ignore)) {
+                    //     ySnap = hit.point.y;
+                    // }
                 }
                 else {
-                    int yGrid = (int)(rawSpace.y / gridSnap);
-                    ySnap = ((rawSpace.y % gridSnap) / gridSnap) < .5f ? yGrid : yGrid + 1;
-                    ySnap *= gridSnap;
+
+                    ySnap = SnapValue(rawSpace.y, gridSnap, currentPreviewPos.y, ref changedSnap);
+
+                    // int yGrid = (int)(rawSpace.y / gridSnap);
+                    // ySnap = ((rawSpace.y % gridSnap) / gridSnap) < .5f ? yGrid : yGrid + 1;
+                    // ySnap *= gridSnap;
                 }
 
                 Vector3 snappedPosition = new Vector3(xSnap, ySnap, zSnap);
 
-
-                int angleGrid = (int)(yAngle / angleSnap);
-                float angleSnapped = ((yAngle % angleSnap) / angleSnap) < .5f ? angleGrid : angleGrid + 1;
-                angleSnapped *= angleSnap;
+                // int angleGrid = (int)(yAngle / angleSnap);
+                // float angleSnapped = ((yAngle % angleSnap) / angleSnap) < .5f ? angleGrid : angleGrid + 1;
+                // angleSnapped *= angleSnap;
+                float angleSnapped = SnapValue(yAngle, angleSnap, currentYAngle, ref changedSnap);
 
                 Quaternion rotation = Quaternion.Euler(0,angleSnapped,0);
 
                 currentPreviewTransform.position = snappedPosition;
                 currentPreviewTransform.rotation = rotation;
 
+                if (changedSnap) {
+                    OnSnapChange();
+                }
             }
+        }
+
+
+        void OnSnapChange () {
+            // just for haptic pulses in VR...
+            WorkshopUIHandler.instance.uiObject.BroadcastSelectEvent(null, null, null);
         }
 
         void Awake () {
@@ -327,17 +392,54 @@ namespace Game.InventorySystem.WorkshopSystem {
         bool isMovingObject { get { return movedObject != null; } }
         bool inBuildMode { get { return currentPreviewTransform != null && !isMovingObject; } }
 
+
+
+        Renderer[] currentPreviewRenderers;
+
         void DestroyCurrentPreview () {
+
+
+
+
+            
+
+
+
+
+
+
+            RenderTricks.ObjectOutlines.UnHighlight_Renderers( currentPreviewRenderers );
+            currentPreviewRenderers = null;
+
             Destroy(currentPreviewTransform.gameObject);
             currentPreviewTransform = null;        
             currentPreviewID = -1;
+            // actor.interactor.mainInteractor.findInteractables = true;
+            // actor.interactor.mainInteractor.StopFindingEnvironmentPoint();
             actor.interactor.mainInteractor.findInteractables = true;
+
+
+            
+       
+        
+
+
+
+
+
         }
         void SetNewPreviewTransform(Transform previewPrefab) {
             currentPreviewTransform = GameObject.Instantiate(previewPrefab);
+
+            currentPreviewRenderers = currentPreviewTransform.GetComponentsInChildren<Renderer>();
+            RenderTricks.ObjectOutlines.Highlight_Renderers( currentPreviewRenderers, highlightGroup );
+            
+
             currentPreviewID = previewPrefab.GetInstanceID();
             // disable our interactor
             actor.interactor.mainInteractor.findInteractables = false;
+            // Actor.interactor.mainInteractor.FindEnvironmentPointWithRay(environmentMask);
+
         }
     }
 }
