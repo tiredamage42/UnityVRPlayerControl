@@ -52,6 +52,7 @@ public class InteractableShowHints : MonoBehaviour, IInteractable
     
     public void OnInteractableAvailabilityChange(bool available) { }
     public void OnInteractableInspectedStart (InteractionPoint interactor) {
+        Debug.LogError(getInteractionMessage + " getInteractionMessage");
         GameUI.ShowInteractionHint (interactor.interactorID, getInteractionMessage, actions, names);
     }
     public void OnInteractableInspectedEnd (InteractionPoint interactor) {

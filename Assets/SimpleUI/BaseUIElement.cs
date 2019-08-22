@@ -23,7 +23,7 @@ namespace SimpleUI {
         }
         public void RemoveAllControllerHints () {
             if (controlHintsPanel != null) {
-                controlHintsPanel.RemoveAllControllerHints();
+                controlHintsPanel.RemoveAllHintElements();
             }
             // else {
             //     Debug.LogError("cant add hint for " + name + " contorl hint panel == null");

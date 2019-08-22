@@ -16,12 +16,14 @@ namespace SimpleUI {
         ControllerHintUIElement CreateNewElement () {
             ControllerHintUIElement newElement = GameObject.Instantiate(elementPrefab);
             allInstances.Add(newElement);
+            newElement.gameObject.SetActive(true);
             return newElement;
         }
 
         ControllerHintUIElement _GetAvailableElement () {
             for (int i = 0; i < allInstances.Count; i++) {
                 if (!allInstances[i].gameObject.activeSelf) {
+                    allInstances[i].gameObject.SetActive(true);
                     return allInstances[i];
                 }
             }
@@ -80,7 +82,10 @@ namespace SimpleUI {
         protected override void Update () {
             base.Update();
             UpdateHintsLayouts();
+            if (!Application.isPlaying) {
+
             SetText ( debugMessage);
+            }
 
         }
 #endif
@@ -121,6 +126,8 @@ namespace SimpleUI {
                 hint.gameObject.SetActive(false);
                 allHints.Remove(hint);
                 UpdateHintsLayouts();
+                
+            Debug.LogError("disabled single");
             }
         }
         public void RemoveAllHintElements () {
@@ -128,6 +135,7 @@ namespace SimpleUI {
                 allHints[i].transform.SetParent(null);
                 allHints[i].gameObject.SetActive(false);
             }
+            Debug.LogError("disabled");
             allHints.Clear();
         }
 
@@ -145,7 +153,9 @@ namespace SimpleUI {
         public void AddHintElement (ControllerHintUIElement hint, string txt) {
             if (!allHints.Contains(hint)) {
                 hint.transform.SetParent(transform);
+                hint.transform.localRotation = Quaternion.identity;
                 hint.gameObject.SetActive(true);
+                // Debug.LogError("adding " + txt);
                 hint.SetText ( txt );
                 allHints.Add(hint);
                 UpdateHintsLayouts();

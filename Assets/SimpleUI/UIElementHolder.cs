@@ -146,7 +146,7 @@ namespace SimpleUI {
                 count++;
 
             for (int i = 0; i < count; i++) {
-                yield return null; baseObject.SetActive(i%2!=0); // false, true, false....
+                yield return null; (parentElement != null ? parentElement.baseObject : baseObject).SetActive(i%2!=0); // false, true, false....
                 // Debug.LogError("setting active " + (i%2!=0));
             }
 

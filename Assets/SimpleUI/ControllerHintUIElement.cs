@@ -16,9 +16,9 @@ namespace SimpleUI {
             UpdateTextValues();
         }
         void Start () {
-            if (Application.isPlaying) {
-                Hide();
-            }
+            // if (Application.isPlaying) {
+                // Hide();
+            // }
         }
         public void SetLayoutValues (float textScale, Vector3 textOffset, TextAnchor textAnchor) {
             this.textScale = textScale;

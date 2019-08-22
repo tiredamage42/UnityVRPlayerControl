@@ -311,6 +311,10 @@ namespace Game.UI {
             SubscribeToUIObjectEvents();
             OnOpenUI();
 
+
+            for (int i =0 ; i < allActionNames.Count; i++) {
+                Debug.LogError(allActionNames[i]);
+            }
             // uiObject.AddHintElements (inputActions, inputNames);
             uiObject.AddControllerHints (allActions, allActionNames);
 

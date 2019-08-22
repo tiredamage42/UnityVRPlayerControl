@@ -124,7 +124,10 @@ namespace Game.InventorySystem.WorkshopSystem {
                 // int angleGrid = (int)(yAngle / angleSnap);
                 // float angleSnapped = ((yAngle % angleSnap) / angleSnap) < .5f ? angleGrid : angleGrid + 1;
                 // angleSnapped *= angleSnap;
-                float angleSnapped = SnapValue(yAngle, angleSnap, currentYAngle, ref changedSnap);
+
+                // changedSnap = false;
+                bool _ = false;
+                float angleSnapped = SnapValue(yAngle, angleSnap, currentYAngle, ref _);
 
                 Quaternion rotation = Quaternion.Euler(0,angleSnapped,0);
 
@@ -339,6 +342,8 @@ namespace Game.InventorySystem.WorkshopSystem {
 
         // if we're not moving an object and we're currently in build mode
         void OnUISelect (GameObject selectedObject, GameObject[] data, object[] customData) {
+            if (customData != null) {
+
             currentSelectedRecipeItem = null;
             currentSelectedWorkshopRecipe = null;
 
@@ -376,6 +381,7 @@ namespace Game.InventorySystem.WorkshopSystem {
                     currentPreviewID = id;
                 }
                 }
+            }
             // }
         }
 
