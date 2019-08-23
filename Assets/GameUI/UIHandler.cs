@@ -129,7 +129,7 @@ namespace Game.UI {
                 return uiObject.gameObject.activeInHierarchy;
             }
 
-            if (previousUIHandler != null && previousUIHandler.UIObjectActive(true, baseHandler)) return true;
+            // if (previousUIHandler != null && previousUIHandler.UIObjectActive(true, baseHandler)) return true;
             if (nextUIHandler != null && nextUIHandler.UIObjectActive(true, baseHandler)) return true;
             
             return uiObject.gameObject.activeInHierarchy;

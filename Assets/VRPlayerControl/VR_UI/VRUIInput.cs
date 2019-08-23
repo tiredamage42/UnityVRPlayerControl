@@ -72,7 +72,7 @@ namespace VRPlayer {
         // }
         // static SteamVR_Input_Sources lastUsedUIHand = SteamVR_Input_Sources.Any;
         // static SteamVR_Input_Sources currentUIHand = SteamVR_Input_Sources.Any;
-        public override Vector2 mousePosition { get { return selectionAxis.GetAxis( VRManager.Int2Hand(ControlsManager.currentUIController ) ); } }
+        public override Vector2 mousePosition { get { return selectionAxis.GetAxis( ControlsManager.currentUIController < 0 ? SteamVR_Input_Sources.Any : VRManager.Int2Hand( ControlsManager.currentUIController) ); } }
 
 
         static SteamVR_Action_Vector2 selectionAxis { get { return Player.instance.trackpadAxis; } }
@@ -96,10 +96,10 @@ namespace VRPlayer {
             }
 
             if (axisName == inputModule.horizontalAxis){ 
-                return Player.instance.GetScrollDelta(VRManager.Int2Hand( currentUIHand)).x;
+                return Player.instance.GetScrollDelta( currentUIHand < 0 ? SteamVR_Input_Sources.Any : VRManager.Int2Hand( currentUIHand)).x;
             }
             else if (axisName == inputModule.verticalAxis){
-                return Player.instance.GetScrollDelta(VRManager.Int2Hand(currentUIHand)).y;
+                return Player.instance.GetScrollDelta(currentUIHand < 0 ? SteamVR_Input_Sources.Any : VRManager.Int2Hand( currentUIHand)).y;
             }   
             return 0;
         }

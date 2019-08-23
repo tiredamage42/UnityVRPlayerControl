@@ -95,8 +95,11 @@ namespace VRPlayer
 
         public Vector2 GetScrollDelta (SteamVR_Input_Sources hand) {
             if (hand == SteamVR_Input_Sources.Any) return new Vector2(savedAxis.x, savedAxis.y) + new Vector2(savedAxis.z, savedAxis.w);
-            int handOffset = 2*VRManager.Hand2Int(hand);
-            return new Vector2(savedAxis[handOffset], savedAxis[handOffset+1]);
+			if (hand != SteamVR_Input_Sources.LeftHand && hand != SteamVR_Input_Sources.RightHand) {
+				Debug.LogError("wrong hand");
+			}
+		    int handOffset = 2*VRManager.Hand2Int(hand);
+		    return new Vector2(savedAxis[handOffset], savedAxis[handOffset+1]);
         }
         
         /*
