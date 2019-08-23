@@ -8,7 +8,12 @@ using SimpleUI;
 namespace Game.UI {
     public abstract class UIHandler : MonoBehaviour
     {
-        // static List<UIHandler> allUIHandlers = new List<UIHandler>();
+
+        protected static T GetInstance<T> (ref T reference) where T : MonoBehaviour {
+            if (reference == null) reference = GameObject.FindObjectOfType<T>();
+            if (reference == null) Debug.LogError("Couldnt Find " + typeof(T) + " instance");
+            return reference;
+        }
         public BaseUIElement uiObject;
         public string context;
         public static UIHandler GetUIHandlerByContext (string context) {
@@ -20,18 +25,7 @@ namespace Game.UI {
             }
             return null;
         }
-        
-        // #if UNITY_EDITOR
-        //     public static string[] GetHandlerInputNames (GameObject checkObject, string context) {//where X : UIHandler {
-        //         UIHandler handler = GetUIHandlerByContext(checkObject, context);
-        //         return handler != null ? handler.GetInputNames() : null;
-        //     }
-        // #endif
 
-        // [Header("If false, ")]
-
-        // protected abstract bool RequiresCustomInputMethod () ;
-        // public bool requiresCustomInputMethod;
         Func<Vector2Int> customGetInputMethod;
         public void SetUIInputCallback (Func<Vector2Int> callback) {
             customGetInputMethod = callback;
@@ -44,10 +38,8 @@ namespace Game.UI {
 
         public bool cancelCloses = true;
         protected virtual void OnEnable () {
-            // if (RequiresCustomInputMethod()) {
-                SetUIInputCallback(GetUIInputs);
-            // }
-
+            SetUIInputCallback(GetUIInputs);
+            
             List<string> myNames;
             List<int> myActions = InitializeInputsAndNames(out myNames);
 
@@ -68,8 +60,6 @@ namespace Game.UI {
             
         }
         
-        // public Func<object[], bool> shouldOpenCheck, shouldCloseCheck;
-
         bool OpenUIDenied (object[] parameters) {
             if (UIObjectActive(false)) {
                 Debug.LogError("object active");
@@ -80,22 +70,9 @@ namespace Game.UI {
                 Debug.LogError(nm + " any ui active");    
                 return true;
             }
-            // if (requiresCustomInputMethod) {
-            //     if (customGetInputMethod == null) {
-            //         Debug.LogError("cant open " + context + " UI, no getUIInputs callback supplied");
-            //         return true;
-            //     }
-            // }
             return false;
         }
 
-        
-        // protected int GetInputActionOffset () {
-        //     int offset = 0;
-        //     if (nextUIHandler != null) offset++;
-        //     if (previousUIHandler != null) offset++;
-        //     return offset;
-        // }
 
         public UIHandler previousUIHandler, nextUIHandler;
         public Vector2Int prevNextOpenAction;
@@ -112,12 +89,10 @@ namespace Game.UI {
             if (nextUIHandler == null && previousUIHandler == null) {
                 return false;
             }
-            // if (previousUIHandler != null && input.x == 0) {
             if (previousUIHandler != null && input.x == prevNextOpenAction.x) {
                 OpenOtherUI(previousUIHandler);
                 return true;
             }
-            // if (nextUIHandler != null && input.x == 1) {
             if (nextUIHandler != null && input.x == prevNextOpenAction.y) {
                 OpenOtherUI(nextUIHandler);
                 return true;
@@ -147,43 +122,33 @@ namespace Game.UI {
         
 
         protected bool CheckActiveRecursive(UIHandler baseHandler) {
-            if (baseHandler == this) {
+            bool topLevel = baseHandler == null;
+            if (topLevel) baseHandler = this;
+            
+            if (baseHandler == this && !topLevel) {
                 return uiObject.gameObject.activeInHierarchy;
             }
-            if (previousUIHandler != null && previousUIHandler.UIObjectActive(true)) {
-                return true;
-            }
-            if (nextUIHandler != null && nextUIHandler.UIObjectActive(true)) {
-                return true;
-            }
+
+            if (previousUIHandler != null && previousUIHandler.UIObjectActive(true, baseHandler)) return true;
+            if (nextUIHandler != null && nextUIHandler.UIObjectActive(true, baseHandler)) return true;
+            
             return uiObject.gameObject.activeInHierarchy;
 
         }
-        public bool UIObjectActive(bool checkLinked) {
+        public bool UIObjectActive(bool checkLinked, UIHandler baseHandler=null) {
             if (uiObject.gameObject.activeInHierarchy) {
                 return true;
             }
             if (checkLinked) {
-                if (CheckActiveRecursive(this))
+                if (CheckActiveRecursive( baseHandler))
                     return true;
-                // if (previousUIHandler != null && previousUIHandler.UIObjectActive(true)) {
-                //     return true;
-                // }
-                // if (nextUIHandler != null && nextUIHandler.UIObjectActive(true)) {
-                //     return true;
-                // }
+                
             }
             return false;
         }
 
-
-        // [Header("-1 for any")]
-        // public int inputFromControllerIndex = -1;
-        // ControlsManager currentControlsManager;
-
-        // bool needsSingleControllerInput { get { return inputFromControllerIndex != -1; } }
         Vector2Int GetUIInputs (){
-            List<int> actions = allActions;// GetInputActions();
+            List<int> actions = allActions;
             bool usesAnyController = controllerIndex < 0;
             for (int i = 0; i < actions.Count; i++) {
                 int action = actions[i];
@@ -203,64 +168,8 @@ namespace Game.UI {
             return new Vector2Int(-1, controllerIndex);        
         }
 
-
-
-
-
-
-
-
-
-
-
         protected abstract void OnUISelect (GameObject selectedObject, GameObject[] data, object[] customData);
         
-        // [NeatArray] public NeatStringList inputNames;
-        // [NeatArray] public NeatIntList inputActions;
-        
-
-        // public List<int> GetInputActions () {
-        //     return allInputActions;
-        //     int c = inputActions.list.Count;
-        //     // c += GetInputActionOffset();
-            
-        //     List<int> r = new List<int>();
-
-        //     if (previousUIHandler != null) r.Add(prevNextOpenAction.x);
-        //     if (nextUIHandler != null) r.Add(prevNextOpenAction.y);
-        //     for (int i = 0; i < c; i++) r.Add(inputActions.list[i]);
-        //     return r;
-
-        // }
-        // public List<string> GetInputNames () {
-
-        //     int c = inputNames.list.Length;
-        //     // c += GetInputActionOffset();
-            
-        //     // int offset = GetInputActionOffset();
-
-        //     // string[] r = new string[c + offset];
-        //     List<string> r = new List<string>();
-
-        //     if (previousUIHandler != null) r.Add(previousUIHandler.context);
-        //     if (nextUIHandler != null) r.Add(nextUIHandler.context);
-            
-        //     // if (previousUIHandler != null) {
-        //     //     r[0] = previousUIHandler.context;
-        //     // }
-        //     // if (nextUIHandler != null) {
-        //     //     r[1] = nextUIHandler.context;
-        //     // }   
-
-        //     // int x = 0;
-        //     for (int i = 0; i < c; i++) {
-        //         r.Add(inputNames.list[i]);
-        //         // r[i+offset] = inputNames.list[i];
-        //         // x++; 
-        //     }
-        //     return r;
-        // }
-
         protected abstract object[] GetDefaultColdOpenParams ();
         public void OpenUI () {
             OpenUI(-1, GetDefaultColdOpenParams());
@@ -275,14 +184,10 @@ namespace Game.UI {
         protected object[] openedWithParams;
 
 
-        // [Header("-1 for any")]
         [HideInInspector] public int controllerIndex = -1;
-        // ControlsManager currentControlsManager;
-
         
-        public void OpenUI(
-            // ControlsManager currentControlsManager, 
-            int controllerIndex, object[] parameters) {
+        
+        public void OpenUI(int controllerIndex, object[] parameters) {
 
             if (parameters == null){
                 Debug.LogError("Cant open " + GetType().ToString() + " ui handler, params null");
@@ -292,18 +197,13 @@ namespace Game.UI {
                 Debug.LogError("ui open denied");
                 return;
             }
-            // this.currentControlsManager = currentControlsManager;
             this.controllerIndex = controllerIndex;
 
             this.openedWithParams = parameters;
 
             UIManager.ShowUI(uiObject);
             
-            // uiObject.onBaseCancel = CloseUI;
-            
-            // if (requiresCustomInputMethod) {
-            // }
-                uiObject.runtimeSubmitHandler = customGetInputMethod;
+            uiObject.runtimeSubmitHandler = customGetInputMethod;
             
             uiObject.SubscribeToSubmitEvent(_OnUIInput);
             uiObject.SubscribeToSelectEvent(OnUISelect);
@@ -315,8 +215,18 @@ namespace Game.UI {
             for (int i =0 ; i < allActionNames.Count; i++) {
                 Debug.LogError(allActionNames[i]);
             }
-            // uiObject.AddHintElements (inputActions, inputNames);
             uiObject.AddControllerHints (allActions, allActionNames);
+
+
+              List<int> inputActions = allActions;
+            for (int i = 0; i < inputActions.Count; i++) {
+
+                ControlsManager.MarkActionOccupied(inputActions[i], controllerIndex);
+                // StandardizedVRInput.MarkActionOccupied(Player.instance.actions[inputActions[i]], hand);
+            }
+
+            ControlsManager.SetUIController(controllerIndex);
+
 
 
             if (onUIOpen != null) onUIOpen (uiObject.baseObject, controllerIndex);
@@ -335,18 +245,13 @@ namespace Game.UI {
         protected abstract void OnOpenUI ();
         
         protected void CloseUIRecursive (UIHandler startHandler) {
-            if (startHandler == this) 
-                return;
-
+            if (startHandler == this) return;
             if (previousUIHandler != null) previousUIHandler.CloseUIRecursive(startHandler);
             if (nextUIHandler != null) nextUIHandler.CloseUIRecursive(startHandler);
-            
         }
+            
         public void CloseUI () {
-
             CloseUIRecursive(this);
-            // if (previousUIHandler != null) previousUIHandler.CloseUI();
-            // if (nextUIHandler != null) nextUIHandler.CloseUI();
             
             if (!UIObjectActive(false)) {
                 Debug.LogError("object not active");
@@ -355,6 +260,14 @@ namespace Game.UI {
             
             UIManager.HideUI(uiObject);
             OnCloseUI();
+
+            List<int> inputActions = allActions;
+            for (int i = 0; i < inputActions.Count; i++) {
+                ControlsManager.MarkActionUnoccupied(inputActions[i]);
+                // StandardizedVRInput.MarkActionUnoccupied(Player.instance.actions[inputActions[i]]);
+                
+            }
+
             if (onUIClose != null) onUIClose (uiObject.baseObject);
         }
 

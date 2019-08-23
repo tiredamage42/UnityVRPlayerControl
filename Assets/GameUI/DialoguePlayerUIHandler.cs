@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 
+using SimpleUI;
 using Game.DialogueSystem;
 namespace Game.UI {
 
@@ -9,17 +10,12 @@ namespace Game.UI {
     public class DialoguePlayerUIHandler : UISelectableElementHandler{
     
         static DialoguePlayerUIHandler _instance;
-        public static DialoguePlayerUIHandler instance {
-            get {
-                if (_instance == null) _instance = GameObject.FindObjectOfType<DialoguePlayerUIHandler>();
-                return _instance;
-            }
-        }
+        public static DialoguePlayerUIHandler instance { get { return GetInstance<DialoguePlayerUIHandler> (ref _instance); } }
+        
         public void OpenDialogueResponseUI (List<DialogueResponse> responses, Action<DialogueResponse> onRespond) {
             this.onRespond = onRespond;
-            OpenUI (  0, new object[] { responses } );
+            OpenUI ( -1, new object[] { responses } );
         }
-
 
         Action<DialogueResponse> onRespond;
         protected override void OnOpenUI() { 
@@ -40,8 +36,6 @@ namespace Game.UI {
             return (obj as DialogueResponse).bark; 
         }
 
-
-        // protected override bool RequiresCustomInputMethod () { return false; }
         public int selectAction;
         protected override List<int> InitializeInputsAndNames (out List<string> names) {
             names = new List<string>() { "Select" };
@@ -49,10 +43,14 @@ namespace Game.UI {
         }
 
 
-        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){//, int actionOffset) {
-        	// if (input.x == actionOffset) {
-            if (input.x == selectAction) {
+        protected override void SetFlairs(SelectableElement element, object mainObject, int panelIndex) {
             
+        }
+
+
+
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){//, int actionOffset) {
+            if (input.x == selectAction) {
                 onRespond(customData[0] as DialogueResponse);
                 CloseUI();
             }

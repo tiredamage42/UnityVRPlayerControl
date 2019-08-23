@@ -7,6 +7,8 @@ using Valve.VR.InteractionSystem;
 
 using GameBase;
 
+using Game;
+
 namespace VRPlayer 
 {
 
@@ -254,8 +256,12 @@ public class TouchpadLocomotion : MonoBehaviour
     
     void CheckForJump (bool movementEnabled) {
         if (moveScript.isGrounded && movementEnabled) {
-            if (jumpAction.GetStateDown(moveHand)) {
-                if (!StandardizedVRInput.ActionOccupied(jumpAction, moveHand)) {
+
+            if (ControlsManager.GetActionStart(jumpAction, VRManager.Hand2Int(moveHand))) {
+            // if (jumpAction.GetStateDown(moveHand)) {
+                // if (!StandardizedVRInput.ActionOccupied(jumpAction, moveHand)) {
+                if (!ControlsManager.ActionOccupied(jumpAction, VRManager.Hand2Int(moveHand))) {
+                
                     moveScript.Jump();
                 }
             }
@@ -269,9 +275,14 @@ public class TouchpadLocomotion : MonoBehaviour
             return;
         }
 
-        if (!GameManager.isPaused && !StandardizedVRInput.ActionOccupied(crouchAction, moveHand) && !Player.instance.handsTogether) {
+                
 
-            if (crouchAction.GetStateDown(moveHand)) {
+        if (!GameManager.isPaused && !ControlsManager.ActionOccupied(crouchAction, VRManager.Hand2Int(moveHand))) {
+        // if (!GameManager.isPaused && !StandardizedVRInput.ActionOccupied(crouchAction, moveHand) && !Player.instance.handsTogether) {
+
+            // if (crouchAction.GetStateDown(moveHand)) {
+            if (ControlsManager.GetActionStart(crouchAction, VRManager.Hand2Int(moveHand))) {
+            
                 isCrouched = !isCrouched;
             }
         }
@@ -286,10 +297,21 @@ public class TouchpadLocomotion : MonoBehaviour
     public float capsuleRadius = .25f;
     
 
-    [Header("Controls")]
+    // [Header("Controls")]
     
-    public SteamVR_Action_Vector2 moveAction;
-    public SteamVR_Action_Boolean runAction, jumpAction, crouchAction;
+    // public SteamVR_Action_Vector2 moveAction;
+
+    SteamVR_Action_Vector2 moveAction {
+        get {
+            return Player.instance.trackpadAxis;// StandardizedVRInput.instance.TrackpadAxis;
+        }
+    }
+
+    public int jumpAction = 0;
+    public int crouchAction = 1;
+
+    // public SteamVR_Action_Boolean runAction, jumpAction, crouchAction;
+    public SteamVR_Action_Boolean runAction;//, crouchAction;
     
     public SteamVR_Action_Boolean turnActionLeft, turnActionRight;
 
@@ -416,7 +438,12 @@ public class TouchpadLocomotion : MonoBehaviour
         //     isRunning = false;
         //     return;
         // }
-        currentMoveVector = !movementEnabled || StandardizedVRInput.ActionOccupied(moveAction, moveHand) ? Vector2.zero : moveAction.GetAxis(moveHand);
+        
+        bool moveHandOccupied = ControlsManager.ControllerOccuped_UI(VRManager.Hand2Int(moveHand));
+        
+        // currentMoveVector = !movementEnabled || StandardizedVRInput.ActionOccupied(moveAction, moveHand) ? Vector2.zero : moveAction.GetAxis(moveHand);
+        currentMoveVector = !movementEnabled || moveHandOccupied ? Vector2.zero : moveAction.GetAxis(moveHand);
+        
         if (currentMoveVector == Vector2.zero)
         {
             isRunning = false;
@@ -471,11 +498,16 @@ public class TouchpadLocomotion : MonoBehaviour
         CheckCrouched(deltaTime, head);
 
         bool movementEnabled = !GameManager.isPaused && !isClimbing;
-        
-        CheckForJump(movementEnabled && !VRUIInput.HandOccupied(moveHand)); // also when jump hand isnt hovering
 
-        HandleTurnInput(head, movementEnabled && !VRUIInput.HandOccupied(turnHand));
-        HandleMoveInput(movementEnabled && !VRUIInput.HandOccupied(moveHand));
+
+
+        bool moveHandOccupied = ControlsManager.ControllerOccuped_UI(VRManager.Hand2Int(moveHand));
+        bool turnHandOccupied = ControlsManager.ControllerOccuped_UI(VRManager.Hand2Int(turnHand));
+        
+        CheckForJump(movementEnabled && !moveHandOccupied); // also when jump hand isnt hovering
+
+        HandleTurnInput(head, movementEnabled && !turnHandOccupied);
+        HandleMoveInput(movementEnabled && !moveHandOccupied);
         if (!isClimbing) {
             moveScript.SetInputMoveVector(new Vector3 (currentMoveVector.x, 0, currentMoveVector.y));
         }

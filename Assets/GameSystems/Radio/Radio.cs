@@ -65,7 +65,7 @@ namespace Game.RadioSystem {
 
         }
 
-        void SwitchStation(RadioStation newStation) {
+        public void SwitchStation(RadioStation newStation) {
             if (isOn) RadioManager.UnSubscribeStationSwitch(OnSwitchSong);
             
             currentStation = newStation;
@@ -86,7 +86,7 @@ namespace Game.RadioSystem {
             if (isOn) TurnOff();
             else TurnOn();
         }
-        void TurnOff () {
+        public void TurnOff () {
             isOn = false;
             RadioManager.UnSubscribeStationSwitch(OnSwitchSong);
             fxSource.PlayOneShot(turnOffClip);
@@ -101,7 +101,7 @@ namespace Game.RadioSystem {
         }
 
 
-        void TurnOn () {
+        public void TurnOn () {
             isOn = true;
             fxSource.PlayOneShot(turnOnClip);
             // TODO: warm up volume effect

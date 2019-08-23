@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
 
-// using SimpleUI;
-
-// TODO: switch over to game ui
 namespace SimpleUI {
     [ExecuteInEditMode]
     public class ControllerHintUIElement : MonoBehaviour
@@ -14,11 +11,6 @@ namespace SimpleUI {
 
         void Awake () {
             UpdateTextValues();
-        }
-        void Start () {
-            // if (Application.isPlaying) {
-                // Hide();
-            // }
         }
         public void SetLayoutValues (float textScale, Vector3 textOffset, TextAnchor textAnchor) {
             this.textScale = textScale;
@@ -37,8 +29,6 @@ namespace SimpleUI {
             text.SetAnchor(textAnchor);
             text.transform.localPosition = textOffset;
             text.transform.localScale = Vector3.one * textScale; 
-            // if (text != null) {
-            // }
         }
 
 #if UNITY_EDITOR
@@ -47,15 +37,5 @@ namespace SimpleUI {
         }
 #endif
         
-        public void Hide () {
-            gameObject.SetActive(false);
-        }
-        public void Show (string message) {
-            UpdateTextValues();
-            gameObject.SetActive(true);
-            text.SetText(message, -1);
-            // if (text != null) {
-            // }
-        }
     }
 }

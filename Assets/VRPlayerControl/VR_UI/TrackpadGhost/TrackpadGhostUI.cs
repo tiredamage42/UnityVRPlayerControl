@@ -3,11 +3,19 @@
 using UnityEngine.UI;
 
 namespace VRPlayer.UI {
-    public class TrackpadGhostUI : MonoBehaviour
+    [ExecuteInEditMode] public class TrackpadGhostUI : MonoBehaviour
     {
         public Vector2 axis;
+        public float middleZone = .1f;
+        public bool inMiddle;
         public float showSize = .2f;
-        RectTransform axisShowRect;
+        public RectTransform axisShowRect;
+        public RectTransform middleShowRect;
+        public RectTransform inMiddleRect;
+
+
+
+
         
         void OnEnable () {
             UpdateAxisShow();
@@ -15,6 +23,11 @@ namespace VRPlayer.UI {
     
         void UpdateAxisShow () {
             if (axisShowRect == null) axisShowRect = transform.GetChild(1).GetComponent<RectTransform>();
+            
+            
+            if (inMiddleRect != null) inMiddleRect.gameObject.SetActive(inMiddle);
+            if (axisShowRect != null) axisShowRect.gameObject.SetActive(!inMiddle);
+            
             
             if (axisShowRect != null) {
                 float halfShow = showSize * .5f;
@@ -24,10 +37,14 @@ namespace VRPlayer.UI {
                 );
                 axisShowRect.anchorMin = a;
                 axisShowRect.anchorMax = a;
-#if UNITY_EDITOR
+// #if UNITY_EDITOR
                 axisShowRect.localScale = Vector3.one * showSize;
-#endif
+// #endif
             }
+
+            if (middleShowRect != null) middleShowRect.localScale = Vector3.one * middleZone;
+            if (inMiddleRect != null) inMiddleRect.localScale = Vector3.one * middleZone;// * .9f;
+            
         }
 
         void Update()

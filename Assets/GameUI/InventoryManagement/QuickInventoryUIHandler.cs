@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Game.InventorySystem;
-
+using SimpleUI;
 namespace Game.UI {
 
     public class QuickInventoryUIHandler : UISelectableElementHandler
@@ -13,12 +13,14 @@ namespace Game.UI {
         }
 
         static QuickInventoryUIHandler _instance;
-        public static QuickInventoryUIHandler instance {
-            get {
-                if (_instance == null) _instance = GameObject.FindObjectOfType<QuickInventoryUIHandler>();
-                return _instance;
-            }
+
+        public static QuickInventoryUIHandler instance { get { return GetInstance<QuickInventoryUIHandler> (ref _instance); } }
+        
+
+        protected override void SetFlairs(SelectableElement element, object mainObject, int panelIndex) {
+            
         }
+
         public void OpenQuickInventoryUI (int interactorID, Inventory inventory) {
             OpenUI(interactorID, new object[] { inventory });
         }
@@ -44,10 +46,6 @@ namespace Game.UI {
         }
                     
 
-        // protected override bool RequiresCustomInputMethod () { return false; }
-
-        // const int consumeAction = 0;
-
         public int useAction;
         protected override List<int> InitializeInputsAndNames (out List<string> names) {
             names = new List<string>() { "Use" };
@@ -55,8 +53,7 @@ namespace Game.UI {
         }
 
         protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){//, int actionOffset) {
-        	// if (input.x == consumeAction+actionOffset){
-            if (input.x == useAction) {
+        	if (input.x == useAction) {
                 
                 CloseUI();
                 if (customData != null) {

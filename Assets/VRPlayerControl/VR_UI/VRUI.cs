@@ -1,20 +1,17 @@
-﻿// using System.Collections;
-// using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 using SimpleUI;
 using Valve.VR;
 using GameBase;
-using Game;
-// using Game.GameUI;
-using Game.InventorySystem;
 
+using Game;
+using Game.InventorySystem;
 using Game.UI;
+
 namespace VRPlayer.UI {
 
     public class VRUI : MonoBehaviour
     {
-        // public GameObject playerObject;
         public float buildRotationOffset = 25;
         public float textPanelRotationZOffset = .1f;
 
@@ -83,16 +80,9 @@ namespace VRPlayer.UI {
         public UIPageParameters workshopPageParams = new UIPageParameters(new Vector2(3, .25f), .5f, .01f, TextAnchor.MiddleCenter, 0, .0025f);
         public TextPanelParameters workshopPanelParams = new TextPanelParameters(new Vector2(3, 4), new Vector2(.1f, .1f), .0025f, TextAnchor.UpperLeft, 64);
         
-
-
-        // TODO: build interactor controller hints panels,
-        // TODO: build controller hints panels on all ui elements above 
-
         //TODO: get ui stuff out of actor script...
-        void BuildUIs (){//Actor playerActor, GameObject uiObject) {
+        void BuildUIs () {
 
-            // quickInvHandler = uiObject.GetComponent<QuickInventoryUIHandler>();
-            // invUIHandler = uiObject.GetComponent<FullInventoryUIHandler>();
             
             UIElementHolder fullTradeHolder = VRUIBuilder.MakeFullTradeUI("Page2Panel", normalPageParams, textPanelParameters, fullTradeTransform, normalVRMenuFollowParams, buildRotationOffset, textPanelRotationZOffset, controlsPanelPositionTrade, controlsPanelParamsTrade);// = new ControllerHintsPanelParameters();
 
@@ -124,9 +114,7 @@ namespace VRPlayer.UI {
             GameUI.dialogueResponseUI.SetUIObject(VRUIBuilder.MakeButtonsPage("Dialogue", dialogueParams, dialogueOptionsTransform, normalVRMenuFollowParams, controlsPanelPositionDialogue, controlsPanelParamsDialogue));//
         
             for (int i = 0; i < 2; i++) {
-                GameUI.AddInteractorControllerHintsPanel(
-                    VRUIBuilder.InstantiateControllerPanelFull ("InteractorHints" + i, controlsPanelParamsInteractor)
-                );
+                GameUI.AddInteractorControllerHintsPanel(VRUIBuilder.InstantiateControllerPanelFull ("InteractorHints" + i, controlsPanelParamsInteractor));
             }
         
 
@@ -146,19 +134,40 @@ namespace VRPlayer.UI {
         
         void OnEnable () {
             inventory = Player.instance.GetComponent<Inventory>();    
-            BuildUIs();//inventory.actor);//, GameObject.FindObjectOfType<UIObjectInitializer>().gameObject);
+            BuildUIs();
 
             GameManager.onPauseRoutineStart += OnGamePaused;
-            UIManager.onAnyUISelect += OnUISelection;            
-
             GameUI.onOpenInteractionHint += OnOpenInteractorHint;
+            UIManager.onAnyUISelect += OnUISelection;            
+            UIManager.onPopupOpen += OnPopupOpen;
+            UIManager.onPopupClose += OnPopupClose;
+
         }
             
         void OnDisable () {
             GameManager.onPauseRoutineStart -= OnGamePaused;
-            UIManager.onAnyUISelect -= OnUISelection;
             GameUI.onOpenInteractionHint -= OnOpenInteractorHint;
+            UIManager.onAnyUISelect -= OnUISelection;
+            UIManager.onPopupOpen -= OnPopupOpen;
+            UIManager.onPopupClose -= OnPopupClose;
         }
+
+        // SteamVR_Input_Sources uiHandBeforePopup;
+        int uiHandBeforePopup;
+        
+        void OnPopupOpen () {
+            // uiHandBeforePopup = currentUIHand;
+            uiHandBeforePopup = ControlsManager.currentUIController;
+
+            // SetUIHand(SteamVR_Input_Sources.Any);
+            ControlsManager.SetUIController(-1);
+        }
+
+        void OnPopupClose () {
+            // SetUIHand(uiHandBeforePopup);
+            ControlsManager.SetUIController(uiHandBeforePopup);
+        }
+
 
         public TransformBehavior interactionHintTransform;
 
@@ -166,50 +175,35 @@ namespace VRPlayer.UI {
             TransformBehavior.AdjustTransform(uiObject.transform, Player.instance.GetHand(VRManager.Int2Hand( controllerIndex )).transform, interactionHintTransform, controllerIndex);
         }
             
-
         void OnUISelection (GameObject selectedObject, GameObject[] data, object[] customData) {
             // float duration,  float frequency, float amplitude
-            StandardizedVRInput.instance.TriggerHapticPulse( VRUIInput.GetUIHand (), .1f, 1.0f, 1.0f );   
+            // StandardizedVRInput.instance.TriggerHapticPulse( VRUIInput.GetUIHand (), .1f, 1.0f, 1.0f );   
+            Player.instance.TriggerHapticPulse( VRManager.Int2Hand( ControlsManager.GetUIController () ), .1f, 1.0f, 1.0f );   
         }
         
         void OnGamePaused(bool isPaused, float routineTime) {
             if (isPaused) {
-                VRUIInput.SetUIHand(SteamVR_Input_Sources.Any);
+                ControlsManager.SetUIController(-1);
+                // VRUIInput.SetUIHand(SteamVR_Input_Sources.Any);
             }
         }        
 
         void Update()
         { 
             if (GameManager.isPaused) return;
-            // UpdateNormalInventory();
             UpdateQuickInventory();
         }
-         
-        // [Space] public SteamVR_Action_Boolean uiInvToggleAction;
-        // FullInventoryUIHandler invUIHandler;
-        // QuickInventoryUIHandler quickInvHandler;
 
-        // open full inventory logic
-        // void UpdateNormalInventory () {
-        //     if (uiInvToggleAction.GetStateDown(VRManager.instance.mainHand)) {
-        //         // if (invUIHandler.UIObjectActive())
-        //         if (GameUI.inventoryManagementUI.UIObjectActive(true))
-        //             GameUI.inventoryManagementUI.CloseUI();
-        //         else
-        //             GameUI.inventoryManagementUI.OpenInventoryManagementUI(inventory, null);
-        //     }
-        // } 
-
-        [Space] public SteamVR_Action_Boolean uiQuickInvToggleAction;
+        
+        // [Space] public SteamVR_Action_Boolean uiQuickInvToggleAction;
+        [Space] public int uiQuickInvToggleAction;
         
         // Opening quick invnetory logic
         bool CheckHandForWristRadialOpen (SteamVR_Input_Sources hand) {
-			if (uiQuickInvToggleAction.GetStateDown(hand)) {
-
-
-                GameUI.quickInventoryUI.OpenQuickInventoryUI(VRManager.Hand2Int(hand), inventory);
-                // GameUI.OpenQuickInventoryUI(inventory, VRManager.Hand2Int(hand));
-                // quickInvHandler.OpenUI(new object[] { inventory, VRManager.Hand2Int(hand), null, null });
+            int handInt = VRManager.Hand2Int(hand);
+            if (ControlsManager.GetActionStart(uiQuickInvToggleAction, handInt)) {
+			// if (uiQuickInvToggleAction.GetStateDown(hand)) {
+                GameUI.quickInventoryUI.OpenQuickInventoryUI(handInt, inventory);
                 return true;
 			}
 			return false;
@@ -220,14 +214,18 @@ namespace VRPlayer.UI {
             
 			if (Player.instance.handsTogether) {
                 
-                StandardizedVRInput.MarkActionOccupied(uiQuickInvToggleAction, SteamVR_Input_Sources.Any);
+                
+                ControlsManager.MarkActionOccupied(uiQuickInvToggleAction, -1);
+                // StandardizedVRInput.MarkActionOccupied(uiQuickInvToggleAction, SteamVR_Input_Sources.Any);
 
                 if (!CheckHandForWristRadialOpen(SteamVR_Input_Sources.LeftHand)) {
                     CheckHandForWristRadialOpen(SteamVR_Input_Sources.RightHand);
                 }
             }
             else {
-                StandardizedVRInput.MarkActionUnoccupied(uiQuickInvToggleAction);
+                
+                ControlsManager.MarkActionUnoccupied(uiQuickInvToggleAction);
+                // StandardizedVRInput.MarkActionUnoccupied(uiQuickInvToggleAction);
             }   
         }   
 

@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using Valve.VR;
-
-using StandaloneInputModule = SimpleUI.StandaloneInputModule;
+using Game;
 using SimpleUI;
-namespace VRPlayer{
+using StandaloneInputModule = SimpleUI.StandaloneInputModule;
+namespace VRPlayer {
 
     /*
         interface for any ui input system set up
@@ -16,21 +15,14 @@ namespace VRPlayer{
 
         static StandaloneInputModule inputModule;
 
-        //assumes input module turns on and off with ui
-        public static bool uiInputActive {
-            get {
-                return inputModule.gameObject.activeInHierarchy;//.UIManager.uiInputActive;
-            }
-        }
-        public static bool HandOccupied (SteamVR_Input_Sources forHand) {
-            return uiInputActive && (forHand == currentUIHand || currentUIHand == SteamVR_Input_Sources.Any);
-        }
-        public static bool ActionOccupied (SteamVR_Action action, SteamVR_Input_Sources forHand) {
-            return HandOccupied(forHand) && (
-                (action == Player.instance.actions[UIManager.instance.submitAction]) || (action == Player.instance.actions[UIManager.instance.cancelAction]) || (action == selectionAxis) 
-                // (action == instance.submitButton) || (action == instance.cancelButton) || (action == selectionAxis) 
-            );
-        }
+        // public static bool HandOccupied (SteamVR_Input_Sources forHand) {
+        //     return UIManager.uiInputActive && (forHand == currentUIHand || currentUIHand == SteamVR_Input_Sources.Any);
+        // }
+        // public static bool ActionOccupied (SteamVR_Action action, SteamVR_Input_Sources forHand) {
+        //     return HandOccupied(forHand) && (
+        //         (action == Player.instance.actions[UIManager.instance.submitAction]) || (action == Player.instance.actions[UIManager.instance.cancelAction]) || (action == selectionAxis) 
+        //     );
+        // }
         
 
         protected override void Awake() {
@@ -43,112 +35,71 @@ namespace VRPlayer{
                 Debug.LogError(" vr ui input couldnt find a standalone input module in the scene ");
             }
         }
-        protected override void OnEnable () {
-            base.OnEnable();
-            UIManager.onPopupOpen += OnPopupOpen;
-            UIManager.onPopupClose += OnPopupClose;
-        }
-        protected override void OnDisable () {
-            base.OnDisable();
-            UIManager.onPopupOpen -= OnPopupOpen;
-            UIManager.onPopupClose -= OnPopupClose;
-        }
+        // protected override void OnEnable () {
+        //     base.OnEnable();
+        //     UIManager.onPopupOpen += OnPopupOpen;
+        //     UIManager.onPopupClose += OnPopupClose;
+        // }
+        // protected override void OnDisable () {
+        //     base.OnDisable();
+        //     UIManager.onPopupOpen -= OnPopupOpen;
+        //     UIManager.onPopupClose -= OnPopupClose;
+        // }
 
 
-        SteamVR_Input_Sources uiHandBeforePopup;
-        void OnPopupOpen () {
-            uiHandBeforePopup = currentUIHand;
-            SetUIHand(SteamVR_Input_Sources.Any);
-        }
-
-        void OnPopupClose () {
-            SetUIHand(uiHandBeforePopup);
-        }
-      
-        public static SteamVR_Input_Sources GetUIHand () {
-            return currentUIHand != SteamVR_Input_Sources.Any ? currentUIHand : lastUsedUIHand;
-        }
-
-        static VRUIInput _instance;
-		public static VRUIInput instance {
-			get {
-				if ( _instance == null )
-					_instance = FindObjectOfType<VRUIInput>();
-				return _instance;
-			}
-		}
-
-        public static void SetUIHand (SteamVR_Input_Sources hand) {
-            currentUIHand = hand;
-        }
-
-        // public SteamVR_Action_Boolean submitButton;
-        // public SteamVR_Action_Boolean cancelButton;      
+        // // SteamVR_Input_Sources uiHandBeforePopup;
+        // int uiHandBeforePopup;
         
-        // [Tooltip(".15f is a good setting when\nstandalone input module has 60 actions per second")]  
-        // public Vector2 deltaThresholdForScroll = new Vector2(.15f, .15f);
-        static SteamVR_Action_Vector2 selectionAxis { get { return StandardizedVRInput.instance.TrackpadAxis; } }
-        static SteamVR_Input_Sources lastUsedUIHand = SteamVR_Input_Sources.Any;
-        static SteamVR_Input_Sources currentUIHand = SteamVR_Input_Sources.Any;
+        // void OnPopupOpen () {
+        //     // uiHandBeforePopup = currentUIHand;
+        //     uiHandBeforePopup = ControlsManager.currentUIController;
 
-        public override Vector2 mousePosition { get { return selectionAxis.GetAxis( currentUIHand ); } }
-
-        // bool checkedFrameX, checkedFramey;
-        // Vector2 savedAxis, lastAxis;
-        // void LateUpdate () {
-        //     checkedFrameX = false;
-        //     checkedFramey = false;
+        //     // SetUIHand(SteamVR_Input_Sources.Any);
+        //     ControlsManager.SetUIController(-1);
         // }
 
-
-        // /*
-        //     make axis react to scrolling action on trackpad
-        // */
-        // float GetAxisRaw(int axisIndex, Vector2 currentAxis, ref bool checkedFrame) {
-
-        //     if (checkedFrame) {
-        //         return savedAxis[axisIndex];
-        //     }
-        //     float delta = currentAxis[axisIndex] - lastAxis[axisIndex];
-        //     float returnAxis = 0;
-
-        //     if (delta != 0 && Mathf.Abs(delta) >= deltaThresholdForScroll[axisIndex]) {
-        //         if (lastAxis[axisIndex] == 0 || currentAxis[axisIndex] == 0) {
-        //             if (lastAxis[axisIndex] == 0) {
-        //                 // Debug.LogError("on scroll start");
-        //             }
-        //             else {
-        //                 // Debug.LogError("on scroll end");
-        //             }
-        //         }
-        //         else {
-        //             returnAxis = Mathf.Clamp(delta * 99999, -1, 1);
-        //         }
-        //         lastAxis[axisIndex] = currentAxis[axisIndex];
-        //     }
-        //     checkedFrame = true;
-        //     savedAxis[axisIndex] = returnAxis;
-        //     return returnAxis;
+        // void OnPopupClose () {
+        //     // SetUIHand(uiHandBeforePopup);
+        //     ControlsManager.SetUIController(uiHandBeforePopup);
+        // }
+      
+        // public static SteamVR_Input_Sources GetUIHand () {
+        //     return currentUIHand != SteamVR_Input_Sources.Any ? currentUIHand : lastUsedUIHand;
         // }
 
+        // public static void SetUIHand (SteamVR_Input_Sources hand) {
+        //     currentUIHand = hand;
+        // }
+        // static SteamVR_Input_Sources lastUsedUIHand = SteamVR_Input_Sources.Any;
+        // static SteamVR_Input_Sources currentUIHand = SteamVR_Input_Sources.Any;
+        public override Vector2 mousePosition { get { return selectionAxis.GetAxis( VRManager.Int2Hand(ControlsManager.currentUIController ) ); } }
 
+
+        static SteamVR_Action_Vector2 selectionAxis { get { return Player.instance.trackpadAxis; } }
+
+        
+        /*
+            make axis react to scrolling action on trackpad
+        */
         public override float GetAxisRaw(string axisName) {
 
             // Vector2 axis = selectionAxis.GetAxis(currentUIHand);
-            if (currentUIHand == SteamVR_Input_Sources.Any) {
-                lastUsedUIHand = selectionAxis.GetAxis(SteamVR_Input_Sources.RightHand) != Vector2.zero ? 
-                    SteamVR_Input_Sources.RightHand : 
-                    SteamVR_Input_Sources.LeftHand;
+            // if (currentUIHand == SteamVR_Input_Sources.Any) {
+
+                int currentUIHand = ControlsManager.currentUIController;
+            if (currentUIHand < 0) {
+                ControlsManager.lastUsedUIController
+                // lastUsedUIHand 
+                    = selectionAxis.GetAxis(SteamVR_Input_Sources.RightHand) != Vector2.zero ? 
+                    VRManager.Hand2Int( SteamVR_Input_Sources.RightHand ) : 
+                    VRManager.Hand2Int( SteamVR_Input_Sources.LeftHand );
             }
 
             if (axisName == inputModule.horizontalAxis){ 
-                return StandardizedVRInput.instance.GetScrollDelta(currentUIHand).x;
-                // return GetAxisRaw(0, axis, ref checkedFrameX);
+                return Player.instance.GetScrollDelta(VRManager.Int2Hand( currentUIHand)).x;
             }
             else if (axisName == inputModule.verticalAxis){
-                return StandardizedVRInput.instance.GetScrollDelta(currentUIHand).y;
-                // return GetAxisRaw(1, axis, ref checkedFramey);
-                
+                return Player.instance.GetScrollDelta(VRManager.Int2Hand(currentUIHand)).y;
             }   
             return 0;
         }

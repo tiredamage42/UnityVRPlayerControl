@@ -180,7 +180,7 @@ namespace Valve.VR.InteractionSystem.Sample
                 if (isEquipped)
                 {
                 SteamVR_Input_Sources hand = GetComponent<SceneItem>().parentInventory.GetComponent<Hand>().handType;
-                    StandardizedVRInput.instance.TriggerHapticPulse(hand,
+                    Player.instance.TriggerHapticPulse(hand,
                     // interactable.attachedToHand.TriggerHapticPulse(
                         (ushort)Mathf.RoundToInt(300 * Mathf.Lerp(1.0f, 0.6f, buggy.mvol)));
                 }

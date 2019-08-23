@@ -25,17 +25,7 @@ namespace VRPlayer {
         public TransformBehavior followBehavior;
 
 
-        // Vector3 rotationTarget, lastRotationFWD = Vector3.forward;
-
-        private void OnEnable() {
-            // lastRotationFWD = hmdTransform.forward;
-            // rotationTarget = hmdTransform.rotation.eulerAngles;
-            // rotationTarget.z = 0;
-            
-            // if (!parameters.matchXRotation)
-            //     rotationTarget.x = 0;
-        }
-
+        
 
         float currentYRotation;
         void FollowCameraPosition (float deltaTime) {
@@ -56,27 +46,8 @@ namespace VRPlayer {
                 currentYRotation = ySnap;
             }
 
-
-
-
-
-
-
-            // if (Vector3.Angle(hmdTransform.forward, lastRotationFWD) > parameters.angleThreshold) {
-            //     lastRotationFWD = hmdTransform.forward;
-            //     rotationTarget = hmdTransform.rotation.eulerAngles;
-            //     rotationTarget.z = 0;
-            //     if (!parameters.matchXRotation)
-            //         rotationTarget.x = 0;
-            // }
-
-
             Quaternion rotationTarget = Quaternion.Euler(parameters.matchXRotation ? headEuler.x : 0, currentYRotation, 0);
-                
-
-
-                
-            // baseTransform.rotation = Quaternion.Slerp(baseTransform.rotation, Quaternion.Euler(rotationTarget), deltaTime * parameters.turnSpeed);
+                                
             baseTransform.rotation = Quaternion.Slerp(baseTransform.rotation, (rotationTarget), deltaTime * parameters.turnSpeed);
         }
 

@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using SimpleUI;
 using Game.InventorySystem;
 using Game.InventorySystem.WorkshopSystem;
 namespace Game.UI {
@@ -16,19 +17,11 @@ namespace Game.UI {
             return (buttonObject as InventorySlot).item.itemName;
         }
         static WorkshopUIHandler _instance;
-        public static WorkshopUIHandler instance {
-            get {
-                if (_instance == null) _instance = GameObject.FindObjectOfType<WorkshopUIHandler>();
-                return _instance;
-            }
-        }
-        public void OpenWorkshopUI (Inventory inventory, List<int> categoryFilter) {
-            OpenUI ( -1, new object[] { inventory, categoryFilter });
-        }
-
-        // protected override bool RequiresCustomInputMethod () { return false; }
-
+        public static WorkshopUIHandler instance { get { return GetInstance<WorkshopUIHandler> (ref _instance); } }
         
+        public void OpenWorkshopUI (Inventory inventory, List<int> categoryFilter) {
+            OpenUI ( 1, new object[] { inventory, categoryFilter });
+        }
 
         [Header("Sync actions with workshop mode actions...")]
         public int buildAction;
@@ -40,7 +33,14 @@ namespace Game.UI {
 
 
 
-        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){}//, int inputOffset) { }
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){
+
+        }
+        // set flair any in inventory ?
+        protected override void SetFlairs(SelectableElement element, object mainObject, int panelIndex) {
+            
+        }
+
         
         protected override void OnUISelect (GameObject selectedObject, GameObject[] data, object[] customData) {
             string txt = "";

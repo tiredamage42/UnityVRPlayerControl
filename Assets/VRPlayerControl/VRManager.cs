@@ -154,7 +154,7 @@ namespace VRPlayer{
         }
         public static bool headsetIsOnPlayerHead{
             get {
-                return StandardizedVRInput.instance != null && StandardizedVRInput.instance.headsetIsOnPlayerHead;
+                return Player.instance.headsetIsOnPlayerHead;// StandardizedVRInput.instance != null && StandardizedVRInput.instance.headsetIsOnPlayerHead;
             }
         }
         public static Transform trackingOrigin {
@@ -332,17 +332,6 @@ namespace VRPlayer{
         }
 
 
-
-
-        public void ShowTextHints ( GameObject[] data )
-		{
-            Debug.LogError("showing texxt hints");
-			StandardizedVRInput.instance.PlayDebugRoutine();
-		}
-		public void DisableHints ( GameObject[] data )
-		{
-			StandardizedVRInput.instance.StopHintRoutine();
-		}
         public void SetRenderModel(GameObject[] data)
         {
             if (data.Length < 2) {

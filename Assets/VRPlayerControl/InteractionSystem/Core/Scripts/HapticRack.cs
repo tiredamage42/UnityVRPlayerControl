@@ -48,7 +48,7 @@ namespace VRPlayer//Valve.VR.InteractionSystem
 			
 				{
 					ushort duration = (ushort)Random.Range( minimumPulseDuration, maximumPulseDuration + 1 );
-					StandardizedVRInput.instance.TriggerHapticPulse( hand.handType, duration );
+					Player.instance.TriggerHapticPulse( hand.handType, duration );
 
 					onPulse.Invoke();
 				}

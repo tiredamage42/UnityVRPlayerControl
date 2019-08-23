@@ -12,11 +12,11 @@ namespace VRPlayer {
     public class VRWorkshop : MonoBehaviour
     {
         
-
-        public SteamVR_Action_Boolean newTeleportButton;
+        public int newTeleportButton = 0;
+        // public SteamVR_Action_Boolean newTeleportButton;
     //     // public SteamVR_Input_Sources newTeleportHand;
 
-        SteamVR_Action_Boolean oldTeleportButton;
+        int oldTeleportButton;
         SteamVR_Input_Sources oldTeleportHand;
 
         WorkshopMode workshop;
@@ -51,7 +51,7 @@ namespace VRPlayer {
 
 
             SteamVR_Input_Sources uiHand = SteamVR_Input_Sources.LeftHand;
-            VRUIInput.SetUIHand(uiHand);
+            // VRUIInput.SetUIHand(uiHand);
 
             TransformBehavior.AdjustTransform(uiObject.transform, Player.instance.GetHand(uiHand).transform, workshopUITransform, 0);
         
@@ -103,7 +103,8 @@ namespace VRPlayer {
 
         void Update () {
             if (isOpen) {
-                workshop.ProvideAxisDeltas(StandardizedVRInput.instance.GetScrollDelta(SteamVR_Input_Sources.RightHand));
+                // workshop.ProvideAxisDeltas(StandardizedVRInput.instance.GetScrollDelta(SteamVR_Input_Sources.RightHand));
+                workshop.ProvideAxisDeltas(Player.instance.GetScrollDelta(SteamVR_Input_Sources.RightHand));
             }
         }
 

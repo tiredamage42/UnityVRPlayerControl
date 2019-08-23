@@ -8,6 +8,11 @@ namespace Game.UI {
     public class CraftingUIHandler : UISelectableElementHandler
     {
 
+        protected override void SetFlairs(SelectableElement element, object mainObject, int panelIndex) {
+            
+        }
+
+
         
 
         public static string BuildConfirmationText(ItemComposition[] compositionsToShow, string actionPrefix, string objectName, Actor actorValues) {
@@ -92,12 +97,8 @@ namespace Game.UI {
         }
 
         static CraftingUIHandler _instance;
-        public static CraftingUIHandler instance {
-            get {
-                if (_instance == null) _instance = GameObject.FindObjectOfType<CraftingUIHandler>();
-                return _instance;
-            }
-        }
+        public static CraftingUIHandler instance { get { return GetInstance<CraftingUIHandler> (ref _instance); } }
+        
         public void OpenCraftingUI (Inventory craftingInventory, List<int> categoryFilter) {
             OpenUI (  0, new object[] { craftingInventory, categoryFilter } );
         }
@@ -132,12 +133,10 @@ namespace Game.UI {
         int currentPanelIndex;
         InventorySlot currentSlot;
 
-        // protected override bool RequiresCustomInputMethod () { return false; }
-
         public int craftAction;
         protected override List<int> InitializeInputsAndNames (out List<string> names) {
             names = new List<string>() { "Craft / Scrap" };
-            return new List<int>() { craftAction };//, UIManager.instance.cancelAction };
+            return new List<int>() { craftAction };
         }
 
         protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){//, int actionOffset) {
@@ -147,7 +146,6 @@ namespace Game.UI {
                 currentPanelIndex = (int)customData[1];
 
                 if (input.x == craftAction) {
-                // if (input.x == craftAction+actionOffset) {
                 
                     // showign crafting recipes
                     if (currentPanelIndex == 0) {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using SimpleUI;
 namespace Game.UI {
 
     public class UIGameValuePage : UISelectableElementHandler
@@ -55,6 +56,10 @@ namespace Game.UI {
         protected override List<int> InitializeInputsAndNames (out List<string> names) {
             names = new List<string>() { };
             return new List<int>() { };
+        }
+
+        protected override void SetFlairs(SelectableElement element, object mainObject, int panelIndex) {
+            
         }
 
 

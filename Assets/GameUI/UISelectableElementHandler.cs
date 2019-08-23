@@ -38,10 +38,13 @@ namespace Game.UI {
             }
             lastElementsShownCount = new int[maxUIPages];
         }
-        
-        void MakeButton (SelectableElement element, string text, object[] customData) {
+
+        protected abstract void SetFlairs(SelectableElement element, object mainObject, int panelIndex);
+                
+        void MakeButton (SelectableElement element, string text, object[] customData, int panelIndex) {
             element.uiText.SetText(text, -1);
             element.customData = customData;
+            SetFlairs(element, customData[0], panelIndex);
         }
 
 
@@ -142,11 +145,11 @@ namespace Game.UI {
                 bool isAtBeginning = currentPaginatedOffsets[panelIndex] == 0;
 
                 if (!isAtBeginning){
-                    MakeButton(elements[0], " [ Page Up ] ", new object[]{ "B", panelIndex} );
+                    MakeButton(elements[0], " [ Page Up ] ", new object[]{ "B", panelIndex}, panelIndex );
                     start = 1;
                 }
                 if (!isAtEnd) {
-                    MakeButton(elements[maxButtons-1], "[ Page Down ] ", new object[]{ "F", panelIndex} );
+                    MakeButton(elements[maxButtons-1], "[ Page Down ] ", new object[]{ "F", panelIndex}, panelIndex );
                     end = maxButtons - 1;
                 }
             }
@@ -155,10 +158,10 @@ namespace Game.UI {
                 int index = isPaginated ? (i-start) + currentPaginatedOffsets[panelIndex] : i;
 
                 if (index < buttonObjectsCount) {
-                    MakeButton( elements[i], GetDisplayForButtonObject(buttonObjects[index]), new object[] { buttonObjects[index], panelIndex } );
+                    MakeButton( elements[i], GetDisplayForButtonObject(buttonObjects[index]), new object[] { buttonObjects[index], panelIndex }, panelIndex );
                 }
                 else {
-                    MakeButton( elements[i], "Empty", new object[] { null, panelIndex} );
+                    MakeButton( elements[i], "Empty", new object[] { null, panelIndex}, panelIndex );
                 }
             }
         }  

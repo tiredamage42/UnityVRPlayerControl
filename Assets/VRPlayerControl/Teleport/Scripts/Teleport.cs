@@ -8,6 +8,7 @@ using UnityEngine;
 using Valve.VR;
 using GameBase;
 using InteractionSystem;
+using Game;
 namespace VRPlayer
 {
 	public class Teleport : MonoBehaviour
@@ -15,8 +16,8 @@ namespace VRPlayer
 
 		public bool teleportationAllowed;
 
-
-        public SteamVR_Action_Boolean teleportAction;
+		public int teleportAction = 1;
+        // public SteamVR_Action_Boolean teleportAction;
 		public SteamVR_Input_Sources teleportHand = SteamVR_Input_Sources.LeftHand;
 
 		Hand teleportHandClass { get { return Player.instance.GetHand(teleportHand); } }
@@ -77,7 +78,6 @@ namespace VRPlayer
 		public Transform destinationReticleTransform;
 		public Transform invalidReticleTransform;
 
-		public bool showPlayAreaMarker = true;
 		public float teleportFadeTime = 0.1f;
 		public float arcDistance = 10.0f;
 
@@ -171,7 +171,8 @@ namespace VRPlayer
 			if (!teleporting && teleportationAllowed) {
 				if ( visible && validAreaTargeted)
 				{
-					if (teleportAction.GetStateUp(teleportHand))
+					// if (teleportAction.GetStateUp(teleportHand))
+					if (ControlsManager.GetActionEnd(teleportAction, VRManager.Hand2Int(teleportHand) ))
 					{
 						//Pointing at an unlocked teleport marker
 						teleportingToMarker = pointedAtTeleportMarker;
@@ -180,7 +181,9 @@ namespace VRPlayer
 				}
 				if (!GameManager.isPaused) {
 
-					if ((!StandardizedVRInput.ActionOccupied(teleportAction, teleportHand) || Player.instance.GetComponent<Interactor>().interactionMode == 1) && teleportAction.GetStateDown(teleportHand) )
+					// if ((!StandardizedVRInput.ActionOccupied(teleportAction, teleportHand) || Player.instance.GetComponent<Interactor>().interactionMode == 1) && teleportAction.GetStateDown(teleportHand) )
+					if ((!ControlsManager.ActionOccupied(teleportAction, VRManager.Hand2Int(teleportHand)) || Player.instance.GetComponent<Interactor>().interactionMode == 1) && ControlsManager.GetActionStart(teleportAction, VRManager.Hand2Int(teleportHand) ) )
+
 					{
 						teleportNewlyPressed = true;
 					}
@@ -193,7 +196,9 @@ namespace VRPlayer
 			}
 			else if ( visible )
 			{
-				if ( !teleportNewlyPressed && !teleportAction.GetState(teleportHand) )
+
+				// if ( !teleportNewlyPressed && !teleportAction.GetState(teleportHand) )
+				if ( !teleportNewlyPressed && !ControlsManager.GetActionUpdate(teleportAction, VRManager.Hand2Int(teleportHand) ))
 				{
 					HidePointer();
 				}
@@ -391,7 +396,7 @@ namespace VRPlayer
 
 		private void PlayPointerHaptic( bool validLocation )
 		{
-			StandardizedVRInput.instance.TriggerHapticPulse(teleportHand, (ushort)(validLocation ? 800 : 100) );
+			Player.instance.TriggerHapticPulse(teleportHand, (ushort)(validLocation ? 800 : 100) );
 		}
 
 		float teleportLerp;
@@ -429,18 +434,12 @@ namespace VRPlayer
 
 			currentFadeTime = teleportFadeTime;
 
-			// TeleportPoint teleportPoint = teleportingToMarker as TeleportPoint;
-			// if ( teleportPoint != null && teleportPoint.teleportType == TeleportPoint.TeleportPointType.SwitchToNewScene ) {
-			// 	currentFadeTime *= 3.0f;
-			// }
-			// else {
 				if (fastTeleport) {
 					doFade = false;
 					teleportStartPosition = VRManager.instance.trackingOriginTransform.position;
 					teleportLerp = 0;
 					if (playerCC != null) playerCC.enabled = false;
 				}
-			// }
 			
 			if (doFade) {
 				SteamVR_Fade.Start( Color.clear, 0 );
@@ -467,13 +466,6 @@ namespace VRPlayer
 			if ( teleportingToMarker != null )
 			{
 				teleportPosition = teleportingToMarker.transform.position;
-
-				//Teleport to a new scene
-				// if ( teleportingToMarker.teleportType == TeleportPoint.TeleportPointType.SwitchToNewScene )
-				// {
-				// 	teleportingToMarker.TeleportToScene();
-				// 	return;
-				// }
 			}			
 			VRManager.instance.trackingOriginTransform.position = GetNewPlayAreaPosition(teleportPosition);
 		}

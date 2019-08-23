@@ -16,12 +16,8 @@ namespace Game.UI {
         }
 
         static FullInventoryUIHandler _instance;
-        public static FullInventoryUIHandler instance {
-            get {
-                if (_instance == null) _instance = GameObject.FindObjectOfType<FullInventoryUIHandler>();
-                return _instance;
-            }
-        }
+        public static FullInventoryUIHandler instance { get { return GetInstance<FullInventoryUIHandler> (ref _instance); } }
+        
         public void OpenInventoryManagementUI (Inventory inventory, List<int> categoryFilter) {
             OpenUI (  0, new object[] { inventory, categoryFilter });
         }
@@ -45,8 +41,6 @@ namespace Game.UI {
         }
         
         
-        // const int consumeAction = 0, dropAction = 1;
-        
         InventorySlot highlightedItemSlot;
 
         void OnGetDropAmount (bool used, int value) {
@@ -64,7 +58,6 @@ namespace Game.UI {
                 // drop
                 if (value == 0) {       
                     // get slider value
-                    Debug.LogError("show slider in inv ui");
                     UIManager.ShowIntSliderPopup(false, "\n\nDrop " + highlightedItemSlot.item.itemName + ":", 0, highlightedItemSlot.count, OnGetDropAmount);
                 }
                 // favorite
@@ -75,15 +68,20 @@ namespace Game.UI {
             }
         }
 
-
-
-        // protected override bool RequiresCustomInputMethod () { return true; }
         public int consumeAction = 0;
         public int optionsAction = 1;
 
         protected override List<int> InitializeInputsAndNames (out List<string> names) {
             names = new List<string>() { "Use", "Options" };
-            return new List<int>() { consumeAction, optionsAction };//, UIManager.instance.cancelAction };
+            return new List<int>() { consumeAction, optionsAction };
+        }
+
+        protected override void SetFlairs(SelectableElement element, object mainObject, int panelIndex) {
+            InventorySlot slot = mainObject as InventorySlot;
+            if (slot != null) {
+                element.EnableFlair(0, showingInventory.equipper.ItemIsEquipped(-1, slot.item));
+                element.EnableFlair(1, showingInventory.IsFavorited(slot.item));
+            }
         }
 
 
@@ -95,13 +93,13 @@ namespace Game.UI {
                 
                 if (highlightedItemSlot != null) {
                                     
-                    if (input.x == consumeAction){//+actionOffset) {
+                    if (input.x == consumeAction){
                         if (highlightedItemSlot.item.OnConsume(showingInventory, count: 1, input.y)){
                             UpdateUIButtons();
                         }
                     }
                     // drop
-                    else if (input.x == optionsAction){//+actionOffset) {
+                    else if (input.x == optionsAction){
                         UIManager.ShowSelectionPopup(true, "\n\n"+highlightedItemSlot.item.itemName+":", new string[] {"Drop", "Favorite"}, OnItemActionSelection);
                     }
                 }

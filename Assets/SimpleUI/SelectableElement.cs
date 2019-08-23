@@ -36,13 +36,21 @@ namespace SimpleUI {
                 return _mainImage;
             }
         }   
-        
+
+        public RectTransform[] flairs;
+    
         public GameObject[] data;
         public object[] customData;
         public UIButtonClickWData onClick;
         
         void OnEnable () {
             UpdateElement();
+        }
+
+        public void EnableFlair(int index, bool enabled) {
+            if (index >= 0 && index <= flairs.Length) {
+                flairs[index].gameObject.SetActive(enabled);
+            }
         }
 
         public void UpdateElement () {

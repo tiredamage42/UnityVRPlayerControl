@@ -83,10 +83,13 @@ namespace SimpleUI {
             base.Update();
             UpdateHintsLayouts();
             if (!Application.isPlaying) {
+                // debugMessage = "<size=64><b>\u2022</b></size> Hey <size=64><b>\u2665</b></size>";
+                // debugMessage = "<size=64><b>\u25A3</b></size> Hey <size=64><b>\u2665</b></size>";
 
-            SetText ( debugMessage);
+                
+                // debugMessage = "<font size='6'><b>\u2022</b></font> buller \u2023 arraow hyphen \u2665";
+                SetText ( debugMessage);
             }
-
         }
 #endif
         void UpdateHintsLayouts () {
@@ -120,22 +123,11 @@ namespace SimpleUI {
             
         }
 
-        public void RemoveHintElement (ControllerHintUIElement hint) {
-            if (allHints.Contains(hint)) {
-                hint.transform.SetParent(null);
-                hint.gameObject.SetActive(false);
-                allHints.Remove(hint);
-                UpdateHintsLayouts();
-                
-            Debug.LogError("disabled single");
-            }
-        }
         public void RemoveAllHintElements () {
             for (int i = 0; i < allHints.Count; i++) {
                 allHints[i].transform.SetParent(null);
                 allHints[i].gameObject.SetActive(false);
             }
-            Debug.LogError("disabled");
             allHints.Clear();
         }
 
@@ -155,7 +147,6 @@ namespace SimpleUI {
                 hint.transform.SetParent(transform);
                 hint.transform.localRotation = Quaternion.identity;
                 hint.gameObject.SetActive(true);
-                // Debug.LogError("adding " + txt);
                 hint.SetText ( txt );
                 allHints.Add(hint);
                 UpdateHintsLayouts();

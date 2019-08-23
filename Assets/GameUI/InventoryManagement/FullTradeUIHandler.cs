@@ -18,12 +18,9 @@ namespace Game.UI {
 
 
         static FullTradeUIHandler _instance;
-        public static FullTradeUIHandler instance {
-            get {
-                if (_instance == null) _instance = GameObject.FindObjectOfType<FullTradeUIHandler>();
-                return _instance;
-            }
-        }
+        
+        public static FullTradeUIHandler instance { get { return GetInstance<FullTradeUIHandler> (ref _instance); } }
+        
         public void OpenTradUI (Inventory inventory0, Inventory inventory1, List<int> categoryFilter) {
             OpenUI(  0, new object[] { inventory0, inventory1, categoryFilter } );
         }
@@ -47,8 +44,6 @@ namespace Game.UI {
         }
         
 
-        // const int singleTradeAction = 0, tradeAllAction = 1, consumeAction = 2;
-
         Inventory giver, receiver;
         InventorySlot highlightedItem;
         void OnDropSliderReturnValue(bool used, int value) {
@@ -61,8 +56,6 @@ namespace Game.UI {
         }
 
 
-        // protected override bool RequiresCustomInputMethod () { return true; }
-
         public int tradeAction = 0;
         public int tradeAllAction = 1;
         public int consumeAction = 2;
@@ -73,7 +66,14 @@ namespace Game.UI {
         }
 
 
-        
+        protected override void SetFlairs(SelectableElement element, object mainObject, int panelIndex) {
+            InventorySlot slot = mainObject as InventorySlot;
+            if (slot != null) {
+                element.EnableFlair(0, invs[panelIndex].equipper.ItemIsEquipped(-1, slot.item));
+                element.EnableFlair(1, invs[panelIndex].IsFavorited(slot.item));
+            }
+        }
+
 
 
         protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){//, int actionOffset) {
@@ -88,7 +88,7 @@ namespace Game.UI {
                 receiver = invs[1-panelIndex];
 
                 // single trade
-                if (input.x == tradeAction){//+actionOffset) {
+                if (input.x == tradeAction){
                     if (highlightedItem != null) {
                         // get count from slider
                         if (highlightedItem.count > 5) {
@@ -101,14 +101,14 @@ namespace Game.UI {
                     }
                 }
                 // take all
-                else if (input.x == tradeAllAction){//+actionOffset) {   
+                else if (input.x == tradeAllAction){
                     //TODO: check if any actually transfeerrrd
                     giver.TransferInventoryContentsTo(receiver, sendMessage: false);
                     updateButtons = true;
                 }
 
                 //consume on selected inventory (limit to other inventory)
-                else if (input.x == consumeAction){//+actionOffset) {
+                else if (input.x == consumeAction){
                     if (highlightedItem != null) {
                         if (highlightedItem.item.OnConsume(giver, count: 1, input.y)){
                             updateButtons = true;

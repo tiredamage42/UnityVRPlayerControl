@@ -2,7 +2,7 @@
 using UnityEngine;
 
 using Game.InventorySystem;
-
+using SimpleUI;
 namespace Game.UI {
 
     public class QuickTradeUIHandler : UISelectableElementHandler
@@ -10,12 +10,8 @@ namespace Game.UI {
         Inventory showingInventory, takingInventory;
 
         static QuickTradeUIHandler _instance;
-        public static QuickTradeUIHandler instance {
-            get {
-                if (_instance == null) _instance = GameObject.FindObjectOfType<QuickTradeUIHandler>();
-                return _instance;
-            }
-        }
+        public static QuickTradeUIHandler instance { get { return GetInstance<QuickTradeUIHandler> (ref _instance); } }
+        
         public void OpenQuickTradeUI (int interactorID, Inventory shownInventory, Inventory taker) {
             OpenUI( interactorID, new object[] { shownInventory, taker } );
         }
@@ -43,13 +39,15 @@ namespace Game.UI {
             BuildButtons(showingInventory.GetDisplayName(), true, 0);
         }
 
-
-        // protected override bool RequiresCustomInputMethod () { return true; }
-
         protected override List<int> InitializeInputsAndNames (out List<string> names) {
             names = new List<string>() { "Take", "Take All", "Trade" };
             return new List<int>() { singleTradeAction, tradeAllAction, switchToFullTradeAction };
         }
+
+        protected override void SetFlairs(SelectableElement element, object mainObject, int panelIndex) {
+            
+        }
+
 
         public int singleTradeAction = 0, tradeAllAction = 1, switchToFullTradeAction = 2;
         protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){//, int actionOffset) {
@@ -57,7 +55,7 @@ namespace Game.UI {
 
             
             // single trade
-            if (input.x == singleTradeAction){//+actionOffset) {
+            if (input.x == singleTradeAction){
                 if (customData != null) {
                     InventorySlot item = customData[0] as InventorySlot;
                     if (item != null) {
@@ -67,12 +65,12 @@ namespace Game.UI {
                 }
             }
             // take all
-            else if (input.x == tradeAllAction){//+actionOffset) {
+            else if (input.x == tradeAllAction){
                 // TODO: check if shown inventory has anything
                 showingInventory.TransferInventoryContentsTo(takingInventory, sendMessage: false);
                 updateButtons = true;
             }
-            else if (input.x == switchToFullTradeAction){//+actionOffset) {
+            else if (input.x == switchToFullTradeAction){
                 CloseUI();
                 StartCoroutine(OpenFullTrade());
             }

@@ -3,11 +3,69 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Game.UI;
+using SimpleUI;
 namespace Game {
 
     
     public class ControlsManager : MonoBehaviour
     {
+
+        #region UI
+        public static int currentUIController = -1;
+        public static bool ControllerOccuped_UI (int controllerIndex) {
+            return UIManager.uiInputActive && (controllerIndex == currentUIController || currentUIController < 0);
+        }
+        public static bool ActionOccupied_UI (int action, int controllerIndex) {
+            return ControllerOccuped_UI(controllerIndex) && (
+                action == UIManager.instance.submitAction || action == UIManager.instance.cancelAction || (action == instance.selectionAxisActionIndex) 
+            );
+        }
+        public static int GetUIController () {
+            return currentUIController != -1 ? currentUIController : lastUsedUIController;
+        }
+
+        public static void SetUIController (int hand) {
+            currentUIController = hand;
+        }
+        public static int lastUsedUIController = -1;
+        #endregion
+        
+
+
+        // action, controller
+        static Dictionary<int, int> occupiedActions = new Dictionary<int, int>();
+        const int unoccupiedController = int.MinValue;
+
+        public static void MarkActionOccupied(int action, int controllerIndex) {
+            occupiedActions[action] = controllerIndex;
+        }
+        public static void MarkActionUnoccupied(int action) {
+            occupiedActions[action] = unoccupiedController;
+        }
+        public static bool ActionOccupied (int action, int controllerIndex) {
+            if (ActionOccupied_UI(action, controllerIndex)) return true;
+            
+            int controllerValue;
+            if (occupiedActions.TryGetValue(action, out controllerValue)) {
+                return controllerValue != unoccupiedController && (controllerIndex == controllerValue || controllerIndex < 0);
+            }
+            else {
+                return false;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         static ControlsManager _i;
         public static ControlsManager instance {
@@ -24,7 +82,10 @@ namespace Game {
             }
         }
 
+        public int selectionAxisActionIndex;
         public int maxControllersCount = 2; //2 for vr, 1 for fps...
+
+
 
         public static int maxControllers {
             get {

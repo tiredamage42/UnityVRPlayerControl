@@ -29,7 +29,10 @@ namespace VRPlayer.UI {
             UpdateTrackpadTransforms();
 #endif
             for (int i = 0; i < trackpadGhosts.Length; i++) {
-                trackpadGhosts[i].axis = StandardizedVRInput.instance.TrackpadAxis.GetAxis(VRManager.Int2Hand(i));
+                // trackpadGhosts[i].axis = StandardizedVRInput.instance.TrackpadAxis.GetAxis(VRManager.Int2Hand(i));
+                trackpadGhosts[i].axis = Player.instance.GetTrackpadAxis(i);
+                trackpadGhosts[i].middleZone = Player.instance.trackpadMiddleZone;
+                trackpadGhosts[i].inMiddle = Player.instance.GetTrackpadIsMiddleValue(i);
             }
             
         }

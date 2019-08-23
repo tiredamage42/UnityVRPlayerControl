@@ -293,36 +293,22 @@ namespace SimpleUI {
             HideUI(popup);
             SetAllActiveUIsSelectableActive(true);
             popupOpen = false;
-
-            // Debug.LogError("setting selection back to " + selectedWhenPoppedUp);
-            // SetSelection(selectedWhenPoppedUp);
-            // SetSelection(selectedWhenPoppedUp);
-
-            // if (setbackselect)
-                instance.StartCoroutine(SetSelectionBack());
-
-            // selectedWhenPoppedUp = null;
+            instance.StartCoroutine(SetSelectionBack());
         }
 
         static IEnumerator SetSelectionBack() {
             yield return null;
-            // Debug.LogError("setting selection back to " + selectedWhenPoppedUp);
-
-                        SetSelection(selectedWhenPoppedUp);
-            // selectedWhenPoppedUp = null;
-
+            SetSelection(selectedWhenPoppedUp);
         }
-        static void ShowPopup (bool saveSelection, BaseUIElement popup, 
-            // System.Action onCancel, 
-            System.Action<GameObject, GameObject[], object[], Vector2Int> onSubmit) {
+            
+
+        static void ShowPopup (bool saveSelection, BaseUIElement popup, System.Action<GameObject, GameObject[], object[], Vector2Int> onSubmit) {
             if (onPopupOpen != null) {
                 onPopupOpen();
             }
             
             if (saveSelection) {
-
-            selectedWhenPoppedUp = CurrentSelected();
-            // Debug.LogError("saving selected " + selectedWhenPoppedUp);
+                selectedWhenPoppedUp = CurrentSelected();
             }
 
             ShowUI(popup);
@@ -331,13 +317,7 @@ namespace SimpleUI {
 
             SetAllActiveUIsSelectableActive(false);
             popupOpen = true;
-
-            // popup.onBaseCancel = onCancel;
-
             popup.runtimeSubmitHandler = DefaultUIInputs;
-            
-
-
             popup.SubscribeToSubmitEvent(onSubmit);
         }
 
@@ -360,9 +340,7 @@ namespace SimpleUI {
                 return;
             }
             
-            ShowPopup (saveCurrentSelection, selectionPopupElement, 
-            // OnCancelSelectionUI, 
-            OnSelectionSubmit);
+            ShowPopup (saveCurrentSelection, selectionPopupElement, OnSelectionSubmit);
 
             selectionReturnCallback = returnValue;
 
@@ -383,10 +361,8 @@ namespace SimpleUI {
             else if (input.x == instance.submitAction) {
                 
                 HidePopup(selectionPopupElement);
-                Debug.LogError("SHPULD CALLBACK");
-
+                
                 if (selectionReturnCallback != null) {
-                    // Debug.LogError("CALLBACK");
                     selectionReturnCallback(true, (int)customData[0]);
 
                     // not setting to null because callback might bring up another popup...
@@ -402,7 +378,6 @@ namespace SimpleUI {
             HidePopup( selectionPopupElement);
             if (selectionReturnCallback != null) {
                 selectionReturnCallback (false, 0);
-                // selectionReturnCallback = null;
             }
         }
 
@@ -420,13 +395,7 @@ namespace SimpleUI {
                 return;
             }
 
-            Debug.LogError("show slider int");
-
-            ShowPopup (saveCurrentSelection, sliderElement, 
-            // OnCancelSliderUI, 
-            OnSliderSubmit);
-
-
+            ShowPopup (saveCurrentSelection, sliderElement, OnSliderSubmit);
 
             sliderReturnCallback = returnValue;
             sliderElement.SetTitle(title);
@@ -444,17 +413,13 @@ namespace SimpleUI {
                 HidePopup(sliderElement);
                 if (sliderReturnCallback != null) {
                     sliderReturnCallback(true, (int)sliderElement.sliderValue);
-                    // sliderReturnCallback = null;
                 }
-
             }
-            
         }
         static void OnCancelSliderUI () {
             HidePopup( sliderElement);
             if (sliderReturnCallback != null) {
                 sliderReturnCallback (false, 0);
-                // sliderReturnCallback = null;
             }
         }
     }

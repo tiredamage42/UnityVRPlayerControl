@@ -262,8 +262,11 @@ namespace Game.InventorySystem {
         public void FavoriteItem (ItemBehavior item) {
             int slotIndex = GetSlotIndex(item);
             FavoriteItem(slotIndex);
-            
         }
+        public bool IsFavorited (ItemBehavior item) {
+            return GetSlotIndex(item) != -1;
+        }
+            
         public void FavoriteItem (int slotIndex) {
             if (favoriteAbleCategories.Contains(allInventory[slotIndex].item.category)) {
                 if (!favorites.Contains(slotIndex)) {

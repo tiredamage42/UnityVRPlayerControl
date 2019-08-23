@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
 using Game.QuestSystem;
 using SimpleUI;
 
@@ -9,12 +8,8 @@ namespace Game.UI {
     public class UIQuestsPage : UISelectableElementHandler
     {
         static UIQuestsPage _instance;
-        public static UIQuestsPage instance {
-            get {
-                if (_instance == null) _instance = GameObject.FindObjectOfType<UIQuestsPage>();
-                return _instance;
-            }
-        }
+        public static UIQuestsPage instance { get { return GetInstance<UIQuestsPage> (ref _instance); } }
+        
         public void OpenQuestManagementUI () {
             OpenUI ( -1, new object[] { } );
         }
@@ -58,18 +53,22 @@ namespace Game.UI {
             return (obj as Quest).displayName; 
         }
 
-        // const int selectQuestAction = 0;
-
         public int selectAction = 0;
         protected override List<int> InitializeInputsAndNames (out List<string> names) {
             names = new List<string>() { "Select" };
             return new List<int>() { selectAction };
         }
 
+        protected override void SetFlairs(SelectableElement element, object mainObject, int panelIndex) {
+            Quest quest = mainObject as Quest;
+            if (quest != null) {
+                element.EnableFlair(0, QuestHandler.currentSelectedQuest == quest);
+            }
+        }
 
-        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){//, int actionOffset) {
+
+        protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){
             
-            // if (input.x == selectQuestAction+actionOffset) {
             if (input.x == selectAction) {
                 
                 if (customData != null) {

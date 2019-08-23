@@ -32,7 +32,7 @@ namespace Valve.VR.InteractionSystem
                 { 
 					float pulse = distanceIntensityCurve.Evaluate( distance );
 
-					StandardizedVRInput.instance.TriggerHapticPulse(hand.handType,
+					Player.instance.TriggerHapticPulse(hand.handType,
 					// hand.TriggerHapticPulse(
 							(ushort)pulse
 					);

@@ -12,7 +12,6 @@ namespace Game.UI {
     // TODO: add game modifier message for ui showing
 
 
-
     /*
         TODO: make quest that initializes perk table available to player into player perk holder
     */
@@ -21,12 +20,8 @@ namespace Game.UI {
     {
 
         static UIPerksTable _instance;
-        public static UIPerksTable instance {
-            get {
-                if (_instance == null) _instance = GameObject.FindObjectOfType<UIPerksTable>();
-                return _instance;
-            }
-        }
+        public static UIPerksTable instance { get { return GetInstance<UIPerksTable> (ref _instance); } }
+        
         public void OpenPerksManagementUI (Actor actorToEdit, PerkHandler perkPointsContainer) {
             instance.OpenUI (  0, new object[] { actorToEdit, perkPointsContainer } );
         }
@@ -130,7 +125,6 @@ namespace Game.UI {
             }
         }
 
-        const int attemptChangeAction = 0;
         int currentPanelIndex;
         PerkHolder currentPerkHolder;
         GameValue currentGameValue;
@@ -155,13 +149,24 @@ namespace Game.UI {
         }
 
 
+        protected override void SetFlairs(SelectableElement element, object mainObject, int panelIndex) {
+            PerkHolder perkHolder = mainObject as PerkHolder;
+            if (perkHolder != null) {
+                element.EnableFlair(0, perkHolder.level >= perkHolder.perk.levels);
+            }
+            else {
+                GameValue specialValue = mainObject as GameValue;
+                if (specialValue != null) {
+                    element.EnableFlair(0, specialValue.baseValue >= specialValue.baseMinMax.y);
+                }
+                
+            }
+        }
 
         protected override void OnUIInput (GameObject selectedObject, GameObject[] data, object[] customData, Vector2Int input){//, int actionOffset) {
             if (customData != null) {
 
-
                 if (input.x == upgradeAction) {
-                // if (input.x == attemptChangeAction+actionOffset) {
                 
                     if (perkPointsContainer.perkPoints > 0) {
                         currentPanelIndex = (int)customData[1];

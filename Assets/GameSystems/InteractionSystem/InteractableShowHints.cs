@@ -29,7 +29,6 @@ public class InteractableShowHints : MonoBehaviour, IInteractable
     [Header("EG: 'Drag-0'")]
     [NeatArray] public NeatStringArray nameAndAction;
 
-
     SceneItem sceneItem;
 
     List<int> actions = new List<int>();
@@ -37,7 +36,6 @@ public class InteractableShowHints : MonoBehaviour, IInteractable
     void Awake () {
         sceneItem = GetComponent<SceneItem>();
         
-
         for (int i = 0; i < nameAndAction.list.Length; i++) {
             string[] split = nameAndAction.list[i].Split('-');
             if (split == null || split.Length != 2) {
@@ -52,7 +50,6 @@ public class InteractableShowHints : MonoBehaviour, IInteractable
     
     public void OnInteractableAvailabilityChange(bool available) { }
     public void OnInteractableInspectedStart (InteractionPoint interactor) {
-        Debug.LogError(getInteractionMessage + " getInteractionMessage");
         GameUI.ShowInteractionHint (interactor.interactorID, getInteractionMessage, actions, names);
     }
     public void OnInteractableInspectedEnd (InteractionPoint interactor) {
